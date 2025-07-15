@@ -99,9 +99,9 @@ export const DevUrlPopup = ({
             }}
             target="_blank"
             rel="noopener noreferrer"
-            href={'https://wallet.aldrin.com'}
+            href={'https://svmseek.com'}
           >
-            wallet.aldrin.com{' '}
+            svmseek.com{' '}
           </a>
           .
         </Text>
@@ -111,7 +111,7 @@ export const DevUrlPopup = ({
           style={{ textDecoration: 'none', width: '100%' }}
           target="_blank"
           rel="noopener noreferrer"
-          href={'https://wallet.aldrin.com'}
+          href={'https://svmseek.com'}
         >
           {' '}
           <BlueButton
@@ -125,7 +125,7 @@ export const DevUrlPopup = ({
             theme={theme}
             onClick={() => {}}
           >
-            Go to wallet.aldrin.com
+            Go to svmseek.com
           </BlueButton>
         </a>
       </RowContainer>

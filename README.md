@@ -1,8 +1,8 @@
-# SPL Token Wallet
+# SVMSeek Wallet
 
-Example Aldrin wallet with support for [SPL tokens](https://spl.solana.com/token) and Serum integration.
+SVMSeek wallet with support for [SPL tokens](https://spl.solana.com/token) and Serum integration.
 
-See [wallet.aldrin.com](https://www.wallet.aldrin.com) for a demo.
+See [svmseek.com](https://www.svmseek.com) for a demo.
 
 Wallet keys are stored in `localStorage`, optionally encrypted by a password.
 

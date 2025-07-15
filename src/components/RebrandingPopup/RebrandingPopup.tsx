@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material';
 
 import { Dialog, Paper, Theme } from '@mui/material';
 
-import MainLogo from '../../images/Aldrin.svg';
+import MainLogo from '../../images/SVMSeek.svg';
 import AustronautHelmet from '../../images/austronautHelmet.png';
 import { Row, RowContainer } from '../../pages/commonStyles';
 import { BtnCustom } from '../BtnCustom';
@@ -98,12 +98,12 @@ const RebrandingPopup = ({
       <Row width={'70%'} direction={'column'} padding={'0 2rem 0 0'}>
         <RowContainer margin={'0 0 3rem 0'} justify={'flex-start'}>
           <Title style={{ fontFamily: 'Avenir Next Bold', fontSize: '2.4rem' }}>
-            Cryptocurrencies.Ai is Aldrin now!
+            Cryptocurrencies.Ai is SVMSeek now!
           </Title>
         </RowContainer>
         <RowContainer direction={'column'} align={'flex-start'}>
           <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
-            We are happy to announce that we have rebranded CCAI and are ready to present – Aldrin!
+            We are happy to announce that we have rebranded CCAI and are ready to present – SVMSeek!
           </WhiteText>
           <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
             The CCAI token has also been renamed to RIN. CCAI tokens in your wallets are automatically changed to RIN.
@@ -117,7 +117,7 @@ const RebrandingPopup = ({
               fontFamily: 'Avenir Next Demi',
             }}
           >
-            Respectfully, the Aldrin team.
+            Respectfully, the SVMSeek team.
           </WhiteText>
         </RowContainer>
 

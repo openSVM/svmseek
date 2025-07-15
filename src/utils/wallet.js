@@ -431,7 +431,7 @@ export function useBalanceInfo(publicKey) {
         decimals,
         mint,
         owner,
-        tokenName: name === 'Cryptocurrencies.Ai' ? 'Aldrin' : name,
+        tokenName: name === 'Cryptocurrencies.Ai' ? 'SVMSeek' : name,
         tokenSymbol: symbol === 'CCAI' ? 'RIN' : symbol,
         tokenLogoUri: logoUri,
         valid: true,

@@ -229,7 +229,7 @@ export default function AddTokenDialog({
             />
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Name (e.g. Aldrin)'}
+                placeholder={'Token Name (e.g. SVMSeek)'}
                 value={tokenName}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}

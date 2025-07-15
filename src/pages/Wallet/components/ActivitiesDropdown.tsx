@@ -151,7 +151,7 @@ const ActivitiesDropdown = ({
                   !tokensData.has(`${tokenSymbol?.toUpperCase()}`)
                 }
                 rel="noopener"
-                href={`https://dex.aldrin.com/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
+                href={`https://svmseek.com/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
                 style={{
                   width: '100%',
                   height: '5rem',

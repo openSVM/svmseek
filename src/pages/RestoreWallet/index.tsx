@@ -64,7 +64,7 @@ export const RestorePage = () => {
   return (
     <Body>
       <Helmet>
-        <title>Restore Aldrin Wallet by seed phrase</title>
+        <title>Restore SVMSeek Wallet by seed phrase</title>
       </Helmet>
       <FakeInputs />
       {redirectToWallet && <Redirect to="/wallet" />}

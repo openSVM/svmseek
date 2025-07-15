@@ -196,7 +196,7 @@ export const getAllTokensData = async (
     : abbreviateAddress(new PublicKey(el.account.data.parsed.info.mint))
 
     const dataForToken = {
-      name: name === 'Cryptocurrencies.Ai' ? 'Aldrin' : name,
+      name: name === 'Cryptocurrencies.Ai' ? 'SVMSeek' : name,
       symbol: symbol === 'CCAI' ? 'RIN' : symbol,
       decimals: el.account.data.parsed.info.tokenAmount.decimals,
       amount: el.account.data.parsed.info.tokenAmount.uiAmount,
@@ -244,7 +244,7 @@ export function useInterval(callback, delay) {
   }, [delay]);
 }
 
-export const extensionUrl = 'https://chrome.google.com/webstore/detail/cryptocurrenciesai-wallet/oomlbhdllfeiglglhhaacafbkkbibhel'
+export const extensionUrl = 'https://chrome.google.com/webstore/detail/svmseek-wallet/svmseek-extension-id'
 
 export const encode = (data) => {
   return Object.keys(data)
