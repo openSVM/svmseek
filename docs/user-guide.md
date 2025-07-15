@@ -1,8 +1,106 @@
-# SVMSeek Explorer User Guide
+# SVMSeek Wallet User Guide
 
 ## Getting Started
 
-The SVMSeek Explorer provides a comprehensive view of the Solana blockchain directly within your wallet interface. Access it by clicking the "Explorer" tab in the main wallet view.
+SVMSeek Wallet provides a comprehensive interface for managing your Solana assets with built-in explorer, AI chat, and Web3 browser capabilities. The wallet interface contains five main tabs:
+
+1. **Assets** - View and manage your tokens and NFTs
+2. **Activity** - Transaction history and account activity
+3. **AI Chat** - Interact with AI assistants for crypto guidance
+4. **Explorer** - Browse the Solana blockchain
+5. **Browser** - Access Solana dApps with built-in wallet connectivity
+
+## Wallet Tabs Overview
+
+### Assets Tab
+Your main dashboard showing:
+- SOL balance and token holdings
+- NFT collections
+- Asset management tools (send, receive, swap)
+
+### Activity Tab
+Track your transaction history:
+- Recent transactions
+- Transaction status and details
+- Filter and search capabilities
+
+### AI Chat Tab
+Intelligent assistance for:
+- Market insights and token analysis
+- DeFi strategy guidance
+- Technical support and education
+- Multi-provider AI support (OpenAI, Anthropic, etc.)
+
+### Explorer Tab
+Comprehensive blockchain exploration:
+- Transaction and account lookup
+- Real-time network statistics
+- Block explorer functionality
+- Live transaction feeds
+
+### Browser Tab
+**🌐 Built-in Web3 Browser for Solana dApps**
+
+The Browser tab provides seamless access to the Solana ecosystem with automatic wallet connectivity.
+
+#### Popular dApps Available
+
+| Category | dApp | Description |
+|----------|------|-------------|
+| **DEX** | Jupiter | Premier swap aggregator for best prices |
+| **DEX** | Raydium | Automated market maker and farming |
+| **DEX** | Orca | User-friendly trading interface |
+| **DEX** | Phoenix | Advanced order book trading |
+| **NFT** | Magic Eden | Leading NFT marketplace |
+| **NFT** | Tensor | Professional NFT trading platform |
+| **DeFi** | Marinade | Liquid staking for SOL rewards |
+| **DeFi** | Kamino | Automated yield optimization |
+| **Lending** | Solend | Lending and borrowing protocol |
+| **Trading** | Mango Markets | Leveraged trading platform |
+| **Portfolio** | Step Finance | Portfolio tracking and analytics |
+
+#### Browser Features
+
+**🔗 Automatic Wallet Connection**
+- Your wallet is automatically connected to compatible dApps
+- No need to manually connect each time
+- Secure wallet provider injection
+
+**🧭 Full Browser Experience**
+- Address bar for custom URLs
+- Back/forward navigation with history
+- Refresh and home buttons
+- External link opening in new tabs
+
+**🔒 Security Features**
+- Iframe sandboxing for safe browsing
+- Cross-origin protection warnings
+- Wallet connection status indicators
+- Secure transaction handling
+
+#### How to Use the Browser
+
+1. **Quick Access**: Click any dApp card to navigate directly
+2. **Custom URLs**: Type any Solana dApp URL in the address bar
+3. **Navigation**: Use browser controls like any web browser
+4. **Wallet Usage**: Your wallet is automatically available to dApps
+5. **External Access**: Click the external link icon to open in your main browser
+
+#### Browser Security
+
+**Transaction Signing**
+- For security, transaction signing opens approval dialogs
+- Some dApps may require external wallet confirmation
+- Cross-origin restrictions protect against malicious sites
+
+**Safe Browsing**
+- All sites load in secure iframes
+- Automatic security warnings for untrusted content
+- Wallet connection only with your explicit permission
+
+## Explorer Features
+
+The SVMSeek Explorer provides a comprehensive view of the Solana blockchain directly within your wallet interface.
 
 ## Overview
 
