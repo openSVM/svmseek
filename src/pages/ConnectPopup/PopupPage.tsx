@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 import { useWallet, useWalletSelector } from '../../utils/wallet';
-import { useTheme } from '@mui/material';
+import { Button, useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';

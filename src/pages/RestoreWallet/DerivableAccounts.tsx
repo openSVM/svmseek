@@ -62,7 +62,7 @@ export default function DerivedAccounts({
     return getAccountFromSeed(
       Buffer.from(seed, 'hex'),
       idx,
-      toDerivationPath(dPathMenuItem),
+      toDerivationPath(dPathMenuItem) as any,
     );
   });
 
@@ -72,7 +72,7 @@ export default function DerivedAccounts({
         mnemonic,
         seed,
         password,
-        toDerivationPath(dPathMenuItem),
+        toDerivationPath(dPathMenuItem) as any,
       ),
     );
 
@@ -262,7 +262,7 @@ const DerivationPathMenuItem = {
   Bip44Change: 2,
 };
 
-function toDerivationPath(dPathMenuItem: number) {
+function toDerivationPath(dPathMenuItem: number): string | undefined {
   switch (dPathMenuItem) {
     case DerivationPathMenuItem.Deprecated:
       return DERIVATION_PATH.deprecated;

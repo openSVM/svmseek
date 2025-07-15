@@ -48,7 +48,7 @@ export function useSendTransaction(): [any, boolean] {
       closeSnackbar(id);
       setSending(false);
 
-      let message = e.message;
+      let message = (e as Error).message;
 
       if (
         message.includes(
@@ -119,7 +119,7 @@ export function useCallAsync() {
     } catch (e) {
       console.warn(e);
       closeSnackbar(id);
-      let message = e.message;
+      let message = (e as Error).message;
 
       if (
         message.includes(
