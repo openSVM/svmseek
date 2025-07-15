@@ -76,6 +76,10 @@
     "build:extension-edge": "mkdir -p ./extension/edge/build && cp -a ./build/. ./extension/edge/build/ && cp -a ./extension/src/. ./extension/edge/build/ && cp ./extension/edge/manifest.json ./extension/edge/build/manifest.json",
     "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "craco test",
+    "test:e2e": "playwright test",
+    "test:e2e-headed": "playwright test --headed",
+    "test:e2e-ui": "playwright test --ui",
+    "playwright:install": "playwright install",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -115,6 +119,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
     "cross-env": "^7.0.3",
     "gh-pages": "^6.2.0",
     "git-format-staged": "^3.1.1",
