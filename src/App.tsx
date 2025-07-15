@@ -1,14 +1,9 @@
-import blue from '@mui/material/colors/blue';
-import CssBaseline from '@mui/material/CssBaseline';
-import {
-  ThemeProvider,
-  createTheme
-} from '@mui/material/styles';
 import React, { lazy, Suspense, useMemo } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import LoadingIndicator from './components/LoadingIndicator';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
+import { ThemeProvider } from './context/ThemeContext';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { ConnectionProvider } from './utils/connection';
 import { TokenRegistryProvider } from './utils/tokens/names';
@@ -41,111 +36,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-// const LOCAL_BUILD = window.location.href.includes('localhost');
-
 export default function App() {
-  // TODO: add toggle for dark mode
-  const prefersDarkMode = true;
-  const theme = React.useMemo(
-    () =>
-      createTheme(
-        prefersDarkMode
-          ? {
-              palette: {
-                mode: 'dark',
-                primary: blue,
-              },
-              customPalette: {
-                text: {
-                  grey: '#fff',
-                },
-                border: {
-                  main: '.1rem solid #2e2e2e',
-                  new: '.1rem solid #3A475C',
-                },
-                grey: {
-                  additional: '#fff',
-                  border: '#2E2E2E',
-                  light: '#96999C',
-                  dark: '#93A0B2',
-                  soft: '#E2E0E5',
-                  background: '#222429',
-                },
-                dark: {
-                  main: '#D1DDEF',
-                  background: '#17181A',
-                },
-                blue: {
-                  serum: '#651CE4',
-                  new: '#651CE4',
-                },
-                white: {
-                  main: '#fff',
-                  background: '#1B2028',
-                },
-                red: {
-                  main: '#F69894',
-                },
-                green: {
-                  main: '#97E873',
-                  light: '#53DF11',
-                },
-                orange: {
-                  dark: '#F8B567',
-                  light: '#F29C38',
-                },
-              },
-            }
-          : {
-              palette: {
-                mode: 'light',
-                primary: blue,
-              },
-              customPalette: {
-                text: {
-                  grey: '#2E2E2E',
-                },
-                border: {
-                  main: '.1rem solid #e0e5ec',
-                  new: '.1rem solid #3A475C',
-                },
-                grey: {
-                  additional: '#0E1016',
-                  border: '#e0e5ec',
-                  light: '#96999C',
-                  dark: '#93A0B2',
-                  soft: '#383B45',
-                  background: '#222429',
-                },
-                dark: {
-                  main: '#16253D',
-                  background: '#17181A',
-                },
-                blue: {
-                  serum: '#651CE4',
-                  new: '#651CE4',
-                },
-                white: {
-                  main: '#fff',
-                  background: '#1B2028',
-                },
-                red: {
-                  main: '#F69894',
-                },
-                green: {
-                  main: '#97E873',
-                  light: '#53DF11',
-                },
-                orange: {
-                  dark: '#F8B567',
-                  light: '#F29C38',
-                },
-              },
-            },
-      ),
-    [prefersDarkMode],
-  );
-
   // Disallow rendering inside an iframe to prevent clickjacking.
   if (window.self !== window.top) {
     return null;
@@ -166,8 +57,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingIndicator />}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
+        <ThemeProvider>
           <ConnectionProvider>
             <TokenRegistryProvider>
               <SnackbarProvider maxSnack={5} autoHideDuration={3000}>

@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 import { useWallet, useWalletSelector } from '../../utils/wallet';
-import { Button, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import { makeStyles } from '@mui/material/styles';
+import { styled as muiStyled } from '@mui/material/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import {
@@ -355,23 +355,10 @@ function focusParent() {
   }
 }
 
-const useStyles = makeStyles((theme) => ({
-  connection: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    textAlign: 'center',
-  },
-  approveButton: {
-    backgroundColor: '#43a047',
-    color: 'white',
-  },
-  actions: {
-    justifyContent: 'space-between',
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
+const ConnectionContainer = muiStyled('div')(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+  textAlign: 'center',
 }));
 
 function getInitialRequests(hash: string) {
@@ -414,7 +401,6 @@ function ApproveConnectionForm({
   setAutoApprove,
 }) {
   const wallet = useWallet();
-  const classes = useStyles();
   const { accounts, hardwareWalletAccount } = useWalletSelector();
   // TODO better way to do this
   const allAccounts = hardwareWalletAccount
@@ -445,22 +431,23 @@ function ApproveConnectionForm({
           Allow this site to access your Wallet™?
         </Title>
 
-        <RowContainer
-          margin={'0 0 4rem 0'}
-          direction={'column'}
-          className={classes.connection}
-        >
-          <RowContainer margin="6rem 0 0 0">
-            <Title>{origin}</Title>
+        <ConnectionContainer>
+          <RowContainer
+            margin={'0 0 4rem 0'}
+            direction={'column'}
+          >
+            <RowContainer margin="6rem 0 0 0">
+              <Title>{origin}</Title>
+            </RowContainer>
+            <img
+              alt={'import export icon'}
+              style={{ margin: '2rem 0' }}
+              src={ImportExportIcon}
+            />
+            <Title fontSize="1.6rem">{account?.name}</Title>
+            <Title fontSize="1.6rem">{wallet?.publicKey?.toBase58()}</Title>
           </RowContainer>
-          <img
-            alt={'import export icon'}
-            style={{ margin: '2rem 0' }}
-            src={ImportExportIcon}
-          />
-          <Title fontSize="1.6rem">{account?.name}</Title>
-          <Title fontSize="1.6rem">{wallet?.publicKey?.toBase58()}</Title>
-        </RowContainer>
+        </ConnectionContainer>
 
         <RowContainer direction={'row'}>
           <StyledCheckbox

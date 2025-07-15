@@ -14,6 +14,7 @@ module.exports = {
         url: require.resolve('url'),
         os: require.resolve('os'),
         path: require.resolve('path-browserify'),
+        vm: require.resolve('vm-browserify'),
         fs: false,
         net: false,
         tls: false,

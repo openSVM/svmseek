@@ -8,6 +8,7 @@ import { Button } from '../Button';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
 import { COLORS } from '../variables';
 import DiscordIcon from './DiscordIcon';
+import ThemeToggle from '../ThemeToggle';
 // TODO: Refactor popup
 import { DropDown } from './Dropdown';
 import {
@@ -151,6 +152,9 @@ export const Navbar = () => {
         </MainLinksWrap>
         <WalletContainer>
           <RowContainer padding="0">
+            <div style={{ marginRight: '2rem' }}>
+              <ThemeToggle />
+            </div>
             <Socials justify={'space-around'} height="100%" width={'auto'}>
               <StyledLink
                 style={{ marginRight: '3rem', height: '2.5rem' }}
