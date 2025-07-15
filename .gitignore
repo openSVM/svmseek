@@ -11,6 +11,9 @@
 # production
 /build
 
+# extension builds
+extension/*/build/
+extension/*.zip
 extension/build/
 extension/build.zip
 
