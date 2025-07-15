@@ -4,8 +4,8 @@ import { useWallet } from '../../../utils/wallet';
 import { checkIsCorrectPassword } from '../../../utils/wallet-seed';
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 import { InputWithEye, TextareaWithCopy } from '../../../components/Input';
-import { useTheme } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { useTheme } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useCallAsync } from '../../../utils/notifications';
 import { BtnCustom } from '../../../components/BtnCustom';
 

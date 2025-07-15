@@ -13,7 +13,7 @@ import {
   MAINNET_URL,
 } from '../utils/connection';
 import { createAndInitializeMint } from '../utils/tokens';
-import { Tooltip, Button } from '@material-ui/core';
+import { Tooltip, Button } from '@mui/material';
 import React from 'react';
 
 export default function DebugButtons() {

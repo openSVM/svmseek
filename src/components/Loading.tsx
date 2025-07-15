@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 import styled from 'styled-components'
-import { useTheme } from '@material-ui/core'
+import { useTheme } from '@mui/material'
 
 const RawLoading = ({
   size = 64,

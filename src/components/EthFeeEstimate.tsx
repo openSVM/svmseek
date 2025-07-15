@@ -1,4 +1,4 @@
-import { DialogContentText } from "@material-ui/core";
+import { DialogContentText } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Title } from "../pages/commonStyles";
 import { useConnection } from "../utils/connection";

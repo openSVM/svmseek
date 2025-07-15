@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { Theme, useTheme } from '@material-ui/core';
+import { Theme, useTheme } from '@mui/material';
 import { PublicKey } from '@solana/web3.js';
 
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';

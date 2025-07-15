@@ -6,7 +6,7 @@ import {
   DERIVATION_PATH,
 } from '../../utils/walletProvider/localStorage.js';
 import { useSolanaExplorerUrlSuffix } from '../../utils/connection';
-import FingerprintIcon from '@material-ui/icons/Fingerprint';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
 
 import {
   Card,
@@ -17,12 +17,12 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import { useTheme } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import { useTheme } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 
 import logoAstronaut from '../../images/logoAstronaut.svg';
 import { useBalanceInfo } from '../../utils/wallet';

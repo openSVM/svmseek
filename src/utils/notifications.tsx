@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { confirmTransaction } from './utils';
 
 export function useSendTransaction(): [any, boolean] {

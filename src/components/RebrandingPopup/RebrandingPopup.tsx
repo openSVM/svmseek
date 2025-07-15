@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
-import { Dialog, Paper, Theme } from '@material-ui/core';
+import { Dialog, Paper, Theme } from '@mui/material';
 
 import MainLogo from '../../images/Aldrin.svg';
 import AustronautHelmet from '../../images/austronautHelmet.png';

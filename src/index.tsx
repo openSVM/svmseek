@@ -1,18 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { hot } from 'react-hot-loader';
+import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import * as serviceWorker from './serviceWorker';
 
-const render = () =>
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    document.getElementById('root'),
-  );
+const container = document.getElementById('root');
+const root = createRoot(container!);
 
-render(hot(module)(App));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

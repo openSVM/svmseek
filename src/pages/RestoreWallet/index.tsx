@@ -21,7 +21,7 @@ import {
 
 import { InputWithEye, InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import DerivableAccounts from './DerivableAccounts';
 import FakeInputs from '../../components/FakeInputs';
 import Warning from '../CreateWallet/components/Warning';

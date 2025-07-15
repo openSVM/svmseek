@@ -1,13 +1,13 @@
 import React, { useRef } from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import CopyIcon from 'mdi-material-ui/ContentCopy';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import QrcodeIcon from 'mdi-material-ui/Qrcode';
 import QRCode from 'qrcode.react';
-import DialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
 
 const useStyles = makeStyles((theme) => ({
   root: {

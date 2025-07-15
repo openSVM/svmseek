@@ -9,9 +9,9 @@ import {
   ListItemText,
   makeStyles,
   Paper,
-} from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { DoneAll, ExpandLess, ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DoneAll, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useConnectedWallets } from '../../utils/connected-wallets';
 import { useWalletSelector } from '../../utils/wallet';
 import DialogForm from '../../pages/Wallet/components/DialogForm';

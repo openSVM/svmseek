@@ -1,9 +1,9 @@
-import blue from '@material-ui/core/colors/blue';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import blue from '@mui/material/colors/blue';
+import CssBaseline from '@mui/material/CssBaseline';
 import {
   ThemeProvider,
   unstable_createMuiStrictModeTheme as createMuiTheme
-} from '@material-ui/core/styles';
+} from '@mui/material/styles';
 import React, { lazy, Suspense, useMemo } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import LoadingIndicator from './components/LoadingIndicator';
@@ -30,7 +30,7 @@ const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 // const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 // const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
-declare module '@material-ui/core/styles/createMuiTheme' {
+declare module '@mui/material/styles/createMuiTheme' {
   interface Theme {
     // add types later
     customPalette: any;

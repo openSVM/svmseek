@@ -1,13 +1,13 @@
-import { Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { Typography } from '@mui/material';
+import Link from '@mui/material/Link';
 import React from 'react';
 import { useSolanaExplorerUrlSuffix } from '../utils/connection';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
 import DialogForm from '../pages/Wallet/components/DialogForm';
 import { abbreviateAddress } from '../utils/utils';
 import CopyableDisplay from './CopyableDisplay';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/material/styles';
 
 const useStyles = makeStyles((theme) => ({
   explorerLink: {

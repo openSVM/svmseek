@@ -5,7 +5,7 @@ import { Row, RowContainer } from '../../pages/commonStyles';
 import Warning from '../../images/newWarning.svg';
 import { BtnCustom } from '../BtnCustom';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
-import { useTheme, Paper } from '@material-ui/core';
+import { useTheme, Paper } from '@mui/material';
 
 export const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   height: auto;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DialogForm from './DialogForm';
 import { LedgerWalletProvider } from '../../../utils/walletProvider/ledger';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
 import {
   RowContainer,
@@ -9,7 +9,7 @@ import {
   VioletButton,
   WhiteButton,
 } from '../../commonStyles';
-import { FormControl, Select, MenuItem, useTheme } from '@material-ui/core';
+import { FormControl, Select, MenuItem, useTheme } from '@mui/material';
 import { DERIVATION_PATH } from '../../../utils/walletProvider/localStorage';
 import { BalanceListItem } from '../../../components/BalancesList';
 

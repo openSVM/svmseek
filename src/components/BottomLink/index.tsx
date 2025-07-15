@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { Title, RowContainer } from '../../pages/commonStyles';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
 const BottomLink = ({
   to = '/restore_wallet',

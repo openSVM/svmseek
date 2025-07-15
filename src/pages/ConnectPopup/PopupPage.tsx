@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Redirect } from 'react-router-dom';
 import { useWallet, useWalletSelector } from '../../utils/wallet';
-import { Button, useTheme } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import { Button, useTheme } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import ImportExportIcon from '../../images/importExportIcon.svg';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/material/styles';
 import assert from 'assert';
 import bs58 from 'bs58';
 import {

@@ -4,7 +4,7 @@ import ERC20_ABI from './erc20-abi.json';
 import SWAP_ABI from './swap-abi.json';
 import { useCallAsync } from '../notifications';
 import { VioletButton } from '../../pages/commonStyles';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { isExtension } from '../utils';
 
 const web3 = new Web3(window.ethereum);

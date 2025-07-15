@@ -1,8 +1,8 @@
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
-import { withStyles } from '@material-ui/styles';
-import { IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { withStyles } from '@mui/styles';
+import { IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 import errorIcon from '../images/errorIcon.svg';
 import successIcon from '../images/successIcon.svg';

@@ -8,7 +8,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useCallAsync, useSendTransaction } from '../../../utils/notifications';
 import { swapApiRequest, useSwapApiGet } from '../../../utils/swap/api';
 import { showSwapAddress } from '../../../utils/config';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 import {
   ConnectToMetamaskButton,
   // getErc20Balance,
@@ -16,16 +16,16 @@ import {
   withdrawEth,
 } from '../../../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../../../utils/connection';
-// import Link from '@material-ui/core/Link';
-// import Typography from '@material-ui/core/Typography';
+// import Link from '@mui/material/Link';
+// import Typography from '@mui/material/Typography';
 import { useAsyncData } from '../../../utils/fetch-loop';
-// import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@mui/material/CircularProgress';
 import {
   TOKEN_PROGRAM_ID,
   WRAPPED_SOL_MINT,
 } from '../../../utils/tokens/instructions';
 import { parseTokenAccountData } from '../../../utils/tokens/data';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 // import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
 import {
   RowContainer,

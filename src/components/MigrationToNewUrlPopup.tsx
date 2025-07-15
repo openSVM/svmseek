@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Row, RowContainer } from '../pages/commonStyles';
 import { BtnCustom } from '../components/BtnCustom';
 import DialogForm from '../pages/Wallet/components/DialogForm';
-import { useTheme, Paper } from '@material-ui/core';
+import { useTheme, Paper } from '@mui/material';
 import SunLogo from '../images/SunLogo.svg';
 
 export const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`

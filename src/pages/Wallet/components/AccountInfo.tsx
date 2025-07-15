@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
 import copy from 'clipboard-copy';
 

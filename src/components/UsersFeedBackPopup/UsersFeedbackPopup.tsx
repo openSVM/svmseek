@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Theme } from '@material-ui/core';
+import { Theme } from '@mui/material';
 
 import CloseIcon from '../../images/closeIcon.svg';
 import CoolIcon from '../../images/Emoji.svg';

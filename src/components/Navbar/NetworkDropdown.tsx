@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { useConnectionConfig, MAINNET_URL } from '../../utils/connection';
 import { clusterApiUrl } from '@solana/web3.js';
-import { Theme, useTheme, Paper, MenuList, MenuItem } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Theme, useTheme, Paper, MenuList, MenuItem } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { BtnCustom } from '../BtnCustom';
 import { useWallet } from '../../utils/wallet';

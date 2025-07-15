@@ -1,4 +1,4 @@
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import AldrinLogo from '../../images/Aldrin.svg';

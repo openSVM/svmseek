@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { BtnCustom } from '../components/BtnCustom';
-import { Grid, Checkbox, Radio } from '@material-ui/core';
+import { Grid, Checkbox, Radio } from '@mui/material';
 
 export type RowProps = {
   wrap?: string;

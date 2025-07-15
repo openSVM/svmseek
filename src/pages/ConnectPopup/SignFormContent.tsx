@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import CardContent from '@material-ui/core/CardContent';
-import Warning from '@material-ui/icons/Warning';
-import { Tooltip, Divider } from '@material-ui/core';
+import CardContent from '@mui/material/CardContent';
+import Warning from '@mui/icons-material/Warning';
+import { Tooltip, Divider } from '@mui/material';
 import { useWallet } from '../../utils/wallet';
 import { Title } from '../commonStyles';
 

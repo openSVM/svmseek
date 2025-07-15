@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Theme } from '@material-ui/core'
+import { Theme } from '@mui/material'
 import { CSSProperties } from 'react'
 
 const Text = styled.span`

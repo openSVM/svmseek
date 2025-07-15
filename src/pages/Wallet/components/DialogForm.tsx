@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Dialog } from '@material-ui/core';
+import { Dialog } from '@mui/material';
 import { Card } from '../../commonStyles';
-import { Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
 
 const StyledCard = styled(Card)`
   && {

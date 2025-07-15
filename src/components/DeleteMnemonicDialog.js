@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import DialogForm from '../pages/Wallet/components/DialogForm';
 import { forgetWallet } from '../utils/wallet-seed';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { DialogContentText } from '@material-ui/core';
-import DialogActions from '@material-ui/core/DialogActions';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import { DialogContentText } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 export default function DeleteMnemonicDialog({ open, onClose }) {
   const [deleteCheck, setDeleteCheck] = useState('');

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
 import {
   refreshWalletPublicKeys,
   useWallet,
@@ -15,21 +15,21 @@ import { TOKENS } from '../utils/tokens/tokens'
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
-import { makeStyles, Tab, Tabs } from '@material-ui/core';
+import { makeStyles, Tab, Tabs } from '@mui/material';
 import { useSendTransaction } from '../utils/notifications';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import { abbreviateAddress } from '../utils/utils';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
 import {
   useConnectionConfig,
   useSolanaExplorerUrlSuffix,
 } from '../utils/connection';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import CopyableDisplay from './CopyableDisplay';
 import DialogForm from '../pages/Wallet/components/DialogForm';
 import { showSwapAddress } from '../utils/config';

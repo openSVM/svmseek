@@ -1,4 +1,4 @@
-import { pbkdf2 } from 'crypto';
+import { pbkdf2 } from 'crypto-browserify';
 import { randomBytes, secretbox } from 'tweetnacl';
 import * as bip32 from 'bip32';
 import bs58 from 'bs58';

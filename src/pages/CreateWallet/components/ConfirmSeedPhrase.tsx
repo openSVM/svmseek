@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import {
   Card,
   Row,
