@@ -2,7 +2,7 @@ import blue from '@mui/material/colors/blue';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
   ThemeProvider,
-  unstable_createMuiStrictModeTheme as createMuiTheme
+  createTheme
 } from '@mui/material/styles';
 import React, { lazy, Suspense, useMemo } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
@@ -30,7 +30,7 @@ const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 // const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 // const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
-declare module '@mui/material/styles/createMuiTheme' {
+declare module '@mui/material/styles' {
   interface Theme {
     // add types later
     customPalette: any;
@@ -48,11 +48,11 @@ export default function App() {
   const prefersDarkMode = true;
   const theme = React.useMemo(
     () =>
-      createMuiTheme(
+      createTheme(
         prefersDarkMode
           ? {
               palette: {
-                type: 'dark',
+                mode: 'dark',
                 primary: blue,
               },
               customPalette: {
@@ -98,7 +98,7 @@ export default function App() {
             }
           : {
               palette: {
-                type: 'light',
+                mode: 'light',
                 primary: blue,
               },
               customPalette: {

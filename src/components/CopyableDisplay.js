@@ -4,7 +4,7 @@ import CopyIcon from 'mdi-material-ui/ContentCopy';
 import { makeStyles } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import QrcodeIcon from 'mdi-material-ui/Qrcode';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG as QRCode } from 'qrcode.react';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';

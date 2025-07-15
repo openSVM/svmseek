@@ -1,10 +1,13 @@
 import { pbkdf2 } from 'crypto-browserify';
 import { randomBytes, secretbox } from 'tweetnacl';
-import * as bip32 from 'bip32';
+import { BIP32Factory } from 'bip32';
+import * as ecc from 'tiny-secp256k1';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
 import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
+
+const bip32 = BIP32Factory(ecc);
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
