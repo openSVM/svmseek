@@ -9,6 +9,7 @@ import SendDialog from './components/SendPopup';
 import ReceiveDialog from './components/ReceivePopup';
 import AddTokenDialog from './components/AddTokenPopup';
 import ChatInterface from '../../components/ChatInterface';
+import { ExplorerInterface } from '../../components/Explorer';
 
 import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
@@ -34,7 +35,7 @@ const Switcher = styled.button`
   @media (max-width: 540px) {
     outline: none;
     display: block;
-    width: 33.33%;
+    width: 25%;
     color: ${(props) => (props.isTabActive ? ' #f5f5fb' : '#96999C')};
     background: none;
     font-family: 'Avenir Next Demi';
@@ -159,6 +160,14 @@ const Wallet = () => {
           >
             AI Chat
           </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'explorer'}
+            onClick={() => {
+              setTabActive('explorer');
+            }}
+          >
+            Explorer
+          </Switcher>
         </SwitcherRow>
 
         <AssetsTable
@@ -178,6 +187,12 @@ const Wallet = () => {
         {activeTab === 'chat' && (
           <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
             <ChatInterface />
+          </div>
+        )}
+        
+        {activeTab === 'explorer' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <ExplorerInterface isActive={true} />
           </div>
         )}
       </TableContainer>
