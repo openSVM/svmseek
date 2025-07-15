@@ -11,6 +11,8 @@ import AddTokenDialog from './components/AddTokenPopup';
 import ChatInterface from '../../components/ChatInterface';
 import { ExplorerInterface } from '../../components/Explorer';
 import WebBrowser from '../../components/WebBrowser';
+import { SVMPayInterface } from '../../components/SVMPay';
+import { AEANetworkInterface } from '../../components/AEANetwork';
 
 import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
@@ -177,6 +179,22 @@ const Wallet = () => {
           >
             Browser
           </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'svmpay'}
+            onClick={() => {
+              setTabActive('svmpay');
+            }}
+          >
+            SVM-Pay
+          </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'aea'}
+            onClick={() => {
+              setTabActive('aea');
+            }}
+          >
+            AEA
+          </Switcher>
         </SwitcherRow>
 
         <AssetsTable
@@ -208,6 +226,18 @@ const Wallet = () => {
         {activeTab === 'browser' && (
           <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
             <WebBrowser isActive={true} />
+          </div>
+        )}
+        
+        {activeTab === 'svmpay' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <SVMPayInterface isActive={true} />
+          </div>
+        )}
+        
+        {activeTab === 'aea' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <AEANetworkInterface isActive={true} />
           </div>
         )}
       </TableContainer>
