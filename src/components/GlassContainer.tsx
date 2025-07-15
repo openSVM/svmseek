@@ -59,3 +59,4 @@ const GlassContainer: React.FC<GlassContainerProps> = ({
 };
 
 export default GlassContainer;
+export { GlassContainer };

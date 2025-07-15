@@ -68,7 +68,12 @@
     "start": "craco start",
     "build": "craco build",
     "buildMaster": "cross-env MASTER_BUILD=TRUE && craco build",
-    "build:extension": "yarn build && cp -a ./build/. ./extension/build/ && yarn build:extension-scripts",
+    "build:extension": "yarn build && yarn build:extension-chrome && yarn build:extension-firefox && yarn build:extension-safari && yarn build:extension-edge",
+    "build:extension-all": "./build-extensions.sh",
+    "build:extension-chrome": "mkdir -p ./extension/chrome/build && cp -a ./build/. ./extension/chrome/build/ && cp -a ./extension/src/. ./extension/chrome/build/ && cp ./extension/chrome/manifest.json ./extension/chrome/build/manifest.json",
+    "build:extension-firefox": "mkdir -p ./extension/firefox/build && cp -a ./build/. ./extension/firefox/build/ && cp -a ./extension/src/. ./extension/firefox/build/ && cp ./extension/firefox/manifest.json ./extension/firefox/build/manifest.json",
+    "build:extension-safari": "mkdir -p ./extension/safari/build && cp -a ./build/. ./extension/safari/build/ && cp -a ./extension/src/. ./extension/safari/build/ && cp ./extension/safari/manifest.json ./extension/safari/build/manifest.json",
+    "build:extension-edge": "mkdir -p ./extension/edge/build && cp -a ./build/. ./extension/edge/build/ && cp -a ./extension/src/. ./extension/edge/build/ && cp ./extension/edge/manifest.json ./extension/edge/build/manifest.json",
     "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
     "test": "craco test",
     "eject": "react-scripts eject"

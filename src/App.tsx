@@ -3,6 +3,8 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import LoadingIndicator from './components/LoadingIndicator';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
+import OnboardingTutorial from './components/OnboardingTutorial';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import { ThemeProvider } from './context/ThemeContext';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { ConnectionProvider } from './utils/connection';
@@ -10,6 +12,7 @@ import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { useWallet, WalletProvider } from './utils/wallet';
 import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
+import useOnboarding from './utils/useOnboarding';
 // import { MASTER_BUILD } from './utils/config';
 // import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
@@ -73,6 +76,13 @@ export default function App() {
 
 const Pages = () => {
   const wallet = useWallet();
+  const {
+    showOnboarding,
+    showPWAPrompt,
+    completeOnboarding,
+    dismissPWAPrompt,
+    handlePWAInstall,
+  } = useOnboarding();
   // const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
 
   // const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
@@ -100,6 +110,20 @@ const Pages = () => {
 
   return (
     <>
+      {/* Onboarding Tutorial */}
+      <OnboardingTutorial
+        isOpen={showOnboarding}
+        onClose={completeOnboarding}
+      />
+      
+      {/* PWA Install Prompt */}
+      {showPWAPrompt && (
+        <PWAInstallPrompt
+          onInstall={handlePWAInstall}
+          onDismiss={dismissPWAPrompt}
+        />
+      )}
+      
       {/* {!MASTER_BUILD && !LOCAL_BUILD && (
         <DevUrlPopup
           open={isDevUrlPopupOpen}
