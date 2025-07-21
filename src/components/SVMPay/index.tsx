@@ -13,6 +13,10 @@ import {
   Grid,
   Paper,
   InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Payment as PaymentIcon,
@@ -20,7 +24,9 @@ import {
   QrCode as QrCodeIcon,
   Send as SendIcon,
   RequestQuote as RequestIcon,
+  ContentCopy as CopyIcon,
 } from '@mui/icons-material';
+import { QRCodeSVG } from 'qrcode.react';
 import { SVMPay } from 'svm-pay';
 import { useWallet } from '../../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
@@ -109,6 +115,10 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
   const [recipientError, setRecipientError] = useState<string | null>(null);
   const [amountError, setAmountError] = useState<string | null>(null);
   const [requestAmountError, setRequestAmountError] = useState<string | null>(null);
+
+  // QR Code dialog state
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState<string>('');
 
   // Real-time validation handlers
   const handleRecipientChange = (value: string) => {
@@ -283,6 +293,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       });
       
       setGeneratedUrl(paymentUrl);
+      setQrCodeData(paymentUrl);
       setSuccess('✅ Payment request generated successfully!');
     } catch (err) {
       setError(`❌ Failed to generate payment request: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -304,6 +315,22 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       setError(`Failed to process payment URL: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setSuccess('✅ Payment URL copied to clipboard!');
+    } catch (err) {
+      setError('❌ Failed to copy to clipboard');
+    }
+  };
+
+  const handleShowQRCode = () => {
+    if (generatedUrl) {
+      setQrCodeData(generatedUrl);
+      setQrDialogOpen(true);
     }
   };
 
@@ -512,6 +539,26 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                     rows={3}
                     InputProps={{
                       readOnly: true,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Button
+                            size="small"
+                            startIcon={<CopyIcon />}
+                            onClick={() => handleCopyToClipboard(generatedUrl)}
+                            sx={{ mr: 1 }}
+                          >
+                            Copy
+                          </Button>
+                          <Button
+                            size="small"
+                            startIcon={<QrCodeIcon />}
+                            onClick={handleShowQRCode}
+                            variant="outlined"
+                          >
+                            QR Code
+                          </Button>
+                        </InputAdornment>
+                      ),
                     }}
                   />
                 </Grid>
@@ -567,6 +614,66 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
           )}
         </Typography>
       </Box>
+
+      {/* QR Code Dialog */}
+      <Dialog
+        open={qrDialogOpen}
+        onClose={() => setQrDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box display="flex" alignItems="center">
+            <QrCodeIcon sx={{ mr: 1 }} />
+            Payment Request QR Code
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" alignItems="center" p={2}>
+            {qrCodeData && (
+              <Box mb={2}>
+                <QRCodeSVG
+                  value={qrCodeData}
+                  size={256}
+                  level="M"
+                  includeMargin={true}
+                />
+              </Box>
+            )}
+            <Typography variant="body2" color="textSecondary" textAlign="center" mb={2}>
+              Scan this QR code with any compatible wallet to process the payment request
+            </Typography>
+            <Box width="100%">
+              <StyledTextField
+                fullWidth
+                label="Payment URL"
+                value={qrCodeData}
+                multiline
+                rows={3}
+                InputProps={{
+                  readOnly: true,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Button
+                        size="small"
+                        startIcon={<CopyIcon />}
+                        onClick={() => handleCopyToClipboard(qrCodeData)}
+                      >
+                        Copy
+                      </Button>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setQrDialogOpen(false)}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </PaymentContainer>
     </ErrorBoundary>
   );

@@ -62,9 +62,59 @@ The repository includes a GitHub Action workflow (`.github/workflows/build-andro
 2. Installs dependencies
 3. Builds the web application
 4. Initializes Capacitor and Android platform
-5. Builds the APK
-6. Signs it with a debug certificate
-7. Uploads the APK as a build artifact
+5. Builds debug and production APKs (when configured)
+6. Signs APKs with appropriate certificates
+7. Uploads APKs as build artifacts
+
+### Build Types
+
+#### Debug Builds (All branches)
+- **Automatic signing** with debug keystore
+- **Generated for**: All pushes to main/develop and pull requests
+- **Artifact name**: `svmseek-wallet-debug-vX.X.X-YYYYMMDD-HHMMSS.apk`
+- **Use case**: Development, testing, internal distribution
+
+#### Production Builds (Main branch only)
+- **Production signing** with release keystore (when secrets configured)
+- **Generated for**: Pushes to main branch only
+- **Artifact name**: `svmseek-wallet-production-vX.X.X-YYYYMMDD-HHMMSS.apk`
+- **Use case**: App store distribution, production releases
+
+### Production Signing Setup
+
+To enable production APK signing, configure these GitHub repository secrets:
+
+1. **ANDROID_KEYSTORE_BASE64**: Base64-encoded keystore file
+2. **ANDROID_KEYSTORE_PASSWORD**: Keystore password
+3. **ANDROID_KEY_ALIAS**: Key alias name
+4. **ANDROID_KEY_PASSWORD**: Key password
+
+#### Creating Production Keystore
+
+```bash
+# Generate a new keystore (one-time setup)
+keytool -genkey -v -keystore release.keystore \
+  -alias svmseek-key \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 10000 \
+  -storepass YOUR_STORE_PASSWORD \
+  -keypass YOUR_KEY_PASSWORD \
+  -dname "CN=SVMSeek, O=SVMSeek, C=US"
+
+# Convert keystore to base64 for GitHub secrets
+base64 -i release.keystore | pbcopy  # macOS
+base64 -i release.keystore | xclip -selection clipboard  # Linux
+```
+
+#### Adding GitHub Secrets
+
+1. Go to repository Settings > Secrets and Variables > Actions
+2. Add new repository secrets:
+   - `ANDROID_KEYSTORE_BASE64`: Paste the base64 keystore content
+   - `ANDROID_KEYSTORE_PASSWORD`: Your keystore password
+   - `ANDROID_KEY_ALIAS`: `svmseek-key` (or your chosen alias)
+   - `ANDROID_KEY_PASSWORD`: Your key password
 
 ### Triggering the Build
 
@@ -77,17 +127,46 @@ The workflow runs automatically on:
 
 1. Go to the "Actions" tab in the GitHub repository
 2. Click on the latest workflow run
-3. Download the "svmseek-wallet-apk" artifact
-4. Extract the ZIP file to get the APK
+3. Download the desired artifact:
+   - `svmseek-wallet-apk`: Contains all generated APKs
+   - `svmseek-wallet-production-apk`: Production APK only (main branch)
+4. Extract the ZIP file to get the APK(s)
 
 ## Production Builds
 
-For production releases, you should:
+Production builds are automatically generated when pushing to the main branch and production signing secrets are configured.
 
-1. Create a production keystore
-2. Update the Capacitor configuration with production signing details
-3. Use `assembleRelease` instead of `assembleDebug`
-4. Configure app store deployment if needed
+### Manual Production Build
+
+For manual production builds:
+
+1. **Set up production keystore** (see GitHub Actions setup above)
+2. **Place keystore** in the android directory as `release.keystore`
+3. **Build production APK**:
+
+```bash
+cd android
+./gradlew assembleRelease
+```
+
+4. **Sign the APK**:
+
+```bash
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore release.keystore \
+  -storepass YOUR_STORE_PASSWORD \
+  -keypass YOUR_KEY_PASSWORD \
+  app/build/outputs/apk/release/app-release-unsigned.apk \
+  YOUR_KEY_ALIAS
+```
+
+5. **Verify signing**:
+
+```bash
+jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release-unsigned.apk
+```
+
+The signed production APK will be ready for app store distribution.
 
 ## Mobile-Specific Features
 

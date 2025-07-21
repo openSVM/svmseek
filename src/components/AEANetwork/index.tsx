@@ -110,7 +110,68 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
   const [dialogType, setDialogType] = useState<'agent' | 'mcp'>('agent');
   const [selectedItem, setSelectedItem] = useState<Agent | MCPServer | null>(null);
   
-  // Form state for adding new items
+  // Form validation state
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+
+  // URL validation helper
+  const validateUrl = (url: string, fieldName: string): boolean => {
+    if (!url.trim()) {
+      setFormErrors(prev => ({ ...prev, [fieldName]: `${fieldName} is required` }));
+      return false;
+    }
+    
+    try {
+      new URL(url);
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        setFormErrors(prev => ({ ...prev, [fieldName]: 'URL must start with http:// or https://' }));
+        return false;
+      }
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+      return true;
+    } catch (err) {
+      setFormErrors(prev => ({ ...prev, [fieldName]: 'Please enter a valid URL' }));
+      return false;
+    }
+  };
+
+  // Form change handlers with validation
+  const handleAgentFormChange = (field: string, value: string) => {
+    setNewAgentForm(prev => ({ ...prev, [field]: value }));
+    
+    // Validate URL fields
+    if (field === 'repository' || field === 'documentation' || field === 'endpoint') {
+      if (value.trim()) {
+        validateUrl(value, field);
+      } else {
+        setFormErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+    }
+  };
+
+  const handleMCPFormChange = (field: string, value: string) => {
+    setNewMCPForm(prev => ({ ...prev, [field]: value }));
+    
+    // Validate URL fields
+    if (field === 'repository' || field === 'documentation' || field === 'endpoint') {
+      if (value.trim()) {
+        validateUrl(value, field);
+      } else {
+        setFormErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+    }
+  };
   const [newAgentForm, setNewAgentForm] = useState({
     name: '',
     description: '',
@@ -203,6 +264,24 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       setLoading(true);
       setError(null);
       
+      // Validate required URL fields
+      let hasErrors = false;
+      
+      if (newAgentForm.repository && !validateUrl(newAgentForm.repository, 'repository')) {
+        hasErrors = true;
+      }
+      if (newAgentForm.documentation && !validateUrl(newAgentForm.documentation, 'documentation')) {
+        hasErrors = true;
+      }
+      if (newAgentForm.endpoint && !validateUrl(newAgentForm.endpoint, 'endpoint')) {
+        hasErrors = true;
+      }
+      
+      if (hasErrors) {
+        setError('Please fix the URL validation errors before submitting');
+        return;
+      }
+      
       const agentBuilder = new AgentBuilder()
         .setName(newAgentForm.name)
         .setDescription(newAgentForm.description)
@@ -225,12 +304,12 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       const agent = agentBuilder.build();
       await client.registerAgent(agent);
       
-      setSuccess('Agent registered successfully!');
+      setSuccess('✅ Agent registered successfully with validated URLs!');
       setDialogOpen(false);
       resetAgentForm();
       loadAgents(client);
     } catch (err) {
-      setError(`Failed to register agent: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`❌ Failed to register agent: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -242,6 +321,27 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
     try {
       setLoading(true);
       setError(null);
+      
+      // Validate required URL fields
+      let hasErrors = false;
+      
+      if (newMCPForm.repository && !validateUrl(newMCPForm.repository, 'repository')) {
+        hasErrors = true;
+      }
+      if (newMCPForm.documentation && !validateUrl(newMCPForm.documentation, 'documentation')) {
+        hasErrors = true;
+      }
+      if (!newMCPForm.endpoint) {
+        setFormErrors(prev => ({ ...prev, endpoint: 'Endpoint URL is required for MCP servers' }));
+        hasErrors = true;
+      } else if (!validateUrl(newMCPForm.endpoint, 'endpoint')) {
+        hasErrors = true;
+      }
+      
+      if (hasErrors) {
+        setError('Please fix the URL validation errors before submitting');
+        return;
+      }
       
       const mcpBuilder = new MCPServerBuilder()
         .setName(newMCPForm.name)
@@ -261,12 +361,12 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       const mcpServer = mcpBuilder.build();
       await client.registerMCPServer(mcpServer);
       
-      setSuccess('MCP Server registered successfully!');
+      setSuccess('✅ MCP Server registered successfully with validated URLs!');
       setDialogOpen(false);
       resetMCPForm();
       loadMCPServers(client);
     } catch (err) {
-      setError(`Failed to register MCP server: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`❌ Failed to register MCP server: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -279,6 +379,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       socialLinks: '', endpoint: '', chain: '', accountModel: '', runtimeVersion: '',
       dependencies: '', capabilities: '',
     });
+    setFormErrors({});
   };
 
   const resetMCPForm = () => {
@@ -287,6 +388,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       repository: '', documentation: '', tags: '', endpoint: '', supportedProtocols: '',
       capabilities: '', requirements: '', configuration: '',
     });
+    setFormErrors({});
   };
 
   const filteredAgents = agents.filter(agent =>
@@ -710,7 +812,10 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
                       fullWidth
                       label="Repository URL"
                       value={newAgentForm.repository}
-                      onChange={(e) => setNewAgentForm({...newAgentForm, repository: e.target.value})}
+                      onChange={(e) => handleAgentFormChange('repository', e.target.value)}
+                      error={!!formErrors.repository}
+                      helperText={formErrors.repository || "Enter a valid repository URL (e.g., https://github.com/user/repo)"}
+                      placeholder="https://github.com/user/repo"
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -742,7 +847,10 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
                       fullWidth
                       label="Endpoint URL"
                       value={newAgentForm.endpoint}
-                      onChange={(e) => setNewAgentForm({...newAgentForm, endpoint: e.target.value})}
+                      onChange={(e) => handleAgentFormChange('endpoint', e.target.value)}
+                      error={!!formErrors.endpoint}
+                      helperText={formErrors.endpoint || "Enter a valid endpoint URL (e.g., https://api.example.com)"}
+                      placeholder="https://api.example.com"
                     />
                   </Grid>
                 </>
@@ -796,7 +904,11 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
                       fullWidth
                       label="Endpoint URL"
                       value={newMCPForm.endpoint}
-                      onChange={(e) => setNewMCPForm({...newMCPForm, endpoint: e.target.value})}
+                      onChange={(e) => handleMCPFormChange('endpoint', e.target.value)}
+                      error={!!formErrors.endpoint}
+                      helperText={formErrors.endpoint || "Enter a valid endpoint URL (required for MCP servers)"}
+                      placeholder="https://mcp.example.com"
+                      required
                     />
                   </Grid>
                   <Grid item xs={12}>
