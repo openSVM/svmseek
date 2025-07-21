@@ -27,19 +27,6 @@ jobs:
         node-version: '18.20.0'
         cache: 'yarn'
         
-    - name: Setup Java JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        cache: 'gradle'
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        api-level: 34
-        build-tools: 34.0.0
-        
     - name: Cache Node modules
       uses: actions/cache@v4
       with:
@@ -68,15 +55,28 @@ jobs:
           npx cap add android
         fi
         
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        api-level: 34
+        build-tools: 34.0.0
+        
     - name: Cache Gradle packages
       uses: actions/cache@v4
+      if: hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') != ''
       with:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
           android/.gradle
           android/app/.gradle
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
         
