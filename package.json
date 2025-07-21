@@ -140,6 +140,9 @@
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5"
   },
+  "engines": {
+    "node": ">=20.18.0"
+  },
   "resolutions": {
     "elliptic": "6.6.0"
   }
