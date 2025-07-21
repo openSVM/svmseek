@@ -252,44 +252,28 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       
       setSuccess('🔄 Creating transaction...');
       
-      // Try to create a real on-chain transaction
-      try {
-        // Use SVM-Pay to create and send the transaction
-        const transactionResult = await svmPay.sendPayment({
-          recipient: new PublicKey(recipient),
-          amount: parseFloat(amount),
-          network: selectedNetwork as any,
-          memo: memo || undefined,
-          signer: wallet,
-        });
-        
-        setSuccess(`✅ Payment sent successfully! Transaction: ${transactionResult.signature.slice(0, 16)}...`);
-        
-        // Clear form on successful payment
-        setRecipient('');
-        setAmount('');
-        setMemo('');
-        
-      } catch (transactionError) {
-        // Fallback to payment URL generation if direct transaction fails
-        console.warn('Direct transaction failed, falling back to URL generation:', transactionError);
-        
-        setSuccess('🔄 Generating payment URL...');
-        
-        const paymentUrl = svmPay.createTransferUrl(recipient, amount, {
-          network: selectedNetwork as any,
-          memo: memo || undefined,
-          label: 'SVMSeek Payment',
-          message: `Payment from ${wallet.publicKey.toString().slice(0, 8)}...`,
-        });
-        
-        setSuccess(`✅ Payment URL generated! Copy and share: ${paymentUrl.slice(0, 50)}...`);
-        
-        // Optionally open the payment URL in a new tab
-        if (window.confirm('Would you like to open the payment URL to complete the transaction?')) {
-          window.open(paymentUrl, '_blank');
-        }
+      // For now, we'll create a payment URL since direct transaction signing 
+      // requires more complex wallet integration
+      setSuccess('🔄 Generating secure payment URL...');
+      
+      const paymentUrl = svmPay.createTransferUrl(recipient, amount, {
+        network: selectedNetwork as any,
+        memo: memo || undefined,
+        label: 'SVMSeek Payment',
+        message: `Payment from ${wallet.publicKey.toString().slice(0, 8)}...`,
+      });
+      
+      setSuccess(`✅ Payment URL generated! You can share this to request payment: ${paymentUrl.slice(0, 50)}...`);
+      
+      // Optionally open the payment URL in a new tab for immediate processing
+      if (window.confirm('Would you like to open the payment URL to complete the transaction?')) {
+        window.open(paymentUrl, '_blank');
       }
+      
+      // Clear form on successful generation
+      setRecipient('');
+      setAmount('');
+      setMemo('');
       
     } catch (err) {
       setError(`❌ Payment failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -351,15 +335,20 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
         return;
       }
       
-      if (!paymentInfo.amount || parseFloat(paymentInfo.amount) <= 0) {
-        setError('❌ Invalid payment URL: Invalid amount');
-        return;
+      // Check if it's a transfer request with amount
+      const isTransferRequest = 'amount' in paymentInfo;
+      if (isTransferRequest) {
+        const transferInfo = paymentInfo as any; // TransferRequest type
+        if (!transferInfo.amount || parseFloat(transferInfo.amount) <= 0) {
+          setError('❌ Invalid payment URL: Invalid amount');
+          return;
+        }
       }
       
       // Display parsed payment information
       const displayInfo = {
         recipient: paymentInfo.recipient,
-        amount: `${paymentInfo.amount} SOL`,
+        amount: isTransferRequest ? `${(paymentInfo as any).amount} SOL` : 'Not specified',
         network: paymentInfo.network || selectedNetwork,
         memo: paymentInfo.memo || 'No memo provided',
         label: paymentInfo.label || 'Payment',
@@ -377,9 +366,9 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
 💬 Message: ${displayInfo.message}`);
       
       // Optionally, auto-fill the send form with parsed data
-      if (window.confirm('Would you like to auto-fill the send form with this payment data?')) {
+      if (isTransferRequest && window.confirm('Would you like to auto-fill the send form with this payment data?')) {
         setRecipient(paymentInfo.recipient);
-        setAmount(paymentInfo.amount);
+        setAmount((paymentInfo as any).amount);
         setMemo(paymentInfo.memo || '');
         setActiveTab('send');
       }
