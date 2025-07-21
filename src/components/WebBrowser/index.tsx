@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { styled } from '@mui/material/styles';
+import styled from 'styled-components';
 import {
   IconButton,
   TextField,
@@ -11,12 +11,6 @@ import {
   CardContent,
   CircularProgress,
   Alert,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -27,9 +21,6 @@ import {
   OpenInNew,
   Security,
   Language,
-  Warning,
-  CheckCircle,
-  Replay,
 } from '@mui/icons-material';
 import { GlassContainer } from '../GlassContainer';
 import { useWallet } from '../../utils/wallet';
@@ -37,104 +28,88 @@ import ErrorBoundary, { NetworkErrorBoundary } from '../ErrorBoundary';
 import { WalletInjectionService } from '../../services/WalletInjectionService';
 import { createInputProps, ValidationPresets } from '../../utils/inputValidation';
 
-const BrowserContainer = styled(GlassContainer)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(2),
-  gap: theme.spacing(2),
-  overflow: 'hidden',
-}));
+const BrowserContainer = styled(GlassContainer)`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+  overflow: hidden;
+`;
 
-const NavigationBar = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  padding: theme.spacing(1),
-  background: 'rgba(255, 255, 255, 0.1)',
-  borderRadius: 12,
-  backdropFilter: 'blur(10px)',
-}));
+const NavigationBar = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+`;
 
-const AddressBar = styled(TextField)(({ theme }) => ({
-  flex: 1,
-  '& .MuiOutlinedInput-root': {
-    background: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
-    backdropFilter: 'blur(10px)',
-  },
-}));
+const AddressBar = styled(TextField)`
+  flex: 1;
+  .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+`;
 
-const BrowserFrame = styled('iframe')(({ theme }) => ({
-  flex: 1,
-  border: 'none',
-  borderRadius: 12,
-  background: 'white',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+const BrowserFrame = styled.iframe`
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
-  '&:hover': {
-    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
-  },
-}));
+  &:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+`;
 
-const DAppsGrid = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(2, 0),
-}));
+const DAppsGrid = styled(Grid)`
+  padding: 1rem 0;
+`;
 
-const DAppCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.1) !important',
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  cursor: 'pointer',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+const DAppCard = styled(Card)`
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
-  '&:hover': {
-    background: 'rgba(255, 255, 255, 0.2) !important',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-  },
-}));
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+`;
 
-const LoadingOverlay = styled(Box)(({ theme }) => ({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'rgba(255, 255, 255, 0.9)',
-  borderRadius: 12,
-  backdropFilter: 'blur(10px)',
-}));
+const LoadingOverlay = styled(Box)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+`;
 
-const SecurityIndicator = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'error',
-})<{ error?: boolean }>(({ theme, error }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  padding: theme.spacing(0.5, 1.5),
-  borderRadius: 20,
-  background: error ? 'rgba(244, 67, 54, 0.1)' : 'rgba(76, 175, 80, 0.1)',
-  border: error ? '1px solid rgba(244, 67, 54, 0.3)' : '1px solid rgba(76, 175, 80, 0.3)',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  
-  '&:hover': {
-    background: error ? 'rgba(244, 67, 54, 0.2)' : 'rgba(76, 175, 80, 0.2)',
-  },
-}));
-
-const WalletStatusDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialog-paper': {
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-  },
-}));
+const SecurityIndicator = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+`;
 
 // Popular Solana dApps
 const POPULAR_DAPPS = [
@@ -230,10 +205,6 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [walletInjected, setWalletInjected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [showWalletDialog, setShowWalletDialog] = useState(false);
-  const [injectionAttempts, setInjectionAttempts] = useState(0);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [isRetrying, setIsRetrying] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const walletInjectionServiceRef = useRef<WalletInjectionService | null>(null);
   const wallet = useWallet();
@@ -327,78 +298,16 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         
         if (result.success) {
           setWalletInjected(true);
-          setInjectionAttempts(0);
-          setShowSuccessMessage(true);
           console.log('Wallet providers injected successfully:', result.injectedProviders);
         } else {
-          setWalletInjected(false);
-          setInjectionAttempts(prev => prev + 1);
-          setConnectionError(result.error || 'Failed to inject wallet providers');
           console.warn('Wallet injection failed:', result.error);
+          setConnectionError(result.error || 'Failed to inject wallet providers');
         }
       } catch (error) {
-        setWalletInjected(false);
-        setInjectionAttempts(prev => prev + 1);
-        setConnectionError('Failed to setup wallet connection');
         console.error('Wallet injection error:', error);
+        setConnectionError('Failed to setup wallet connection');
       }
     }
-  };
-
-  const retryWalletInjection = async () => {
-    if (!walletInjectionServiceRef.current || !iframeRef.current) return;
-    
-    setIsRetrying(true);
-    setConnectionError(null);
-    
-    try {
-      // Wait a moment before retrying
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const result = await walletInjectionServiceRef.current.injectWalletProviders(iframeRef.current);
-      
-      if (result.success) {
-        setWalletInjected(true);
-        setInjectionAttempts(0);
-        setShowSuccessMessage(true);
-        setShowWalletDialog(false);
-      } else {
-        setInjectionAttempts(prev => prev + 1);
-        setConnectionError(result.error || 'Retry failed');
-      }
-    } catch (error) {
-      setInjectionAttempts(prev => prev + 1);
-      setConnectionError('Retry failed');
-    } finally {
-      setIsRetrying(false);
-    }
-  };
-
-  const openExternalBrowser = () => {
-    if (currentUrl) {
-      window.open(currentUrl, '_blank');
-    }
-  };
-
-  const getWalletStatusMessage = () => {
-    if (walletInjected) return 'Wallet Connected Successfully';
-    if (injectionAttempts === 0) return 'Connecting Wallet...';
-    if (injectionAttempts === 1) return 'Connection Failed - Retrying...';
-    return 'Multiple Connection Attempts Failed';
-  };
-
-  const getRecoveryOptions = () => {
-    const options = [
-      'Refresh the page and try again',
-      'Open the dApp in a new browser tab',
-      'Check if the dApp supports external wallet connections',
-    ];
-    
-    if (injectionAttempts > 2) {
-      options.push('Some dApps may not support embedded wallet connections');
-    }
-    
-    return options;
   };
 
   };
@@ -461,14 +370,10 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         />
         
         {wallet?.publicKey && (
-          <SecurityIndicator 
-            error={!walletInjected}
-            onClick={() => setShowWalletDialog(true)}
-            title="Click for wallet connection details"
-          >
-            {walletInjected ? <CheckCircle fontSize="small" /> : <Warning fontSize="small" />}
+          <SecurityIndicator>
+            <Security fontSize="small" />
             <Typography variant="caption">
-              {walletInjected ? 'Wallet Ready' : 'Connection Issue'}
+              {walletInjected ? 'Wallet Ready' : 'Wallet Connected'}
             </Typography>
           </SecurityIndicator>
         )}
@@ -484,25 +389,9 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         )}
       </NavigationBar>
 
-      {connectionError && !showWalletDialog && (
-        <Alert 
-          severity={injectionAttempts > 2 ? "error" : "warning"} 
-          onClose={() => setConnectionError(null)}
-          action={
-            <Button
-              color="inherit"
-              size="small"
-              onClick={() => setShowWalletDialog(true)}
-              startIcon={<Security />}
-            >
-              Details
-            </Button>
-          }
-        >
-          {injectionAttempts > 2 
-            ? 'Wallet connection failed multiple times. Some dApps may not support embedded wallets.'
-            : 'Wallet connection issue detected. Click Details for recovery options.'
-          }
+      {connectionError && (
+        <Alert severity="warning" onClose={() => setConnectionError(null)}>
+          {connectionError}
         </Alert>
       )}
 
@@ -564,113 +453,6 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
           />
         </Box>
       )}
-      
-      {/* Wallet Status Dialog */}
-      <WalletStatusDialog
-        open={showWalletDialog}
-        onClose={() => setShowWalletDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          <Box display="flex" alignItems="center" gap={1}>
-            {walletInjected ? (
-              <CheckCircle color="success" />
-            ) : (
-              <Warning color="warning" />
-            )}
-            <Typography variant="h6">
-              {getWalletStatusMessage()}
-            </Typography>
-          </Box>
-        </DialogTitle>
-        
-        <DialogContent>
-          {walletInjected ? (
-            <Box>
-              <Alert severity="success" sx={{ mb: 2 }}>
-                Your SVMSeek wallet is successfully connected to this dApp. You can now interact with Solana features.
-              </Alert>
-              <Typography variant="body2" color="text.secondary">
-                • Wallet address: {wallet?.publicKey?.toString().slice(0, 8)}...{wallet?.publicKey?.toString().slice(-4)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                • Connection secure and active
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                • Transaction signing requires confirmation in main app
-              </Typography>
-            </Box>
-          ) : (
-            <Box>
-              <Alert severity={injectionAttempts > 2 ? "error" : "warning"} sx={{ mb: 2 }}>
-                {connectionError || 'Unable to connect wallet to this dApp.'}
-              </Alert>
-              
-              <Typography variant="subtitle2" gutterBottom>
-                Try these recovery options:
-              </Typography>
-              
-              <Box component="ul" sx={{ pl: 2, mb: 2 }}>
-                {getRecoveryOptions().map((option, index) => (
-                  <Typography component="li" variant="body2" key={index} sx={{ mb: 0.5 }}>
-                    {option}
-                  </Typography>
-                ))}
-              </Box>
-              
-              {currentUrl && (
-                <Alert severity="info" sx={{ mb: 2 }}>
-                  You can also open this dApp in your external browser where it may work better with browser extension wallets.
-                </Alert>
-              )}
-            </Box>
-          )}
-        </DialogContent>
-        
-        <DialogActions>
-          <Button onClick={() => setShowWalletDialog(false)}>
-            Close
-          </Button>
-          
-          {!walletInjected && (
-            <Button
-              onClick={retryWalletInjection}
-              disabled={isRetrying}
-              startIcon={isRetrying ? <CircularProgress size={16} /> : <Replay />}
-              variant="outlined"
-            >
-              {isRetrying ? 'Retrying...' : 'Retry Connection'}
-            </Button>
-          )}
-          
-          {currentUrl && (
-            <Button
-              onClick={openExternalBrowser}
-              startIcon={<OpenInNew />}
-              variant="contained"
-            >
-              Open Externally
-            </Button>
-          )}
-        </DialogActions>
-      </WalletStatusDialog>
-      
-      {/* Success notification */}
-      <Snackbar
-        open={showSuccessMessage}
-        autoHideDuration={3000}
-        onClose={() => setShowSuccessMessage(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert 
-          onClose={() => setShowSuccessMessage(false)} 
-          severity="success"
-          variant="filled"
-        >
-          Wallet connected successfully!
-        </Alert>
-      </Snackbar>
     </BrowserContainer>
     </ErrorBoundary>
   );
