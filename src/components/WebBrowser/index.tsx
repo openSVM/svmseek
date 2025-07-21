@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   IconButton,
@@ -26,7 +26,6 @@ import { GlassContainer } from '../GlassContainer';
 import { useWallet } from '../../utils/wallet';
 import ErrorBoundary, { NetworkErrorBoundary } from '../ErrorBoundary';
 import { WalletInjectionService } from '../../services/WalletInjectionService';
-import { createInputProps, ValidationPresets } from '../../utils/inputValidation';
 
 const BrowserContainer = styled(GlassContainer)`
   height: 100%;
@@ -308,8 +307,6 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         setConnectionError('Failed to setup wallet connection');
       }
     }
-  };
-
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {

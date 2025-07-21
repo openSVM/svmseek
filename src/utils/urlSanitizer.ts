@@ -103,7 +103,7 @@ function isPrivateIP(hostname: string): boolean {
   const match = hostname.match(ipv4Pattern);
   
   if (match) {
-    const [, a, b, c, d] = match.map(Number);
+    const [, a, b] = match.map(Number);
     
     // 10.0.0.0/8
     if (a === 10) return true;

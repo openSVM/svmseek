@@ -12,8 +12,6 @@ import {
   useTheme,
 } from '@mui/material';
 import {
-  ChevronLeft,
-  ChevronRight,
   FirstPage,
   LastPage,
 } from '@mui/icons-material';

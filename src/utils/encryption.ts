@@ -1,7 +1,7 @@
 import { pbkdf2 } from 'crypto-browserify';
 import { randomBytes, secretbox } from 'tweetnacl';
 import bs58 from 'bs58';
-import scrypt from 'scrypt-js';
+import { scrypt } from 'scrypt-js';
 import argon2 from 'argon2-browser';
 
 /**

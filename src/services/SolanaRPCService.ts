@@ -1,7 +1,7 @@
 /**
  * Real Solana RPC service for fetching live blockchain data
  */
-import { Connection, PublicKey, ParsedAccountData, ConfirmedSignatureInfo } from '@solana/web3.js';
+import { Connection, PublicKey, ParsedAccountData } from '@solana/web3.js';
 
 export interface NetworkStats {
   blocksProcessed: number;

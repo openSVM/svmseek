@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   Box,
@@ -20,15 +20,12 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { PublicKey } from '@solana/web3.js';
-import { useWallet } from '../../utils/wallet';
 import { useConnection } from '../../utils/connection';
 import { GlassContainer } from '../GlassContainer';
 import { 
   SolanaAIRegistriesClient, 
   Agent, 
   MCPServer,
-  AgentBuilder,
-  MCPServerBuilder 
 } from '../../integration/aeamcp-simple';
 
 // Import new subcomponents
@@ -85,8 +82,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
   const [dialogType, setDialogType] = useState<'agent' | 'mcp'>('agent');
   const [selectedItem, setSelectedItem] = useState<Agent | MCPServer | null>(null);
 
-  const { wallet } = useWallet();
-  const { connection } = useConnection();
+  const connection = useConnection();
 
   // Filter items based on search query
   const filteredAgents = agents.filter(agent =>
