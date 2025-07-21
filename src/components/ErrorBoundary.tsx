@@ -3,6 +3,7 @@ import { Box, Typography, Button, Alert, Card, CardContent } from '@mui/material
 import { ErrorOutline, Refresh } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { GlassContainer } from './GlassContainer';
+import { loggingService } from '../services/LoggingService';
 
 const ErrorContainer = styled(GlassContainer)(({ theme }) => ({
   display: 'flex',
@@ -55,6 +56,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    // Log to centralized logging service
+    loggingService.logComponentError(error, errorInfo, this.props.context || 'UnknownComponent');
+    
     this.setState({
       error,
       errorInfo,

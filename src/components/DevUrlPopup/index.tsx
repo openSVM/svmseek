@@ -89,7 +89,7 @@ export const DevUrlPopup = ({
           Hello, this page is for developers only.
         </BoldHeader>
         <Text>
-          To avoid loss of funds or cunfusing situations, please leave it. You
+          To avoid loss of funds or confusing situations, please leave it. You
           probably wanted to get to
           <a
             style={{

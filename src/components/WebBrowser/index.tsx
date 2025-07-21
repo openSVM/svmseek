@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import {
   IconButton,
@@ -25,6 +25,8 @@ import {
 import { GlassContainer } from '../GlassContainer';
 import { useWallet } from '../../utils/wallet';
 import ErrorBoundary, { NetworkErrorBoundary } from '../ErrorBoundary';
+import { WalletInjectionService } from '../../services/WalletInjectionService';
+import { createInputProps, ValidationPresets } from '../../utils/inputValidation';
 
 const BrowserContainer = styled(GlassContainer)`
   height: 100%;
@@ -204,7 +206,22 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
   const [walletInjected, setWalletInjected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const walletInjectionServiceRef = useRef<WalletInjectionService | null>(null);
   const wallet = useWallet();
+
+  // Initialize wallet injection service
+  useEffect(() => {
+    if (wallet && !walletInjectionServiceRef.current) {
+      walletInjectionServiceRef.current = new WalletInjectionService(wallet);
+    }
+    
+    return () => {
+      if (walletInjectionServiceRef.current) {
+        walletInjectionServiceRef.current.cleanup();
+        walletInjectionServiceRef.current = null;
+      }
+    };
+  }, [wallet]);
 
   const isValidUrl = (url: string) => {
     try {
@@ -270,126 +287,29 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
     setIsLoading(false);
   };
 
-  const handleIframeLoad = () => {
+  const handleIframeLoad = async () => {
     setIsLoading(false);
     setConnectionError(null);
     
-    // Inject wallet provider if available
-    if (wallet && iframeRef.current?.contentWindow) {
+    // Inject wallet provider using the secure service
+    if (walletInjectionServiceRef.current && iframeRef.current) {
       try {
-        // Create a secure wallet adapter with safe serialization
-        const createSecureWalletAdapter = () => {
-          const publicKey = wallet.publicKey?.toString();
-          
-          return {
-            name: 'SVMSeek',
-            url: 'https://svmseek.com',
-            icon: '/images/SVMSeek.svg',
-            readyState: 'Installed',
-            publicKey: publicKey ? { toString: () => publicKey } : null,
-            connecting: false,
-            connected: !!publicKey,
-            
-            // These will be safe function stubs that communicate via postMessage
-            connect: '() => window.parent.postMessage({type: "SVMSEEK_CONNECT"}, "*")',
-            disconnect: '() => window.parent.postMessage({type: "SVMSEEK_DISCONNECT"}, "*")',
-            signTransaction: '(tx) => { throw new Error("Transaction signing requires user approval in SVMSeek wallet"); }',
-            signAllTransactions: '(txs) => { throw new Error("Batch transaction signing requires user approval in SVMSeek wallet"); }',
-            signMessage: '(msg) => { throw new Error("Message signing requires user approval in SVMSeek wallet"); }',
-          };
-        };
-
-        // Create the secure injection script without JSON.stringify for functions
-        const walletInfo = createSecureWalletAdapter();
-        const injectionScript = `
-          (function() {
-            // Secure wallet adapter injection
-            const walletAdapter = {
-              name: "${walletInfo.name}",
-              url: "${walletInfo.url}",
-              icon: "${walletInfo.icon}",
-              readyState: "${walletInfo.readyState}",
-              publicKey: ${walletInfo.publicKey ? `{ toString: () => "${walletInfo.publicKey.toString()}" }` : 'null'},
-              connecting: ${walletInfo.connecting},
-              connected: ${walletInfo.connected},
-              
-              // Safe communication methods
-              connect: ${walletInfo.connect},
-              disconnect: ${walletInfo.disconnect},
-              signTransaction: ${walletInfo.signTransaction},
-              signAllTransactions: ${walletInfo.signAllTransactions},
-              signMessage: ${walletInfo.signMessage}
-            };
-            
-            // Prevent multiple injections
-            if (window.svmseekInjected) return;
-            window.svmseekInjected = true;
-            
-            // Inject wallet providers
-            window.solana = walletAdapter;
-            window.phantom = { solana: walletAdapter };
-            window.svmseek = walletAdapter;
-            
-            // Dispatch wallet ready events
-            setTimeout(() => {
-              window.dispatchEvent(new Event('solana#initialized'));
-              window.dispatchEvent(new Event('phantom#initialized'));
-              console.log('SVMSeek wallet injected securely');
-            }, 100);
-          })();
-        `;
+        const result = await walletInjectionServiceRef.current.injectWalletProviders(iframeRef.current);
         
-        // Listen for wallet communication messages
-        const handleWalletMessage = (event: MessageEvent) => {
-          if (event.source !== iframeRef.current?.contentWindow) return;
-          
-          switch (event.data.type) {
-            case 'SVMSEEK_CONNECT':
-              console.log('dApp requested wallet connection');
-              break;
-            case 'SVMSEEK_DISCONNECT':
-              console.log('dApp requested wallet disconnection');
-              break;
-          }
-        };
-        
-        window.addEventListener('message', handleWalletMessage);
-        
-        // Clean up listener on unmount
-        const cleanup = () => {
-          window.removeEventListener('message', handleWalletMessage);
-        };
-        
-        // Store cleanup function for later use
-        (iframeRef.current as any).__walletCleanup = cleanup;
-        
-        // Execute injection script securely
-        const scriptBlob = new Blob([injectionScript], { type: 'application/javascript' });
-        const scriptUrl = URL.createObjectURL(scriptBlob);
-        
-        // Post secure injection message
-        iframeRef.current.contentWindow.postMessage({
-          type: 'SVMSEEK_SECURE_INJECTION',
-          scriptUrl: scriptUrl,
-          walletInfo: {
-            name: 'SVMSeek',
-            publicKey: wallet.publicKey?.toString(),
-            connected: !!wallet.publicKey,
-          }
-        }, '*');
-        
-        // Clean up blob URL after a delay
-        setTimeout(() => {
-          URL.revokeObjectURL(scriptUrl);
-        }, 5000);
-        
-        setWalletInjected(true);
-        
+        if (result.success) {
+          setWalletInjected(true);
+          console.log('Wallet providers injected successfully:', result.injectedProviders);
+        } else {
+          console.warn('Wallet injection failed:', result.error);
+          setConnectionError(result.error || 'Failed to inject wallet providers');
+        }
       } catch (error) {
-        console.error('Secure wallet injection failed:', error);
-        setConnectionError('Wallet injection blocked by security policy. Some dApps may require external wallet connection.');
+        console.error('Wallet injection error:', error);
+        setConnectionError('Failed to setup wallet connection');
       }
     }
+  };
+
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -440,6 +360,10 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
           onChange={(e) => setInputUrl(e.target.value)}
           onKeyPress={handleKeyPress}
           size="small"
+          inputProps={{
+            maxLength: 2048,
+            'aria-label': 'Address bar - enter URL or search terms'
+          }}
           InputProps={{
             startAdornment: <Search style={{ marginRight: '0.5rem', opacity: 0.7 }} />,
           }}
