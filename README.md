@@ -38,6 +38,12 @@ SVMSeek Wallet is a comprehensive Solana ecosystem application featuring a secur
 - **Mobile-optimized** responsive design
 - **Interactive onboarding** tutorial
 
+### 📱 Native Mobile App
+- **Android APK** generation via Capacitor
+- **Native mobile features** and performance
+- **Automated builds** via GitHub Actions
+- **Cross-platform compatibility** (iOS support ready)
+
 ### 🎨 Modern Design System
 - **Glass morphism effects** with backdrop filters
 - **Microanimations** and smooth transitions
@@ -54,6 +60,7 @@ SVMSeek Wallet is a comprehensive Solana ecosystem application featuring a secur
 - **[Developer Setup Guide](docs/developer-guide.md)** - Complete development environment setup
 - **[API Documentation](docs/explorer-api.md)** - Technical API reference
 - **[Component Documentation](docs/component-docs.md)** - Detailed component architecture
+- **[Mobile Build Guide](docs/MOBILE_BUILD.md)** - Android APK build instructions
 
 ### Architecture
 - **Component hierarchy** and data flow diagrams

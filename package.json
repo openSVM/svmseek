@@ -77,6 +77,10 @@
     "build:extension-safari": "mkdir -p ./extension/safari/build && cp -a ./build/. ./extension/safari/build/ && cp -a ./extension/src/. ./extension/safari/build/ && cp ./extension/safari/manifest.json ./extension/safari/build/manifest.json",
     "build:extension-edge": "mkdir -p ./extension/edge/build && cp -a ./build/. ./extension/edge/build/ && cp -a ./extension/src/. ./extension/edge/build/ && cp ./extension/edge/manifest.json ./extension/edge/build/manifest.json",
     "build:extension-scripts": "cp -a ./extension/src/. ./extension/build/.",
+    "build:android": "npx cap build android",
+    "sync:android": "npx cap sync android",
+    "cap:init": "npx cap init",
+    "cap:add-android": "npx cap add android",
     "test": "craco test",
     "test:e2e": "playwright test",
     "test:e2e-headed": "playwright test --headed",
@@ -121,6 +125,9 @@
     }
   },
   "devDependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
     "@playwright/test": "^1.54.1",
     "cross-env": "^7.0.3",
     "gh-pages": "^6.2.0",

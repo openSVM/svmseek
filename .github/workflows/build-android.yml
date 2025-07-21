@@ -1,0 +1,106 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.20.0'
+        cache: 'yarn'
+        
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        api-level: 34
+        build-tools: 34.0.0
+        
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+      
+    - name: Build web application
+      run: yarn build
+      
+    - name: Initialize Capacitor (if not exists)
+      run: |
+        if [ ! -d "android" ]; then
+          npx cap init "SVMSeek Wallet" "com.svmseek.wallet" --web-dir=build
+        fi
+        
+    - name: Add Android platform (if not exists)  
+      run: |
+        if [ ! -d "android" ]; then
+          npx cap add android
+        fi
+        
+    - name: Sync Capacitor
+      run: npx cap sync android
+      
+    - name: Grant execute permission for gradlew
+      run: chmod +x android/gradlew
+      
+    - name: Build Android APK
+      working-directory: ./android
+      run: |
+        ./gradlew assembleDebug --stacktrace
+        
+    - name: Sign APK (Debug)
+      working-directory: ./android
+      run: |
+        # Generate debug keystore if it doesn't exist
+        if [ ! -f "debug.keystore" ]; then
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        fi
+        
+        # Sign the APK
+        jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore debug.keystore -storepass android -keypass android app/build/outputs/apk/debug/app-debug.apk androiddebugkey
+        
+    - name: Verify APK
+      working-directory: ./android
+      run: |
+        jarsigner -verify -verbose -certs app/build/outputs/apk/debug/app-debug.apk
+        
+    - name: Rename APK with version
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        cp android/app/build/outputs/apk/debug/app-debug.apk svmseek-wallet-v${VERSION}-${TIMESTAMP}.apk
+        
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: svmseek-wallet-apk
+        path: svmseek-wallet-*.apk
+        retention-days: 30
+        
+    - name: Upload APK as release asset (on main branch)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/upload-artifact@v4
+      with:
+        name: svmseek-wallet-release-apk
+        path: svmseek-wallet-*.apk
+        retention-days: 90
