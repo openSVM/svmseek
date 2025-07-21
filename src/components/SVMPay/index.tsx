@@ -25,6 +25,7 @@ import { SVMPay } from 'svm-pay';
 import { useWallet } from '../../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
 import { GlassContainer } from '../GlassContainer';
+import ErrorBoundary from '../ErrorBoundary';
 
 const PaymentContainer = styled(GlassContainer)`
   max-width: 800px;
@@ -104,6 +105,42 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
   const [requestMemo, setRequestMemo] = useState('');
   const [generatedUrl, setGeneratedUrl] = useState('');
 
+  // Form validation state
+  const [recipientError, setRecipientError] = useState<string | null>(null);
+  const [amountError, setAmountError] = useState<string | null>(null);
+  const [requestAmountError, setRequestAmountError] = useState<string | null>(null);
+
+  // Real-time validation handlers
+  const handleRecipientChange = (value: string) => {
+    setRecipient(value);
+    if (value.trim()) {
+      const validation = validateRecipientAddress(value);
+      setRecipientError(validation.isValid ? null : validation.error!);
+    } else {
+      setRecipientError(null);
+    }
+  };
+
+  const handleAmountChange = (value: string) => {
+    setAmount(value);
+    if (value.trim()) {
+      const validation = validateAmount(value);
+      setAmountError(validation.isValid ? null : validation.error!);
+    } else {
+      setAmountError(null);
+    }
+  };
+
+  const handleRequestAmountChange = (value: string) => {
+    setRequestAmount(value);
+    if (value.trim()) {
+      const validation = validateAmount(value);
+      setRequestAmountError(validation.isValid ? null : validation.error!);
+    } else {
+      setRequestAmountError(null);
+    }
+  };
+
   const wallet = useWallet();
 
   const initializeSVMPay = useCallback(async () => {
@@ -132,15 +169,75 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
     }
   }, [isActive, wallet?.publicKey, initializeSVMPay]);
 
+  const validateRecipientAddress = (address: string): { isValid: boolean; error?: string } => {
+    if (!address.trim()) {
+      return { isValid: false, error: 'Recipient address is required' };
+    }
+    
+    try {
+      new PublicKey(address);
+      return { isValid: true };
+    } catch (err) {
+      return { isValid: false, error: 'Invalid Solana address format' };
+    }
+  };
+
+  const validateAmount = (amount: string): { isValid: boolean; error?: string } => {
+    if (!amount.trim()) {
+      return { isValid: false, error: 'Amount is required' };
+    }
+    
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount)) {
+      return { isValid: false, error: 'Amount must be a valid number' };
+    }
+    
+    if (numAmount <= 0) {
+      return { isValid: false, error: 'Amount must be greater than 0' };
+    }
+    
+    if (numAmount > 1000000) {
+      return { isValid: false, error: 'Amount exceeds maximum limit (1,000,000 SOL)' };
+    }
+    
+    // Check for too many decimal places
+    const decimalPlaces = (amount.split('.')[1] || '').length;
+    if (decimalPlaces > 9) {
+      return { isValid: false, error: 'Amount can have at most 9 decimal places' };
+    }
+    
+    return { isValid: true };
+  };
+
   const handleSendPayment = async () => {
-    if (!svmPay || !wallet?.publicKey) return;
+    if (!svmPay || !wallet?.publicKey) {
+      setError('Wallet not connected or SVM-Pay not initialized');
+      return;
+    }
     
     try {
       setLoading(true);
       setError(null);
       
-      // Validate recipient address
-      new PublicKey(recipient);
+      // Validate recipient address with explicit feedback
+      const addressValidation = validateRecipientAddress(recipient);
+      if (!addressValidation.isValid) {
+        setError(addressValidation.error!);
+        return;
+      }
+      
+      // Validate amount with explicit feedback
+      const amountValidation = validateAmount(amount);
+      if (!amountValidation.isValid) {
+        setError(amountValidation.error!);
+        return;
+      }
+      
+      // Additional validation: Check if sending to self
+      if (recipient === wallet.publicKey.toString()) {
+        setError('Cannot send payment to yourself');
+        return;
+      }
       
       // Create a payment URL for now (real implementation would need wallet integration)
       const paymentUrl = svmPay.createTransferUrl(recipient, amount, {
@@ -150,23 +247,33 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
         message: `Payment from ${wallet.publicKey.toString().slice(0, 8)}...`,
       });
       
-      setSuccess(`Payment URL created: ${paymentUrl}`);
+      setSuccess(`✅ Payment prepared successfully! URL: ${paymentUrl}`);
       setRecipient('');
       setAmount('');
       setMemo('');
     } catch (err) {
-      setError(`Payment failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`❌ Payment preparation failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleGeneratePaymentRequest = async () => {
-    if (!svmPay || !wallet?.publicKey) return;
+    if (!svmPay || !wallet?.publicKey) {
+      setError('Wallet not connected or SVM-Pay not initialized');
+      return;
+    }
     
     try {
       setLoading(true);
       setError(null);
+      
+      // Validate amount with explicit feedback
+      const amountValidation = validateAmount(requestAmount);
+      if (!amountValidation.isValid) {
+        setError(amountValidation.error!);
+        return;
+      }
       
       const paymentUrl = svmPay.createTransferUrl(wallet.publicKey.toString(), requestAmount, {
         network: selectedNetwork as any,
@@ -176,9 +283,9 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       });
       
       setGeneratedUrl(paymentUrl);
-      setSuccess('Payment request generated successfully!');
+      setSuccess('✅ Payment request generated successfully!');
     } catch (err) {
-      setError(`Failed to generate payment request: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`❌ Failed to generate payment request: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -203,7 +310,8 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
   if (!isActive) return null;
 
   return (
-    <PaymentContainer className="fade-in">
+    <ErrorBoundary context="SVM-Pay interface" showDetails={false}>
+      <PaymentContainer className="fade-in">
       <Box mb={3}>
         <Typography variant="h4" component="h2" gutterBottom>
           <PaymentIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -296,8 +404,10 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   fullWidth
                   label="Recipient Address"
                   value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
+                  onChange={(e) => handleRecipientChange(e.target.value)}
                   placeholder="Enter Solana address"
+                  error={!!recipientError}
+                  helperText={recipientError || "Enter a valid Solana public key"}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -313,8 +423,10 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   label="Amount"
                   type="number"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => handleAmountChange(e.target.value)}
                   placeholder="0.00"
+                  error={!!amountError}
+                  helperText={amountError || "Enter amount in SOL (max 9 decimal places)"}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">SOL</InputAdornment>,
                   }}
@@ -335,7 +447,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   variant="contained"
                   size="large"
                   onClick={handleSendPayment}
-                  disabled={loading || !recipient || !amount || !wallet?.publicKey}
+                  disabled={loading || !recipient || !amount || !wallet?.publicKey || !!recipientError || !!amountError}
                   startIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}
                 >
                   {loading ? 'Sending...' : 'Send Payment'}
@@ -360,8 +472,10 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   label="Amount"
                   type="number"
                   value={requestAmount}
-                  onChange={(e) => setRequestAmount(e.target.value)}
+                  onChange={(e) => handleRequestAmountChange(e.target.value)}
                   placeholder="0.00"
+                  error={!!requestAmountError}
+                  helperText={requestAmountError || "Enter amount in SOL (max 9 decimal places)"}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">SOL</InputAdornment>,
                   }}
@@ -382,7 +496,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   variant="contained"
                   size="large"
                   onClick={handleGeneratePaymentRequest}
-                  disabled={loading || !requestAmount}
+                  disabled={loading || !requestAmount || !!requestAmountError}
                   startIcon={loading ? <CircularProgress size={20} /> : <RequestIcon />}
                 >
                   {loading ? 'Generating...' : 'Generate Payment Request'}
@@ -454,5 +568,6 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
         </Typography>
       </Box>
     </PaymentContainer>
+    </ErrorBoundary>
   );
 };

@@ -6,6 +6,7 @@ import NetworkStats from './NetworkStats';
 import RecentBlocks from './RecentBlocks';
 import TransactionList from './TransactionList';
 import { GlassContainer } from '../GlassContainer';
+import ErrorBoundary, { RPCErrorBoundary, NetworkErrorBoundary } from '../ErrorBoundary';
 
 const ExplorerContainer = styled(GlassContainer)(({ theme }) => ({
   height: '100%',
@@ -154,51 +155,61 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
   }
 
   return (
-    <ExplorerContainer className="fade-in">
-      <Box>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          sx={{
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: 3,
-          }}
-        >
-          OpenSVM Explorer
-        </Typography>
-        <SearchBar
-          onSearch={handleSearch}
-          searchResults={searchResults}
-          onResultClick={handleSearchResultClick}
-          isLoading={isLoading}
-        />
-      </Box>
-
-      <StatsContainer>
-        <NetworkStats stats={mockStats} />
-      </StatsContainer>
-
-      <ContentGrid>
-        <Section>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-            Recent Blocks
+    <ErrorBoundary context="Explorer" showDetails={false}>
+      <ExplorerContainer className="fade-in">
+        <Box>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              marginBottom: 3,
+            }}
+          >
+            OpenSVM Explorer
           </Typography>
-          <RecentBlocks />
-        </Section>
-        
-        <Section>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-            Recent Transactions
-          </Typography>
-          <TransactionList />
-        </Section>
-      </ContentGrid>
-    </ExplorerContainer>
+          <NetworkErrorBoundary onRetry={() => window.location.reload()}>
+            <SearchBar
+              onSearch={handleSearch}
+              searchResults={searchResults}
+              onResultClick={handleSearchResultClick}
+              isLoading={isLoading}
+            />
+          </NetworkErrorBoundary>
+        </Box>
+
+        <StatsContainer>
+          <RPCErrorBoundary onRetry={() => window.location.reload()}>
+            <NetworkStats stats={mockStats} />
+          </RPCErrorBoundary>
+        </StatsContainer>
+
+        <ContentGrid>
+          <Section>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+              Recent Blocks
+            </Typography>
+            <RPCErrorBoundary onRetry={() => window.location.reload()}>
+              <RecentBlocks />
+            </RPCErrorBoundary>
+          </Section>
+          
+          <Section>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+              Recent Transactions
+            </Typography>
+            <RPCErrorBoundary onRetry={() => window.location.reload()}>
+              <TransactionList />
+            </RPCErrorBoundary>
+          </Section>
+        </ContentGrid>
+      </ExplorerContainer>
+    </ErrorBoundary>
   );
 };
 

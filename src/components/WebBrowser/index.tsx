@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import { GlassContainer } from '../GlassContainer';
 import { useWallet } from '../../utils/wallet';
+import ErrorBoundary, { NetworkErrorBoundary } from '../ErrorBoundary';
 
 const BrowserContainer = styled(GlassContainer)`
   height: 100%;
@@ -276,83 +277,117 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
     // Inject wallet provider if available
     if (wallet && iframeRef.current?.contentWindow) {
       try {
-        // Create a more comprehensive wallet adapter
-        const walletAdapter = {
-          name: 'SVMSeek',
-          url: 'https://svmseek.com',
-          icon: '/images/SVMSeek.svg',
-          readyState: 'Installed' as const,
-          publicKey: wallet.publicKey,
-          connecting: false,
-          connected: !!wallet.publicKey,
+        // Create a secure wallet adapter with safe serialization
+        const createSecureWalletAdapter = () => {
+          const publicKey = wallet.publicKey?.toString();
           
-          // Connection methods
-          connect: async () => {
-            if (!wallet.publicKey) {
-              throw new Error('No wallet available');
-            }
-            return { publicKey: wallet.publicKey };
-          },
-          
-          disconnect: async () => {
-            console.log('Wallet disconnect requested');
-          },
-          
-          // Transaction signing (would require user approval in real implementation)
-          signTransaction: async (transaction: any) => {
-            throw new Error('Transaction signing requires user approval - please use external wallet');
-          },
-          
-          signAllTransactions: async (transactions: any[]) => {
-            throw new Error('Batch transaction signing requires user approval - please use external wallet');
-          },
-          
-          signMessage: async (message: Uint8Array) => {
-            throw new Error('Message signing requires user approval - please use external wallet');
-          },
+          return {
+            name: 'SVMSeek',
+            url: 'https://svmseek.com',
+            icon: '/images/SVMSeek.svg',
+            readyState: 'Installed',
+            publicKey: publicKey ? { toString: () => publicKey } : null,
+            connecting: false,
+            connected: !!publicKey,
+            
+            // These will be safe function stubs that communicate via postMessage
+            connect: '() => window.parent.postMessage({type: "SVMSEEK_CONNECT"}, "*")',
+            disconnect: '() => window.parent.postMessage({type: "SVMSEEK_DISCONNECT"}, "*")',
+            signTransaction: '(tx) => { throw new Error("Transaction signing requires user approval in SVMSeek wallet"); }',
+            signAllTransactions: '(txs) => { throw new Error("Batch transaction signing requires user approval in SVMSeek wallet"); }',
+            signMessage: '(msg) => { throw new Error("Message signing requires user approval in SVMSeek wallet"); }',
+          };
         };
 
-        // Create the injection script
+        // Create the secure injection script without JSON.stringify for functions
+        const walletInfo = createSecureWalletAdapter();
         const injectionScript = `
-          // Solana wallet adapter injection
-          window.solana = ${JSON.stringify(walletAdapter, (key, value) => {
-            if (typeof value === 'function') {
-              return value.toString();
-            }
-            return value;
-          })};
-          
-          // Legacy Phantom-style injection
-          window.phantom = {
-            solana: window.solana
-          };
-          
-          // SVMSeek specific injection
-          window.svmseek = window.solana;
-          
-          // Dispatch wallet ready events
-          window.dispatchEvent(new Event('solana#initialized'));
-          window.dispatchEvent(new Event('phantom#initialized'));
-          
-          console.log('SVMSeek wallet injected successfully');
+          (function() {
+            // Secure wallet adapter injection
+            const walletAdapter = {
+              name: "${walletInfo.name}",
+              url: "${walletInfo.url}",
+              icon: "${walletInfo.icon}",
+              readyState: "${walletInfo.readyState}",
+              publicKey: ${walletInfo.publicKey ? `{ toString: () => "${walletInfo.publicKey.toString()}" }` : 'null'},
+              connecting: ${walletInfo.connecting},
+              connected: ${walletInfo.connected},
+              
+              // Safe communication methods
+              connect: ${walletInfo.connect},
+              disconnect: ${walletInfo.disconnect},
+              signTransaction: ${walletInfo.signTransaction},
+              signAllTransactions: ${walletInfo.signAllTransactions},
+              signMessage: ${walletInfo.signMessage}
+            };
+            
+            // Prevent multiple injections
+            if (window.svmseekInjected) return;
+            window.svmseekInjected = true;
+            
+            // Inject wallet providers
+            window.solana = walletAdapter;
+            window.phantom = { solana: walletAdapter };
+            window.svmseek = walletAdapter;
+            
+            // Dispatch wallet ready events
+            setTimeout(() => {
+              window.dispatchEvent(new Event('solana#initialized'));
+              window.dispatchEvent(new Event('phantom#initialized'));
+              console.log('SVMSeek wallet injected securely');
+            }, 100);
+          })();
         `;
         
-        // Post message to inject script
+        // Listen for wallet communication messages
+        const handleWalletMessage = (event: MessageEvent) => {
+          if (event.source !== iframeRef.current?.contentWindow) return;
+          
+          switch (event.data.type) {
+            case 'SVMSEEK_CONNECT':
+              console.log('dApp requested wallet connection');
+              break;
+            case 'SVMSEEK_DISCONNECT':
+              console.log('dApp requested wallet disconnection');
+              break;
+          }
+        };
+        
+        window.addEventListener('message', handleWalletMessage);
+        
+        // Clean up listener on unmount
+        const cleanup = () => {
+          window.removeEventListener('message', handleWalletMessage);
+        };
+        
+        // Store cleanup function for later use
+        (iframeRef.current as any).__walletCleanup = cleanup;
+        
+        // Execute injection script securely
+        const scriptBlob = new Blob([injectionScript], { type: 'application/javascript' });
+        const scriptUrl = URL.createObjectURL(scriptBlob);
+        
+        // Post secure injection message
         iframeRef.current.contentWindow.postMessage({
-          type: 'SVMSEEK_WALLET_INJECTION',
-          script: injectionScript,
+          type: 'SVMSEEK_SECURE_INJECTION',
+          scriptUrl: scriptUrl,
           walletInfo: {
             name: 'SVMSeek',
             publicKey: wallet.publicKey?.toString(),
-            connected: true,
+            connected: !!wallet.publicKey,
           }
         }, '*');
+        
+        // Clean up blob URL after a delay
+        setTimeout(() => {
+          URL.revokeObjectURL(scriptUrl);
+        }, 5000);
         
         setWalletInjected(true);
         
       } catch (error) {
-        console.log('Wallet injection failed (cross-origin restrictions):', error);
-        setConnectionError('Wallet injection blocked by cross-origin policy. Some dApps may require external wallet connection.');
+        console.error('Secure wallet injection failed:', error);
+        setConnectionError('Wallet injection blocked by security policy. Some dApps may require external wallet connection.');
       }
     }
   };
@@ -372,7 +407,8 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
   if (!isActive) return null;
 
   return (
-    <BrowserContainer className="fade-in">
+    <ErrorBoundary context="Web3 Browser" showDetails={false}>
+      <BrowserContainer className="fade-in">
       <NavigationBar data-testid="browser-navigation">
         <IconButton 
           onClick={handleBack} 
@@ -448,32 +484,34 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
             Browse Solana dApps with built-in wallet connectivity. Some features may require external wallet confirmation for security.
           </Alert>
           
-          <DAppsGrid container spacing={2}>
-            {POPULAR_DAPPS.map((dapp) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={dapp.name}>
-                <DAppCard onClick={() => navigateToUrl(dapp.url)} data-testid="dapp-card">
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={1} mb={1}>
-                      <Typography variant="h4">{dapp.icon}</Typography>
-                      <Box>
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          {dapp.name}
-                        </Typography>
-                        <Chip 
-                          label={dapp.category} 
-                          size="small" 
-                          variant="outlined"
-                        />
+          <NetworkErrorBoundary onRetry={() => setShowDApps(true)}>
+            <DAppsGrid container spacing={2}>
+              {POPULAR_DAPPS.map((dapp) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={dapp.name}>
+                  <DAppCard onClick={() => navigateToUrl(dapp.url)} data-testid="dapp-card">
+                    <CardContent>
+                      <Box display="flex" alignItems="center" gap={1} mb={1}>
+                        <Typography variant="h4">{dapp.icon}</Typography>
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {dapp.name}
+                          </Typography>
+                          <Chip 
+                            label={dapp.category} 
+                            size="small" 
+                            variant="outlined"
+                          />
+                        </Box>
                       </Box>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {dapp.description}
-                    </Typography>
-                  </CardContent>
-                </DAppCard>
-              </Grid>
-            ))}
-          </DAppsGrid>
+                      <Typography variant="body2" color="text.secondary">
+                        {dapp.description}
+                      </Typography>
+                    </CardContent>
+                  </DAppCard>
+                </Grid>
+              ))}
+            </DAppsGrid>
+          </NetworkErrorBoundary>
         </Box>
       ) : (
         <Box position="relative" flex={1}>
@@ -492,6 +530,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         </Box>
       )}
     </BrowserContainer>
+    </ErrorBoundary>
   );
 };
 
