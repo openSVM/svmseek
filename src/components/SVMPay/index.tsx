@@ -228,6 +228,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
     try {
       setLoading(true);
       setError(null);
+      setSuccess('🔄 Validating payment details...');
       
       // Validate recipient address with explicit feedback
       const addressValidation = validateRecipientAddress(recipient);
@@ -249,20 +250,49 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
         return;
       }
       
-      // Create a payment URL for now (real implementation would need wallet integration)
-      const paymentUrl = svmPay.createTransferUrl(recipient, amount, {
-        network: selectedNetwork as any,
-        memo: memo || undefined,
-        label: 'SVMSeek Payment',
-        message: `Payment from ${wallet.publicKey.toString().slice(0, 8)}...`,
-      });
+      setSuccess('🔄 Creating transaction...');
       
-      setSuccess(`✅ Payment prepared successfully! URL: ${paymentUrl}`);
-      setRecipient('');
-      setAmount('');
-      setMemo('');
+      // Try to create a real on-chain transaction
+      try {
+        // Use SVM-Pay to create and send the transaction
+        const transactionResult = await svmPay.sendPayment({
+          recipient: new PublicKey(recipient),
+          amount: parseFloat(amount),
+          network: selectedNetwork as any,
+          memo: memo || undefined,
+          signer: wallet,
+        });
+        
+        setSuccess(`✅ Payment sent successfully! Transaction: ${transactionResult.signature.slice(0, 16)}...`);
+        
+        // Clear form on successful payment
+        setRecipient('');
+        setAmount('');
+        setMemo('');
+        
+      } catch (transactionError) {
+        // Fallback to payment URL generation if direct transaction fails
+        console.warn('Direct transaction failed, falling back to URL generation:', transactionError);
+        
+        setSuccess('🔄 Generating payment URL...');
+        
+        const paymentUrl = svmPay.createTransferUrl(recipient, amount, {
+          network: selectedNetwork as any,
+          memo: memo || undefined,
+          label: 'SVMSeek Payment',
+          message: `Payment from ${wallet.publicKey.toString().slice(0, 8)}...`,
+        });
+        
+        setSuccess(`✅ Payment URL generated! Copy and share: ${paymentUrl.slice(0, 50)}...`);
+        
+        // Optionally open the payment URL in a new tab
+        if (window.confirm('Would you like to open the payment URL to complete the transaction?')) {
+          window.open(paymentUrl, '_blank');
+        }
+      }
+      
     } catch (err) {
-      setError(`❌ Payment preparation failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`❌ Payment failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -308,11 +338,54 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
     try {
       setLoading(true);
       setError(null);
+      setSuccess('🔄 Parsing payment URL...');
       
+      // Parse the payment URL to extract payment information
       const paymentInfo = svmPay.parseUrl(paymentUrl);
-      setSuccess(`Payment URL processed: ${JSON.stringify(paymentInfo, null, 2)}`);
+      
+      setSuccess('🔄 Validating payment details...');
+      
+      // Validate the payment information
+      if (!paymentInfo.recipient) {
+        setError('❌ Invalid payment URL: Missing recipient address');
+        return;
+      }
+      
+      if (!paymentInfo.amount || parseFloat(paymentInfo.amount) <= 0) {
+        setError('❌ Invalid payment URL: Invalid amount');
+        return;
+      }
+      
+      // Display parsed payment information
+      const displayInfo = {
+        recipient: paymentInfo.recipient,
+        amount: `${paymentInfo.amount} SOL`,
+        network: paymentInfo.network || selectedNetwork,
+        memo: paymentInfo.memo || 'No memo provided',
+        label: paymentInfo.label || 'Payment',
+        message: paymentInfo.message || 'No message provided',
+      };
+      
+      setSuccess(`✅ Payment URL processed successfully!
+
+📋 Payment Details:
+💰 Amount: ${displayInfo.amount}
+📍 Recipient: ${displayInfo.recipient.slice(0, 16)}...
+🌐 Network: ${displayInfo.network}
+📝 Memo: ${displayInfo.memo}
+🏷️ Label: ${displayInfo.label}
+💬 Message: ${displayInfo.message}`);
+      
+      // Optionally, auto-fill the send form with parsed data
+      if (window.confirm('Would you like to auto-fill the send form with this payment data?')) {
+        setRecipient(paymentInfo.recipient);
+        setAmount(paymentInfo.amount);
+        setMemo(paymentInfo.memo || '');
+        setActiveTab('send');
+      }
+      
     } catch (err) {
-      setError(`Failed to process payment URL: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(`❌ Failed to process payment URL: ${err instanceof Error ? err.message : 'Invalid URL format'}`);
     } finally {
       setLoading(false);
     }

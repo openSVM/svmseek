@@ -95,6 +95,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
   const [activeTab, setActiveTab] = useState(0);
   const [client, setClient] = useState<SolanaAIRegistriesClient | null>(null);
   const [loading, setLoading] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   
@@ -121,11 +122,38 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
     }
     
     try {
-      new URL(url);
+      const urlObj = new URL(url);
+      
+      // Enhanced validation checks
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         setFormErrors(prev => ({ ...prev, [fieldName]: 'URL must start with http:// or https://' }));
         return false;
       }
+      
+      // Check for valid hostname
+      if (!urlObj.hostname || urlObj.hostname.includes('..') || urlObj.hostname.startsWith('.') || urlObj.hostname.endsWith('.')) {
+        setFormErrors(prev => ({ ...prev, [fieldName]: 'URL contains invalid hostname' }));
+        return false;
+      }
+      
+      // Endpoint-specific validation
+      if (fieldName === 'endpoint') {
+        // MCP servers should have valid endpoints
+        if (urlObj.pathname === '/' || urlObj.pathname === '') {
+          setFormErrors(prev => ({ ...prev, [fieldName]: 'MCP server endpoint must specify a path (e.g., /api/mcp)' }));
+          return false;
+        }
+      }
+      
+      // Repository-specific validation
+      if (fieldName === 'repository') {
+        const validHosts = ['github.com', 'gitlab.com', 'bitbucket.org', 'codeberg.org', 'gitea.com'];
+        if (!validHosts.some(host => urlObj.hostname.includes(host))) {
+          setFormErrors(prev => ({ ...prev, [fieldName]: 'Repository must be from a known git hosting service (GitHub, GitLab, etc.)' }));
+          return false;
+        }
+      }
+      
       setFormErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[fieldName];
@@ -133,7 +161,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       });
       return true;
     } catch (err) {
-      setFormErrors(prev => ({ ...prev, [fieldName]: 'Please enter a valid URL' }));
+      setFormErrors(prev => ({ ...prev, [fieldName]: 'Please enter a valid URL format' }));
       return false;
     }
   };
@@ -261,8 +289,11 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
     if (!client || !wallet?.publicKey) return;
     
     try {
-      setLoading(true);
+      setFormSubmitting(true);
       setError(null);
+      
+      // Show loading state with better feedback
+      setSuccess('🔄 Validating agent registration data...');
       
       // Validate required URL fields
       let hasErrors = false;
@@ -278,9 +309,11 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       }
       
       if (hasErrors) {
-        setError('Please fix the URL validation errors before submitting');
+        setError('❌ Please fix the URL validation errors before submitting');
         return;
       }
+      
+      setSuccess('🔄 Creating agent registration...');
       
       const agentBuilder = new AgentBuilder()
         .setName(newAgentForm.name)
@@ -301,17 +334,23 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
         .setDependencies(newAgentForm.dependencies.split(',').map(d => d.trim()))
         .setCapabilities(newAgentForm.capabilities.split(',').map(c => c.trim()));
       
+      setSuccess('🔄 Submitting to AEA Network...');
+      
       const agent = agentBuilder.build();
       await client.registerAgent(agent);
       
       setSuccess('✅ Agent registered successfully with validated URLs!');
       setDialogOpen(false);
       resetAgentForm();
-      loadAgents(client);
+      
+      // Reload agents in background
+      setSuccess('🔄 Refreshing agent registry...');
+      await loadAgents(client);
+      setSuccess('✅ Agent registration complete!');
     } catch (err) {
       setError(`❌ Failed to register agent: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
-      setLoading(false);
+      setFormSubmitting(false);
     }
   };
 
@@ -319,8 +358,11 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
     if (!client || !wallet?.publicKey) return;
     
     try {
-      setLoading(true);
+      setFormSubmitting(true);
       setError(null);
+      
+      // Show loading state with better feedback
+      setSuccess('🔄 Validating MCP server registration data...');
       
       // Validate required URL fields
       let hasErrors = false;
@@ -339,9 +381,11 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
       }
       
       if (hasErrors) {
-        setError('Please fix the URL validation errors before submitting');
+        setError('❌ Please fix the URL validation errors before submitting');
         return;
       }
+      
+      setSuccess('🔄 Creating MCP server registration...');
       
       const mcpBuilder = new MCPServerBuilder()
         .setName(newMCPForm.name)
@@ -358,17 +402,23 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
         .setRequirements(newMCPForm.requirements.split(',').map(r => r.trim()))
         .setConfiguration(newMCPForm.configuration);
       
+      setSuccess('🔄 Submitting to AEA Network...');
+      
       const mcpServer = mcpBuilder.build();
       await client.registerMCPServer(mcpServer);
       
-      setSuccess('✅ MCP Server registered successfully with validated URLs!');
+      setSuccess('✅ MCP server registered successfully with validated endpoints!');
       setDialogOpen(false);
       resetMCPForm();
-      loadMCPServers(client);
+      
+      // Reload servers in background
+      setSuccess('🔄 Refreshing MCP server registry...');
+      await loadMCPServers(client);
+      setSuccess('✅ MCP server registration complete!');
     } catch (err) {
       setError(`❌ Failed to register MCP server: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
-      setLoading(false);
+      setFormSubmitting(false);
     }
   };
 
@@ -933,16 +983,26 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>
+          <Button 
+            onClick={() => setDialogOpen(false)}
+            disabled={formSubmitting}
+          >
             {selectedItem ? 'Close' : 'Cancel'}
           </Button>
           {!selectedItem && (
             <Button 
               variant="contained" 
               onClick={dialogType === 'agent' ? handleRegisterAgent : handleRegisterMCPServer}
-              disabled={loading}
+              disabled={formSubmitting || Object.keys(formErrors).length > 0}
+              startIcon={formSubmitting ? <CircularProgress size={20} /> : null}
+              sx={{
+                minWidth: '120px',
+                '&.Mui-disabled': {
+                  opacity: 0.7,
+                },
+              }}
             >
-              {loading ? <CircularProgress size={20} /> : 'Register'}
+              {formSubmitting ? 'Submitting...' : 'Register'}
             </Button>
           )}
         </DialogActions>
