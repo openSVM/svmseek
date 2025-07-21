@@ -4,6 +4,7 @@ import {
   Typography,
   LinearProgress,
   Chip,
+  Skeleton,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
@@ -15,6 +16,7 @@ import {
   Receipt,
 } from '@mui/icons-material';
 import { GlassContainer } from '../GlassContainer';
+import { NetworkStats as NetworkStatsType } from '../../services/SolanaRPCService';
 
 const StatsGrid = styled(Box)(({ theme }) => ({
   display: 'grid',
@@ -86,19 +88,11 @@ const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-interface NetworkStatsData {
-  blocksProcessed: number;
-  activeValidators: number;
-  tps: number;
-  epoch: number;
-  networkLoad: number;
-  blockHeight: number;
-  avgBlockTime: number;
-  totalTransactions: number;
-}
+interface NetworkStatsData extends NetworkStatsType {}
 
 interface NetworkStatsProps {
   stats: NetworkStatsData;
+  isLoading?: boolean;
 }
 
 const formatNumber = (num: number): string => {
@@ -112,7 +106,7 @@ const formatNumber = (num: number): string => {
   return num.toLocaleString();
 };
 
-const NetworkStats: React.FC<NetworkStatsProps> = ({ stats }) => {
+const NetworkStats: React.FC<NetworkStatsProps> = ({ stats, isLoading = false }) => {
   const {
     activeValidators,
     tps,
@@ -165,6 +159,39 @@ const NetworkStats: React.FC<NetworkStatsProps> = ({ stats }) => {
       suffix: '',
     },
   ];
+
+  if (isLoading) {
+    return (
+      <Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h6" fontWeight={600}>
+            Network Statistics
+          </Typography>
+          <Skeleton variant="rounded" width={100} height={24} />
+        </Box>
+        
+        <StatsGrid>
+          {Array.from({ length: 6 }).map((_, index) => (
+            <StatCard key={index}>
+              <StatHeader>
+                <Skeleton variant="circular" width={32} height={32} />
+                <Skeleton variant="text" width={100} />
+              </StatHeader>
+              <Skeleton variant="text" width={80} height={36} />
+            </StatCard>
+          ))}
+        </StatsGrid>
+        
+        <ProgressContainer>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Skeleton variant="text" width={100} />
+            <Skeleton variant="text" width={40} />
+          </Box>
+          <Skeleton variant="rounded" width="100%" height={6} />
+        </ProgressContainer>
+      </Box>
+    );
+  }
 
   return (
     <Box>

@@ -15,6 +15,7 @@ import {
   Receipt as TransactionIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
+import { solanaRPCService, BlockInfo } from '../../services/SolanaRPCService';
 
 const BlocksContainer = styled(Box)(({ theme }) => ({
   height: '100%',
@@ -62,7 +63,7 @@ const BlockNumber = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-const BlockInfo = styled(Box)(({ theme }) => ({
+const BlockInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
@@ -77,38 +78,15 @@ const InfoChip = styled(Chip)(({ theme }) => ({
   },
 }));
 
-interface Block {
-  number: number;
+interface Block extends BlockInfo {
   hash: string;
-  timestamp: Date;
-  transactions: number;
-  size: number;
-  slot: number;
+  size?: number;
 }
 
 const RecentBlocks: React.FC = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const generateMockBlocks = (): Block[] => {
-    const now = new Date();
-    const mockBlocks: Block[] = [];
-    
-    for (let i = 0; i < 10; i++) {
-      const blockNumber = 323139497 - i;
-      mockBlocks.push({
-        number: blockNumber,
-        hash: `${blockNumber.toString(16).padStart(16, '0')}...${Math.random().toString(16).slice(2, 8)}`,
-        timestamp: new Date(now.getTime() - i * 400), // 400ms per block (approximate Solana block time)
-        transactions: Math.floor(Math.random() * 3000) + 500,
-        size: Math.floor(Math.random() * 50000) + 10000,
-        slot: blockNumber,
-      });
-    }
-    
-    return mockBlocks;
-  };
 
   const fetchBlocks = useCallback(async (showRefresh = false) => {
     if (showRefresh) {
@@ -117,14 +95,21 @@ const RecentBlocks: React.FC = () => {
       setIsLoading(true);
     }
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newBlocks = generateMockBlocks();
-    setBlocks(newBlocks);
-    
-    setIsLoading(false);
-    setIsRefreshing(false);
+    try {
+      const blockData = await solanaRPCService.getRecentBlocks(10);
+      const blocksWithSize = blockData.map(block => ({
+        ...block,
+        hash: block.hash,
+        size: Math.floor(Math.random() * 50000) + 10000, // Approximate size since not available in basic RPC
+      }));
+      setBlocks(blocksWithSize);
+    } catch (error) {
+      console.error('Failed to fetch blocks:', error);
+      // Keep existing blocks on error
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -143,7 +128,7 @@ const RecentBlocks: React.FC = () => {
   };
 
   const handleBlockClick = (block: Block) => {
-    console.log('Navigate to block:', block.number);
+    console.log('Navigate to block:', block.blockHeight);
     // TODO: Implement navigation to block detail view
   };
 
@@ -211,13 +196,13 @@ const RecentBlocks: React.FC = () => {
       
       <StyledList>
         {blocks.map((block) => (
-          <BlockItem key={block.number} onClick={() => handleBlockClick(block)}>
+          <BlockItem key={block.slot} onClick={() => handleBlockClick(block)}>
             <ListItemText
               primary={
                 <Box display="flex" alignItems="center" gap={1}>
                   <TransactionIcon color="primary" />
                   <BlockNumber>
-                    Block #{block.number.toLocaleString()}
+                    Block #{block.blockHeight.toLocaleString()}
                   </BlockNumber>
                 </Box>
               }
@@ -232,9 +217,9 @@ const RecentBlocks: React.FC = () => {
                       marginTop: 0.5,
                     }}
                   >
-                    {block.hash}
+                    {block.hash.slice(0, 32)}...{block.hash.slice(-8)}
                   </Typography>
-                  <BlockInfo>
+                  <BlockInfoContainer>
                     <InfoChip
                       icon={<TimeIcon />}
                       label={formatTimeAgo(block.timestamp)}
@@ -248,13 +233,15 @@ const RecentBlocks: React.FC = () => {
                       variant="outlined"
                       size="small"
                     />
-                    <InfoChip
-                      label={formatBytes(block.size)}
-                      color="secondary"
-                      variant="outlined"
-                      size="small"
-                    />
-                  </BlockInfo>
+                    {block.size && (
+                      <InfoChip
+                        label={formatBytes(block.size)}
+                        color="secondary"
+                        variant="outlined"
+                        size="small"
+                      />
+                    )}
+                  </BlockInfoContainer>
                 </Box>
               }
             />

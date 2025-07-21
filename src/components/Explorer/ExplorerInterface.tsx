@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SearchBar from './SearchBar';
@@ -7,6 +7,7 @@ import RecentBlocks from './RecentBlocks';
 import TransactionList from './TransactionList';
 import { GlassContainer } from '../GlassContainer';
 import ErrorBoundary, { RPCErrorBoundary, NetworkErrorBoundary } from '../ErrorBoundary';
+import { solanaRPCService, NetworkStats as NetworkStatsType } from '../../services/SolanaRPCService';
 
 const ExplorerContainer = styled(GlassContainer)(({ theme }) => ({
   height: '100%',
@@ -48,16 +49,16 @@ const Section = styled(GlassContainer)(({ theme }) => ({
   overflow: 'hidden',
 }));
 
-// Mock data
-const mockStats = {
-  blocksProcessed: 323139497,
-  activeValidators: 1388,
-  tps: 4108,
-  epoch: 748,
-  networkLoad: 0.81,
-  blockHeight: 323139497,
-  avgBlockTime: 0.4,
-  totalTransactions: 285847329,
+// Default stats for loading state
+const defaultStats: NetworkStatsType = {
+  blocksProcessed: 0,
+  activeValidators: 0,
+  tps: 0,
+  epoch: 0,
+  networkLoad: 0,
+  blockHeight: 0,
+  avgBlockTime: 0,
+  totalTransactions: 0,
 };
 
 interface ExplorerInterfaceProps {
@@ -80,8 +81,33 @@ interface SearchResult {
 const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }) => {
   const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [networkStats, setNetworkStats] = useState<NetworkStatsType>(defaultStats);
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  const handleSearch = useCallback((query: string) => {
+  // Load network stats on component mount
+  useEffect(() => {
+    const loadNetworkStats = async () => {
+      try {
+        setStatsLoading(true);
+        const stats = await solanaRPCService.getNetworkStats();
+        setNetworkStats(stats);
+      } catch (error) {
+        console.error('Failed to load network stats:', error);
+        // Keep default stats on error
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    if (isActive) {
+      loadNetworkStats();
+      // Refresh stats every 30 seconds
+      const interval = setInterval(loadNetworkStats, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isActive]);
+
+  const handleSearch = useCallback(async (query: string) => {
     if (!query.trim()) {
       setSearchResults(null);
       return;
@@ -89,60 +115,60 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
 
     setIsLoading(true);
     
-    // Simulate search API call
-    setTimeout(() => {
-      // Parse search query to determine type
-      const lowerQuery = query.toLowerCase().trim();
-      const mockResults: SearchResult[] = [];
+    try {
+      const result = await solanaRPCService.search(query);
+      const searchResult: SearchResult[] = [];
 
-      // Mock transaction search
-      if (lowerQuery.length === 88 || lowerQuery.includes('transaction')) {
-        mockResults.push({
-          type: 'transaction',
-          id: query.length === 88 ? query : '5VfydnLz8YGV4RqD6DF9hnVxf7YGEWJFaAqN7h1QEi3m9KjH8P1BX3x9yYnA1W4R',
-          title: 'Transaction',
-          status: 'Success',
-          slot: 323139497,
-          timestamp: new Date(),
-        });
+      switch (result.type) {
+        case 'account':
+          searchResult.push({
+            type: 'account',
+            id: result.data.address,
+            title: 'Account',
+            balance: `${result.data.balance.toFixed(6)} SOL`,
+            tokens: result.data.tokens?.length || 0,
+          });
+          break;
+        case 'transaction':
+          searchResult.push({
+            type: 'transaction',
+            id: result.data.signature,
+            title: 'Transaction',
+            status: result.data.status,
+            slot: result.data.slot,
+            timestamp: result.data.timestamp,
+          });
+          break;
+        case 'block':
+          searchResult.push({
+            type: 'block',
+            id: result.data.slot.toString(),
+            title: `Block #${result.data.slot}`,
+            transactions: result.data.transactions,
+            timestamp: result.data.timestamp,
+          });
+          break;
+        default:
+          searchResult.push({
+            type: 'search',
+            id: query,
+            title: 'No Results Found',
+            description: `No account, transaction, or block found for "${query}"`,
+          });
       }
 
-      // Mock account search
-      if (lowerQuery.length === 44 || lowerQuery.includes('account')) {
-        mockResults.push({
-          type: 'account',
-          id: query.length === 44 ? query : 'FD1VbCsN8HB8cYaW6P2o9L1YkJiZcBHGdLz4J3x9Y2k',
-          title: 'Account',
-          balance: '1,234.567 SOL',
-          tokens: 5,
-        });
-      }
-
-      // Mock block search
-      if (/^\d+$/.test(lowerQuery) || lowerQuery.includes('block')) {
-        const blockNumber = /^\d+$/.test(lowerQuery) ? parseInt(lowerQuery) : 323139497;
-        mockResults.push({
-          type: 'block',
-          id: blockNumber.toString(),
-          title: `Block #${blockNumber}`,
-          transactions: 1234,
-          timestamp: new Date(),
-        });
-      }
-
-      // Default to general search if no specific pattern matches
-      if (mockResults.length === 0) {
-        mockResults.push({
-          type: 'search',
-          id: query,
-          title: 'General Search',
-          description: `Search results for "${query}"`,
-        });
-      }
-
-      setSearchResults(mockResults);
+      setSearchResults(searchResult);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults([{
+        type: 'search',
+        id: query,
+        title: 'Search Error',
+        description: 'Failed to search. Please try again.',
+      }]);
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   }, []);
 
   const handleSearchResultClick = useCallback((result: SearchResult) => {
@@ -185,7 +211,7 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
 
         <StatsContainer>
           <RPCErrorBoundary onRetry={() => window.location.reload()}>
-            <NetworkStats stats={mockStats} />
+            <NetworkStats stats={networkStats} isLoading={statsLoading} />
           </RPCErrorBoundary>
         </StatsContainer>
 

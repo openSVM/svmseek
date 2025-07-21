@@ -1,6 +1,8 @@
 import { pbkdf2 } from 'crypto-browserify';
 import { randomBytes, secretbox } from 'tweetnacl';
 import bs58 from 'bs58';
+import scrypt from 'scrypt-js';
+import argon2 from 'argon2-browser';
 
 /**
  * Cryptographic configuration interface for KDF parameters
@@ -44,11 +46,25 @@ export const CRYPTO_CONFIGS: Record<number, CryptoConfig> = {
     saltLength: 32,
     keyLength: 32,
   },
-  // Future versions can add scrypt, argon2, etc.
+  3: {
+    kdf: 'scrypt',
+    iterations: 16384, // N parameter for scrypt
+    digest: 'sha256', // Not used for scrypt
+    saltLength: 32,
+    keyLength: 32,
+  },
+  4: {
+    kdf: 'argon2',
+    iterations: 3, // Number of passes
+    digest: 'sha256', // Not used for argon2
+    saltLength: 32,
+    keyLength: 32,
+  },
+  // Future versions can add more configurations
 };
 
 // Current version (can be updated for new installations)
-export const CURRENT_CRYPTO_VERSION = 2;
+export const CURRENT_CRYPTO_VERSION = 4;
 
 /**
  * Abstract base class for encryption providers
@@ -105,6 +121,43 @@ export class PBKDF2Provider extends EncryptionProvider {
 }
 
 /**
+ * Scrypt-based encryption provider
+ */
+export class ScryptProvider extends EncryptionProvider {
+  async deriveKey(password: string, salt: Uint8Array): Promise<Uint8Array> {
+    const passwordBuffer = Buffer.from(password, 'utf8');
+    const N = this.config.iterations; // Cost parameter
+    const r = 8; // Block size parameter
+    const p = 1; // Parallelization parameter
+    
+    return scrypt(passwordBuffer, salt, N, r, p, this.config.keyLength);
+  }
+}
+
+/**
+ * Argon2-based encryption provider
+ */
+export class Argon2Provider extends EncryptionProvider {
+  async deriveKey(password: string, salt: Uint8Array): Promise<Uint8Array> {
+    try {
+      const result = await argon2.hash({
+        pass: password,
+        salt: salt,
+        time: this.config.iterations, // Number of passes
+        mem: 64 * 1024, // Memory usage in KB (64MB)
+        hashLen: this.config.keyLength,
+        parallelism: 1,
+        type: argon2.ArgonType.Argon2id, // Use Argon2id (most secure variant)
+      });
+      
+      return new Uint8Array(result.hash);
+    } catch (error) {
+      throw new Error(`Argon2 key derivation failed: ${error}`);
+    }
+  }
+}
+
+/**
  * Factory for creating encryption providers
  */
 export class EncryptionProviderFactory {
@@ -112,7 +165,10 @@ export class EncryptionProviderFactory {
     switch (config.kdf) {
       case 'pbkdf2':
         return new PBKDF2Provider(config);
-      // Future cases for scrypt, argon2, etc.
+      case 'scrypt':
+        return new ScryptProvider(config);
+      case 'argon2':
+        return new Argon2Provider(config);
       default:
         throw new Error(`Unsupported KDF: ${config.kdf}`);
     }
@@ -230,9 +286,20 @@ export class WalletEncryptionManager {
     const config = CRYPTO_CONFIGS[this.version];
     
     // Rough estimates for educational purposes
-    const estimatedCrackTime = config.iterations >= 200000 
-      ? 'centuries (with current hardware)' 
-      : 'decades (with current hardware)';
+    const estimatedCrackTime = (() => {
+      switch (config.kdf) {
+        case 'argon2':
+          return 'millennia (with current hardware)';
+        case 'scrypt':
+          return 'centuries (with current hardware)';
+        case 'pbkdf2':
+          return config.iterations >= 200000 
+            ? 'centuries (with current hardware)' 
+            : 'decades (with current hardware)';
+        default:
+          return 'unknown';
+      }
+    })();
     
     return {
       version: this.version,

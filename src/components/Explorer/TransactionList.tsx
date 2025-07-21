@@ -17,6 +17,7 @@ import {
   Error as ErrorIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
+import { solanaRPCService, TransactionInfo } from '../../services/SolanaRPCService';
 
 const TransactionsContainer = styled(Box)(({ theme }) => ({
   height: '100%',
@@ -64,7 +65,7 @@ const TransactionHash = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-const TransactionInfo = styled(Box)(({ theme }) => ({
+const TransactionInfoContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
@@ -86,14 +87,8 @@ const StatusAvatar = styled(Avatar)(({ theme }) => ({
   marginRight: theme.spacing(1),
 }));
 
-interface Transaction {
-  signature: string;
-  status: 'success' | 'failed';
-  type: string;
-  timestamp: Date;
-  fee: number;
-  slot: number;
-  accounts: number;
+interface Transaction extends TransactionInfo {
+  type?: string;
   programId?: string;
 }
 
@@ -102,39 +97,6 @@ const TransactionList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const generateMockTransactions = (): Transaction[] => {
-    const now = new Date();
-    const mockTransactions: Transaction[] = [];
-    
-    const types = ['Transfer', 'Swap', 'Stake', 'Vote', 'Program Call', 'Token Create', 'NFT Mint'];
-    const programs = [
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-      '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
-      'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4',
-      'So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo',
-    ];
-    
-    for (let i = 0; i < 15; i++) {
-      const signature = Array.from({ length: 88 }, () => 
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-          .charAt(Math.floor(Math.random() * 62))
-      ).join('');
-      
-      mockTransactions.push({
-        signature,
-        status: Math.random() > 0.05 ? 'success' : 'failed',
-        type: types[Math.floor(Math.random() * types.length)],
-        timestamp: new Date(now.getTime() - i * 2000 - Math.random() * 10000),
-        fee: Math.random() * 0.01 + 0.000005,
-        slot: 323139497 - Math.floor(i / 3),
-        accounts: Math.floor(Math.random() * 8) + 2,
-        programId: programs[Math.floor(Math.random() * programs.length)],
-      });
-    }
-    
-    return mockTransactions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  };
-
   const fetchTransactions = useCallback(async (showRefresh = false) => {
     if (showRefresh) {
       setIsRefreshing(true);
@@ -142,14 +104,21 @@ const TransactionList: React.FC = () => {
       setIsLoading(true);
     }
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    
-    const newTransactions = generateMockTransactions();
-    setTransactions(newTransactions);
-    
-    setIsLoading(false);
-    setIsRefreshing(false);
+    try {
+      const transactionData = await solanaRPCService.getRecentTransactions(15);
+      const enhancedTransactions = transactionData.map(tx => ({
+        ...tx,
+        type: tx.instructions > 1 ? 'Program Call' : 'Transfer', // Simple type detection
+        programId: tx.accounts[0] || undefined, // First account as program
+      }));
+      setTransactions(enhancedTransactions);
+    } catch (error) {
+      console.error('Failed to fetch transactions:', error);
+      // Keep existing transactions on error
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -186,7 +155,7 @@ const TransactionList: React.FC = () => {
   };
 
   const getStatusIcon = (status: string) => {
-    return status === 'success' ? (
+    return status === 'Success' ? (
       <SuccessIcon sx={{ color: 'success.main' }} />
     ) : (
       <ErrorIcon sx={{ color: 'error.main' }} />
@@ -246,7 +215,7 @@ const TransactionList: React.FC = () => {
           >
             <StatusAvatar
               sx={{
-                bgcolor: transaction.status === 'success' ? 'success.main' : 'error.main',
+                bgcolor: transaction.status === 'Success' ? 'success.main' : 'error.main',
               }}
             >
               {getStatusIcon(transaction.status)}
@@ -258,7 +227,7 @@ const TransactionList: React.FC = () => {
                     {formatSignature(transaction.signature)}
                   </TransactionHash>
                   <InfoChip
-                    label={transaction.type}
+                    label={transaction.type || 'Transaction'}
                     color="primary"
                     variant="outlined"
                     size="small"
@@ -266,7 +235,7 @@ const TransactionList: React.FC = () => {
                 </Box>
               }
               secondary={
-                <TransactionInfo>
+                <TransactionInfoContainer>
                   <InfoChip
                     icon={<TimeIcon />}
                     label={formatTimeAgo(transaction.timestamp)}
@@ -274,7 +243,7 @@ const TransactionList: React.FC = () => {
                     size="small"
                   />
                   <InfoChip
-                    label={`${transaction.fee.toFixed(6)} SOL`}
+                    label={`${(transaction.fee / 1e9).toFixed(6)} SOL`}
                     color="secondary"
                     variant="outlined"
                     size="small"
@@ -285,11 +254,11 @@ const TransactionList: React.FC = () => {
                     size="small"
                   />
                   <InfoChip
-                    label={`${transaction.accounts} accounts`}
+                    label={`${transaction.accounts.length} accounts`}
                     variant="outlined"
                     size="small"
                   />
-                </TransactionInfo>
+                </TransactionInfoContainer>
               }
             />
           </TransactionItem>

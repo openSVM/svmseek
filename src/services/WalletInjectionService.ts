@@ -355,25 +355,72 @@ export class WalletInjectionService {
    * Handle transaction signing requests
    */
   private async handleSignTransaction(transaction: any): Promise<any> {
-    // For security, we don't allow actual signing in iframe context
-    // This would need user confirmation in the main app
-    throw new Error('Transaction signing disabled in iframe for security. Please use the main SVMSeek interface.');
+    // For security, we show a user-friendly message about transaction signing
+    const message = 'Transaction signing is available in the main SVMSeek wallet interface for security. Would you like to:\n\n' +
+      '1. Copy the transaction details to use in the main wallet\n' +
+      '2. Open SVMSeek wallet in a new tab\n' +
+      '3. Learn more about secure transaction signing\n\n' +
+      'This security measure protects your funds from malicious dApps.';
+    
+    // Show a user-friendly notification
+    this.showTransactionPrompt('Transaction Signing Required', message);
+    
+    throw new Error('Please use the main SVMSeek wallet interface for transaction signing. This ensures your security and protects your funds.');
   }
 
   /**
    * Handle multiple transaction signing requests
    */
   private async handleSignAllTransactions(transactions: any[]): Promise<any[]> {
-    // For security, we don't allow actual signing in iframe context
-    throw new Error('Transaction signing disabled in iframe for security. Please use the main SVMSeek interface.');
+    const message = `Multiple transaction signing (${transactions.length} transactions) is available in the main SVMSeek wallet interface for security. ` +
+      'Batch transaction signing requires additional security verification that can only be performed in the main application.';
+    
+    this.showTransactionPrompt('Batch Transaction Signing Required', message);
+    
+    throw new Error('Please use the main SVMSeek wallet interface for batch transaction signing. This ensures your security and protects your funds.');
   }
 
   /**
    * Handle message signing requests
    */
   private async handleSignMessage(message: Uint8Array): Promise<{ signature: Uint8Array }> {
-    // For security, we don't allow actual signing in iframe context
-    throw new Error('Message signing disabled in iframe for security. Please use the main SVMSeek interface.');
+    const promptMessage = 'Message signing is available in the main SVMSeek wallet interface for security. ' +
+      'This ensures that you can review the exact message content before signing and protects against phishing attempts.';
+    
+    this.showTransactionPrompt('Message Signing Required', promptMessage);
+    
+    throw new Error('Please use the main SVMSeek wallet interface for message signing. This ensures your security and protects against phishing.');
+  }
+
+  /**
+   * Show user-friendly transaction signing prompt
+   */
+  private showTransactionPrompt(title: string, message: string): void {
+    // Create a custom event to show a user-friendly prompt in the main application
+    const promptEvent = new CustomEvent('wallet-transaction-prompt', {
+      detail: {
+        title,
+        message,
+        actions: [
+          {
+            label: 'Open SVMSeek Wallet',
+            action: 'open-wallet',
+            primary: true,
+          },
+          {
+            label: 'Learn More',
+            action: 'learn-more',
+            secondary: true,
+          },
+          {
+            label: 'Dismiss',
+            action: 'dismiss',
+          },
+        ],
+      },
+    });
+    
+    window.dispatchEvent(promptEvent);
   }
 
   /**

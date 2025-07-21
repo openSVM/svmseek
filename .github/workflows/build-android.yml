@@ -2,12 +2,12 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/*', 'fix/*', 'copilot/*' ]
     paths-ignore:
       - 'docs/**'
       - '*.md'
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -32,12 +32,35 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
+        cache: 'gradle'
         
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
         api-level: 34
         build-tools: 34.0.0
+        
+    - name: Cache Node modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          ~/.yarn/cache
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+          
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          android/.gradle
+          android/app/.gradle
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
         
     - name: Install dependencies
       run: yarn install --frozen-lockfile
@@ -66,7 +89,9 @@ jobs:
     - name: Build Android APK
       working-directory: ./android
       run: |
-        ./gradlew assembleDebug --stacktrace
+        # Configure Gradle for faster builds
+        export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.parallel=true -Dorg.gradle.configureondemand=true -Dorg.gradle.daemon=true -Dorg.gradle.caching=true"
+        ./gradlew assembleDebug --stacktrace --build-cache --parallel --configure-on-demand
         
     - name: Setup Production Keystore (if secrets available)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -88,7 +113,8 @@ jobs:
       run: |
         if [ -f "release.keystore" ]; then
           echo "Building production APK..."
-          ./gradlew assembleRelease --stacktrace
+          export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.parallel=true -Dorg.gradle.configureondemand=true -Dorg.gradle.daemon=true -Dorg.gradle.caching=true"
+          ./gradlew assembleRelease --stacktrace --build-cache --parallel --configure-on-demand
           echo "Production APK built successfully"
         else
           echo "No production keystore found, skipping production build"
