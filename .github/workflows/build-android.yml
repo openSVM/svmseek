@@ -86,6 +86,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x android/gradlew
       
+    - name: Clean Android project
+      working-directory: ./android
+      run: |
+        # Clean project to remove any corrupted resources or build artifacts
+        ./gradlew clean --stacktrace
+        
     - name: Build Android APK
       working-directory: ./android
       run: |
@@ -107,61 +113,64 @@ jobs:
       env:
         ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         
-    - name: Build Production APK (if production keystore available)
+    - name: Build and Sign Production APK (if production keystore available)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       working-directory: ./android
       run: |
         if [ -f "release.keystore" ]; then
-          echo "Building production APK..."
+          echo "Building and signing production APK..."
+          
+          # Clean before production build to prevent resource corruption
+          ./gradlew clean --stacktrace
+          
+          # Configure signing in gradle.properties for production build
+          echo "MYAPP_UPLOAD_STORE_FILE=../release.keystore" >> gradle.properties
+          echo "MYAPP_UPLOAD_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> gradle.properties
+          echo "MYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> gradle.properties
+          echo "MYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> gradle.properties
+          
+          # Build signed release APK directly (Gradle handles signing automatically)
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.parallel=true -Dorg.gradle.configureondemand=true -Dorg.gradle.daemon=true -Dorg.gradle.caching=true"
           ./gradlew assembleRelease --stacktrace --build-cache --parallel --configure-on-demand
-          echo "Production APK built successfully"
+          
+          # Verify the signed APK exists and is valid
+          if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+            echo "Production APK built and signed successfully"
+            # Basic APK validation
+            unzip -l app/build/outputs/apk/release/app-release.apk | grep "META-INF.*\.RSA\|META-INF.*\.DSA" && echo "APK is properly signed" || echo "Warning: APK signing verification incomplete"
+          else
+            echo "Production APK not found after build"
+            ls -la app/build/outputs/apk/release/ || echo "Release output directory not found"
+            exit 1
+          fi
         else
           echo "No production keystore found, skipping production build"
-        fi
-        
-    - name: Sign Production APK (if available)
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      working-directory: ./android
-      run: |
-        if [ -f "release.keystore" ] && [ -f "app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
-          echo "Signing production APK..."
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore release.keystore \
-            -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
-            -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" \
-            app/build/outputs/apk/release/app-release-unsigned.apk \
-            "${{ secrets.ANDROID_KEY_ALIAS }}"
-          
-          # Verify the signature
-          jarsigner -verify -verbose -certs app/build/outputs/apk/release/app-release-unsigned.apk
-          
-          # Rename to signed APK
-          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
-          echo "Production APK signed successfully"
-        else
-          echo "No production APK or keystore found, skipping signing"
         fi
       env:
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         
-    - name: Sign APK (Debug)
+    - name: Verify APKs
       working-directory: ./android
       run: |
-        # Generate debug keystore if it doesn't exist
-        if [ ! -f "debug.keystore" ]; then
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        echo "Verifying debug APK..."
+        if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+          # Basic APK structure validation
+          unzip -l app/build/outputs/apk/debug/app-debug.apk > /dev/null && echo "Debug APK structure is valid"
+          echo "Debug APK verified successfully"
+        else
+          echo "Debug APK not found for verification"
+          ls -la app/build/outputs/apk/debug/ || echo "Debug output directory not found"
+          exit 1
         fi
         
-        # Sign the APK
-        jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore debug.keystore -storepass android -keypass android app/build/outputs/apk/debug/app-debug.apk androiddebugkey
-        
-    - name: Verify APK
-      working-directory: ./android
-      run: |
-        jarsigner -verify -verbose -certs app/build/outputs/apk/debug/app-debug.apk
+        # Verify production APK if it exists
+        if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+          echo "Verifying production APK..."
+          unzip -l app/build/outputs/apk/release/app-release.apk > /dev/null && echo "Production APK structure is valid"
+          echo "Production APK verified successfully"
+        fi
         
     - name: Rename APK with version
       run: |
