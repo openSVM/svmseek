@@ -4,12 +4,6 @@ import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@mui/material/Button';
 import { confirmTransaction } from './utils';
 
-import React, { useState } from 'react';
-import { useSnackbar } from 'notistack';
-import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
-import Button from '@mui/material/Button';
-import { confirmTransaction } from './utils';
-
 interface TransactionCallbacks {
   onSuccess?: (signature: string) => void;
   onError?: (error: Error) => void;
