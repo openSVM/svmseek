@@ -4,35 +4,60 @@ import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@mui/material/Button';
 import { confirmTransaction } from './utils';
 
-export function useSendTransaction(): [any, boolean] {
+import React, { useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
+import Button from '@mui/material/Button';
+import { confirmTransaction } from './utils';
+
+interface TransactionCallbacks {
+  onSuccess?: (signature: string) => void;
+  onError?: (error: Error) => void;
+}
+
+interface NotificationConfig {
+  progressMessage?: string;
+  successMessage?: string;
+  onSuccess?: (result: unknown) => void;
+  onError?: (error: Error) => void;
+}
+
+type SendTransactionFunction = (
+  signaturePromise: Promise<string>,
+  callbacks?: TransactionCallbacks
+) => Promise<void>;
+
+export function useSendTransaction(): [SendTransactionFunction, boolean] {
   const connection = useConnection();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [sending, setSending] = useState(false);
 
   async function sendTransaction(
-    signaturePromise,
+    signaturePromise: Promise<string>,
     {
-      onSuccess = (res) => {},
-      onError = (e) => {
+      onSuccess = () => {},
+      onError = (e: Error) => {
         console.error(e);
       },
-    } = {},
-  ) {
-    let id =
+    }: TransactionCallbacks = {},
+  ): Promise<void> {
+    let id = String(
       enqueueSnackbar('Sending transaction...', {
         variant: 'info',
         persist: true,
-      }) || '';
+      }) || ''
+    );
     setSending(true);
     try {
-      let signature = await signaturePromise;
+      const signature = await signaturePromise;
       closeSnackbar(id);
-      id =
+      id = String(
         enqueueSnackbar('Confirming transaction...', {
           variant: 'info',
           persist: true,
           action: <ViewTransactionOnExplorerButton signature={signature} />,
-        }) || '';
+        }) || ''
+      );
       await confirmTransaction(connection, signature);
       closeSnackbar(id);
       setSending(false);
@@ -41,9 +66,7 @@ export function useSendTransaction(): [any, boolean] {
         autoHideDuration: 3000,
         action: <ViewTransactionOnExplorerButton signature={signature} />,
       });
-      if (onSuccess) {
-        onSuccess(signature);
-      }
+      onSuccess(signature);
     } catch (e) {
       closeSnackbar(id);
       setSending(false);
@@ -60,16 +83,18 @@ export function useSendTransaction(): [any, boolean] {
 
       console.warn(message);
       enqueueSnackbar(message, { variant: 'error' });
-      if (onError) {
-        onError(e);
-      }
+      onError(e as Error);
     }
   }
 
   return [sendTransaction, sending];
 }
 
-function ViewTransactionOnExplorerButton({ signature }) {
+interface ViewTransactionButtonProps {
+  signature: string;
+}
+
+function ViewTransactionOnExplorerButton({ signature }: ViewTransactionButtonProps) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
   return (
     <Button
@@ -87,12 +112,12 @@ function ViewTransactionOnExplorerButton({ signature }) {
 export function useCallAsync() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  return async function callAsync(promise: any, notificationObj?: any) {
+  return async function callAsync<T>(promise: Promise<T>, notificationObj?: NotificationConfig): Promise<void> {
     const {
       progressMessage = 'Submitting...',
       successMessage = 'Success',
       onSuccess = () => {},
-      onError = (e) => {
+      onError = (e: Error) => {
         console.error(e);
       },
     } = notificationObj || {};
@@ -100,22 +125,21 @@ export function useCallAsync() {
     let id = '';
 
     if (progressMessage) {
-      id =
-        String(enqueueSnackbar(progressMessage, {
+      id = String(
+        enqueueSnackbar(progressMessage, {
           variant: 'info',
           persist: true,
-        })) || '';
+        }) || ''
+      );
     }
 
     try {
-      let result = await promise;
+      const result = await promise;
       closeSnackbar(id);
       if (successMessage) {
         enqueueSnackbar(successMessage, { variant: 'success' });
       }
-      if (onSuccess) {
-        onSuccess(result);
-      }
+      onSuccess(result);
     } catch (e) {
       console.warn(e);
       closeSnackbar(id);
@@ -130,9 +154,7 @@ export function useCallAsync() {
       }
 
       enqueueSnackbar(message, { variant: 'error' });
-      if (onError) {
-        onError(e);
-      }
+      onError(e as Error);
     }
   };
 }

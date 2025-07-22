@@ -1,7 +1,7 @@
 /* 
- * Animation constants are now defined in src/styles/constants.ts
- * Import and use these constants in your components for consistent theming:
- * import { ANIMATION_DURATIONS, ANIMATION_EASINGS } from '../styles/constants';
+ * Animation styles using CSS Variables from cssVariables.css
+ * These styles work with the centralized design tokens for consistent theming
+ * Import cssVariables.css before this file for proper variable resolution
  */
 
 /* Animation Keyframes */
@@ -111,33 +111,33 @@
   }
 }
 
-/* Animation Classes with consistent durations */
+/* Animation Classes using CSS Variables */
 .fade-in {
-  animation: fadeIn var(--animation-duration-fade-in, 0.8s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+  animation: fadeIn var(--animation-duration-fade-in) var(--animation-easing-default) forwards;
 }
 
 .slide-up {
-  animation: slideUp var(--animation-duration-slide-up, 0.6s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+  animation: slideUp var(--animation-duration-slide-up) var(--animation-easing-default) forwards;
 }
 
 .scale-in {
-  animation: scaleIn var(--animation-duration-scale-in, 0.5s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+  animation: scaleIn var(--animation-duration-scale-in) var(--animation-easing-default) forwards;
 }
 
 .slide-in-left {
-  animation: slideInFromLeft var(--animation-duration-slide-in, 0.6s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+  animation: slideInFromLeft var(--animation-duration-slide-in) var(--animation-easing-default) forwards;
 }
 
 .slide-in-right {
-  animation: slideInFromRight var(--animation-duration-slide-in, 0.6s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+  animation: slideInFromRight var(--animation-duration-slide-in) var(--animation-easing-default) forwards;
 }
 
 .pulse {
-  animation: pulse var(--animation-duration-pulse, 2s) var(--animation-easing-smooth, ease-in-out) infinite;
+  animation: pulse var(--animation-duration-pulse) var(--animation-easing-smooth) infinite;
 }
 
 .glow {
-  animation: glow var(--animation-duration-glow, 2s) var(--animation-easing-smooth, ease-in-out) infinite alternate;
+  animation: glow var(--animation-duration-glow) var(--animation-easing-smooth) infinite alternate;
 }
 
 .shimmer {
@@ -148,28 +148,28 @@
     transparent
   );
   background-size: 200px 100%;
-  animation: shimmer var(--animation-duration-shimmer, 2s) linear infinite;
+  animation: shimmer var(--animation-duration-shimmer) linear infinite;
 }
 
 .float {
-  animation: float var(--animation-duration-float, 3s) var(--animation-easing-smooth, ease-in-out) infinite;
+  animation: float var(--animation-duration-float) var(--animation-easing-smooth) infinite;
 }
 
 .bounce {
-  animation: bounce var(--animation-duration-bounce, 1s) var(--animation-easing-smooth, ease-in-out);
+  animation: bounce var(--animation-duration-bounce) var(--animation-easing-smooth);
 }
 
-/* Delay Classes */
+/* Delay Classes using CSS Variables */
 .animation-delay-100 {
-  animation-delay: var(--animation-delay-short, 0.1s);
+  animation-delay: var(--animation-delay-short);
 }
 
 .animation-delay-200 {
-  animation-delay: var(--animation-delay-medium, 0.2s);
+  animation-delay: var(--animation-delay-medium);
 }
 
 .animation-delay-300 {
-  animation-delay: var(--animation-delay-long, 0.3s);
+  animation-delay: var(--animation-delay-long);
 }
 
 .animation-delay-400 {
@@ -177,20 +177,20 @@
 }
 
 .animation-delay-500 {
-  animation-delay: var(--animation-delay-extra-long, 0.5s);
+  animation-delay: var(--animation-delay-extra-long);
 }
 
-/* Transition Classes with configurable durations */
+/* Transition Classes using CSS Variables */
 .transition-all {
-  transition: all var(--animation-duration-standard, 0.3s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1));
+  transition: all var(--animation-duration-standard) var(--animation-easing-default);
 }
 
 .transition-fast {
-  transition: all var(--animation-duration-fast, 0.15s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1));
+  transition: all var(--animation-duration-fast) var(--animation-easing-default);
 }
 
 .transition-slow {
-  transition: all var(--animation-duration-fade-in, 0.8s) var(--animation-easing-default, cubic-bezier(0.4, 0, 0.2, 1));
+  transition: all var(--animation-duration-fade-in) var(--animation-easing-default);
 }
 
 /* Hover Effects */
@@ -211,23 +211,23 @@
   backdrop-filter: blur(20px);
 }
 
-/* Glass Morphism Effects with CSS Custom Properties */
+/* Glass Morphism Effects using CSS Variables */
 .glass-light {
-  background: var(--glass-light-bg, rgba(255, 255, 255, 0.1));
-  backdrop-filter: var(--glass-light-backdrop, blur(10px));
-  border: var(--glass-light-border, 1px solid rgba(255, 255, 255, 0.2));
+  background: var(--glass-light-bg);
+  backdrop-filter: var(--glass-light-backdrop);
+  border: var(--glass-light-border);
 }
 
 .glass-dark {
-  background: var(--glass-dark-bg, rgba(0, 0, 0, 0.1));
-  backdrop-filter: var(--glass-dark-backdrop, blur(10px));
-  border: var(--glass-dark-border, 1px solid rgba(255, 255, 255, 0.1));
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-dark-backdrop);
+  border: var(--glass-dark-border);
 }
 
 .glass-strong {
-  background: var(--glass-strong-bg, rgba(255, 255, 255, 0.2));
-  backdrop-filter: var(--glass-strong-backdrop, blur(20px));
-  border: var(--glass-strong-border, 1px solid rgba(255, 255, 255, 0.3));
+  background: var(--glass-strong-bg);
+  backdrop-filter: var(--glass-strong-backdrop);
+  border: var(--glass-strong-border);
 }
 
 /* Responsive Animation Controls */
@@ -258,7 +258,7 @@
   }
 }
 
-/* Loading States */
+/* Loading States using CSS Variables */
 .loading-skeleton {
   background: linear-gradient(
     90deg,
@@ -267,12 +267,12 @@
     rgba(255, 255, 255, 0.1)
   );
   background-size: 200px 100%;
-  animation: shimmer var(--animation-duration-skeleton, 1.5s) linear infinite;
+  animation: shimmer var(--animation-duration-skeleton) linear infinite;
 }
 
 .loading-dots::after {
   content: '.';
-  animation: loadingDots var(--animation-duration-loading-dots, 1.5s) steps(5, end) infinite;
+  animation: loadingDots var(--animation-duration-loading-dots) steps(5, end) infinite;
 }
 
 @keyframes loadingDots {
@@ -292,7 +292,7 @@
   }
 }
 
-/* Loading indicator with customizable timing */
+/* Loading indicator using CSS Variables */
 .loading-indicator {
   position: relative;
   overflow: hidden;
@@ -311,6 +311,6 @@
     rgba(255, 255, 255, 0.3),
     transparent
   );
-  animation: shimmer var(--loading-duration, 1.5s) ease-in-out infinite;
+  animation: shimmer var(--animation-duration-skeleton) ease-in-out infinite;
   z-index: 1;
 }

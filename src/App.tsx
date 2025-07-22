@@ -5,6 +5,7 @@ import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
 import OnboardingTutorial from './components/OnboardingTutorial';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
+import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './context/ThemeContext';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
 import { ConnectionProvider } from './utils/connection';
@@ -28,14 +29,54 @@ const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 // const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
 // const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
+interface CustomPalette {
+  text: {
+    grey: string;
+  };
+  border: {
+    main: string;
+    new: string;
+  };
+  grey: {
+    additional: string;
+    border: string;
+    light: string;
+    dark: string;
+    soft: string;
+    background: string;
+  };
+  dark: {
+    main: string;
+    background: string;
+  };
+  blue: {
+    serum: string;
+    new: string;
+  };
+  white: {
+    main: string;
+    background: string;
+  };
+  red: {
+    main: string;
+  };
+  green: {
+    main: string;
+    light: string;
+  };
+  orange: {
+    dark: string;
+    light: string;
+  };
+}
+
 declare module '@mui/material/styles' {
   interface Theme {
-    // add types later
-    customPalette: any;
+    customPalette: CustomPalette;
   }
 
   interface ThemeOptions {
-    customPalette: any;
+    customPalette?: CustomPalette;
   }
 }
 
@@ -46,9 +87,13 @@ export default function App() {
   }
 
   let appElement = (
-    <NavigationFrame>
-      <Pages />
-    </NavigationFrame>
+    <ErrorBoundary context="navigation">
+      <NavigationFrame>
+        <ErrorBoundary context="application routes">
+          <Pages />
+        </ErrorBoundary>
+      </NavigationFrame>
+    </ErrorBoundary>
   );
 
   if (isExtension) {
@@ -132,14 +177,55 @@ const Pages = () => {
       )} */}
 
       <Switch>
-        {/* <Route path="/connecting_wallet" component={ConnectingWallet} /> */}
-        <Route path="/wallet" component={Wallet} />
-        <Route path="/restore_wallet" component={RestorePage} />
-        <Route path="/welcome" component={WelcomePage} />
-        <Route path="/create_wallet" component={CreateWalletPage} />
-        {/* <Route path="/import_wallet" component={ImportWalletPage} /> */}
-        <Route exact path="/welcome_back" component={WelcomeBackPage} />
-        <Route path="/connect_popup" component={ConnectPopup} />
+        <Route 
+          path="/wallet" 
+          render={(routeProps) => (
+            <ErrorBoundary context="wallet interface">
+              <Wallet {...routeProps} />
+            </ErrorBoundary>
+          )} 
+        />
+        <Route 
+          path="/restore_wallet" 
+          render={(routeProps) => (
+            <ErrorBoundary context="wallet restoration">
+              <RestorePage {...routeProps} />
+            </ErrorBoundary>
+          )} 
+        />
+        <Route 
+          path="/welcome" 
+          render={(routeProps) => (
+            <ErrorBoundary context="welcome page">
+              <WelcomePage {...routeProps} />
+            </ErrorBoundary>
+          )} 
+        />
+        <Route 
+          path="/create_wallet" 
+          render={(routeProps) => (
+            <ErrorBoundary context="wallet creation">
+              <CreateWalletPage {...routeProps} />
+            </ErrorBoundary>
+          )} 
+        />
+        <Route 
+          exact 
+          path="/welcome_back" 
+          render={(routeProps) => (
+            <ErrorBoundary context="welcome back page">
+              <WelcomeBackPage {...routeProps} />
+            </ErrorBoundary>
+          )} 
+        />
+        <Route 
+          path="/connect_popup" 
+          render={(routeProps) => (
+            <ErrorBoundary context="wallet connection">
+              <ConnectPopup {...routeProps} />
+            </ErrorBoundary>
+          )} 
+        />
 
         {/* popup if connecting from dex UI */}
         {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
