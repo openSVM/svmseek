@@ -71,8 +71,8 @@ const WelcomeBack = () => {
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
-      progressMessage: null,
-      successMessage: null,
+      progressMessage: undefined,
+      successMessage: undefined,
       onSuccess: () => {},
       onError: () => {},
     });

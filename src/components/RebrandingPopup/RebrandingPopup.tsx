@@ -31,7 +31,7 @@ export const BlueButton = styled(
   background-color: ${(props: { disabled: boolean; theme: Theme }) =>
     !props.disabled
       ? props.theme.customPalette.blue.serum
-      : props.theme.customPalette.grey.title};
+      : props.theme.customPalette.grey.dark};
   border-radius: 1rem;
   border-color: none;
   cursor: pointer;
@@ -102,18 +102,18 @@ const RebrandingPopup = ({
           </Title>
         </RowContainer>
         <RowContainer direction={'column'} align={'flex-start'}>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
+          <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
             We are happy to announce that we have rebranded CCAI and are ready to present – SVMSeek!
           </WhiteText>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
+          <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
             The CCAI token has also been renamed to RIN. CCAI tokens in your wallets are automatically changed to RIN.
           </WhiteText>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
+          <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
             The new name comes with exciting developments for future holders of tokens and traders like you, so make sure to follow us on twitter as we announce these new features.
           </WhiteText>
           <WhiteText
             style={{
-              color: theme.customPalette.white.text,
+              color: theme.customPalette.text.grey,
               fontFamily: 'Avenir Next Demi',
             }}
           >

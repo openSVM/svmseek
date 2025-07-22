@@ -11,6 +11,13 @@ const BottomLink = ({
   linkColor = null,
   isButton = false,
   onClick = () => {},
+}: {
+  to?: string;
+  toText?: string;
+  needOr?: boolean;
+  linkColor?: string | null;
+  isButton?: boolean;
+  onClick?: () => void;
 }) => {
   const theme = useTheme();
 

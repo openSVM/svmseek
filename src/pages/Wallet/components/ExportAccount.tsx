@@ -20,8 +20,8 @@ export default function ExportAccountDialog({ open, onClose }) {
 
   const submit = () => {
     callAsync(checkIsCorrectPassword(password), {
-      progressMessage: null,
-      successMessage: null,
+      progressMessage: undefined,
+      successMessage: undefined,
       onSuccess: () => {
         setKeyOutput(`[${Array.from(wallet.provider.account.secretKey)}]`);
       },
@@ -112,11 +112,12 @@ export function ExportMnemonicDialog({ open, onClose }) {
   const submit = () => {
     callAsync(checkIsCorrectPassword(password), {
       onSuccess: (res) => {
-        setMnemonic(res.mnemonic);
+        const { mnemonic } = res as { mnemonic: string; seed: string; derivationPath: string };
+        setMnemonic(mnemonic);
       },
       onError: () => {},
-      progressMessage: null,
-      successMessage: null,
+      progressMessage: undefined,
+      successMessage: undefined,
     });
   };
 

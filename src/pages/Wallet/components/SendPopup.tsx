@@ -378,7 +378,7 @@ function SendSwapDialog({
 }) {
   const wallet = useWallet();
   const [sendTransaction, sending] = useSendTransaction();
-  const [signature, setSignature] = useState(null);
+  const [signature, setSignature] = useState<string | null>(null);
   const {
     fields,
     destinationAddress,

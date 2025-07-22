@@ -145,6 +145,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onInstall, o
   };
 
   // Reset dismissal state if user manually clears storage or after timeout
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const resetDismissalState = () => {
     localStorage.removeItem('svmseek-pwa-prompt-dismissed');
     localStorage.removeItem('svmseek-pwa-prompt-last-dismissed');
