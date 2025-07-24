@@ -60,17 +60,31 @@ global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
 global.URL.revokeObjectURL = jest.fn();
 
 // Mock crypto libraries to avoid flakiness
-jest.mock('tweetnacl', () => ({
-  secretbox: jest.fn((plaintext, nonce, key) => new Uint8Array(plaintext.length + 16)),
-  secretbox_open: jest.fn((ciphertext, nonce, key) => new Uint8Array(ciphertext.length - 16)),
-  randomBytes: jest.fn((length) => new Uint8Array(length)),
-}));
+jest.mock('tweetnacl', () => {
+  const mockSecretbox = jest.fn((plaintext, nonce, key) => new Uint8Array(plaintext.length + 16));
+  mockSecretbox.open = jest.fn((ciphertext, nonce, key) => new Uint8Array(ciphertext.length - 16));
+  mockSecretbox.nonceLength = 24;
+  
+  return {
+    secretbox: mockSecretbox,
+    randomBytes: jest.fn((length) => {
+      const array = new Uint8Array(length);
+      for (let i = 0; i < length; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+      return array;
+    }),
+  };
+});
 
-jest.mock('argon2-wasm', () => ({
+jest.mock('argon2-browser', () => ({
   hash: jest.fn(() => Promise.resolve({
     hash: new Uint8Array(32),
     encoded: 'mock-encoded-hash'
   })),
+  ArgonType: {
+    Argon2id: 2,
+  },
 }));
 
 jest.mock('scrypt-js', () => jest.fn((password, salt, N, r, p, keylen, callback) => {

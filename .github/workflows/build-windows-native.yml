@@ -43,7 +43,11 @@ jobs:
           ${{ runner.os }}-yarn-
           
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      shell: bash
+      run: |
+        for i in 1 2 3; do
+          yarn install --frozen-lockfile && break || sleep 10
+        done
       
     - name: Build web application
       run: yarn build
@@ -77,29 +81,30 @@ jobs:
         $version = (Get-Content package.json | ConvertFrom-Json).version
         $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
         
-        # Create metadata file
-        @"
-        SVMSeek Wallet - Windows Native Build Artifacts
-        ===============================================
-        Version: $version
-        Build Date: $(Get-Date)
-        Build System: Windows (GitHub Actions)
-        Node Version: $(node --version)
+        # Create metadata file using simple string concatenation
+        $metadata = "SVMSeek Wallet - Windows Native Build Artifacts`n"
+        $metadata += "===============================================`n"
+        $metadata += "Version: $version`n"
+        $metadata += "Build Date: $(Get-Date)`n"
+        $metadata += "Build System: Windows (GitHub Actions)`n"
+        $metadata += "Node Version: $(node --version)`n`n"
+        $metadata += "Windows Native Packages:`n"
         
-        Windows Native Packages:
-        $(Get-ChildItem -Recurse "native-builds/windows" -Include *.exe,*.msi | ForEach-Object {
-          $size = [math]::Round($_.Length / 1MB, 2)
-          "- $($_.Name): ${size}MB"
-        })
+        if (Test-Path "native-builds/windows") {
+          Get-ChildItem -Recurse "native-builds/windows" -Include *.exe,*.msi | ForEach-Object {
+            $size = [math]::Round($_.Length / 1MB, 2)
+            $metadata += "- $($_.Name): ${size}MB`n"
+          }
+        }
         
-        Installation Instructions:
-        1. NSIS Installer (.exe): Run and follow setup wizard
-        2. Portable (.exe): Extract and run directly
-        3. MSI Package (.msi): Use Windows Installer
+        $metadata += "`nInstallation Instructions:`n"
+        $metadata += "1. NSIS Installer (.exe): Run and follow setup wizard`n"
+        $metadata += "2. Portable (.exe): Extract and run directly`n"
+        $metadata += "3. MSI Package (.msi): Use Windows Installer`n`n"
+        $metadata += "Distribution Ready: Yes`n"
+        $metadata += "Digitally Signed: No (requires code signing certificate)`n"
         
-        Distribution Ready: Yes
-        Digitally Signed: No (requires code signing certificate)
-        "@ | Out-File -FilePath "native-builds/windows/windows-build-metadata.txt" -Encoding UTF8
+        $metadata | Out-File -FilePath "native-builds/windows/windows-build-metadata.txt" -Encoding UTF8
       shell: powershell
       
     - name: Upload Windows native artifacts
