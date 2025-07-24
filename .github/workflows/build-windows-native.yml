@@ -102,7 +102,7 @@ jobs:
         $metadata += "2. Portable (.exe): Extract and run directly`n"
         $metadata += "3. MSI Package (.msi): Use Windows Installer`n`n"
         $metadata += "Distribution Ready: Yes`n"
-        $metadata += "Digitally Signed: No (requires code signing certificate)"
+        $metadata += "Digitally Signed: No (requires code signing certificate)`n"
         
         $metadata | Out-File -FilePath "native-builds/windows/windows-build-metadata.txt" -Encoding UTF8
       shell: powershell
