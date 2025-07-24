@@ -45,10 +45,13 @@ jobs:
     - name: Install Python distutils
       run: |
         python3 -m ensurepip --upgrade
-        python3 -m pip install --upgrade pip setuptools
+        python3 -m pip install --upgrade pip setuptools --break-system-packages
           
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      run: |
+        for i in 1 2 3; do
+          yarn install --frozen-lockfile && break || sleep 10
+        done
       
     - name: Build web application
       run: yarn build
