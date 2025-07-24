@@ -122,7 +122,7 @@ export const WelcomePage = () => {
   return (
     <Body>
       <Helmet>
-        <title>Aldrin Wallet | Wallet made by Aldrin</title>
+        <title>SVMSeek Wallet | Wallet made by SVMSeek</title>
       </Helmet>
       {isExtension && <Logo />}
       <RowContainer height={'80%'} direction={'column'}>
@@ -133,7 +133,7 @@ export const WelcomePage = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href={'http://wallet.aldrin.com/create_wallet'}
+                  href={'http://svmseek.com/create_wallet'}
                   onClick={() => {
                     window.close();
                   }}

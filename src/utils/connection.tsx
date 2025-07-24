@@ -41,7 +41,7 @@ export function ConnectionProvider({ children }) {
         ? // multi connection only for mainnet
           new MultiEndpointsConnection(
             [
-              { url: 'https://frontend-solana-api-1.aldrin.com', RPS: 20 },
+              { url: 'https://frontend-solana-api-1.svmseek.com', RPS: 20 },
               // { url: 'https://api-cryptocurrencies-ai.rpcpool.com', RPS: 20 },
               // { url: 'https://mango.rpcpool.com/', RPS: 10 },
               // { url: 'https://solana-api.projectserum.com', RPS: 2 },

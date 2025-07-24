@@ -11,6 +11,9 @@
 # production
 /build
 
+# extension builds
+extension/*/build/
+extension/*.zip
 extension/build/
 extension/build.zip
 
@@ -27,3 +30,8 @@ yarn-error.log*
 
 .idea
 .eslintcache
+
+# Capacitor mobile app directories
+android/
+ios/
+.capacitor/

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { Theme, useTheme } from '@material-ui/core';
+import { Theme, useTheme } from '@mui/material';
 import { PublicKey } from '@solana/web3.js';
 
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
@@ -474,7 +474,7 @@ const AssetItem = ({
   }
 
   if (tokenName === 'Cryptocurrencies.Ai') {
-    tokenName = 'Aldrin';
+    tokenName = 'SVMSeek';
   }
 
   // Fetch and cache the associated token address.
@@ -749,7 +749,7 @@ const AssetItem = ({
               tokenSymbol === 'USDC'
             }
             rel="noopener"
-            href={`https://dex.aldrin.com/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
+            href={`https://svmseek.com/chart/spot/${tokenSymbol?.toUpperCase()}_${quote}#connect_wallet`}
             height="50%"
             width="7rem"
             margin="0 2rem 0 0"

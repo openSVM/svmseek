@@ -5,7 +5,7 @@ import { Row, RowContainer } from '../../pages/commonStyles';
 import Warning from '../../images/newWarning.svg';
 import { BtnCustom } from '../BtnCustom';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
-import { useTheme, Paper } from '@material-ui/core';
+import { useTheme, Paper } from '@mui/material';
 
 export const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   height: auto;
@@ -89,7 +89,7 @@ export const DevUrlPopup = ({
           Hello, this page is for developers only.
         </BoldHeader>
         <Text>
-          To avoid loss of funds or cunfusing situations, please leave it. You
+          To avoid loss of funds or confusing situations, please leave it. You
           probably wanted to get to
           <a
             style={{
@@ -99,9 +99,9 @@ export const DevUrlPopup = ({
             }}
             target="_blank"
             rel="noopener noreferrer"
-            href={'https://wallet.aldrin.com'}
+            href={'https://svmseek.com'}
           >
-            wallet.aldrin.com{' '}
+            svmseek.com{' '}
           </a>
           .
         </Text>
@@ -111,7 +111,7 @@ export const DevUrlPopup = ({
           style={{ textDecoration: 'none', width: '100%' }}
           target="_blank"
           rel="noopener noreferrer"
-          href={'https://wallet.aldrin.com'}
+          href={'https://svmseek.com'}
         >
           {' '}
           <BlueButton
@@ -125,7 +125,7 @@ export const DevUrlPopup = ({
             theme={theme}
             onClick={() => {}}
           >
-            Go to wallet.aldrin.com
+            Go to svmseek.com
           </BlueButton>
         </a>
       </RowContainer>

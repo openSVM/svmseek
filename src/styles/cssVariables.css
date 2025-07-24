@@ -1,0 +1,208 @@
+/*
+ * Centralized CSS Variables for SVMSeek
+ * Global design tokens for consistent theming across the application
+ */
+
+:root {
+  /* === Animation Variables === */
+  /* Durations */
+  --animation-duration-fast: 0.15s;
+  --animation-duration-standard: 0.3s;
+  --animation-duration-fade-in: 0.8s;
+  --animation-duration-slide-up: 0.6s;
+  --animation-duration-scale-in: 0.5s;
+  --animation-duration-slide-in: 0.6s;
+  --animation-duration-pulse: 2s;
+  --animation-duration-glow: 2s;
+  --animation-duration-shimmer: 2s;
+  --animation-duration-float: 3s;
+  --animation-duration-bounce: 1s;
+  --animation-duration-loading-dots: 1.5s;
+  --animation-duration-skeleton: 1.5s;
+
+  /* Easing */
+  --animation-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-easing-smooth: ease-in-out;
+  --animation-easing-ease-out: ease-out;
+  --animation-easing-ease-in: ease-in;
+  --animation-easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+  --animation-easing-entrance: cubic-bezier(0, 0, 0.2, 1);
+  --animation-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Delays */
+  --animation-delay-none: 0s;
+  --animation-delay-short: 0.1s;
+  --animation-delay-medium: 0.2s;
+  --animation-delay-long: 0.3s;
+  --animation-delay-extra-long: 0.5s;
+
+  /* === Glass Morphism Variables === */
+  /* Light Glass */
+  --glass-light-bg: rgba(255, 255, 255, 0.1);
+  --glass-light-backdrop: blur(10px);
+  --glass-light-border: 1px solid rgba(255, 255, 255, 0.2);
+
+  /* Dark Glass */
+  --glass-dark-bg: rgba(0, 0, 0, 0.1);
+  --glass-dark-backdrop: blur(10px);
+  --glass-dark-border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Strong Glass */
+  --glass-strong-bg: rgba(255, 255, 255, 0.2);
+  --glass-strong-backdrop: blur(20px);
+  --glass-strong-border: 1px solid rgba(255, 255, 255, 0.3);
+
+  /* Subtle Glass */
+  --glass-subtle-bg: rgba(255, 255, 255, 0.05);
+  --glass-subtle-backdrop: blur(20px);
+  --glass-subtle-border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* === Theme Colors === */
+  --color-primary: #8B5CF6;
+  --color-primary-alpha: rgba(139, 92, 246, 0.3);
+  --color-primary-light: #A78BFA;
+  --color-secondary: #06B6D4;
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-info: #3B82F6;
+
+  /* === Typography === */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* === Spacing === */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* === Border Radius === */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px;
+  --border-radius-full: 9999px;
+
+  /* === Shadows === */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  /* === Z-Index === */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
+/* Dark Theme Overrides */
+[data-theme='dark'] {
+  /* Background Colors */
+  --color-bg-primary: #0a0b0d;
+  --color-bg-secondary: #1a1b1e;
+  --color-bg-tertiary: #222429;
+
+  /* Text Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-text-tertiary: #96999c;
+
+  /* Border Colors */
+  --color-border-primary: #2e2e2e;
+  --color-border-secondary: rgba(255, 255, 255, 0.1);
+
+  /* Glass Morphism Dark Adjustments */
+  --glass-primary-bg: rgba(26, 27, 30, 0.8);
+  --glass-primary-border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Shadows for Dark Theme */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Light Theme Overrides */
+[data-theme='light'] {
+  /* Background Colors */
+  --color-bg-primary: #f8fafc;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #f1f5f9;
+
+  /* Text Colors */
+  --color-text-primary: #1a1b1e;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+
+  /* Border Colors */
+  --color-border-primary: #e0e5ec;
+  --color-border-secondary: rgba(0, 0, 0, 0.08);
+
+  /* Glass Morphism Light Adjustments */
+  --glass-primary-bg: rgba(255, 255, 255, 0.9);
+  --glass-primary-border: 1px solid rgba(0, 0, 0, 0.08);
+
+  /* Shadows for Light Theme */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* === Utility Classes using CSS Variables === */
+.glass-morphism {
+  background: var(--glass-light-bg);
+  backdrop-filter: var(--glass-light-backdrop);
+  border: var(--glass-light-border);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--animation-duration-standard) var(--animation-easing-default);
+}
+
+.glass-morphism-strong {
+  background: var(--glass-strong-bg);
+  backdrop-filter: var(--glass-strong-backdrop);
+  border: var(--glass-strong-border);
+  border-radius: var(--border-radius-lg);
+}
+
+.glass-morphism-subtle {
+  background: var(--glass-subtle-bg);
+  backdrop-filter: var(--glass-subtle-backdrop);
+  border: var(--glass-subtle-border);
+  border-radius: var(--border-radius-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    /* Adjust spacing for mobile */
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    
+    /* Smaller border radius on mobile */
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --animation-duration-fast: 0.01ms;
+    --animation-duration-standard: 0.01ms;
+    --animation-duration-fade-in: 0.01ms;
+    --animation-duration-slide-up: 0.01ms;
+    --animation-duration-scale-in: 0.01ms;
+    --animation-duration-slide-in: 0.01ms;
+    --animation-duration-pulse: 0.01ms;
+    --animation-duration-glow: 0.01ms;
+    --animation-duration-shimmer: 0.01ms;
+    --animation-duration-float: 0.01ms;
+    --animation-duration-bounce: 0.01ms;
+  }
+}

@@ -4,14 +4,13 @@ import {
   Button,
   Collapse,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Paper,
-} from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { DoneAll, ExpandLess, ExpandMore } from '@material-ui/icons';
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DoneAll, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useConnectedWallets } from '../../utils/connected-wallets';
 import { useWalletSelector } from '../../utils/wallet';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
@@ -68,36 +67,36 @@ export default function ConnectionsList({ theme, close, open }) {
 const ICON_SIZE = 28;
 const IMAGE_SIZE = 24;
 
-const useStyles = makeStyles((theme) => ({
-  itemDetails: {
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
-    marginBottom: theme.spacing(2),
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  listItemIcon: {
-    backgroundColor: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: ICON_SIZE,
-    width: ICON_SIZE,
-    borderRadius: ICON_SIZE / 2,
-  },
-  listItemImage: {
-    height: IMAGE_SIZE,
-    width: IMAGE_SIZE,
-    borderRadius: IMAGE_SIZE / 2,
-  },
-}));
+const ItemDetails = styled.div`
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 16px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 8px;
+  margin-bottom: 8px;
+`;
+
+const StyledListItemIcon = styled(ListItemIcon)`
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: ${ICON_SIZE}px;
+  width: ${ICON_SIZE}px;
+  border-radius: ${ICON_SIZE / 2}px;
+`;
+
+const ListItemImage = styled.img`
+  height: ${IMAGE_SIZE}px;
+  width: ${IMAGE_SIZE}px;
+  border-radius: ${IMAGE_SIZE / 2}px;
+`;
 
 function ConnectionsListItem({ origin, connectedWallet }) {
-  const classes = useStyles();
   const [open, setOpen] = useState(false);
   // TODO better way to get high res icon?
   const appleIconUrl = origin + '/apple-touch-icon.png';
@@ -125,25 +124,22 @@ function ConnectionsListItem({ origin, connectedWallet }) {
 
   return (
     <>
-      <ListItem button onClick={() => setOpen((open) => !open)}>
-        <ListItemIcon>
-          <div className={classes.listItemIcon}>
-            <img
+      <ListItemButton onClick={() => setOpen((open) => !open)}>
+        <StyledListItemIcon>
+            <ListItemImage
               src={iconUrl}
               onError={() => setIconUrl(faviconUrl)}
-              className={classes.listItemImage}
               alt=""
             />
-          </div>
-        </ListItemIcon>
+        </StyledListItemIcon>
         <div style={{ display: 'flex', flex: 1 }}>
           <ListItemText primary={origin} secondary={account.name} />
         </div>
         {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
+      </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <div className={classes.itemDetails}>
-          <div className={classes.buttonContainer}>
+        <ItemDetails>
+          <ButtonContainer>
             <Button
               variant={connectedWallet.autoApprove ? 'contained' : 'outlined'}
               color="primary"
@@ -162,8 +158,8 @@ function ConnectionsListItem({ origin, connectedWallet }) {
             >
               Disconnect
             </Button>
-          </div>
-        </div>
+          </ButtonContainer>
+        </ItemDetails>
       </Collapse>
     </>
   );

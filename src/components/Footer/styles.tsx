@@ -1,4 +1,4 @@
-import { Link } from '@material-ui/core';
+import { Link } from '@mui/material';
 import styled from 'styled-components';
 import { RowContainer } from '../../pages/commonStyles';
 

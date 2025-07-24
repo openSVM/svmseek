@@ -21,7 +21,7 @@ import {
 
 import { InputWithEye, InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import DerivableAccounts from './DerivableAccounts';
 import FakeInputs from '../../components/FakeInputs';
 import Warning from '../CreateWallet/components/Warning';
@@ -64,9 +64,10 @@ export const RestorePage = () => {
   return (
     <Body>
       <Helmet>
-        <title>Restore Aldrin Wallet by seed phrase</title>
+        <title>Restore SVMSeek Wallet by seed phrase</title>
       </Helmet>
       <FakeInputs />
+      {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
       {redirectToWallet && <Redirect to="/wallet" />}
       {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}

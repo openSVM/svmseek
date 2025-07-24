@@ -17,11 +17,11 @@ import {
 } from '../../../utils/swap/eth';
 import { showSwapAddress } from '../../../utils/config';
 
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Link from '@material-ui/core/Link';
-import { useTheme } from '@material-ui/core';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import CircularProgress from '@mui/material/CircularProgress';
+import Link from '@mui/material/Link';
+import { useTheme } from '@mui/material';
 import { EthFeeEstimate } from '../../../components/EthFeeEstimate';
 import { useBalanceInfo } from '../../../utils/wallet';
 import { swapApiRequest } from '../../../utils/swap/api';

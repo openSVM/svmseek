@@ -8,7 +8,7 @@ import {
   Title,
   WhiteButton,
 } from '../../commonStyles';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import AttentionComponent from '../../../components/Attention';
 import FakeInputs from '../../../components/FakeInputs';
 

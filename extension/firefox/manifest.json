@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+  "short_name": "SVMSeek Wallet",
+  "name": "SVMSeek SPL Token Wallet",
+  "description": "Secure Solana wallet for SPL tokens and DeFi applications",
+  "version": "0.1.0",
+  "icons": {
+    "16": "favicon-16x16.png",
+    "32": "favicon-32x32.png",
+    "48": "android-chrome-192x192.png",
+    "128": "android-chrome-512x512.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "https://*.solana.com/*",
+    "https://*.svmseek.com/*"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentscript.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_title": "SVMSeek Wallet",
+    "default_icon": {
+      "16": "favicon-16x16.png",
+      "32": "favicon-32x32.png",
+      "48": "android-chrome-192x192.png",
+      "128": "android-chrome-512x512.png"
+    }
+  },
+  "web_accessible_resources": [
+    "script.js"
+  ],
+  "applications": {
+    "gecko": {
+      "id": "{svmseek-wallet@svmseek.com}",
+      "strict_min_version": "109.0"
+    }
+  }
+}

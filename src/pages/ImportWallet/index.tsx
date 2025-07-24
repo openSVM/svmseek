@@ -14,7 +14,7 @@ import {
 import Logo from '../../components/Logo';
 import { InputWithEye, InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
 export const ImportPage = () => {
   const [password, setPassword] = useState('');

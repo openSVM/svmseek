@@ -22,7 +22,7 @@ import lock from '../../images/lock.svg';
 // import Logo from '../../components/Logo';
 import { InputWithEye } from '../../components/Input';
 
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { useWallet } from '../../utils/wallet';
 // import BottomLink from '../../components/BottomLink';
 import FakeInputs from '../../components/FakeInputs';
@@ -71,8 +71,8 @@ const WelcomeBack = () => {
 
   const submit = () => {
     callAsync(loadMnemonicAndSeed(password, stayLoggedIn), {
-      progressMessage: null,
-      successMessage: null,
+      progressMessage: undefined,
+      successMessage: undefined,
       onSuccess: () => {},
       onError: () => {},
     });

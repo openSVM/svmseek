@@ -1,9 +1,12 @@
 import { getUnlockedMnemonicAndSeed } from './../wallet-seed';
-import * as bip32 from 'bip32';
+import { BIP32Factory } from 'bip32';
+import * as ecc from 'tiny-secp256k1';
 import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { derivePath } from 'ed25519-hd-key';
+
+const bip32 = BIP32Factory(ecc);
 
 export const DERIVATION_PATH = {
   deprecated: undefined,

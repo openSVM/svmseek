@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
 import copy from 'clipboard-copy';
+import GlassContainer from '../../../components/GlassContainer';
 
 import { useBalanceInfo, useWallet } from '../../../utils/wallet';
 import { Row, RowContainer, Title, ExclamationMark } from '../../commonStyles';
@@ -88,8 +89,9 @@ const Balances = styled(Row)`
 `;
 
 const BalanceCard = styled(({ needLeftMargin, ...props }) => (
-  <Row {...props} />
+  <GlassContainer {...props} />
 ))`
+  display: flex;
   width: 26rem;
   height: 100%;
   margin: ${(props) => props.margin || '0 4rem 0 0'};
@@ -98,8 +100,15 @@ const BalanceCard = styled(({ needLeftMargin, ...props }) => (
   align-items: flex-start;
   justify-content: space-between;
   background: ${(props) =>
-    props.background || 'linear-gradient(135deg, #1331ad 0%, #3b8d17 100%)'};
+    props.background || 'linear-gradient(135deg, rgba(19, 49, 173, 0.8) 0%, rgba(59, 141, 23, 0.8) 100%) !important'};
   border-radius: 1.2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  }
+  
   @media (max-width: 540px) {
     margin: 0;
     width: 48%;

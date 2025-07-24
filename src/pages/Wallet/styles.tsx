@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, StepLabel, Tab, Tabs } from '@material-ui/core'
+import { Dialog, DialogContent, StepLabel, Tab, Tabs } from '@mui/material'
 import styled from 'styled-components'
 
 export const StyledDialogContent = styled(DialogContent)`

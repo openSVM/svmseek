@@ -3,7 +3,7 @@ import { StyledLink, StyledA, StyledButton } from './styles';
 
 export const TradeLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA target="_blank" href="https://dex.aldrin.com/chart/spot/CCAI_USDC">
+    <StyledA target="_blank" href="https://svmseek.com/chart/spot/CCAI_USDC">
       <svg
         width="100%"
         height="100%"
@@ -76,7 +76,7 @@ export const AnalyticsLink = ({ isActive }: { isActive: boolean }) => {
 
 export const PoolsLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA target="_blank" href="https://dex.aldrin.com/pools">
+    <StyledA target="_blank" href="https://svmseek.com/pools">
       <svg
         width="100%"
         height="100%"
@@ -103,7 +103,7 @@ export const PoolsLink = ({ isActive }: { isActive: boolean }) => {
 
 export const SwapsLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA target="_blank" href="https://dex.aldrin.com/swap">
+    <StyledA target="_blank" href="https://svmseek.com/swap">
       <svg
         width="100%"
         height="100%"
@@ -125,7 +125,7 @@ export const SwapsLink = ({ isActive }: { isActive: boolean }) => {
 
 export const RebalanceLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA target="_blank" href="https://dex.aldrin.com/rebalance">
+    <StyledA target="_blank" href="https://svmseek.com/rebalance">
       <svg
         width="100%"
         height="100%"
@@ -167,7 +167,7 @@ export const WalletLink = ({ isActive }) => {
 
 export const DashboardLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA target="_blank" href="https://dex.aldrin.com/dashboard">
+    <StyledA target="_blank" href="https://svmseek.com/dashboard">
       <svg
         width="100%"
         height="100%"
@@ -200,7 +200,7 @@ export const DashboardLink = ({ isActive }: { isActive: boolean }) => {
 
 export const StakingLink = ({ isActive }: { isActive: boolean }) => {
   return (
-    <StyledA target="_blank" href="https://dex.aldrin.com/staking">
+    <StyledA target="_blank" href="https://svmseek.com/staking">
       <svg
         width="100%"
         height="100%"

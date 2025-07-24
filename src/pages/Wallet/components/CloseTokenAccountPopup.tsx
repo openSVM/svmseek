@@ -1,6 +1,6 @@
 import React from 'react';
 import DialogForm from './DialogForm';
-import { DialogContentText, useTheme } from '@material-ui/core';
+import { DialogContentText, useTheme } from '@mui/material';
 import {
   RedFilledButton,
   RowContainer,

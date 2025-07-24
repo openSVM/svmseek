@@ -4,7 +4,7 @@ import ERC20_ABI from './erc20-abi.json';
 import SWAP_ABI from './swap-abi.json';
 import { useCallAsync } from '../notifications';
 import { VioletButton } from '../../pages/commonStyles';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { isExtension } from '../utils';
 
 const web3 = new Web3(window.ethereum);
@@ -240,12 +240,12 @@ export function ConnectToMetamaskButton() {
       <VioletButton
         theme={theme}
         component="a"
-        href={isExtension ? 'http://wallet.aldrin.com/' : 'https://metamask.io/'}
+        href={isExtension ? 'http://svmseek.com/' : 'https://metamask.io/'}
         target="_blank"
         rel="noopener"
         width={'calc(50% - .5rem)'}
       >
-        {isExtension ? 'Open Aldrin Wallet' : 'Connect to MetaMask'}
+        {isExtension ? 'Open SVMSeek Wallet' : 'Connect to MetaMask'}
       </VioletButton>
     );
   }

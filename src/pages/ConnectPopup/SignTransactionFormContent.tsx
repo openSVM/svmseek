@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import bs58 from 'bs58';
-import { Divider, Typography } from '@material-ui/core';
-import CardContent from '@material-ui/core/CardContent';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Box from '@material-ui/core/Box';
+import { Divider, Typography } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
 import {

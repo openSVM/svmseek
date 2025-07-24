@@ -5,7 +5,7 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { useUpdateTokenName } from '../../../utils/tokens/names';
 import { useAsyncData } from '../../../utils/fetch-loop';
 import LoadingIndicator from '../../../components/LoadingIndicator';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { useSendTransaction } from '../../../utils/notifications';
 import {
   abbreviateAddress,
@@ -13,7 +13,7 @@ import {
   stripDigitPlaces,
 } from '../../../utils/utils';
 import { usePopularTokens } from '../../../utils/tokens/names';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import DialogForm from './DialogForm';
 // import { showSwapAddress } from '../../../utils/config';
 import { swapApiRequest } from '../../../utils/swap/api';
@@ -229,7 +229,7 @@ export default function AddTokenDialog({
             />
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Name (e.g. Aldrin)'}
+                placeholder={'Token Name (e.g. SVMSeek)'}
                 value={tokenName}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenName(e.target.value)}

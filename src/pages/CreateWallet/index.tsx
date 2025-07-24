@@ -72,7 +72,7 @@ export const CreateWalletPage = () => {
   return (
     <Body>
       <Helmet>
-        <title>Create new Aldrin Wallet</title>
+        <title>Create new SVMSeek Wallet</title>
       </Helmet>
       <FakeInputs />
       <RowContainer height={'100%'} direction={'column'}>

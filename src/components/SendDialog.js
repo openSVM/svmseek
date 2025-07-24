@@ -1,20 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
 import DialogForm from '../pages/Wallet/components/DialogForm';
 import { useWallet, useWalletAddressForMint } from '../utils/wallet';
 import { PublicKey } from '@solana/web3.js';
 import { abbreviateAddress } from '../utils/utils';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useCallAsync, useSendTransaction } from '../utils/notifications';
 import { swapApiRequest, useSwapApiGet } from '../utils/swap/api';
 import { showSwapAddress } from '../utils/config';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import DialogContentText from '@mui/material/DialogContentText';
 import {
   ConnectToMetamaskButton,
   getErc20Balance,
@@ -22,19 +22,19 @@ import {
   withdrawEth,
 } from '../utils/swap/eth';
 import { useConnection, useIsProdNetwork } from '../utils/connection';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 import { useAsyncData } from '../utils/fetch-loop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import {
   TOKEN_PROGRAM_ID,
   WRAPPED_SOL_MINT,
 } from '../utils/tokens/instructions';
 import { parseTokenAccountData } from '../utils/tokens/data';
-import { Switch, Tooltip } from '@material-ui/core';
+import { Switch, Tooltip } from '@mui/material';
 import { EthFeeEstimate } from './EthFeeEstimate';
 
 const WUSDC_MINT = new PublicKey(

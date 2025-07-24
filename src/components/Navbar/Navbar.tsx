@@ -1,13 +1,14 @@
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import AldrinLogo from '../../images/Aldrin.svg';
+import SVMSeekLogo from '../../images/SVMSeek.svg';
 import StakeBtn from '../../images/stakeBtn.png';
 import { Row, RowContainer } from '../../pages/commonStyles';
 import { Button } from '../Button';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
 import { COLORS } from '../variables';
 import DiscordIcon from './DiscordIcon';
+import ThemeToggle from '../ThemeToggle';
 // TODO: Refactor popup
 import { DropDown } from './Dropdown';
 import {
@@ -60,12 +61,12 @@ export const Navbar = () => {
       <HeaderWrap>
         <LogoBlock>
           <LogoLink to={'/'}>
-            <Logo src={AldrinLogo} />
+            <Logo src={SVMSeekLogo} />
           </LogoLink>
           <Button
             backgroundImage={StakeBtn}
             as="a"
-            href="https://dex.aldrin.com/staking"
+            href="https://svmseek.com/staking"
             fontSize="xs"
             padding="md"
             borderRadius="xxl"
@@ -78,14 +79,14 @@ export const Navbar = () => {
           <MainLinksBlock>
             <NavLink
               as="a"
-              href="https://dex.aldrin.com/chart/spot/RIN_USDC"
+              href="https://svmseek.com/chart/spot/RIN_USDC"
               activeClassName="selected"
             >
               Trade
             </NavLink>
             <NavLink
               as="a"
-              href="https://dex.aldrin.com/swap"
+              href="https://svmseek.com/swap"
               activeClassName="selected"
             >
               Swap
@@ -94,21 +95,21 @@ export const Navbar = () => {
               new
               show="md"
               as="a"
-              href="https://dex.aldrin.com/pools"
+              href="https://svmseek.com/pools"
               activeClassName="selected"
             >
               Pools
             </NavLink>
             <NavLink
               as="a"
-              href="https://dex.aldrin.com/rebalance"
+              href="https://svmseek.com/rebalance"
               activeClassName="selected"
             >
               Rebalance
             </NavLink>
             <NavLink
               as="a"
-              href="https://dex.aldrin.com/dashboard"
+              href="https://svmseek.com/dashboard"
               activeClassName="selected"
             >
               Dashboard
@@ -128,7 +129,7 @@ export const Navbar = () => {
               show="md"
               as="a"
               target="_blank"
-              href="https://docs.aldrin.com/dex/how-to-get-started-on-aldrin-dex"
+              href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
             >
               FAQ
             </NavLink>
@@ -142,7 +143,7 @@ export const Navbar = () => {
                 hide="md"
                 as="a"
                 target="_blank"
-                href="https://docs.aldrin.com/dex/how-to-get-started-on-aldrin-dex"
+                href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
               >
                 FAQ
               </NavLink>
@@ -151,12 +152,15 @@ export const Navbar = () => {
         </MainLinksWrap>
         <WalletContainer>
           <RowContainer padding="0">
+            <div style={{ marginRight: '2rem' }}>
+              <ThemeToggle />
+            </div>
             <Socials justify={'space-around'} height="100%" width={'auto'}>
               <StyledLink
                 style={{ marginRight: '3rem', height: '2.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://twitter.com/Aldrin_Exchange"
+                href="https://twitter.com/svmseek"
               >
                 <TwitterIcon />
               </StyledLink>
@@ -164,7 +168,7 @@ export const Navbar = () => {
                 style={{ marginRight: '3rem', height: '2.5rem' }}
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://t.me/Aldrin_Exchange"
+                href="https://t.me/svmseek"
               >
                 <TelegramIcon />
               </StyledLink>

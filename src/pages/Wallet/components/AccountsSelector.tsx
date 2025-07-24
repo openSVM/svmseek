@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { BtnCustom } from '../../../components/BtnCustom';
 import { useWalletSelector } from '../../../utils/wallet';
 import {
@@ -12,7 +12,7 @@ import {
   Legend,
 } from '../../commonStyles';
 import { GreyTitle } from './AssetsTable';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import AddIcon from '../../../images/addIcon.svg';
 import ImportHardwareIcon from '../../../images/importHardware.svg';

@@ -1,0 +1,161 @@
+name: Periodic Realnet Tests
+
+on:
+  # Run every 6 hours to test against live Solana mainnet
+  schedule:
+    - cron: '0 */6 * * *'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      test_pattern:
+        description: 'Test pattern to run (default: all realnet tests)'
+        required: false
+        default: 'realnet-integration.spec.ts'
+
+jobs:
+  realnet-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'yarn'
+        
+    - name: Cache Node modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          ~/.yarn/cache
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+          
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+      
+    - name: Build application
+      run: yarn build
+      
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps chromium firefox webkit
+      
+    - name: Start application server
+      run: |
+        # Start the application in background
+        yarn start &
+        
+        # Wait for server to be ready
+        timeout=60
+        while [ $timeout -gt 0 ]; do
+          if curl -f http://localhost:3000 >/dev/null 2>&1; then
+            echo "Application server is ready"
+            break
+          fi
+          sleep 2
+          timeout=$((timeout - 2))
+        done
+        
+        if [ $timeout -le 0 ]; then
+          echo "Application server failed to start within 60 seconds"
+          exit 1
+        fi
+      
+    - name: Run realnet integration tests
+      env:
+        REALNET_TESTS: true
+        PLAYWRIGHT_BASE_URL: http://localhost:3000
+      run: |
+        # Run realnet tests with increased timeout and retries
+        npx playwright test ${{ github.event.inputs.test_pattern || 'realnet-integration.spec.ts' }} \
+          --project=chromium \
+          --timeout=60000 \
+          --retries=2 \
+          --max-failures=5 \
+          --reporter=github
+          
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: realnet-test-results
+        path: |
+          playwright-report/
+          test-results/
+        retention-days: 7
+        
+    - name: Create issue on test failure
+      if: failure() && github.event_name == 'schedule'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: issues } = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['realnet-test-failure'],
+            state: 'open'
+          });
+          
+          // Don't create duplicate issues
+          if (issues.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Realnet Integration Tests Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: `
+              ## Realnet Integration Test Failure
+              
+              The periodic realnet integration tests have failed. This indicates potential issues with:
+              
+              - Live Solana mainnet connectivity
+              - Real blockchain data handling
+              - Network performance under real conditions
+              - API integrations with live services
+              
+              **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              
+              **Next Steps:**
+              1. Review the test failure logs
+              2. Check if this is a temporary network issue or a real bug
+              3. Verify Solana mainnet RPC endpoints are accessible
+              4. Test manually against live data
+              
+              This issue will be automatically closed when the tests pass again.
+              `,
+              labels: ['realnet-test-failure', 'bug', 'priority-high']
+            });
+          }
+          
+    - name: Close realnet failure issues on success
+      if: success() && github.event_name == 'schedule'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: issues } = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['realnet-test-failure'],
+            state: 'open'
+          });
+          
+          for (const issue of issues) {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: '✅ Realnet integration tests are now passing. Closing this issue automatically.'
+            });
+            
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed'
+            });
+          }

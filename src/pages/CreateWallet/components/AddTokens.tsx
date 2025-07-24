@@ -16,7 +16,7 @@ import { InputWithSearch, TextareaWithCopy } from '../../../components/Input';
 
 import Attention from '../../../images/attention.svg';
 import BottomLink from '../../../components/BottomLink';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import {
   refreshWalletPublicKeys,
   useBalanceInfo,

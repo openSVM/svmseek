@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
-import { Dialog, Paper, Theme } from '@material-ui/core';
+import { Dialog, Paper, Theme } from '@mui/material';
 
-import MainLogo from '../../images/Aldrin.svg';
+import MainLogo from '../../images/SVMSeek.svg';
 import AustronautHelmet from '../../images/austronautHelmet.png';
 import { Row, RowContainer } from '../../pages/commonStyles';
 import { BtnCustom } from '../BtnCustom';
@@ -31,7 +31,7 @@ export const BlueButton = styled(
   background-color: ${(props: { disabled: boolean; theme: Theme }) =>
     !props.disabled
       ? props.theme.customPalette.blue.serum
-      : props.theme.customPalette.grey.title};
+      : props.theme.customPalette.grey.dark};
   border-radius: 1rem;
   border-color: none;
   cursor: pointer;
@@ -98,26 +98,26 @@ const RebrandingPopup = ({
       <Row width={'70%'} direction={'column'} padding={'0 2rem 0 0'}>
         <RowContainer margin={'0 0 3rem 0'} justify={'flex-start'}>
           <Title style={{ fontFamily: 'Avenir Next Bold', fontSize: '2.4rem' }}>
-            Cryptocurrencies.Ai is Aldrin now!
+            Cryptocurrencies.Ai is SVMSeek now!
           </Title>
         </RowContainer>
         <RowContainer direction={'column'} align={'flex-start'}>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
-            We are happy to announce that we have rebranded CCAI and are ready to present – Aldrin!
+          <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
+            We are happy to announce that we have rebranded CCAI and are ready to present – SVMSeek!
           </WhiteText>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
+          <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
             The CCAI token has also been renamed to RIN. CCAI tokens in your wallets are automatically changed to RIN.
           </WhiteText>
-          <WhiteText theme={theme} style={{ color: theme.customPalette.white.text, marginBottom: '2rem' }}>
+          <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
             The new name comes with exciting developments for future holders of tokens and traders like you, so make sure to follow us on twitter as we announce these new features.
           </WhiteText>
           <WhiteText
             style={{
-              color: theme.customPalette.white.text,
+              color: theme.customPalette.text.grey,
               fontFamily: 'Avenir Next Demi',
             }}
           >
-            Respectfully, the Aldrin team.
+            Respectfully, the SVMSeek team.
           </WhiteText>
         </RowContainer>
 

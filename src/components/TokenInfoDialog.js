@@ -1,25 +1,12 @@
-import { Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { Typography } from '@mui/material';
+import Link from '@mui/material/Link';
 import React from 'react';
 import { useSolanaExplorerUrlSuffix } from '../utils/connection';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
 import DialogForm from '../pages/Wallet/components/DialogForm';
 import { abbreviateAddress } from '../utils/utils';
 import CopyableDisplay from './CopyableDisplay';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  explorerLink: {
-    marginBottom: theme.spacing(2),
-  },
-  warning: {
-    marginBottom: theme.spacing(2),
-  },
-  container: {
-    minWidth: 600,
-  },
-}));
 
 export default function TokenInfoDialog({
   open,
@@ -29,7 +16,6 @@ export default function TokenInfoDialog({
 }) {
   let { mint, tokenName, tokenSymbol } = balanceInfo;
   const urlSuffix = useSolanaExplorerUrlSuffix();
-  const classes = useStyles();
 
   return (
     <DialogForm open={open} onClose={onClose}>
@@ -37,11 +23,11 @@ export default function TokenInfoDialog({
         {tokenName ?? abbreviateAddress(mint)}
         {tokenSymbol ? ` (${tokenSymbol})` : null}
       </DialogTitle>
-      <DialogContent className={classes.container}>
-        <Typography className={classes.warning}>
+      <DialogContent sx={{ minWidth: 600 }}>
+        <Typography sx={{ marginBottom: 2 }}>
           Information about {tokenName ?? abbreviateAddress(mint)}
         </Typography>
-        <Typography variant="body2" className={classes.explorerLink}>
+        <Typography variant="body2" sx={{ marginBottom: 2 }}>
           <Link
             href={
               `https://explorer.solana.com/account/${publicKey.toBase58()}` +

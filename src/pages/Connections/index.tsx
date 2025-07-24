@@ -1,6 +1,6 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import ConnectionsList from './ConnectionsList';
 
 export default function ConnectionsPage({ theme, close, open }) {

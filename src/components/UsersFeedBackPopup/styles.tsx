@@ -1,4 +1,4 @@
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import React from 'react';
 import styled from 'styled-components';
 import { BtnCustom } from '../BtnCustom';

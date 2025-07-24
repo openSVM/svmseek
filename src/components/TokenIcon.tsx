@@ -25,7 +25,7 @@ export default function TokenIcon({
   
   if (mint === CCAI_MINT.toString()) {
     tokenLogoUri =
-    'https://aldrin.com/logo_rounded.png';
+    'https://svmseek.com/logo_rounded.png';
   }
 
   if (hasError || !tokenLogoUri) {

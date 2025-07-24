@@ -4,8 +4,8 @@ import { useWallet } from '../../../utils/wallet';
 import { checkIsCorrectPassword } from '../../../utils/wallet-seed';
 import { Row, RowContainer, Title, VioletButton } from '../../commonStyles';
 import { InputWithEye, TextareaWithCopy } from '../../../components/Input';
-import { useTheme } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import { useTheme } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useCallAsync } from '../../../utils/notifications';
 import { BtnCustom } from '../../../components/BtnCustom';
 
@@ -20,8 +20,8 @@ export default function ExportAccountDialog({ open, onClose }) {
 
   const submit = () => {
     callAsync(checkIsCorrectPassword(password), {
-      progressMessage: null,
-      successMessage: null,
+      progressMessage: undefined,
+      successMessage: undefined,
       onSuccess: () => {
         setKeyOutput(`[${Array.from(wallet.provider.account.secretKey)}]`);
       },
@@ -112,11 +112,12 @@ export function ExportMnemonicDialog({ open, onClose }) {
   const submit = () => {
     callAsync(checkIsCorrectPassword(password), {
       onSuccess: (res) => {
-        setMnemonic(res.mnemonic);
+        const { mnemonic } = res as { mnemonic: string; seed: string; derivationPath: string };
+        setMnemonic(mnemonic);
       },
       onError: () => {},
-      progressMessage: null,
-      successMessage: null,
+      progressMessage: undefined,
+      successMessage: undefined,
     });
   };
 

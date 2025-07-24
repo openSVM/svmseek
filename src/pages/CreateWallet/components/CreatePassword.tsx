@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
 import {
   Card,

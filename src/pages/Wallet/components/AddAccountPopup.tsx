@@ -10,7 +10,7 @@ import {
   VioletButton,
   WhiteButton,
 } from '../../commonStyles';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { InputWithPaste } from '../../../components/Input';
 import FakeInputs from '../../../components/FakeInputs';
 

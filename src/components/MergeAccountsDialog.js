@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import DialogForm, { StyledPaper } from '../pages/Wallet/components/DialogForm';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import DialogContentText from '@mui/material/DialogContentText';
+import CircularProgress from '@mui/material/CircularProgress';
 import { TokenInstructions } from '@project-serum/serum';
 import { useWalletPublicKeys } from '../utils/wallet';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import AttentionComponent from '../components/Attention';
 import {
   Card,

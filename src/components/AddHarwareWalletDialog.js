@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
 import DialogForm from '../pages/Wallet/components/DialogForm';
 import { LedgerWalletProvider } from '../utils/walletProvider/ledger';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {

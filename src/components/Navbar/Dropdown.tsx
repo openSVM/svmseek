@@ -11,6 +11,7 @@ interface DropdownProps {
   text: React.ReactNode;
   hide?: keyof typeof BREAKPOINTS;
   isActive?: boolean;
+  children?: React.ReactNode;
 }
 
 export const DropDown: React.FC<DropdownProps> = (props) => {

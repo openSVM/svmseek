@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 
 import {
   Card,

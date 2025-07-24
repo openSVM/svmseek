@@ -8,6 +8,11 @@ import ActivityTable from './components/ActivityTable';
 import SendDialog from './components/SendPopup';
 import ReceiveDialog from './components/ReceivePopup';
 import AddTokenDialog from './components/AddTokenPopup';
+import ChatInterface from '../../components/ChatInterface';
+import { ExplorerInterface } from '../../components/Explorer';
+import WebBrowser from '../../components/WebBrowser';
+import { SVMPayInterface } from '../../components/SVMPay';
+import { AEANetworkInterface } from '../../components/AEANetwork';
 
 import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
@@ -33,7 +38,7 @@ const Switcher = styled.button`
   @media (max-width: 540px) {
     outline: none;
     display: block;
-    width: 50%;
+    width: 20%;
     color: ${(props) => (props.isTabActive ? ' #f5f5fb' : '#96999C')};
     background: none;
     font-family: 'Avenir Next Demi';
@@ -129,7 +134,7 @@ const Wallet = () => {
   ]);
 
   return (
-    <MainWalletContainer>
+    <MainWalletContainer data-testid="wallet-interface">
       {window.opener && <Redirect to={'/connect_popup'} />}
       <AccountInfo tokensData={tokensData} allTokensData={allTokensData} />
       <TableContainer>
@@ -150,6 +155,46 @@ const Wallet = () => {
           >
             Activity
           </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'chat'}
+            onClick={() => {
+              setTabActive('chat');
+            }}
+          >
+            AI Chat
+          </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'explorer'}
+            onClick={() => {
+              setTabActive('explorer');
+            }}
+          >
+            Explorer
+          </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'browser'}
+            onClick={() => {
+              setTabActive('browser');
+            }}
+          >
+            Browser
+          </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'svmpay'}
+            onClick={() => {
+              setTabActive('svmpay');
+            }}
+          >
+            SVM-Pay
+          </Switcher>
+          <Switcher
+            isTabActive={activeTab === 'aea'}
+            onClick={() => {
+              setTabActive('aea');
+            }}
+          >
+            AEA
+          </Switcher>
         </SwitcherRow>
 
         <AssetsTable
@@ -165,6 +210,36 @@ const Wallet = () => {
         />
 
         <ActivityTable isActive={activeTab === 'activity'} />
+        
+        {activeTab === 'chat' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <ChatInterface />
+          </div>
+        )}
+        
+        {activeTab === 'explorer' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <ExplorerInterface isActive={true} />
+          </div>
+        )}
+        
+        {activeTab === 'browser' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <WebBrowser isActive={true} />
+          </div>
+        )}
+        
+        {activeTab === 'svmpay' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <SVMPayInterface isActive={true} />
+          </div>
+        )}
+        
+        {activeTab === 'aea' && (
+          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+            <AEANetworkInterface isActive={true} />
+          </div>
+        )}
       </TableContainer>
       {isTokenSelected && (
         <SendDialog

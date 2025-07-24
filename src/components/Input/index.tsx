@@ -12,7 +12,7 @@ import {
 import Image from './Image'
 import Loupe from '../../images/Loupe.svg';
 import Copy from '../../images/copy.svg';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { isExtension } from '../../utils/utils';
 
