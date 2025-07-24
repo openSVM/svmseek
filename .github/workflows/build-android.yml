@@ -45,7 +45,7 @@ jobs:
       
     - name: Initialize Capacitor (if not exists)
       run: |
-        if [ ! -d "android" ] && [ ! -f "capacitor.config.ts" ]; then
+        if [ ! -d "android" ] || [ ! -f "capacitor.config.ts" ]; then
           npx cap init "SVMSeek Wallet" "com.svmseek.wallet" --web-dir=build
         fi
         
@@ -133,11 +133,69 @@ jobs:
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx4096m -Dorg.gradle.parallel=true -Dorg.gradle.configureondemand=true -Dorg.gradle.daemon=true -Dorg.gradle.caching=true"
           ./gradlew assembleRelease --stacktrace --build-cache --parallel --configure-on-demand
           
-          # Verify the signed APK exists and is valid
+          # Verify the signed APK exists and is properly signed with production-grade validation
           if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
-            echo "Production APK built and signed successfully"
-            # Basic APK validation
-            unzip -l app/build/outputs/apk/release/app-release.apk | grep "META-INF.*\.RSA\|META-INF.*\.DSA" && echo "APK is properly signed" || echo "Warning: APK signing verification incomplete"
+            echo "Production APK built successfully, performing comprehensive signature validation..."
+            
+            # 1. Check APK structure integrity
+            APK_FILE="app/build/outputs/apk/release/app-release.apk"
+            
+            # 2. Verify APK can be read without corruption
+            if ! unzip -t "$APK_FILE" > /dev/null 2>&1; then
+              echo "ERROR: APK file is corrupted or invalid"
+              exit 1
+            fi
+            
+            # 3. Check for proper signature files (META-INF directory)
+            SIGNATURE_FILES=$(unzip -l "$APK_FILE" | grep -E "META-INF.*\.(RSA|DSA|EC)" | wc -l)
+            if [ "$SIGNATURE_FILES" -eq 0 ]; then
+              echo "ERROR: No signature files found in APK"
+              exit 1
+            fi
+            echo "Found $SIGNATURE_FILES signature file(s)"
+            
+            # 4. Verify APK signature using jarsigner (more thorough than grep)
+            if command -v jarsigner >/dev/null 2>&1; then
+              echo "Verifying APK signature with jarsigner..."
+              if jarsigner -verify -verbose "$APK_FILE" > /tmp/apk_verify.log 2>&1; then
+                echo "✓ APK signature verification passed"
+                # Check for timestamp and certificate details
+                if grep -q "jar verified" /tmp/apk_verify.log; then
+                  echo "✓ APK is properly signed and verified"
+                else
+                  echo "WARNING: APK verification completed but with potential issues"
+                  cat /tmp/apk_verify.log
+                fi
+              else
+                echo "ERROR: APK signature verification failed"
+                cat /tmp/apk_verify.log
+                exit 1
+              fi
+            else
+              echo "WARNING: jarsigner not available, using basic signature check"
+              unzip -l "$APK_FILE" | grep -E "META-INF.*\.(RSA|DSA|EC)" && echo "✓ Basic signature files present" || (echo "ERROR: No signature files found" && exit 1)
+            fi
+            
+            # 5. Check APK size is reasonable (not empty or suspiciously small)
+            APK_SIZE=$(stat -f%z "$APK_FILE" 2>/dev/null || stat -c%s "$APK_FILE" 2>/dev/null || echo "0")
+            MIN_SIZE=$((1024 * 1024))  # 1MB minimum
+            if [ "$APK_SIZE" -lt "$MIN_SIZE" ]; then
+              echo "ERROR: APK size ($APK_SIZE bytes) is suspiciously small"
+              exit 1
+            fi
+            echo "✓ APK size validation passed: $(( APK_SIZE / 1024 / 1024 ))MB"
+            
+            # 6. Verify APK contains expected Android components
+            REQUIRED_FILES="AndroidManifest.xml classes.dex resources.arsc"
+            for required_file in $REQUIRED_FILES; do
+              if ! unzip -l "$APK_FILE" | grep -q "$required_file"; then
+                echo "ERROR: Required Android component '$required_file' not found in APK"
+                exit 1
+              fi
+            done
+            echo "✓ All required Android components present"
+            
+            echo "🎉 Production APK passed comprehensive validation"
           else
             echo "Production APK not found after build"
             ls -la app/build/outputs/apk/release/ || echo "Release output directory not found"
