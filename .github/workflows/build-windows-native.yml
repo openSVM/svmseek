@@ -1,0 +1,140 @@
+name: Build Windows Native
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'fix/*', 'copilot/*' ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+jobs:
+  build-windows-native:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+        
+    - name: Cache Node modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          ~/.yarn/cache
+          ~/AppData/Local/electron/Cache
+          ~/AppData/Local/electron-builder/Cache
+        key: ${{ runner.os }}-windows-native-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-windows-native-
+          ${{ runner.os }}-yarn-
+          
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+      
+    - name: Build web application
+      run: yarn build
+      
+    - name: Install system dependencies for native builds
+      run: |
+        # Install Wine for potential cross-compilation support
+        # Note: Not needed on Windows, but kept for consistency
+        echo "Windows native build environment ready"
+        
+    - name: Build Windows native applications
+      run: ./scripts/build-native-windows.sh
+      shell: bash
+      
+    - name: Verify Windows builds
+      run: |
+        echo "Verifying Windows native builds..."
+        if (Test-Path "native-builds/windows") {
+          Get-ChildItem -Recurse "native-builds/windows" -Include *.exe,*.msi | ForEach-Object {
+            $size = [math]::Round($_.Length / 1MB, 2)
+            Write-Host "✓ $($_.Name): ${size}MB"
+          }
+        } else {
+          Write-Error "Windows builds not found!"
+          exit 1
+        }
+      shell: powershell
+      
+    - name: Create build artifacts metadata
+      run: |
+        $version = (Get-Content package.json | ConvertFrom-Json).version
+        $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+        
+        # Create metadata file
+        @"
+        SVMSeek Wallet - Windows Native Build Artifacts
+        ===============================================
+        Version: $version
+        Build Date: $(Get-Date)
+        Build System: Windows (GitHub Actions)
+        Node Version: $(node --version)
+        
+        Windows Native Packages:
+        $(Get-ChildItem -Recurse "native-builds/windows" -Include *.exe,*.msi | ForEach-Object {
+          $size = [math]::Round($_.Length / 1MB, 2)
+          "- $($_.Name): ${size}MB"
+        })
+        
+        Installation Instructions:
+        1. NSIS Installer (.exe): Run and follow setup wizard
+        2. Portable (.exe): Extract and run directly
+        3. MSI Package (.msi): Use Windows Installer
+        
+        Distribution Ready: Yes
+        Digitally Signed: No (requires code signing certificate)
+        "@ | Out-File -FilePath "native-builds/windows/windows-build-metadata.txt" -Encoding UTF8
+      shell: powershell
+      
+    - name: Upload Windows native artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: svmseek-wallet-windows-native
+        path: |
+          native-builds/windows/
+        retention-days: 30
+        if-no-files-found: error
+        
+    - name: Upload Windows installer for releases
+      if: github.event_name == 'release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: svmseek-wallet-windows-installer
+        path: |
+          native-builds/windows/**/*.exe
+          native-builds/windows/**/*.msi
+        retention-days: 90
+        
+    - name: Attach to GitHub Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          native-builds/windows/**/*.exe
+          native-builds/windows/**/*.msi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Create Windows Store package (if configured)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        # Future: Create MSIX package for Microsoft Store
+        echo "Windows Store package creation would go here"
+        echo "Requires Microsoft Store developer account and certificates"
+      shell: bash
