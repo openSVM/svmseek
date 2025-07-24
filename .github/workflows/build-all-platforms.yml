@@ -157,6 +157,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
+        shell: bash
         run: |
           for i in 1 2 3; do
             yarn install --frozen-lockfile && break || sleep 10
