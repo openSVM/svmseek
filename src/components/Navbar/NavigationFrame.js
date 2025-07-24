@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -27,25 +26,6 @@ import { useLocation } from 'react-router-dom';
 import { MobileFooter } from '../Footer/MobileFooter';
 
 export const footerHeight = isExtension ? 0 : 6;
-
-const useStyles = makeStyles((theme) => ({
-  content: {
-    flexGrow: 1,
-    paddingTop: 24,
-    paddingBottom: 24,
-    paddingLeft: 8,
-    paddingRight: 8,
-  },
-  title: {
-    flexGrow: 1,
-  },
-  button: {
-    marginLeft: 8,
-  },
-  menuItemIcon: {
-    minWidth: 32,
-  },
-}));
 
 const StyledMain = styled.main`
   height: ${(props) =>
@@ -97,7 +77,6 @@ export function WalletSelector() {
   ] = useState(false);
   const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
-  const classes = useStyles();
 
   if (accounts.length === 0) {
     return null;
@@ -148,7 +127,7 @@ export function WalletSelector() {
         <Button
           color="inherit"
           onClick={(e) => setAnchorEl(e.target)}
-          className={classes.button}
+          sx={{ marginLeft: 1 }}
         >
           Account
         </Button>
@@ -180,7 +159,7 @@ export function WalletSelector() {
             selected={isSelected}
             component="div"
           >
-            <ListItemIcon className={classes.menuItemIcon}>
+            <ListItemIcon sx={{ minWidth: 32 }}>
               {isSelected ? <CheckIcon fontSize="small" /> : null}
             </ListItemIcon>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -193,7 +172,7 @@ export function WalletSelector() {
         ))}
         <Divider />
         <MenuItem onClick={() => setAddHardwareWalletDialogOpen(true)}>
-          <ListItemIcon className={classes.menuItemIcon}>
+          <ListItemIcon sx={{ minWidth: 32 }}>
             <UsbIcon fontSize="small" />
           </ListItemIcon>
           Import Hardware Wallet
@@ -204,7 +183,7 @@ export function WalletSelector() {
             setAddAccountOpen(true);
           }}
         >
-          <ListItemIcon className={classes.menuItemIcon}>
+          <ListItemIcon sx={{ minWidth: 32 }}>
             <AddIcon fontSize="small" />
           </ListItemIcon>
           Add Account
@@ -215,7 +194,7 @@ export function WalletSelector() {
             setExportMnemonicOpen(true);
           }}
         >
-          <ListItemIcon className={classes.menuItemIcon}>
+          <ListItemIcon sx={{ minWidth: 32 }}>
             <ImportExportIcon fontSize="small" />
           </ListItemIcon>
           Export Mnemonic
@@ -226,7 +205,7 @@ export function WalletSelector() {
             setDeleteMnemonicOpen(true);
           }}
         >
-          <ListItemIcon className={classes.menuItemIcon}>
+          <ListItemIcon sx={{ minWidth: 32 }}>
             <ExitToApp fontSize="small" />
           </ListItemIcon>
           Delete Mnemonic
@@ -236,19 +215,12 @@ export function WalletSelector() {
   );
 }
 
-const useFooterStyles = makeStyles((theme) => ({
-  footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-}));
-
 const FooterComponent = styled.footer`
   height: 6rem;
   padding: 0 3rem 0 3rem;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   @media (max-width: 540px) {
     padding: 0;
     height: 0;
@@ -265,9 +237,7 @@ const FooterComponentForExtension = styled.footer`
 `;
 
 function Footer() {
-  const classes = useFooterStyles();
   const isConnectPopup = window.opener;
-  // const theme = useTheme();
   const location = useLocation();
   console.log('location', location);
 
@@ -275,7 +245,7 @@ function Footer() {
 
   return (
     <>
-      <FooterComponent className={classes.footer}>
+      <FooterComponent>
         <span
           style={{
             fontSize: '1.3rem',

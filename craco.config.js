@@ -3,6 +3,7 @@ const webpack = require('webpack');
 module.exports = {
   webpack: {
     configure: (webpackConfig) => {
+      // Add polyfills for node modules
       webpackConfig.resolve.fallback = {
         ...webpackConfig.resolve.fallback,
         crypto: require.resolve('crypto-browserify'),
@@ -20,11 +21,15 @@ module.exports = {
         tls: false,
       };
       
+      // Provide global variables for compatibility
       webpackConfig.plugins = [
         ...webpackConfig.plugins,
         new webpack.ProvidePlugin({
           Buffer: ['buffer', 'Buffer'],
           process: 'process/browser',
+        }),
+        new webpack.DefinePlugin({
+          global: 'globalThis',
         }),
       ];
       

@@ -15,7 +15,7 @@ import { TOKENS } from '../utils/tokens/tokens'
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
-import { makeStyles, Tab, Tabs } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import { useSendTransaction } from '../utils/notifications';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -41,20 +41,12 @@ const feeFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 6,
 });
 
-const useStyles = makeStyles((theme) => ({
-  tabs: {
-    marginBottom: theme.spacing(1),
-    borderBottom: `1px solid ${theme.palette.background.paper}`,
-  },
-}));
-
 export default function AddTokenDialog({ open, onClose }) {
   let wallet = useWallet();
   let [tokenAccountCost] = useAsyncData(
     wallet.tokenAccountCost,
     wallet.tokenAccountCost,
   );
-  let classes = useStyles();
   let updateTokenName = useUpdateTokenName();
   const [sendTransaction, sending] = useSendTransaction();
   const { endpoint } = useConnectionConfig();
@@ -131,7 +123,10 @@ export default function AddTokenDialog({ open, onClose }) {
             value={tab}
             textColor="primary"
             indicatorColor="primary"
-            className={classes.tabs}
+            sx={{
+              marginBottom: 1,
+              borderBottom: (theme) => `1px solid ${theme.palette.background.paper}`,
+            }}
             onChange={(e, value) => setTab(value)}
           >
             <Tab label="Popular Tokens" value="popular" />
