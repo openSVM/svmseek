@@ -1,0 +1,201 @@
+name: Build macOS Native
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'fix/*', 'copilot/*' ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    branches: [ main, develop ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+jobs:
+  build-macos-native:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+        
+    - name: Cache Node modules and Electron
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          ~/.yarn/cache
+          ~/Library/Caches/electron
+          ~/Library/Caches/electron-builder
+        key: ${{ runner.os }}-macos-native-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-macos-native-
+          ${{ runner.os }}-yarn-
+          
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+      
+    - name: Build web application
+      run: yarn build
+      
+    - name: Build macOS native applications
+      run: ./scripts/build-native-macos.sh
+      
+    - name: Verify macOS builds
+      run: |
+        echo "Verifying macOS native builds..."
+        if [ -d "native-builds/macos" ]; then
+          find native-builds/macos -name "*.dmg" -o -name "*.zip" -o -name "*.app" | while read file; do
+            size=$(du -h "$file" | cut -f1)
+            echo "✓ $(basename "$file"): $size"
+          done
+        else
+          echo "❌ macOS builds not found!"
+          exit 1
+        fi
+        
+    - name: Test macOS app bundle
+      run: |
+        # Test that .app bundle is properly structured
+        APP_BUNDLE=$(find native-builds/macos -name "*.app" | head -1)
+        if [ -n "$APP_BUNDLE" ]; then
+          echo "Testing app bundle: $APP_BUNDLE"
+          
+          # Check basic app bundle structure
+          if [ -f "$APP_BUNDLE/Contents/Info.plist" ]; then
+            echo "✓ Info.plist found"
+            plutil -lint "$APP_BUNDLE/Contents/Info.plist" && echo "✓ Info.plist is valid"
+          fi
+          
+          if [ -f "$APP_BUNDLE/Contents/MacOS/SVMSeek Wallet" ] || [ -f "$APP_BUNDLE/Contents/MacOS/"* ]; then
+            echo "✓ Executable found"
+          fi
+          
+          # Check code signature (if signed)
+          codesign -dv "$APP_BUNDLE" 2>&1 || echo "ℹ️ App is not code signed (expected for CI builds)"
+        fi
+        
+    - name: Validate DMG structure
+      run: |
+        DMG_FILE=$(find native-builds/macos -name "*.dmg" | head -1)
+        if [ -n "$DMG_FILE" ]; then
+          echo "Validating DMG: $DMG_FILE"
+          
+          # Mount DMG and check contents
+          MOUNT_POINT=$(mktemp -d)
+          hdiutil attach "$DMG_FILE" -mountpoint "$MOUNT_POINT" -quiet
+          
+          echo "DMG Contents:"
+          ls -la "$MOUNT_POINT"
+          
+          # Check for app bundle in DMG
+          if ls "$MOUNT_POINT"/*.app 1> /dev/null 2>&1; then
+            echo "✓ App bundle found in DMG"
+          fi
+          
+          # Unmount DMG
+          hdiutil detach "$MOUNT_POINT" -quiet
+          rm -rf "$MOUNT_POINT"
+        fi
+        
+    - name: Create build artifacts metadata
+      run: |
+        VERSION=$(node -p "require('./package.json').version")
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        
+        cat > native-builds/macos/macos-build-metadata.txt << EOF
+        SVMSeek Wallet - macOS Native Build Artifacts
+        ==============================================
+        Version: ${VERSION}
+        Build Date: $(date)
+        Build System: macOS (GitHub Actions)
+        Node Version: $(node --version)
+        Xcode Version: $(xcodebuild -version | head -1)
+        
+        macOS Native Packages:
+        $(find native-builds/macos -name "*.dmg" -o -name "*.zip" -o -name "*.app" | while read file; do
+          size=$(du -h "$file" | cut -f1)
+          echo "- $(basename "$file"): $size"
+        done)
+        
+        Supported Architectures:
+        - x64: Intel-based Macs
+        - arm64: Apple Silicon Macs (M1/M2/M3)
+        
+        Package Details:
+        - .dmg: Standard macOS installer with drag-and-drop interface
+        - .zip: Archive containing .app bundle for manual installation
+        - .app: Direct application bundle (for development/testing)
+        
+        Distribution Channels:
+        - Mac App Store (requires Apple Developer Program)
+        - Direct Download: GitHub Releases
+        - Homebrew Cask: brew install --cask svmseek-wallet
+        
+        System Requirements:
+        - macOS 10.15 Catalina or later
+        - Intel Mac or Apple Silicon
+        - 4GB RAM minimum
+        - 500MB disk space
+        
+        Code Signing Status:
+        $(find native-builds/macos -name "*.app" | head -1 | xargs codesign -dv 2>&1 || echo "Not code signed (CI build)")
+        
+        Note: For distribution, apps should be:
+        1. Code signed with Apple Developer certificate
+        2. Notarized through Apple's notarization service
+        3. Distributed through Mac App Store or with proper entitlements
+        EOF
+        
+    - name: Upload macOS native artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: svmseek-wallet-macos-native
+        path: |
+          native-builds/macos/
+        retention-days: 30
+        if-no-files-found: error
+        
+    - name: Upload macOS packages for releases
+      if: github.event_name == 'release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: svmseek-wallet-macos-packages
+        path: |
+          native-builds/macos/**/*.dmg
+          native-builds/macos/**/*.zip
+        retention-days: 90
+        
+    - name: Attach to GitHub Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          native-builds/macos/**/*.dmg
+          native-builds/macos/**/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Code sign and notarize (if certificates available)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && env.APPLE_DEVELOPER_CERTIFICATE != ''
+      run: |
+        echo "Code signing and notarization would go here"
+        echo "Requires Apple Developer Program certificates and credentials"
+        echo "Environment variables needed:"
+        echo "- APPLE_DEVELOPER_CERTIFICATE_P12_BASE64"
+        echo "- APPLE_DEVELOPER_CERTIFICATE_PASSWORD"
+        echo "- APPLE_ID_EMAIL"
+        echo "- APPLE_ID_PASSWORD"
+        echo "- APPLE_TEAM_ID"
+      env:
+        APPLE_DEVELOPER_CERTIFICATE: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}

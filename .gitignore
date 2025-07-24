@@ -32,6 +32,28 @@ yarn-error.log*
 .eslintcache
 
 # Capacitor mobile app directories
-android/
 ios/
 .capacitor/
+
+# Build artifacts and deployment packages
+artifacts_*/
+deploy_*/
+svmseek-wallet-*.tar.gz
+svmseek-wallet-web-*.tar.gz
+
+# Native desktop builds
+native-builds/
+dist/
+*.AppImage
+*.deb
+*.rpm
+*.dmg
+*.exe
+*.msi
+
+# Keep android directory but ignore build outputs
+android/app/build/
+android/app/.cxx/
+android/build/
+android/.gradle/
+android/local.properties

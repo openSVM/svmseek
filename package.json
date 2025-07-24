@@ -62,6 +62,14 @@
     "buildMaster": "cross-env MASTER_BUILD=TRUE && craco build",
     "build:extension": "yarn build && yarn build:extension-chrome && yarn build:extension-firefox && yarn build:extension-safari && yarn build:extension-edge",
     "build:extension-all": "./build-extensions.sh",
+    "build:extension-enhanced": "./scripts/build-extensions.sh",
+    "build:web-deploy": "./scripts/build-web.sh",
+    "build:mobile-all": "./scripts/build-mobile.sh",
+    "build:native-windows": "./scripts/build-native-windows.sh",
+    "build:native-linux": "./scripts/build-native-linux.sh",
+    "build:native-macos": "./scripts/build-native-macos.sh",
+    "build:native-all": "./scripts/build-native-all.sh",
+    "build:all-platforms": "./scripts/build-all-platforms.sh",
     "build:extension-chrome": "mkdir -p ./extension/chrome/build && cp -a ./build/. ./extension/chrome/build/ && cp -a ./extension/src/. ./extension/chrome/build/ && cp ./extension/chrome/manifest.json ./extension/chrome/build/manifest.json",
     "build:extension-firefox": "mkdir -p ./extension/firefox/build && cp -a ./build/. ./extension/firefox/build/ && cp -a ./extension/src/. ./extension/firefox/build/ && cp ./extension/firefox/manifest.json ./extension/firefox/build/manifest.json",
     "build:extension-safari": "mkdir -p ./extension/safari/build && cp -a ./build/. ./extension/safari/build/ && cp -a ./extension/src/. ./extension/safari/build/ && cp ./extension/safari/manifest.json ./extension/safari/build/manifest.json",
@@ -134,6 +142,9 @@
     "@types/react-dom": "^18.3.1",
     "cross-env": "^7.0.3",
     "csstype": "^3.1.3",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "electron-is-dev": "^3.0.1",
     "gh-pages": "^6.2.0",
     "git-format-staged": "^3.1.1",
     "husky": "^9.1.6",
@@ -141,6 +152,66 @@
     "prettier": "^3.3.3",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5"
+  },
+  "main": "public/electron.js",
+  "build": {
+    "appId": "com.svmseek.wallet",
+    "productName": "SVMSeek Wallet",
+    "copyright": "Copyright © 2024 SVMSeek",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "files": [
+      "build/**/*",
+      "public/electron.js",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        },
+        {
+          "target": "rpm",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Finance"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "engines": {
     "node": ">=20.18.0"
