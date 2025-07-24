@@ -1,0 +1,22 @@
+SVMSeek Wallet Browser Extensions
+=================================
+Build Date: Thu Jul 24 13:09:36 UTC 2025
+Extensions Built: Chrome, Firefox, Safari, Edge
+
+Extension Details:
+- chrome: 6.9M (Manifest v3)
+- firefox: 6.9M (Manifest v2)
+- safari: 6.9M (Manifest v2)
+- edge: 6.9M (Manifest v3)
+
+Distribution:
+- Chrome: Chrome Web Store (Manifest v3)
+- Firefox: Firefox Add-ons (Manifest v2)
+- Safari: Safari Extensions (Manifest v2)
+- Edge: Microsoft Edge Add-ons (Manifest v3)
+
+Installation Instructions:
+1. Chrome: Load unpacked extension from chrome/build/ or install .zip via Developer mode
+2. Firefox: Load temporary add-on from firefox/build/ or submit .zip to AMO
+3. Safari: Use Safari extension converter or submit to App Store
+4. Edge: Load unpacked extension from edge/build/ or submit to Microsoft Store
