@@ -228,12 +228,15 @@ const Pages = () => {
         />
 
         {/* popup if connecting from dex UI */}
+        {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
         {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
 
         {/* if wallet exists - for case when we'll have unlocked wallet */}
+        {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
         {!!wallet && <Redirect from="/" to="/wallet" />}
 
         {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
+        {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
         {hasLockedMnemonicAndSeed ? (
           <Redirect from="/" to="/welcome_back" />
         ) : (

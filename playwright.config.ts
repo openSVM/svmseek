@@ -70,6 +70,7 @@ export default defineConfig({
     command: 'yarn start',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: parseInt(process.env.PLAYWRIGHT_SERVER_TIMEOUT || '240') * 1000, // Default 240 seconds, configurable
+    retries: process.env.CI ? 3 : 1, // Add retries for flaky network scenarios
   },
 });

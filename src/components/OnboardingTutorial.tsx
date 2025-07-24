@@ -58,6 +58,28 @@ const StepIcon = styled.div`
   margin: 0 auto 1rem;
   color: white;
   font-size: 24px;
+  
+  /* Improved accessibility for small devices */
+  @media (max-width: 480px) {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+  
+  /* Ensure sufficient contrast and touch target size */
+  min-height: 44px;
+  min-width: 44px;
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    background: #000;
+    border: 2px solid #fff;
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;
 
 const NavigationButtons = styled(Box)`

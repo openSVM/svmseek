@@ -37,6 +37,16 @@ export class WalletInjectionService {
     try {
       this.iframe = iframe;
       
+      // Enhanced security: Check iframe source origin
+      const iframeSrc = iframe.src;
+      if (iframeSrc && !this.isAllowedOrigin(iframeSrc)) {
+        console.warn('Wallet injection blocked for untrusted origin:', iframeSrc);
+        return {
+          success: false,
+          error: 'Wallet injection blocked for security reasons: untrusted origin'
+        };
+      }
+      
       // Wait for iframe to load
       await this.waitForIframeLoad(iframe);
 
@@ -73,6 +83,48 @@ export class WalletInjectionService {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
+    }
+  }
+
+  /**
+   * Check if the origin is allowed for wallet injection
+   * Implements same-origin policy with allowlist for trusted domains
+   */
+  private isAllowedOrigin(url: string): boolean {
+    try {
+      const urlObj = new URL(url);
+      const origin = urlObj.origin;
+      const hostname = urlObj.hostname;
+      
+      // Allow same origin (localhost, 127.0.0.1 for development)
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+        return true;
+      }
+      
+      // Allow SVMSeek domains
+      const allowedDomains = [
+        'svmseek.com',
+        'www.svmseek.com',
+        'app.svmseek.com',
+        'wallet.svmseek.com'
+      ];
+      
+      // Check exact domain match
+      if (allowedDomains.includes(hostname)) {
+        return true;
+      }
+      
+      // Check subdomain pattern for svmseek.com
+      if (hostname.endsWith('.svmseek.com')) {
+        return true;
+      }
+      
+      // Block all other origins for security
+      console.warn('Blocked wallet injection for untrusted origin:', origin);
+      return false;
+    } catch (error) {
+      console.error('Failed to parse URL for origin check:', url, error);
+      return false;
     }
   }
 

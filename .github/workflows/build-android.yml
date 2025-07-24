@@ -45,8 +45,20 @@ jobs:
       
     - name: Initialize Capacitor (if not exists)
       run: |
-        if [ ! -d "android" ] && [ ! -f "capacitor.config.json" ] && [ ! -f "capacitor.config.ts" ]; then
+        # Check if Capacitor is already configured by looking for config file
+        CAPACITOR_CONFIG=""
+        if [ -f "capacitor.config.json" ]; then
+          CAPACITOR_CONFIG="capacitor.config.json"
+        elif [ -f "capacitor.config.ts" ]; then
+          CAPACITOR_CONFIG="capacitor.config.ts"
+        fi
+        
+        # Initialize only if no config exists AND no android directory
+        if [ -z "$CAPACITOR_CONFIG" ] && [ ! -d "android" ]; then
+          echo "No Capacitor configuration found, initializing..."
           npx cap init "SVMSeek Wallet" "com.svmseek.wallet" --web-dir=build
+        else
+          echo "Capacitor already configured with: ${CAPACITOR_CONFIG:-android directory}"
         fi
         
     - name: Add Android platform (if not exists)  
@@ -103,10 +115,16 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       working-directory: ./android
       run: |
-        if [ ! -z "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+        # Use environment variable instead of direct secret interpolation in shell
+        if [ ! -z "$ANDROID_KEYSTORE_BASE64" ]; then
           echo "Setting up production keystore..."
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
-          echo "Production keystore created"
+          # Decode safely with error handling
+          if echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > release.keystore 2>/dev/null; then
+            echo "Production keystore created successfully"
+          else
+            echo "ERROR: Failed to decode keystore base64 data"
+            exit 1
+          fi
         else
           echo "No production keystore secrets found, skipping production build"
         fi
@@ -177,13 +195,11 @@ jobs:
             fi
             
             # 5. Check APK size is reasonable (not empty or suspiciously small)
-            APK_SIZE=$(stat -f%z "$APK_FILE" 2>/dev/null || stat -c%s "$APK_FILE" 2>/dev/null || echo "0")
-            MIN_SIZE=$((1024 * 1024))  # 1MB minimum
-            if [ "$APK_SIZE" -lt "$MIN_SIZE" ]; then
-              echo "ERROR: APK size ($APK_SIZE bytes) is suspiciously small"
+            echo "Validating APK size..."
+            if ! ./scripts/check-apk-size.sh "$APK_FILE" 1; then
+              echo "ERROR: APK size validation failed"
               exit 1
             fi
-            echo "✓ APK size validation passed: $(( APK_SIZE / 1024 / 1024 ))MB"
             
             # 6. Verify APK contains expected Android components
             REQUIRED_FILES="AndroidManifest.xml classes.dex resources.arsc"

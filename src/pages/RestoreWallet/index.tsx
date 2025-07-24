@@ -67,6 +67,7 @@ export const RestorePage = () => {
         <title>Restore SVMSeek Wallet by seed phrase</title>
       </Helmet>
       <FakeInputs />
+      {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
       {redirectToWallet && <Redirect to="/wallet" />}
       {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}

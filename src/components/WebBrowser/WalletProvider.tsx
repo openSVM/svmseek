@@ -36,6 +36,8 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
   const wallet = useWallet();
   const [connecting, setConnecting] = useState(false);
 
+  // Performance optimization: Memoize callback functions to prevent unnecessary re-renders
+  // Dependency array [wallet] is intentionally minimal to ensure callbacks update when wallet changes
   const connect = useCallback(async () => {
     if (!wallet?.publicKey) {
       throw new Error('No wallet available');
@@ -47,12 +49,12 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     } finally {
       setConnecting(false);
     }
-  }, [wallet]);
+  }, [wallet]); // Dependency: wallet - callback updates when wallet instance changes
 
   const disconnect = useCallback(async () => {
     // In a real implementation, this would disconnect the wallet
     console.log('Wallet disconnect requested');
-  }, []);
+  }, []); // No dependencies - function is static
 
   const signTransaction = useCallback(async (transaction: Transaction) => {
     if (!wallet) {
@@ -66,7 +68,7 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     // 4. Return the signed transaction
     
     throw new Error('Transaction signing requires user approval - not implemented in iframe context');
-  }, [wallet]);
+  }, [wallet]); // Dependency: wallet - callback needs current wallet instance
 
   const signAllTransactions = useCallback(async (transactions: Transaction[]) => {
     if (!wallet) {
@@ -75,7 +77,7 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     
     // Similar to signTransaction but for multiple transactions
     throw new Error('Batch transaction signing requires user approval - not implemented in iframe context');
-  }, [wallet]);
+  }, [wallet]); // Dependency: wallet - callback needs current wallet instance
 
   const signMessage = useCallback(async (message: Uint8Array) => {
     if (!wallet) {
@@ -84,7 +86,7 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     
     // In a real implementation, this would sign arbitrary messages
     throw new Error('Message signing requires user approval - not implemented in iframe context');
-  }, [wallet]);
+  }, [wallet]); // Dependency: wallet - callback needs current wallet instance
 
   const value: WalletContextState = {
     isConnected: !!wallet?.publicKey,
