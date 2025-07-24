@@ -42,6 +42,11 @@ jobs:
           ${{ runner.os }}-macos-native-
           ${{ runner.os }}-yarn-
           
+    - name: Install Python distutils
+      run: |
+        python3 -m ensurepip --upgrade
+        python3 -m pip install --upgrade pip setuptools
+          
     - name: Install dependencies
       run: yarn install --frozen-lockfile
       

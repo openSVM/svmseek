@@ -4,6 +4,10 @@
   "private": true,
   "description": "SVMSeek Wallet - Secure Solana wallet for SPL tokens and DeFi applications",
   "homepage": "https://svmseek.com",
+  "author": {
+    "name": "OpenSVM",
+    "email": "dev@opensvm.com"
+  },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",
     "@emotion/react": "^11.14.0",
