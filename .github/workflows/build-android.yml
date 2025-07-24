@@ -45,7 +45,7 @@ jobs:
       
     - name: Initialize Capacitor (if not exists)
       run: |
-        if [ ! -d "android" ] || [ ! -f "capacitor.config.ts" ]; then
+        if [ ! -d "android" ] && [ ! -f "capacitor.config.json" ] && [ ! -f "capacitor.config.ts" ]; then
           npx cap init "SVMSeek Wallet" "com.svmseek.wallet" --web-dir=build
         fi
         
