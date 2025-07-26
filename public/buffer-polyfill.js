@@ -80,6 +80,29 @@
       return new BufferPolyfill(this._data.slice(start, end));
     };
     
+    // Add buffer property for compatibility
+    Object.defineProperty(BufferPolyfill.prototype, 'buffer', {
+      get: function() {
+        return this._data.buffer;
+      },
+      enumerable: false,
+      configurable: true
+    });
+    
+    // Add additional methods that might be needed
+    BufferPolyfill.prototype.writeUInt8 = function(value, offset) {
+      this._data[offset] = value & 0xff;
+      return offset + 1;
+    };
+    
+    BufferPolyfill.prototype.writeUInt32BE = function(value, offset) {
+      this._data[offset] = (value >>> 24) & 0xff;
+      this._data[offset + 1] = (value >>> 16) & 0xff;
+      this._data[offset + 2] = (value >>> 8) & 0xff;
+      this._data[offset + 3] = value & 0xff;
+      return offset + 4;
+    };
+    
     // Static methods
     BufferPolyfill.from = function(data, encoding) {
       return new BufferPolyfill(data, encoding);
