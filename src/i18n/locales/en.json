@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "next": "Next",
+    "back": "Back",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "close": "Close",
+    "save": "Save",
+    "loading": "Loading",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "Choose Your Language",
+      "subtitle": "Select your preferred language for the wallet interface",
+      "selectLanguage": "Select Language"
+    },
+    "themeSelection": {
+      "title": "Choose Your Theme",
+      "subtitle": "Select your preferred visual theme for the wallet",
+      "themes": {
+        "eink": "E-Ink Grayscale",
+        "ascii": "ASCII Terminal",
+        "borland": "Borland Blue",
+        "paper": "Paper White",
+        "solarized": "Solarized Dark",
+        "cyberpunk": "Cyberpunk Pink",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeek Wallet",
+    "subtitle": "Your secure gateway to the Solana ecosystem",
+    "createWallet": {
+      "title": "Create New Wallet",
+      "description": "Generate a new wallet with a secure seed phrase"
+    },
+    "restoreWallet": {
+      "title": "Restore Existing Wallet",
+      "description": "Restore your wallet using a seed phrase",
+      "seedPhrase": "Seed Phrase"
+    },
+    "welcomeBack": {
+      "title": "Welcome Back",
+      "subtitle": "Enter your password to unlock your wallet",
+      "password": "Password",
+      "unlock": "Unlock Wallet"
+    }
+  },
+  "security": {
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "enterPassword": "Enter your password",
+    "createPassword": "Create a password",
+    "seedPhrase": "Seed Phrase",
+    "saveSeedPhrase": "Save your seed phrase",
+    "confirmSeedPhrase": "Confirm your seed phrase",
+    "securityTip": "Keep your seed phrase safe - it's the only way to recover your wallet"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "networkError": "Network connection error",
+    "invalidSeedPhrase": "Invalid seed phrase",
+    "passwordMismatch": "Passwords do not match",
+    "cryptoLibraryError": "Crypto library initialization error",
+    "bufferError": "Buffer access error in crypto module"
+  }
+}

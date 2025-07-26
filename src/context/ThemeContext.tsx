@@ -1,22 +1,21 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme, Theme } from '@mui/material/styles';
+import { ThemeProvider as MuiThemeProvider, createTheme, Theme as MuiTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import blue from '@mui/material/colors/blue';
-
-export type ThemeMode = 'light' | 'dark';
+import { Theme, ThemeName, themes, defaultTheme } from '../themes';
 
 interface ThemeContextType {
-  mode: ThemeMode;
-  toggleTheme: () => void;
-  theme: Theme;
+  currentTheme: Theme;
+  themeName: ThemeName;
+  setTheme: (themeName: ThemeName) => void;
+  availableThemes: Record<string, Theme>;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const useThemeMode = () => {
+export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useThemeMode must be used within a ThemeProvider');
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
 };
@@ -26,57 +25,209 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [mode, setMode] = useState<ThemeMode>(() => {
-    // Get from localStorage or default to dark
-    const saved = localStorage.getItem('theme-mode');
-    return (saved as ThemeMode) || 'dark';
+  const [themeName, setThemeName] = useState<ThemeName>(() => {
+    // Get from localStorage or default to eink
+    const saved = localStorage.getItem('theme-name');
+    return (saved as ThemeName) || 'eink';
   });
 
-  useEffect(() => {
-    localStorage.setItem('theme-mode', mode);
-    // Set theme attribute for CSS variables
-    document.documentElement.setAttribute('data-theme', mode);
-  }, [mode]);
+  const currentTheme = themes[themeName] || defaultTheme;
 
-  const toggleTheme = () => {
-    setMode(prev => prev === 'light' ? 'dark' : 'light');
+  useEffect(() => {
+    localStorage.setItem('theme-name', themeName);
+    // Set theme attribute for CSS variables
+    document.documentElement.setAttribute('data-theme', themeName);
+    
+    // Set CSS custom properties for the current theme
+    const root = document.documentElement;
+    const { colors, effects, typography } = currentTheme;
+    
+    // Background colors
+    root.style.setProperty('--bg-primary', colors.background.primary);
+    root.style.setProperty('--bg-secondary', colors.background.secondary);
+    root.style.setProperty('--bg-tertiary', colors.background.tertiary);
+    root.style.setProperty('--bg-glass', colors.background.glass);
+    root.style.setProperty('--bg-overlay', colors.background.overlay);
+    
+    // Text colors
+    root.style.setProperty('--text-primary', colors.text.primary);
+    root.style.setProperty('--text-secondary', colors.text.secondary);
+    root.style.setProperty('--text-tertiary', colors.text.tertiary);
+    root.style.setProperty('--text-accent', colors.text.accent);
+    root.style.setProperty('--text-inverse', colors.text.inverse);
+    
+    // Interactive colors
+    root.style.setProperty('--interactive-primary', colors.interactive.primary);
+    root.style.setProperty('--interactive-secondary', colors.interactive.secondary);
+    root.style.setProperty('--interactive-hover', colors.interactive.hover);
+    root.style.setProperty('--interactive-active', colors.interactive.active);
+    root.style.setProperty('--interactive-disabled', colors.interactive.disabled);
+    
+    // Status colors
+    root.style.setProperty('--status-success', colors.status.success);
+    root.style.setProperty('--status-warning', colors.status.warning);
+    root.style.setProperty('--status-error', colors.status.error);
+    root.style.setProperty('--status-info', colors.status.info);
+    
+    // Border colors
+    root.style.setProperty('--border-primary', colors.border.primary);
+    root.style.setProperty('--border-secondary', colors.border.secondary);
+    root.style.setProperty('--border-focus', colors.border.focus);
+    root.style.setProperty('--border-glass', colors.border.glass);
+    
+    // Shadow colors
+    root.style.setProperty('--shadow-sm', colors.shadow.sm);
+    root.style.setProperty('--shadow-md', colors.shadow.md);
+    root.style.setProperty('--shadow-lg', colors.shadow.lg);
+    root.style.setProperty('--shadow-xl', colors.shadow.xl);
+    root.style.setProperty('--shadow-glass', colors.shadow.glass);
+    
+    // Glass effects
+    root.style.setProperty('--glass-backdrop', effects.glass.backdrop);
+    root.style.setProperty('--glass-border', effects.glass.border);
+    root.style.setProperty('--glass-shadow', effects.glass.shadow);
+    root.style.setProperty('--glass-opacity', effects.glass.opacity.toString());
+    
+    // Border radius
+    root.style.setProperty('--radius-sm', effects.radius.sm);
+    root.style.setProperty('--radius-md', effects.radius.md);
+    root.style.setProperty('--radius-lg', effects.radius.lg);
+    root.style.setProperty('--radius-xl', effects.radius.xl);
+    root.style.setProperty('--radius-full', effects.radius.full);
+    
+    // Typography
+    root.style.setProperty('--font-primary', typography.fontFamily.primary);
+    root.style.setProperty('--font-mono', typography.fontFamily.mono);
+    root.style.setProperty('--font-display', typography.fontFamily.display);
+  }, [currentTheme, themeName]);
+
+  const setTheme = (newThemeName: ThemeName) => {
+    setThemeName(newThemeName);
   };
 
-  const theme = React.useMemo(() => {
-    const isDark = mode === 'dark';
+  // Create Material-UI theme based on current theme
+  const muiTheme = React.useMemo((): MuiTheme => {
+    const { colors, effects, typography } = currentTheme;
     
     return createTheme({
       palette: {
-        mode,
-        primary: blue,
+        mode: 'light', // We handle our own theming
+        primary: {
+          main: colors.interactive.primary,
+          contrastText: colors.text.inverse,
+        },
+        secondary: {
+          main: colors.interactive.secondary,
+          contrastText: colors.text.inverse,
+        },
         background: {
-          default: isDark ? '#0a0b0d' : '#f8fafc',
-          paper: isDark ? '#1a1b1e' : '#ffffff',
+          default: colors.background.primary,
+          paper: colors.background.secondary,
         },
         text: {
-          primary: isDark ? '#ffffff' : '#1a1b1e',
-          secondary: isDark ? '#b3b3b3' : '#64748b',
+          primary: colors.text.primary,
+          secondary: colors.text.secondary,
+        },
+        error: {
+          main: colors.status.error,
+        },
+        warning: {
+          main: colors.status.warning,
+        },
+        info: {
+          main: colors.status.info,
+        },
+        success: {
+          main: colors.status.success,
         },
       },
+      typography: {
+        fontFamily: typography.fontFamily.primary,
+        h1: {
+          fontFamily: typography.fontFamily.display,
+          fontWeight: typography.fontWeight.bold,
+        },
+        h2: {
+          fontFamily: typography.fontFamily.display,
+          fontWeight: typography.fontWeight.semibold,
+        },
+        h3: {
+          fontFamily: typography.fontFamily.display,
+          fontWeight: typography.fontWeight.semibold,
+        },
+        body1: {
+          fontFamily: typography.fontFamily.primary,
+          fontWeight: typography.fontWeight.normal,
+        },
+        body2: {
+          fontFamily: typography.fontFamily.primary,
+          fontWeight: typography.fontWeight.normal,
+        },
+      },
+      shape: {
+        borderRadius: parseInt(effects.radius.md),
+      },
       components: {
+        MuiCssBaseline: {
+          styleOverrides: {
+            body: {
+              fontFamily: typography.fontFamily.primary,
+              backgroundColor: colors.background.primary,
+              color: colors.text.primary,
+              transition: effects.animation.duration.normal + ' ' + effects.animation.easing.default,
+            },
+          },
+        },
         MuiPaper: {
           styleOverrides: {
             root: {
               backgroundImage: 'none',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              backgroundColor: colors.background.glass,
+              backdropFilter: effects.glass.backdrop,
+              border: effects.glass.border,
+              borderRadius: effects.radius.lg,
+              boxShadow: colors.shadow.glass,
+              transition: `all ${effects.animation.duration.normal} ${effects.animation.easing.default}`,
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: colors.shadow.xl,
+              },
             },
           },
         },
         MuiButton: {
           styleOverrides: {
             root: {
-              borderRadius: 12,
+              borderRadius: effects.radius.md,
               textTransform: 'none',
-              fontWeight: 600,
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              fontWeight: typography.fontWeight.semibold,
+              fontFamily: typography.fontFamily.primary,
+              transition: `all ${effects.animation.duration.normal} ${effects.animation.easing.default}`,
+              backdropFilter: effects.glass.backdrop,
               '&:hover': {
                 transform: 'translateY(-1px)',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                boxShadow: colors.shadow.md,
+                backgroundColor: colors.interactive.hover,
+              },
+              '&:active': {
+                transform: 'translateY(0px)',
+                backgroundColor: colors.interactive.active,
+              },
+            },
+            contained: {
+              backgroundColor: colors.interactive.primary,
+              color: colors.text.inverse,
+              boxShadow: colors.shadow.sm,
+              '&:hover': {
+                backgroundColor: colors.interactive.hover,
+              },
+            },
+            outlined: {
+              borderColor: colors.border.primary,
+              color: colors.text.primary,
+              '&:hover': {
+                borderColor: colors.border.focus,
+                backgroundColor: colors.background.overlay,
               },
             },
           },
@@ -84,80 +235,107 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         MuiCard: {
           styleOverrides: {
             root: {
-              borderRadius: 16,
-              border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'}`,
-              backdropFilter: 'blur(10px)',
-              background: isDark 
-                ? 'rgba(26, 27, 30, 0.8)' 
-                : 'rgba(255, 255, 255, 0.9)',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              backgroundColor: colors.background.glass,
+              backdropFilter: effects.glass.backdrop,
+              border: `1px solid ${colors.border.glass}`,
+              borderRadius: effects.radius.xl,
+              boxShadow: colors.shadow.glass,
+              transition: `all ${effects.animation.duration.normal} ${effects.animation.easing.default}`,
               '&:hover': {
-                transform: 'translateY(-2px)',
-                boxShadow: isDark 
-                  ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
-                  : '0 8px 32px rgba(0, 0, 0, 0.1)',
+                transform: 'translateY(-4px)',
+                boxShadow: colors.shadow.xl,
+                borderColor: colors.border.focus,
+              },
+            },
+          },
+        },
+        MuiTextField: {
+          styleOverrides: {
+            root: {
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: colors.background.glass,
+                backdropFilter: effects.glass.backdrop,
+                borderRadius: effects.radius.md,
+                '& fieldset': {
+                  borderColor: colors.border.primary,
+                },
+                '&:hover fieldset': {
+                  borderColor: colors.border.focus,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: colors.interactive.primary,
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: colors.text.secondary,
+                '&.Mui-focused': {
+                  color: colors.interactive.primary,
+                },
               },
             },
           },
         },
       },
-      // TODO: Migrate these custom palette values to CSS variables for better maintainability
-      // TODO: Consider adding theme variants (e.g., high-contrast mode) for accessibility
+      // Preserve legacy customPalette for existing components
       customPalette: {
         text: {
-          grey: isDark ? '#fff' : '#2E2E2E',
+          grey: colors.text.secondary,
         },
         border: {
-          main: isDark ? '.1rem solid #2e2e2e' : '.1rem solid #e0e5ec',
-          new: '.1rem solid #3A475C',
+          main: `1px solid ${colors.border.primary}`,
+          new: `1px solid ${colors.border.focus}`,
         },
         grey: {
-          additional: isDark ? '#fff' : '#0E1016',
-          border: isDark ? '#2E2E2E' : '#e0e5ec',
-          light: '#96999C',
-          dark: '#93A0B2',
-          soft: isDark ? '#E2E0E5' : '#383B45',
-          background: '#222429',
+          additional: colors.text.primary,
+          border: colors.border.primary,
+          light: colors.text.tertiary,
+          dark: colors.text.secondary,
+          soft: colors.text.tertiary,
+          background: colors.background.secondary,
         },
         dark: {
-          main: isDark ? '#D1DDEF' : '#16253D',
-          background: '#17181A',
+          main: colors.text.primary,
+          background: colors.background.primary,
         },
         blue: {
-          serum: '#651CE4',
-          new: '#651CE4',
+          serum: colors.interactive.primary,
+          new: colors.interactive.primary,
         },
         white: {
-          main: '#fff',
-          background: '#1B2028',
+          main: colors.text.inverse,
+          background: colors.background.primary,
         },
         red: {
-          main: '#F69894',
+          main: colors.status.error,
         },
         green: {
-          main: '#97E873',
-          light: '#53DF11',
+          main: colors.status.success,
+          light: colors.status.success,
         },
         orange: {
-          dark: '#F8B567',
-          light: '#F29C38',
+          dark: colors.status.warning,
+          light: colors.status.warning,
         },
       },
-    });
-  }, [mode]);
+    } as any);
+  }, [currentTheme]);
 
   const value = {
-    mode,
-    toggleTheme,
-    theme,
+    currentTheme,
+    themeName,
+    setTheme,
+    availableThemes: themes,
   };
 
   return (
     <ThemeContext.Provider value={value}>
-      <MuiThemeProvider theme={theme}>
+      <MuiThemeProvider theme={muiTheme}>
         <CssBaseline />
         {children}
       </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 };
+
+// Legacy export for backwards compatibility
+export const useThemeMode = useTheme;

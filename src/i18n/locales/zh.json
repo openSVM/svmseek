@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "欢迎",
+    "next": "下一步",
+    "back": "返回",
+    "continue": "继续",
+    "cancel": "取消",
+    "confirm": "确认",
+    "retry": "重试",
+    "close": "关闭",
+    "save": "保存",
+    "loading": "加载中",
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "info": "信息"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "选择您的语言",
+      "subtitle": "为钱包界面选择您的首选语言",
+      "selectLanguage": "选择语言"
+    },
+    "themeSelection": {
+      "title": "选择您的主题",
+      "subtitle": "为钱包选择您的首选视觉主题",
+      "themes": {
+        "eink": "E-Ink灰度",
+        "ascii": "ASCII终端",
+        "borland": "Borland蓝",
+        "paper": "纸白",
+        "solarized": "Solarized暗色",
+        "cyberpunk": "赛博朋克粉",
+        "newspaper": "纽约时报",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeek钱包",
+    "subtitle": "您通往Solana生态系统的安全门户",
+    "createWallet": {
+      "title": "创建新钱包",
+      "description": "使用安全助记词生成新钱包"
+    },
+    "restoreWallet": {
+      "title": "恢复现有钱包",
+      "description": "使用助记词恢复您的钱包",
+      "seedPhrase": "助记词"
+    },
+    "welcomeBack": {
+      "title": "欢迎回来",
+      "subtitle": "输入密码解锁您的钱包",
+      "password": "密码",
+      "unlock": "解锁钱包"
+    }
+  },
+  "security": {
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "enterPassword": "输入您的密码",
+    "createPassword": "创建密码",
+    "seedPhrase": "助记词",
+    "saveSeedPhrase": "保存您的助记词",
+    "confirmSeedPhrase": "确认您的助记词",
+    "securityTip": "请安全保存您的助记词 - 这是恢复钱包的唯一方法"
+  },
+  "errors": {
+    "generic": "出了点问题",
+    "networkError": "网络连接错误",
+    "invalidSeedPhrase": "无效的助记词",
+    "passwordMismatch": "密码不匹配",
+    "cryptoLibraryError": "加密库初始化错误",
+    "bufferError": "加密模块中的缓冲区访问错误"
+  }
+}

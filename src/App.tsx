@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useMemo } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import './i18n'; // Initialize i18n
 import LoadingIndicator from './components/LoadingIndicator';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
@@ -14,20 +15,17 @@ import { isExtension } from './utils/utils';
 import { useWallet, WalletProvider } from './utils/wallet';
 import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import useOnboarding from './utils/useOnboarding';
+// Import OnboardingSetup component synchronously since it's needed immediately
+import { OnboardingSetup } from './components/OnboardingSetup';
 // import { MASTER_BUILD } from './utils/config';
 // import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
-const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
+const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));  
 const Wallet = lazy(() => import('./routes/WalletRouter'));
-
-// const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
-// const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
-// const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
-// const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 
 interface CustomPalette {
   text: {
@@ -128,6 +126,15 @@ const Pages = () => {
     dismissPWAPrompt,
     handlePWAInstall,
   } = useOnboarding();
+  
+  // Check if user needs to complete initial setup (language/theme selection)
+  const [showOnboardingSetup, setShowOnboardingSetup] = React.useState(() => {
+    return !localStorage.getItem('onboarding-setup-complete');
+  });
+
+  const handleOnboardingSetupComplete = () => {
+    setShowOnboardingSetup(false);
+  };
   // const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
 
   // const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
@@ -152,6 +159,13 @@ const Pages = () => {
       sessionStorage.removeItem('hash');
     }
   }, []);
+
+  // Show onboarding setup first if not completed
+  if (showOnboardingSetup) {
+    return (
+      <OnboardingSetup onComplete={handleOnboardingSetupComplete} />
+    );
+  }
 
   return (
     <>

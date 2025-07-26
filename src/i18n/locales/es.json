@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "retry": "Reintentar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "loading": "Cargando",
+    "error": "Error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "Elige tu idioma",
+      "subtitle": "Selecciona tu idioma preferido para la interfaz del monedero",
+      "selectLanguage": "Seleccionar idioma"
+    },
+    "themeSelection": {
+      "title": "Elige tu tema",
+      "subtitle": "Selecciona tu tema visual preferido para el monedero",
+      "themes": {
+        "eink": "E-Ink Escala de grises",
+        "ascii": "Terminal ASCII",
+        "borland": "Borland Azul",
+        "paper": "Papel blanco",
+        "solarized": "Solarized oscuro",
+        "cyberpunk": "Cyberpunk rosa",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "Monedero SVMSeek",
+    "subtitle": "Tu puerta segura al ecosistema Solana",
+    "createWallet": {
+      "title": "Crear nuevo monedero",
+      "description": "Generar un nuevo monedero con una frase semilla segura"
+    },
+    "restoreWallet": {
+      "title": "Restaurar monedero existente",
+      "description": "Restaura tu monedero usando una frase semilla",
+      "seedPhrase": "Frase semilla"
+    },
+    "welcomeBack": {
+      "title": "Bienvenido de vuelta",
+      "subtitle": "Introduce tu contraseña para desbloquear tu monedero",
+      "password": "Contraseña",
+      "unlock": "Desbloquear monedero"
+    }
+  },
+  "security": {
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "enterPassword": "Introduce tu contraseña",
+    "createPassword": "Crear una contraseña",
+    "seedPhrase": "Frase semilla",
+    "saveSeedPhrase": "Guarda tu frase semilla",
+    "confirmSeedPhrase": "Confirma tu frase semilla",
+    "securityTip": "Mantén tu frase semilla segura - es la única forma de recuperar tu monedero"
+  },
+  "errors": {
+    "generic": "Algo salió mal",
+    "networkError": "Error de conexión de red",
+    "invalidSeedPhrase": "Frase semilla inválida",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "cryptoLibraryError": "Error de inicialización de biblioteca crypto",
+    "bufferError": "Error de acceso al buffer en módulo crypto"
+  }
+}

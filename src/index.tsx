@@ -8,6 +8,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './styles/cssVariables.css';
 import './styles/animations.css';
+import './styles/theme.css';
 
 // Ensure Buffer is available globally AFTER polyfills
 import { Buffer } from 'buffer';

@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "Καλώς ήρθατε",
+    "next": "Επόμενο",
+    "back": "Πίσω",
+    "continue": "Συνέχεια",
+    "cancel": "Ακύρωση",
+    "confirm": "Επιβεβαίωση",
+    "retry": "Επανάληψη",
+    "close": "Κλείσιμο",
+    "save": "Αποθήκευση",
+    "loading": "Φόρτωση",
+    "error": "Σφάλμα",
+    "success": "Επιτυχία",
+    "warning": "Προειδοποίηση",
+    "info": "Πληροφορίες"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "Επιλέξτε τη γλώσσα σας",
+      "subtitle": "Επιλέξτε την προτιμώμενη γλώσσα για τη διεπαφή του πορτοφολιού",
+      "selectLanguage": "Επιλογή γλώσσας"
+    },
+    "themeSelection": {
+      "title": "Επιλέξτε το θέμα σας",
+      "subtitle": "Επιλέξτε το προτιμώμενο οπτικό θέμα για το πορτοφόλι",
+      "themes": {
+        "eink": "E-Ink Αποχρώσεις του γκρι",
+        "ascii": "ASCII Τερματικό",
+        "borland": "Borland Μπλε",
+        "paper": "Λευκό χαρτί",
+        "solarized": "Solarized Σκοτεινό",
+        "cyberpunk": "Cyberpunk Ροζ",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "Πορτοφόλι SVMSeek",
+    "subtitle": "Η ασφαλής πύλη σας στο οικοσύστημα Solana",
+    "createWallet": {
+      "title": "Δημιουργία νέου πορτοφολιού",
+      "description": "Δημιουργήστε ένα νέο πορτοφόλι με ασφαλή φράση σπόρου"
+    },
+    "restoreWallet": {
+      "title": "Επαναφορά υπάρχοντος πορτοφολιού",
+      "description": "Επαναφέρετε το πορτοφόλι σας χρησιμοποιώντας φράση σπόρου",
+      "seedPhrase": "Φράση σπόρου"
+    },
+    "welcomeBack": {
+      "title": "Καλώς ήρθατε πίσω",
+      "subtitle": "Εισάγετε τον κωδικό σας για να ξεκλειδώσετε το πορτοφόλι",
+      "password": "Κωδικός",
+      "unlock": "Ξεκλείδωμα πορτοφολιού"
+    }
+  },
+  "security": {
+    "password": "Κωδικός",
+    "confirmPassword": "Επιβεβαίωση κωδικού",
+    "enterPassword": "Εισάγετε τον κωδικό σας",
+    "createPassword": "Δημιουργήστε κωδικό",
+    "seedPhrase": "Φράση σπόρου",
+    "saveSeedPhrase": "Αποθηκεύστε τη φράση σπόρου",
+    "confirmSeedPhrase": "Επιβεβαιώστε τη φράση σπόρου",
+    "securityTip": "Κρατήστε τη φράση σπόρου ασφαλή - είναι ο μόνος τρόπος να ανακτήσετε το πορτοφόλι σας"
+  },
+  "errors": {
+    "generic": "Κάτι πήγε στραβά",
+    "networkError": "Σφάλμα σύνδεσης δικτύου",
+    "invalidSeedPhrase": "Μη έγκυρη φράση σπόρου",
+    "passwordMismatch": "Οι κωδικοί δεν ταιριάζουν",
+    "cryptoLibraryError": "Σφάλμα αρχικοποίησης βιβλιοθήκης κρυπτογραφίας",
+    "bufferError": "Σφάλμα πρόσβασης buffer στο κρυπτογραφικό module"
+  }
+}

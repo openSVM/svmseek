@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "ยินดีต้อนรับ",
+    "next": "ถัดไป",
+    "back": "กลับ",
+    "continue": "ดำเนินการต่อ",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "retry": "ลองใหม่",
+    "close": "ปิด",
+    "save": "บันทึก",
+    "loading": "กำลังโหลด",
+    "error": "ข้อผิดพลาด",
+    "success": "สำเร็จ",
+    "warning": "คำเตือน",
+    "info": "ข้อมูล"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "เลือกภาษาของคุณ",
+      "subtitle": "เลือกภาษาที่ต้องการสำหรับอินเทอร์เฟซกระเป๋าเงิน",
+      "selectLanguage": "เลือกภาษา"
+    },
+    "themeSelection": {
+      "title": "เลือกธีมของคุณ",
+      "subtitle": "เลือกธีมภาพที่ต้องการสำหรับกระเป๋าเงิน",
+      "themes": {
+        "eink": "E-Ink เกรย์สเกล",
+        "ascii": "ASCII เทอร์มินัล",
+        "borland": "Borland บลู",
+        "paper": "กระดาษขาว",
+        "solarized": "Solarized ดาร์ก",
+        "cyberpunk": "ไซเบอร์พังค์ พิงค์",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "กระเป๋าเงิน SVMSeek",
+    "subtitle": "ประตูสู่ระบบนิเวศ Solana อย่างปลอดภัย",
+    "createWallet": {
+      "title": "สร้างกระเป๋าเงินใหม่",
+      "description": "สร้างกระเป๋าเงินใหม่ด้วยวลีเมล็ดที่ปลอดภัย"
+    },
+    "restoreWallet": {
+      "title": "กู้คืนกระเป๋าเงินที่มีอยู่",
+      "description": "กู้คืนกระเป๋าเงินของคุณโดยใช้วลีเมล็ด",
+      "seedPhrase": "วลีเมล็ด"
+    },
+    "welcomeBack": {
+      "title": "ยินดีต้อนรับกลับ",
+      "subtitle": "ป้อนรหัสผ่านเพื่อปลดล็อกกระเป๋าเงินของคุณ",
+      "password": "รหัสผ่าน",
+      "unlock": "ปลดล็อกกระเป๋าเงิน"
+    }
+  },
+  "security": {
+    "password": "รหัสผ่าน",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
+    "enterPassword": "ป้อนรหัสผ่านของคุณ",
+    "createPassword": "สร้างรหัสผ่าน",
+    "seedPhrase": "วลีเมล็ด",
+    "saveSeedPhrase": "บันทึกวลีเมล็ดของคุณ",
+    "confirmSeedPhrase": "ยืนยันวลีเมล็ดของคุณ",
+    "securityTip": "เก็บวลีเมล็ดของคุณให้ปลอดภัย - เป็นวิธีเดียวในการกู้คืนกระเป๋าเงินของคุณ"
+  },
+  "errors": {
+    "generic": "เกิดข้อผิดพลาดบางอย่าง",
+    "networkError": "ข้อผิดพลาดการเชื่อมต่อเครือข่าย",
+    "invalidSeedPhrase": "วลีเมล็ดไม่ถูกต้อง",
+    "passwordMismatch": "รหัสผ่านไม่ตรงกัน",
+    "cryptoLibraryError": "ข้อผิดพลาดการเริ่มต้นไลบรารีเข้ารหัส",
+    "bufferError": "ข้อผิดพลาดการเข้าถึงบัฟเฟอร์ในโมดูลเข้ารหัส"
+  }
+}

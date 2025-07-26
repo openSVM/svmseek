@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "Добро пожаловать",
+    "next": "Далее",
+    "back": "Назад",
+    "continue": "Продолжить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "retry": "Повторить",
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "loading": "Загрузка",
+    "error": "Ошибка",
+    "success": "Успех",
+    "warning": "Предупреждение",
+    "info": "Информация"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "Выберите язык",
+      "subtitle": "Выберите предпочитаемый язык для интерфейса кошелька",
+      "selectLanguage": "Выбрать язык"
+    },
+    "themeSelection": {
+      "title": "Выберите тему",
+      "subtitle": "Выберите предпочитаемую визуальную тему для кошелька",
+      "themes": {
+        "eink": "E-Ink серый",
+        "ascii": "ASCII терминал",
+        "borland": "Borland синий",
+        "paper": "Бумага белая",
+        "solarized": "Solarized темная",
+        "cyberpunk": "Киберпанк розовый",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "Кошелек SVMSeek",
+    "subtitle": "Ваш безопасный шлюз в экосистему Solana",
+    "createWallet": {
+      "title": "Создать новый кошелек",
+      "description": "Сгенерировать новый кошелек с безопасной сид-фразой"
+    },
+    "restoreWallet": {
+      "title": "Восстановить существующий кошелек",
+      "description": "Восстановите свой кошелек, используя сид-фразу",
+      "seedPhrase": "Сид-фраза"
+    },
+    "welcomeBack": {
+      "title": "Добро пожаловать обратно",
+      "subtitle": "Введите пароль для разблокировки кошелька",
+      "password": "Пароль",
+      "unlock": "Разблокировать кошелек"
+    }
+  },
+  "security": {
+    "password": "Пароль",
+    "confirmPassword": "Подтвердить пароль",
+    "enterPassword": "Введите пароль",
+    "createPassword": "Создать пароль",
+    "seedPhrase": "Сид-фраза",
+    "saveSeedPhrase": "Сохраните свою сид-фразу",
+    "confirmSeedPhrase": "Подтвердите свою сид-фразу",
+    "securityTip": "Храните сид-фразу в безопасности - это единственный способ восстановить кошелек"
+  },
+  "errors": {
+    "generic": "Что-то пошло не так",
+    "networkError": "Ошибка сетевого соединения",
+    "invalidSeedPhrase": "Неверная сид-фраза",
+    "passwordMismatch": "Пароли не совпадают",
+    "cryptoLibraryError": "Ошибка инициализации криптографической библиотеки",
+    "bufferError": "Ошибка доступа к буферу в криптографическом модуле"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "환영합니다",
+    "next": "다음",
+    "back": "뒤로",
+    "continue": "계속",
+    "cancel": "취소",
+    "confirm": "확인",
+    "retry": "재시도",
+    "close": "닫기",
+    "save": "저장",
+    "loading": "로딩 중",
+    "error": "오류",
+    "success": "성공",
+    "warning": "경고",
+    "info": "정보"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "언어를 선택하세요",
+      "subtitle": "지갑 인터페이스의 선호 언어를 선택하세요",
+      "selectLanguage": "언어 선택"
+    },
+    "themeSelection": {
+      "title": "테마를 선택하세요",
+      "subtitle": "지갑의 선호 시각적 테마를 선택하세요",
+      "themes": {
+        "eink": "E-Ink 그레이스케일",
+        "ascii": "ASCII 터미널",
+        "borland": "Borland 블루",
+        "paper": "페이퍼 화이트",
+        "solarized": "Solarized 다크",
+        "cyberpunk": "사이버펑크 핑크",
+        "newspaper": "뉴욕 타임즈",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeek 지갑",
+    "subtitle": "솔라나 생태계로의 안전한 게이트웨이",
+    "createWallet": {
+      "title": "새 지갑 생성",
+      "description": "안전한 시드 문구로 새 지갑을 생성합니다"
+    },
+    "restoreWallet": {
+      "title": "기존 지갑 복구",
+      "description": "시드 문구를 사용하여 지갑을 복구합니다",
+      "seedPhrase": "시드 문구"
+    },
+    "welcomeBack": {
+      "title": "다시 오신 것을 환영합니다",
+      "subtitle": "지갑을 잠금 해제하려면 비밀번호를 입력하세요",
+      "password": "비밀번호",
+      "unlock": "지갑 잠금 해제"
+    }
+  },
+  "security": {
+    "password": "비밀번호",
+    "confirmPassword": "비밀번호 확인",
+    "enterPassword": "비밀번호를 입력하세요",
+    "createPassword": "비밀번호 생성",
+    "seedPhrase": "시드 문구",
+    "saveSeedPhrase": "시드 문구를 저장하세요",
+    "confirmSeedPhrase": "시드 문구를 확인하세요",
+    "securityTip": "시드 문구를 안전하게 보관하세요 - 지갑을 복구하는 유일한 방법입니다"
+  },
+  "errors": {
+    "generic": "문제가 발생했습니다",
+    "networkError": "네트워크 연결 오류",
+    "invalidSeedPhrase": "잘못된 시드 문구",
+    "passwordMismatch": "비밀번호가 일치하지 않습니다",
+    "cryptoLibraryError": "암호화 라이브러리 초기화 오류",
+    "bufferError": "암호화 모듈의 버퍼 액세스 오류"
+  }
+}

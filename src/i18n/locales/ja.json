@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "いらっしゃいませ",
+    "next": "次へ",
+    "back": "戻る",
+    "continue": "続行",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "retry": "再試行",
+    "close": "閉じる",
+    "save": "保存",
+    "loading": "読み込み中",
+    "error": "エラー",
+    "success": "成功",
+    "warning": "警告",
+    "info": "情報"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "言語を選択",
+      "subtitle": "ウォレットインターフェースの優先言語を選択してください",
+      "selectLanguage": "言語を選択"
+    },
+    "themeSelection": {
+      "title": "テーマを選択",
+      "subtitle": "ウォレットの優先視覚テーマを選択してください",
+      "themes": {
+        "eink": "E-Inkグレースケール",
+        "ascii": "ASCIIターミナル",
+        "borland": "Borlandブルー",
+        "paper": "ペーパーホワイト",
+        "solarized": "Solarizedダーク",
+        "cyberpunk": "サイバーパンクピンク",
+        "newspaper": "NYタイムズ",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeekウォレット",
+    "subtitle": "Solanaエコシステムへの安全なゲートウェイ",
+    "createWallet": {
+      "title": "新しいウォレットを作成",
+      "description": "安全なシードフレーズで新しいウォレットを生成"
+    },
+    "restoreWallet": {
+      "title": "既存のウォレットを復元",
+      "description": "シードフレーズを使用してウォレットを復元",
+      "seedPhrase": "シードフレーズ"
+    },
+    "welcomeBack": {
+      "title": "おかえりなさい",
+      "subtitle": "ウォレットのロックを解除するためにパスワードを入力してください",
+      "password": "パスワード",
+      "unlock": "ウォレットのロック解除"
+    }
+  },
+  "security": {
+    "password": "パスワード",
+    "confirmPassword": "パスワードを確認",
+    "enterPassword": "パスワードを入力",
+    "createPassword": "パスワードを作成",
+    "seedPhrase": "シードフレーズ",
+    "saveSeedPhrase": "シードフレーズを保存",
+    "confirmSeedPhrase": "シードフレーズを確認",
+    "securityTip": "シードフレーズを安全に保管してください - ウォレットを回復する唯一の方法です"
+  },
+  "errors": {
+    "generic": "何かが間違っています",
+    "networkError": "ネットワーク接続エラー",
+    "invalidSeedPhrase": "無効なシードフレーズ",
+    "passwordMismatch": "パスワードが一致しません",
+    "cryptoLibraryError": "暗号ライブラリ初期化エラー",
+    "bufferError": "暗号モジュールでのバッファアクセスエラー"
+  }
+}

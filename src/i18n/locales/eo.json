@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "Bonvenon",
+    "next": "Sekva",
+    "back": "Reen",
+    "continue": "Daŭrigi",
+    "cancel": "Nuligi",
+    "confirm": "Konfirmi",
+    "retry": "Reprovi",
+    "close": "Fermi",
+    "save": "Konservi",
+    "loading": "Ŝargante",
+    "error": "Eraro",
+    "success": "Sukceso",
+    "warning": "Averto",
+    "info": "Informo"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "Elektu vian lingvon",
+      "subtitle": "Elektu vian preferatan lingvon por la interfaco de la ujo",
+      "selectLanguage": "Elekti lingvon"
+    },
+    "themeSelection": {
+      "title": "Elektu vian temon",
+      "subtitle": "Elektu vian preferatan vidtematon por la ujo",
+      "themes": {
+        "eink": "E-Ink grizoskalo",
+        "ascii": "ASCII terminalo",
+        "borland": "Borland blua",
+        "paper": "Paper blanka",
+        "solarized": "Solarized malhela",
+        "cyberpunk": "Cyberpunk rozkolora",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeek Ujo",
+    "subtitle": "Via sekura pordo al la Solana ekosistemo",
+    "createWallet": {
+      "title": "Krei novan ujon",
+      "description": "Generi novan ujon kun sekura semfrazo"
+    },
+    "restoreWallet": {
+      "title": "Restarigi ekzistantan ujon",
+      "description": "Restarigi vian ujon uzante semfrazon",
+      "seedPhrase": "Semfrazo"
+    },
+    "welcomeBack": {
+      "title": "Bonvenon reen",
+      "subtitle": "Enigu vian pasvorton por malŝlosi vian ujon",
+      "password": "Pasvorto",
+      "unlock": "Malŝlosi ujon"
+    }
+  },
+  "security": {
+    "password": "Pasvorto",
+    "confirmPassword": "Konfirmi pasvorton",
+    "enterPassword": "Enigu vian pasvorton",
+    "createPassword": "Krei pasvorton",
+    "seedPhrase": "Semfrazo",
+    "saveSeedPhrase": "Konservu vian semfrazon",
+    "confirmSeedPhrase": "Konfirmu vian semfrazon",
+    "securityTip": "Tenu vian semfrazon sekura - ĝi estas la nura maniero por reakiri vian ujon"
+  },
+  "errors": {
+    "generic": "Io malbona okazis",
+    "networkError": "Reto-konekta eraro",
+    "invalidSeedPhrase": "Nevalida semfrazo",
+    "passwordMismatch": "Pasvortoj ne kongruas",
+    "cryptoLibraryError": "Kript-biblioteka komenca eraro",
+    "bufferError": "Buffer-alira eraro en kript-modulo"
+  }
+}

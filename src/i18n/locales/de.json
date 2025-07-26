@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "Willkommen",
+    "next": "Weiter",
+    "back": "Zurück",
+    "continue": "Fortfahren",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "retry": "Wiederholen",
+    "close": "Schließen",
+    "save": "Speichern",
+    "loading": "Laden",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
+    "info": "Information"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "Sprache wählen",
+      "subtitle": "Wählen Sie Ihre bevorzugte Sprache für die Wallet-Oberfläche",
+      "selectLanguage": "Sprache auswählen"
+    },
+    "themeSelection": {
+      "title": "Design wählen",
+      "subtitle": "Wählen Sie Ihr bevorzugtes visuelles Design für die Wallet",
+      "themes": {
+        "eink": "E-Ink Graustufen",
+        "ascii": "ASCII Terminal",
+        "borland": "Borland Blau",
+        "paper": "Papier Weiß",
+        "solarized": "Solarized Dunkel",
+        "cyberpunk": "Cyberpunk Rosa",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeek Wallet",
+    "subtitle": "Ihr sicherer Zugang zum Solana-Ökosystem",
+    "createWallet": {
+      "title": "Neue Wallet erstellen",
+      "description": "Eine neue Wallet mit sicherer Seed-Phrase generieren"
+    },
+    "restoreWallet": {
+      "title": "Bestehende Wallet wiederherstellen",
+      "description": "Stellen Sie Ihre Wallet mit einer Seed-Phrase wieder her",
+      "seedPhrase": "Seed-Phrase"
+    },
+    "welcomeBack": {
+      "title": "Willkommen zurück",
+      "subtitle": "Geben Sie Ihr Passwort ein, um Ihre Wallet zu entsperren",
+      "password": "Passwort",
+      "unlock": "Wallet entsperren"
+    }
+  },
+  "security": {
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "enterPassword": "Passwort eingeben",
+    "createPassword": "Passwort erstellen",
+    "seedPhrase": "Seed-Phrase",
+    "saveSeedPhrase": "Speichern Sie Ihre Seed-Phrase",
+    "confirmSeedPhrase": "Bestätigen Sie Ihre Seed-Phrase",
+    "securityTip": "Bewahren Sie Ihre Seed-Phrase sicher auf - sie ist der einzige Weg, Ihre Wallet wiederherzustellen"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen",
+    "networkError": "Netzwerkverbindungsfehler",
+    "invalidSeedPhrase": "Ungültige Seed-Phrase",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "cryptoLibraryError": "Fehler bei der Initialisierung der Krypto-Bibliothek",
+    "bufferError": "Buffer-Zugriffsfehler im Krypto-Modul"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "common": {
+    "welcome": "स्वागतम्",
+    "next": "अग्रिमम्",
+    "back": "पश्चात्",
+    "continue": "चलन्तु",
+    "cancel": "रद्दीकरणम्",
+    "confirm": "पुष्टिः",
+    "retry": "पुनः प्रयासः",
+    "close": "बन्धनम्",
+    "save": "रक्षणम्",
+    "loading": "आरोपणम्",
+    "error": "त्रुटिः",
+    "success": "सफलता",
+    "warning": "चेतावनी",
+    "info": "सूचना"
+  },
+  "onboarding": {
+    "languageSelection": {
+      "title": "भाषा चुनन्तु",
+      "subtitle": "कोशस्य अन्तर्मुखाय वांछितं भाषां चुनन्तु",
+      "selectLanguage": "भाषा चयनम्"
+    },
+    "themeSelection": {
+      "title": "विषयं चुनन्तु",
+      "subtitle": "कोशस्य वांछितं दृश्य-विषयं चुनन्तु",
+      "themes": {
+        "eink": "E-Ink धूसरवर्णम्",
+        "ascii": "ASCII टर्मिनल्",
+        "borland": "Borland नीलम्",
+        "paper": "कागद श्वेतम्",
+        "solarized": "Solarized तमः",
+        "cyberpunk": "साइबरपंक गुलाबी",
+        "newspaper": "NY Times",
+        "win95": "Windows 95",
+        "winxp": "Windows XP",
+        "macos": "macOS Aqua",
+        "linux": "Linux TUI"
+      }
+    }
+  },
+  "wallet": {
+    "title": "SVMSeek कोशः",
+    "subtitle": "Solana पारिस्थितिकी-तन्त्रस्य सुरक्षितं द्वारम्",
+    "createWallet": {
+      "title": "नवीनं कोशं निर्माणम्",
+      "description": "सुरक्षित बीज-वाक्येन नवीनं कोशं जनयन्तु"
+    },
+    "restoreWallet": {
+      "title": "विद्यमानस्य कोशस्य पुनरुद्धारः",
+      "description": "बीज-वाक्यस्य उपयोगेन कोशस्य पुनरुद्धारं कुरुत",
+      "seedPhrase": "बीज-वाक्यम्"
+    },
+    "welcomeBack": {
+      "title": "पुनरागमने स्वागतम्",
+      "subtitle": "कोशस्य मुक्तिकरणाय गुप्तशब्दं प्रविशन्तु",
+      "password": "गुप्तशब्दः",
+      "unlock": "कोश-मुक्तिकरणम्"
+    }
+  },
+  "security": {
+    "password": "गुप्तशब्दः",
+    "confirmPassword": "गुप्तशब्द-पुष्टिः",
+    "enterPassword": "गुप्तशब्दं प्रविशन्तु",
+    "createPassword": "गुप्तशब्द-सृष्टिः",
+    "seedPhrase": "बीज-वाक्यम्",
+    "saveSeedPhrase": "बीज-वाक्यं रक्षन्तु",
+    "confirmSeedPhrase": "बीज-वाक्यस्य पुष्टिं कुरुत",
+    "securityTip": "बीज-वाक्यं सुरक्षितं रखन्तु - कोशस्य पुनरुद्धारस्य एकमात्र उपायः एतत् अस्ति"
+  },
+  "errors": {
+    "generic": "किमपि गलतं जातम्",
+    "networkError": "जाल-सम्पर्क त्रुटिः",
+    "invalidSeedPhrase": "अवैध बीज-वाक्यम्",
+    "passwordMismatch": "गुप्तशब्दाः न मेलन्ति",
+    "cryptoLibraryError": "गुप्तीकरण-पुस्तकालयस्य आरम्भ-त्रुटिः",
+    "bufferError": "गुप्तीकरण-मॉड्यूले बफर-पहुँच त्रुटिः"
+  }
+}
