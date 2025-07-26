@@ -1,13 +1,9 @@
 import { getUnlockedMnemonicAndSeed } from './../wallet-seed';
-import { BIP32Factory } from 'bip32';
-import * as ecc from 'tiny-secp256k1';
 import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
-import { derivePath } from 'ed25519-hd-key';
 import { Buffer } from 'buffer';
-
-const bip32 = BIP32Factory(ecc);
+import { createAccountFromSeed } from '../crypto-browser-compatible';
 
 export const DERIVATION_PATH = {
   deprecated: undefined,
@@ -23,27 +19,13 @@ export function getAccountFromSeed(
   accountIndex = 0,
 ) {
   try {
-    const derivedSeed = deriveSeed(seed, walletIndex, dPath, accountIndex);
-    if (!derivedSeed) {
-      throw new Error('Failed to derive seed');
+    const accountData = createAccountFromSeed(seed, walletIndex, dPath);
+    
+    if (!accountData || !accountData.secretKey) {
+      throw new Error('Failed to create account data');
     }
     
-    // Ensure derivedSeed is a valid Uint8Array
-    let seedArray;
-    if (derivedSeed instanceof Uint8Array) {
-      seedArray = derivedSeed;
-    } else if (Buffer.isBuffer(derivedSeed)) {
-      seedArray = new Uint8Array(derivedSeed);
-    } else {
-      throw new Error('Invalid derived seed format');
-    }
-    
-    const keyPair = nacl.sign.keyPair.fromSeed(seedArray);
-    if (!keyPair || !keyPair.secretKey) {
-      throw new Error('Failed to generate key pair from seed');
-    }
-    
-    return new Account(keyPair.secretKey);
+    return new Account(accountData.secretKey);
   } catch (error) {
     console.error('getAccountFromSeed failed:', error);
     // Return a fallback account with a deterministic key based on wallet index
@@ -54,66 +36,7 @@ export function getAccountFromSeed(
   }
 }
 
-function deriveSeed(seed, walletIndex, derivationPath, accountIndex) {
-  // Add defensive checks for seed parameter
-  if (!seed) {
-    console.warn('deriveSeed called with undefined/null seed, using empty seed');
-    seed = Buffer.alloc(32); // 32-byte empty seed as fallback
-  }
-  
-  // Ensure seed is a Buffer
-  let seedBuffer;
-  try {
-    if (Buffer.isBuffer(seed)) {
-      seedBuffer = seed;
-    } else if (typeof seed === 'string') {
-      seedBuffer = Buffer.from(seed, 'hex');
-    } else {
-      seedBuffer = Buffer.from(seed);
-    }
-  } catch (error) {
-    console.error('Failed to convert seed to Buffer:', error);
-    seedBuffer = Buffer.alloc(32); // Fallback to empty seed
-  }
 
-  try {
-    switch (derivationPath) {
-      case DERIVATION_PATH.deprecated:
-        const path = `m/501'/${walletIndex}'/0/${accountIndex}`;
-        const bip32Node = bip32.fromSeed(seedBuffer);
-        if (!bip32Node) {
-          throw new Error('Failed to create BIP32 node from seed');
-        }
-        const derivedNode = bip32Node.derivePath(path);
-        if (!derivedNode || !derivedNode.privateKey) {
-          throw new Error('Failed to derive private key from path');
-        }
-        return derivedNode.privateKey;
-      case DERIVATION_PATH.bip44:
-        const path44 = `m/44'/501'/${walletIndex}'`;
-        const derivedKey44 = derivePath(path44, seedBuffer);
-        if (!derivedKey44 || !derivedKey44.key) {
-          throw new Error('Failed to derive key from BIP44 path');
-        }
-        return derivedKey44.key;
-      case DERIVATION_PATH.bip44Change:
-        const path44Change = `m/44'/501'/${walletIndex}'/0'`;
-        const derivedKey44Change = derivePath(path44Change, seedBuffer);
-        if (!derivedKey44Change || !derivedKey44Change.key) {
-          throw new Error('Failed to derive key from BIP44 change path');
-        }
-        return derivedKey44Change.key;
-      default:
-        throw new Error(`invalid derivation path: ${derivationPath}`);
-    }
-  } catch (error) {
-    console.error('Seed derivation failed:', error);
-    // Return a deterministic fallback key based on wallet index
-    const fallbackSeed = Buffer.alloc(32);
-    fallbackSeed.writeUInt32BE(walletIndex || 0, 0);
-    return fallbackSeed;
-  }
-}
 
 export class LocalStorageWalletProvider {
   constructor(args) {

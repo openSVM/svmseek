@@ -1,14 +1,11 @@
 import { pbkdf2 } from 'crypto-browserify';
 import { randomBytes, secretbox } from 'tweetnacl';
-import { BIP32Factory } from 'bip32';
-import * as ecc from 'tiny-secp256k1';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
 import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
-
-const bip32 = BIP32Factory(ecc);
+import { safeCreateImportsEncryptionKey } from './crypto-browser-compatible';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -252,32 +249,7 @@ export function lockWallet() {
 // Returns the 32 byte key used to encrypt imported private keys.
 function deriveImportsEncryptionKey(seed) {
   try {
-    // SLIP16 derivation path.
-    if (!seed) {
-      console.warn('deriveImportsEncryptionKey called with undefined seed');
-      return Buffer.alloc(32); // Return empty 32-byte buffer as fallback
-    }
-    
-    let seedBuffer;
-    if (typeof seed === 'string') {
-      seedBuffer = Buffer.from(seed, 'hex');
-    } else if (Buffer.isBuffer(seed)) {
-      seedBuffer = seed;
-    } else {
-      seedBuffer = Buffer.from(seed);
-    }
-    
-    const bip32Node = bip32.fromSeed(seedBuffer);
-    if (!bip32Node) {
-      throw new Error('Failed to create BIP32 node from seed');
-    }
-    
-    const derivedNode = bip32Node.derivePath("m/10016'/0");
-    if (!derivedNode || !derivedNode.privateKey) {
-      throw new Error('Failed to derive imports encryption key');
-    }
-    
-    return derivedNode.privateKey;
+    return safeCreateImportsEncryptionKey(seed);
   } catch (error) {
     console.error('deriveImportsEncryptionKey failed:', error);
     // Return a deterministic fallback key
