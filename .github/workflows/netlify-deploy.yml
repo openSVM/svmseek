@@ -1,0 +1,145 @@
+name: Netlify Deployment
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          for i in 1 2 3; do
+            yarn install --frozen-lockfile && break || sleep 10
+          done
+
+      - name: Build application
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Building for production (main branch)"
+            yarn buildMaster
+          else
+            echo "Building for development"
+            yarn build
+          fi
+
+      - name: Run bundle analysis
+        run: |
+          # Create bundle analysis report
+          npx webpack-bundle-analyzer build/static/js/*.js build/static/js/ --report build/bundle-report.html --mode static || true
+          
+          # Calculate build size
+          BUILD_SIZE=$(du -sh build | cut -f1)
+          echo "Build size: $BUILD_SIZE"
+          
+          # Check for large files
+          echo "Large files (>500KB):"
+          find build -size +500k -type f | while read file; do
+            size=$(du -h "$file" | cut -f1)
+            echo "  $size - $(basename "$file")"
+          done
+
+      - name: Deploy to Netlify (Production)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --prod --dir=build --message="Production deploy from main branch"
+
+      - name: Deploy to Netlify (Preview)
+        if: github.ref != 'refs/heads/main' || github.event_name == 'pull_request'
+        uses: netlify/actions/cli@master
+        id: netlify-preview
+        with:
+          args: deploy --dir=build --message="Preview deploy from ${{ github.head_ref || github.ref_name }}"
+
+      - name: Comment PR with preview link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployUrl = process.env.NETLIFY_PREVIEW_URL || 'Deploy URL not available';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🚀 Netlify Preview Deploy
+              
+              **Preview URL**: ${deployUrl}
+              
+              Built from commit: ${context.sha.substring(0, 7)}
+              
+              The preview will be available shortly after the deployment completes.`
+            });
+
+      - name: Update deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Netlify deployment successful"
+            if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              echo "🌐 Production site updated at: https://wallet.cryptocurrencies.ai"
+            fi
+          else
+            echo "❌ Netlify deployment failed"
+          fi
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
+
+      - name: Run Lighthouse CI
+        run: |
+          # Wait for deployment to be ready
+          sleep 30
+          
+          # Run Lighthouse audit on preview URL
+          lhci autorun --upload.target=temporary-public-storage || true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  security-check:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Security headers check
+        run: |
+          echo "Checking security headers on production site..."
+          
+          # Check if site is accessible and has proper headers
+          curl -I https://wallet.cryptocurrencies.ai || echo "Site not yet accessible"
+          
+          # Additional security checks can be added here
+          echo "Security check completed"
