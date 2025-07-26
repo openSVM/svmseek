@@ -20,7 +20,7 @@ print_status "Starting Netlify build for SVMSeek Wallet..."
 
 # Environment detection
 CONTEXT=${CONTEXT:-"development"}
-BRANCH=${BRANCH:-$(git branch --show-current)}
+BRANCH=${BRANCH:-$(git branch --show-current 2>/dev/null || echo "main")}
 BUILD_ID=${BUILD_ID:-$(date +%s)}
 
 print_status "Build context: $CONTEXT"
@@ -35,13 +35,21 @@ if [ -f ".env.netlify" ]; then
     set +a  # disable automatic export
 fi
 
+# Ensure proper environment variables for React
+export PUBLIC_URL="/"
+export REACT_APP_PUBLIC_URL="/"
+
 # Set build command based on context
 if [ "$CONTEXT" = "production" ] || [ "$BRANCH" = "main" ]; then
-    BUILD_COMMAND="yarn buildMaster"
+    BUILD_COMMAND="yarn build"
     print_status "Using production build configuration"
+    export NODE_ENV=production
+    export BABEL_ENV=production
 else
     BUILD_COMMAND="yarn build"
     print_status "Using development build configuration"
+    export NODE_ENV=production
+    export BABEL_ENV=production
 fi
 
 # Pre-build optimizations
@@ -59,12 +67,41 @@ if [ ! -d "node_modules" ]; then
     yarn install --frozen-lockfile --production=false
 fi
 
+# Verify critical files exist
+if [ ! -f "src/index.tsx" ]; then
+    print_error "Critical file missing: src/index.tsx"
+    exit 1
+fi
+
+if [ ! -f "public/index.html" ]; then
+    print_error "Critical file missing: public/index.html"
+    exit 1
+fi
+
 # Run the build
 print_status "Building application with: $BUILD_COMMAND"
 $BUILD_COMMAND
 
-# Post-build optimizations and checks
-print_status "Running post-build optimizations..."
+# Post-build validation and optimizations
+print_status "Running post-build validation..."
+
+# Verify build artifacts
+if [ ! -f "build/index.html" ]; then
+    print_error "Build validation failed: index.html not found"
+    exit 1
+fi
+
+if [ ! -d "build/static" ]; then
+    print_error "Build validation failed: static directory not found"
+    exit 1
+fi
+
+# Verify JavaScript bundles exist
+JS_FILES=$(find build/static/js -name "*.js" | wc -l)
+if [ "$JS_FILES" -eq 0 ]; then
+    print_error "Build validation failed: No JavaScript files found"
+    exit 1
+fi
 
 # Create build manifest
 cat > build/build-info.json << EOF
@@ -85,7 +122,7 @@ BUILD_SIZE=$(du -sh build | cut -f1)
 print_status "Build size: $BUILD_SIZE"
 
 # Check for large files that might affect performance
-print_warning "Checking for large files..."
+print_status "Checking for large files..."
 find build -size +1M -type f | while read file; do
     size=$(du -h "$file" | cut -f1)
     print_warning "Large file: $size - $(basename "$file")"
@@ -115,7 +152,7 @@ fi
 
 # Security check - ensure no sensitive files are included
 print_status "Running security checks..."
-SENSITIVE_FILES=(".env" ".env.local" ".env.production" "private.key" "id_rsa")
+SENSITIVE_FILES=(".env" ".env.local" ".env.production" "private.key" "id_rsa" ".env.netlify")
 for file in "${SENSITIVE_FILES[@]}"; do
     if [ -f "build/$file" ]; then
         print_error "Sensitive file found in build: $file"
@@ -124,24 +161,10 @@ for file in "${SENSITIVE_FILES[@]}"; do
     fi
 done
 
-# Bundle analysis (if tools are available)
-if command -v npx &> /dev/null; then
-    print_status "Generating bundle analysis..."
-    if npm list webpack-bundle-analyzer &> /dev/null; then
-        npx webpack-bundle-analyzer build/static/js/*.js build/static/js/ --report build/bundle-report.html --mode static 2>/dev/null || print_warning "Bundle analyzer failed"
-    else
-        print_warning "Bundle analyzer not installed - skipping analysis"
-    fi
-fi
-
-# Final build validation
-if [ ! -f "build/index.html" ]; then
-    print_error "Build validation failed: index.html not found"
-    exit 1
-fi
-
-if [ ! -d "build/static" ]; then
-    print_error "Build validation failed: static directory not found"
+# Verify final build structure
+print_status "Final build verification..."
+if [ ! -f "build/index.html" ] || [ ! -d "build/static/js" ] || [ ! -d "build/static/css" ]; then
+    print_error "Build verification failed: Missing critical build artifacts"
     exit 1
 fi
 
@@ -152,7 +175,8 @@ echo "Build Summary:"
 echo "  Size: $BUILD_SIZE"
 echo "  Context: $CONTEXT"
 echo "  Branch: $BRANCH"
-echo "  Files: $(find build -type f | wc -l)"
+echo "  JavaScript files: $(find build/static/js -name "*.js" | wc -l)"
+echo "  CSS files: $(find build/static/css -name "*.css" | wc -l)"
 echo ""
 
 # Set build metadata for Netlify

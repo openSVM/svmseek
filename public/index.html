@@ -198,7 +198,26 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback content for debugging -->
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #17181a;
+        color: #ffffff;
+        font-family: 'Avenir Next Medium', sans-serif;
+        text-align: center;
+        padding: 20px;
+      ">
+        <div>
+          <div style="font-size: 24px; margin-bottom: 20px;">🔄</div>
+          <div style="font-size: 18px; margin-bottom: 10px;">Loading SVMSeek Wallet...</div>
+          <div style="font-size: 14px; color: #888;">If this message persists, please check browser console for errors</div>
+        </div>
+      </div>
+    </div>
     <form name="walletFeedback" netlify netlify-honeypot="bot-field" hidden>
       <input type="text" name="message" />
       <input type="text" name="contact" />
