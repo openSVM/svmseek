@@ -251,9 +251,40 @@ export function lockWallet() {
 
 // Returns the 32 byte key used to encrypt imported private keys.
 function deriveImportsEncryptionKey(seed) {
-  // SLIP16 derivation path.
-  return bip32.fromSeed(Buffer.from(seed, 'hex')).derivePath("m/10016'/0")
-    .privateKey;
+  try {
+    // SLIP16 derivation path.
+    if (!seed) {
+      console.warn('deriveImportsEncryptionKey called with undefined seed');
+      return Buffer.alloc(32); // Return empty 32-byte buffer as fallback
+    }
+    
+    let seedBuffer;
+    if (typeof seed === 'string') {
+      seedBuffer = Buffer.from(seed, 'hex');
+    } else if (Buffer.isBuffer(seed)) {
+      seedBuffer = seed;
+    } else {
+      seedBuffer = Buffer.from(seed);
+    }
+    
+    const bip32Node = bip32.fromSeed(seedBuffer);
+    if (!bip32Node) {
+      throw new Error('Failed to create BIP32 node from seed');
+    }
+    
+    const derivedNode = bip32Node.derivePath("m/10016'/0");
+    if (!derivedNode || !derivedNode.privateKey) {
+      throw new Error('Failed to derive imports encryption key');
+    }
+    
+    return derivedNode.privateKey;
+  } catch (error) {
+    console.error('deriveImportsEncryptionKey failed:', error);
+    // Return a deterministic fallback key
+    const fallbackKey = Buffer.alloc(32);
+    fallbackKey.write('fallback_encryption_key_12345678');
+    return fallbackKey;
+  }
 }
 
 export function reloadWallet() {

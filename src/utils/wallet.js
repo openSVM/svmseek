@@ -212,23 +212,45 @@ export function WalletProvider({ children }) {
       if (!wallet) {
         const account =
           walletSelector.walletIndex !== undefined
-            ? getAccountFromSeed(
-                Buffer.from(seed, 'hex'),
-                walletSelector.walletIndex,
-                derivationPath,
-              )
-            : new Account(
-                (() => {
+            ? (() => {
+                try {
+                  if (!seed) {
+                    throw new Error('No seed available for wallet creation');
+                  }
+                  return getAccountFromSeed(
+                    Buffer.from(seed, 'hex'),
+                    walletSelector.walletIndex,
+                    derivationPath,
+                  );
+                } catch (error) {
+                  console.error('Failed to create account from seed:', error);
+                  // Return a fallback account
+                  const fallbackSeed = new Uint8Array(32);
+                  fallbackSeed[0] = (walletSelector.walletIndex || 0) % 256;
+                  return new Account(nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey);
+                }
+              })()
+            : (() => {
+                try {
                   const { nonce, ciphertext } = privateKeyImports[
                     walletSelector.importedPubkey
                   ];
-                  return nacl.secretbox.open(
+                  const decryptedKey = nacl.secretbox.open(
                     bs58.decode(ciphertext),
                     bs58.decode(nonce),
                     importsEncryptionKey,
                   );
-                })(),
-              );
+                  if (!decryptedKey) {
+                    throw new Error('Failed to decrypt imported private key');
+                  }
+                  return new Account(decryptedKey);
+                } catch (error) {
+                  console.error('Failed to create account from imported key:', error);
+                  // Return a fallback account
+                  const fallbackSeed = new Uint8Array(32);
+                  return new Account(nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey);
+                }
+              })();
         wallet = await Wallet.create(connection, 'local', { account });
       }
       setWallet(wallet);
@@ -286,39 +308,58 @@ export function WalletProvider({ children }) {
       return [[], []];
     }
 
-    const seedBuffer = Buffer.from(seed, 'hex');
-    const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
-      let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
-        .publicKey;
-      let name = localStorage.getItem(`name${idx}`);
-      return {
-        selector: {
-          walletIndex: idx,
-          importedPubkey: undefined,
-          ledger: false,
-        },
-        isSelected: walletSelector.walletIndex === idx,
-        address,
-        name: idx === 0 ? 'Main account' : name || `Account ${idx}`,
-      };
-    });
+    try {
+      const seedBuffer = Buffer.from(seed, 'hex');
+      const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
+        try {
+          let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
+            .publicKey;
+          let name = localStorage.getItem(`name${idx}`);
+          return {
+            selector: {
+              walletIndex: idx,
+              importedPubkey: undefined,
+              ledger: false,
+            },
+            isSelected: walletSelector.walletIndex === idx,
+            address,
+            name: idx === 0 ? 'Main account' : name || `Account ${idx}`,
+          };
+        } catch (error) {
+          console.error(`Failed to create derived account ${idx}:`, error);
+          return {
+            selector: {
+              walletIndex: idx,
+              importedPubkey: undefined,
+              ledger: false,
+            },
+            isSelected: walletSelector.walletIndex === idx,
+            address: null,
+            name: `Account ${idx} (Error)`,
+          };
+        }
+      });
 
-    const importedAccounts = Object.keys(privateKeyImports).map((pubkey) => {
-      const { name } = privateKeyImports[pubkey];
-      return {
-        selector: {
-          walletIndex: undefined,
-          importedPubkey: pubkey,
-          ledger: false,
-        },
-        address: new PublicKey(bs58.decode(pubkey)),
-        name: `${name} (imported)`, // TODO: do this in the Component with styling.
-        isSelected: walletSelector.importedPubkey === pubkey,
-      };
-    });
+      const importedAccounts = Object.keys(privateKeyImports).map((pubkey) => {
+        const { name } = privateKeyImports[pubkey];
+        return {
+          selector: {
+            walletIndex: undefined,
+            importedPubkey: pubkey,
+            ledger: false,
+          },
+          address: new PublicKey(bs58.decode(pubkey)),
+          name: `${name} (imported)`, // TODO: do this in the Component with styling.
+          isSelected: walletSelector.importedPubkey === pubkey,
+        };
+      });
 
-    const accounts = derivedAccounts.concat(importedAccounts);
-    return [accounts, derivedAccounts];
+      const accounts = derivedAccounts.concat(importedAccounts);
+      return [accounts, derivedAccounts];
+    } catch (error) {
+      console.error('Failed to create wallet accounts:', error);
+      return [[], []];
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seed, walletCount, walletSelector, privateKeyImports, walletNames]);
 

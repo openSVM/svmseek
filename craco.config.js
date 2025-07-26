@@ -30,9 +30,32 @@ module.exports = {
         }),
         new webpack.DefinePlugin({
           global: 'globalThis',
+          'global.Buffer': 'globalThis.Buffer',
           'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
         }),
+        // Add a custom plugin to inject buffer safety checks
+        new webpack.BannerPlugin({
+          banner: `
+            // Buffer safety initialization
+            if (typeof globalThis !== 'undefined' && !globalThis.Buffer) {
+              globalThis.Buffer = require('buffer').Buffer;
+            }
+            if (typeof window !== 'undefined' && !window.Buffer) {
+              window.Buffer = require('buffer').Buffer;
+            }
+          `,
+          raw: false,
+          entryOnly: true,
+        }),
       ];
+      
+      // Add module rules to handle problematic dependencies
+      webpackConfig.module.rules.push({
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false
+        }
+      });
       
       return webpackConfig;
     },

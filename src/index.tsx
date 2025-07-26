@@ -1,3 +1,4 @@
+// Import React and other modules first
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
@@ -5,24 +6,35 @@ import * as serviceWorker from './serviceWorker';
 import './styles/cssVariables.css';
 import './styles/animations.css';
 
-// Ensure Buffer is available globally for Solana dependencies
+// Ensure Buffer is available globally BEFORE any other crypto operations
 import { Buffer } from 'buffer';
+
+// Import comprehensive buffer polyfills FIRST
+import './utils/bufferPolyfills';
+
+// Initialize Buffer globally with additional safety
 if (typeof window !== 'undefined') {
   window.Buffer = Buffer;
   window.global = window.global || window;
-  
-  // Add defensive error handling for buffer access
-  const originalConsoleError = console.error;
-  console.error = function(...args) {
-    const message = args.join(' ');
-    if (message.includes('buffer') && message.includes('undefined')) {
-      console.warn('Buffer access error caught and handled:', message);
-      // Don't let it crash the app
-      return;
-    }
-    originalConsoleError.apply(console, args);
-  };
 }
+
+// Safe globalThis access
+const globalScope = (function() {
+  if (typeof window !== 'undefined') return window;
+  if (typeof global !== 'undefined') return global;
+  return {};
+})();
+
+if (globalScope && typeof globalScope === 'object') {
+  (globalScope as any).Buffer = Buffer;
+  (globalScope as any).global = (globalScope as any).global || globalScope;
+}
+
+if (typeof global !== 'undefined') {
+  global.Buffer = Buffer;
+}
+
+console.log('Buffer polyfills and React initialized successfully');
 
 // Wrap the entire app initialization in error handling
 function initializeApp() {
