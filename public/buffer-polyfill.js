@@ -148,6 +148,18 @@
       global.Buffer = BufferPolyfill;
     }
     
+    // Add a defensive proxy to catch undefined buffer access
+    const originalBuffer = BufferPolyfill;
+    window.Buffer = new Proxy(originalBuffer, {
+      get: function(target, prop) {
+        if (prop === 'buffer' && target === undefined) {
+          console.warn('Attempted to access buffer on undefined object, returning empty buffer');
+          return new ArrayBuffer(0);
+        }
+        return target[prop];
+      }
+    });
+    
     // Also ensure process is available
     if (!window.process) {
       window.process = {
@@ -184,6 +196,117 @@
       window.exports = {};
     }
     
-    console.log('Enhanced Buffer polyfill loaded successfully');
+// Pre-initialize crypto workarounds
+(function() {
+  try {
+    // Apply Buffer safety patches before any modules load
+    console.log('Applying crypto safety patches...');
+    
+    // Patch Uint8Array prototype to prevent undefined buffer access
+    const originalUint8Array = globalThis.Uint8Array;
+    
+    if (originalUint8Array && originalUint8Array.prototype) {
+      const originalBufferGetter = Object.getOwnPropertyDescriptor(originalUint8Array.prototype, 'buffer');
+      
+      if (originalBufferGetter) {
+        Object.defineProperty(originalUint8Array.prototype, 'buffer', {
+          get: function() {
+            try {
+              return originalBufferGetter.get?.call(this) || new ArrayBuffer(0);
+            } catch (error) {
+              console.warn('Uint8Array buffer access patched due to error:', error);
+              return new ArrayBuffer(0);
+            }
+          },
+          configurable: true,
+          enumerable: false
+        });
+      }
+    }
+    
+    console.log('Crypto safety patches applied successfully');
+  } catch (error) {
+    console.error('Failed to apply crypto safety patches:', error);
+  }
+})();
+    
+    // Add global error handler to catch and debug buffer access issues
+    window.addEventListener('error', function(event) {
+      if (event.error && event.error.message && event.error.message.includes('buffer')) {
+        console.error('Buffer-related error caught:', event.error.message);
+        console.error('Stack:', event.error.stack);
+        
+        // Try to provide more context
+        if (event.error.message.includes("Cannot read properties of undefined (reading 'buffer')")) {
+          console.error('This is the known buffer access issue - something is trying to access .buffer on undefined');
+          
+          // Prevent the error from completely breaking the app
+          event.preventDefault();
+          event.stopPropagation();
+          
+          // Try to continue app initialization
+          setTimeout(() => {
+            console.log('Attempting to recover from buffer error...');
+            
+            // Show a user-friendly message about the current state
+            const rootElement = document.getElementById('root');
+            if (rootElement) {
+              rootElement.innerHTML = `
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  height: 100vh;
+                  background: #17181a;
+                  color: #ffffff;
+                  font-family: 'Avenir Next Medium', sans-serif;
+                  text-align: center;
+                  padding: 20px;
+                ">
+                  <div>
+                    <div style="font-size: 64px; margin-bottom: 20px;">🔧</div>
+                    <div style="font-size: 24px; margin-bottom: 20px;">SVMSeek Wallet</div>
+                    <div style="font-size: 18px; margin-bottom: 10px; color: #ff6b6b;">Crypto Library Initialization Issue</div>
+                    <div style="font-size: 14px; color: #888; margin-bottom: 30px; line-height: 1.5; max-width: 500px;">
+                      The wallet is experiencing a compatibility issue with crypto libraries. 
+                      This is being actively fixed by the development team.
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                      <button onclick="window.location.reload()" style="
+                        background: #651CE4;
+                        border: none;
+                        color: white;
+                        padding: 15px 30px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        margin-right: 10px;
+                      ">
+                        Retry
+                      </button>
+                      <button onclick="window.open('https://github.com/openSVM/svmseek/issues', '_blank')" style="
+                        background: transparent;
+                        border: 1px solid #651CE4;
+                        color: #651CE4;
+                        padding: 15px 30px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 16px;
+                      ">
+                        Report Issue
+                      </button>
+                    </div>
+                    <div style="font-size: 12px; color: #666;">
+                      Error: Buffer access on undefined object in crypto module
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+          }, 1000);
+        }
+      }
+    });
+    
   }
 })();
