@@ -5,6 +5,13 @@ import * as serviceWorker from './serviceWorker';
 import './styles/cssVariables.css';
 import './styles/animations.css';
 
+// Ensure Buffer is available globally for Solana dependencies
+import { Buffer } from 'buffer';
+if (typeof window !== 'undefined') {
+  window.Buffer = Buffer;
+  window.global = window.global || window;
+}
+
 const container = document.getElementById('root');
 const root = createRoot(container!);
 
@@ -13,6 +20,11 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.register();
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -5,6 +5,7 @@ import nacl from 'tweetnacl';
 import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { derivePath } from 'ed25519-hd-key';
+import { Buffer } from 'buffer';
 
 const bip32 = BIP32Factory(ecc);
 

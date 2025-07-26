@@ -6,6 +6,7 @@ import bs58 from 'bs58';
 import { EventEmitter } from 'events';
 import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
+import { Buffer } from 'buffer';
 
 const bip32 = BIP32Factory(ecc);
 
