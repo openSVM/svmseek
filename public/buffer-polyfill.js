@@ -143,21 +143,47 @@
     // Set up global Buffer
     window.Buffer = BufferPolyfill;
     
+    // Also make it available in global scope
+    if (typeof global !== 'undefined' && !global.Buffer) {
+      global.Buffer = BufferPolyfill;
+    }
+    
     // Also ensure process is available
     if (!window.process) {
       window.process = {
-        env: {},
+        env: {
+          NODE_ENV: 'production',
+          PUBLIC_URL: ''
+        },
         browser: true,
-        version: '',
-        versions: { node: '16.0.0' }
+        version: 'v16.0.0',
+        versions: { node: '16.0.0' },
+        platform: 'browser'
       };
     }
     
-    // Ensure global is available
+    // Ensure global is available and properly setup
     if (!window.global) {
       window.global = window;
     }
+    if (typeof global === 'undefined') {
+      window.global = window;
+      var global = window;
+    }
     
-    console.log('Buffer polyfill loaded successfully');
+    // Add additional crypto polyfills that might be needed
+    if (!window.crypto && !window.msCrypto) {
+      console.warn('WebCrypto API not available');
+    }
+    
+    // Ensure module/exports pattern for compatibility
+    if (!window.module) {
+      window.module = {};
+    }
+    if (!window.exports) {
+      window.exports = {};
+    }
+    
+    console.log('Enhanced Buffer polyfill loaded successfully');
   }
 })();
