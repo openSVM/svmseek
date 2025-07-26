@@ -6,6 +6,7 @@ import {
   SYSVAR_RENT_PUBKEY,
 } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum';
+import { Buffer } from 'buffer';
 import {
   assertOwner,
   closeAccount,

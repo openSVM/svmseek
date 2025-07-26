@@ -1,0 +1,60 @@
+{
+  "name": "SVMSeek Wallet - Netlify Build Configuration",
+  "description": "Optimized build configuration for Netlify deployment",
+  "plugins": [
+    {
+      "package": "@netlify/plugin-lighthouse",
+      "inputs": {
+        "audits": ["performance", "accessibility", "best-practices", "seo"],
+        "upload": true,
+        "settings": {
+          "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
+          "skipAudits": ["uses-http2"]
+        }
+      }
+    },
+    {
+      "package": "netlify-plugin-bundle-analyzer",
+      "inputs": {
+        "analyzerMode": "static",
+        "openAnalyzer": false,
+        "reportFilename": "bundle-analyzer-report.html"
+      }
+    },
+    {
+      "package": "netlify-plugin-submit-sitemap",
+      "inputs": {
+        "baseUrl": "https://wallet.cryptocurrencies.ai",
+        "sitemapPath": "/sitemap.xml",
+        "ignorePeriod": 0,
+        "providers": [
+          "google",
+          "bing"
+        ]
+      }
+    }
+  ],
+  "build": {
+    "environment": {
+      "NODE_VERSION": "20.18.0",
+      "YARN_VERSION": "1.22.22",
+      "NODE_OPTIONS": "--max-old-space-size=4096"
+    }
+  },
+  "processing": {
+    "css": {
+      "bundle": true,
+      "minify": true
+    },
+    "js": {
+      "bundle": true,
+      "minify": true
+    },
+    "html": {
+      "pretty_urls": true
+    },
+    "images": {
+      "compress": true
+    }
+  }
+}

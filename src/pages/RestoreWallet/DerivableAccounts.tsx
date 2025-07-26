@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Buffer } from 'buffer';
 import { storeMnemonicAndSeed } from '../../utils/wallet-seed';
 import {
   getAccountFromSeed,

@@ -11,6 +11,12 @@
 # production
 /build
 
+# Netlify build artifacts
+deploy_*/
+svmseek-wallet-web-*.tar.gz
+build/bundle-report.html
+build/build-info.json
+
 # extension builds
 extension/*/build/
 extension/*.zip

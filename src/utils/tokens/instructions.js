@@ -1,4 +1,5 @@
 import * as BufferLayout from 'buffer-layout';
+import { Buffer } from 'buffer';
 import {
   PublicKey,
   SYSVAR_RENT_PUBKEY,
