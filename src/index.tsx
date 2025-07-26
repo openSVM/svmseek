@@ -1,4 +1,7 @@
-// Import React and other modules first
+// CRITICAL: Import complete polyfills FIRST before any other modules
+import './polyfills/index.js';
+
+// Import React and other modules AFTER polyfills
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
@@ -6,11 +9,8 @@ import * as serviceWorker from './serviceWorker';
 import './styles/cssVariables.css';
 import './styles/animations.css';
 
-// Ensure Buffer is available globally BEFORE any other crypto operations
+// Ensure Buffer is available globally AFTER polyfills
 import { Buffer } from 'buffer';
-
-// Import comprehensive buffer polyfills FIRST
-import './utils/bufferPolyfills';
 
 // Initialize Buffer globally with additional safety
 if (typeof window !== 'undefined') {

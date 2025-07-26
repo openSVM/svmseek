@@ -3,6 +3,22 @@ const webpack = require('webpack');
 module.exports = {
   webpack: {
     configure: (webpackConfig) => {
+      // Add critical polyfill as the first entry point
+      if (Array.isArray(webpackConfig.entry)) {
+        webpackConfig.entry.unshift('./src/polyfills/index.js');
+      } else if (typeof webpackConfig.entry === 'string') {
+        webpackConfig.entry = ['./src/polyfills/index.js', webpackConfig.entry];
+      } else if (typeof webpackConfig.entry === 'object') {
+        const entries = Object.keys(webpackConfig.entry);
+        entries.forEach(key => {
+          if (Array.isArray(webpackConfig.entry[key])) {
+            webpackConfig.entry[key].unshift('./src/polyfills/index.js');
+          } else {
+            webpackConfig.entry[key] = ['./src/polyfills/index.js', webpackConfig.entry[key]];
+          }
+        });
+      }
+      
       // Add polyfills for node modules
       webpackConfig.resolve.fallback = {
         ...webpackConfig.resolve.fallback,
@@ -33,10 +49,10 @@ module.exports = {
           'global.Buffer': 'globalThis.Buffer',
           'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
         }),
-        // Add a custom plugin to inject buffer safety checks
+        // Add a custom plugin to inject buffer safety checks at the very beginning
         new webpack.BannerPlugin({
           banner: `
-            // Buffer safety initialization
+            // Critical buffer safety initialization - MUST BE FIRST
             if (typeof globalThis !== 'undefined' && !globalThis.Buffer) {
               globalThis.Buffer = require('buffer').Buffer;
             }
