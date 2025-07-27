@@ -8,6 +8,7 @@ import ActivityTable from './components/ActivityTable';
 import SendDialog from './components/SendPopup';
 import ReceiveDialog from './components/ReceivePopup';
 import AddTokenDialog from './components/AddTokenPopup';
+import WalletGroupManager from './components/WalletGroupManager';
 import ChatInterface from '../../components/ChatInterface';
 import { ExplorerInterface } from '../../components/Explorer';
 import WebBrowser from '../../components/WebBrowser';
@@ -22,6 +23,7 @@ import { TokensDataSingleton } from '../../components/TokensDataSingleton';
 import { useConnection } from '../../utils/connection';
 import { useTokenInfosMap } from '../../utils/tokens/names';
 import CloseTokenAccountDialog from './components/CloseTokenAccountPopup';
+import { MultiAccountManager } from '../../services/MultiAccountManager';
 
 const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
@@ -74,6 +76,9 @@ const TableContainer = styled(RowContainer)`
 
 const Wallet = () => {
   const wallet = useWallet();
+  const connection = useConnection();
+  const [multiAccountManager, setMultiAccountManager] = useState<MultiAccountManager | null>(null);
+  
   const [selectedTokenData, selectToken] = useState<{
     publicKey: PublicKey;
     isAssociatedToken: boolean;
@@ -94,10 +99,34 @@ const Wallet = () => {
   );
   const [activeTab, setTabActive] = useState('assets');
 
-  const connection = useConnection();
   const tokenInfosMap = useTokenInfosMap();
   const [refreshCounter, changeRefreshCounter] = useState(0);
   const [tokensData, setTokensData] = useState<Map<string, number>>(new Map());
+
+  // Initialize MultiAccountManager
+  useEffect(() => {
+    if (connection && !multiAccountManager) {
+      const manager = new MultiAccountManager(connection);
+      setMultiAccountManager(manager);
+      
+      // Add current wallet to manager if not already there
+      manager.importWallet(
+        wallet.publicKey,
+        'Main Wallet',
+        'derived',
+        []
+      ).catch(console.error);
+    }
+  }, [connection, wallet.publicKey, multiAccountManager]);
+
+  // Cleanup MultiAccountManager on unmount
+  useEffect(() => {
+    return () => {
+      if (multiAccountManager) {
+        multiAccountManager.dispose();
+      }
+    };
+  }, [multiAccountManager]);
   const [allTokensData, setAllTokensData] = useState<Map<string, TokenInfo>>(
     new Map(),
   );
@@ -156,6 +185,14 @@ const Wallet = () => {
             Activity
           </Switcher>
           <Switcher
+            isTabActive={activeTab === 'multiAccount'}
+            onClick={() => {
+              setTabActive('multiAccount');
+            }}
+          >
+            Multi-Account
+          </Switcher>
+          <Switcher
             isTabActive={activeTab === 'chat'}
             onClick={() => {
               setTabActive('chat');
@@ -209,7 +246,17 @@ const Wallet = () => {
           setCloseTokenAccountDialogOpen={setCloseTokenAccountDialogOpen}
         />
 
-        <ActivityTable isActive={activeTab === 'activity'} />
+        <ActivityTable 
+          isActive={activeTab === 'activity'} 
+          multiAccountManager={multiAccountManager}
+          walletId={`wallet_${wallet.publicKey.toBase58()}`}
+        />
+
+        {activeTab === 'multiAccount' && multiAccountManager && (
+          <div style={{ height: '100%', width: '100%', padding: '1rem' }} className="fade-in">
+            <WalletGroupManager multiAccountManager={multiAccountManager} />
+          </div>
+        )}
         
         {activeTab === 'chat' && (
           <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
