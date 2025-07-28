@@ -93,7 +93,9 @@ The application will open at `http://localhost:3000`
 
 ### 🌐 Live Web Version
 
-The production web application is available at **[wallet.cryptocurrencies.ai](https://wallet.cryptocurrencies.ai)** - no installation required!
+The production web application is available at:
+- **Primary**: [wallet.cryptocurrencies.ai](https://wallet.cryptocurrencies.ai) - no installation required!
+- **GitHub Pages**: [opensvm.github.io/svmseek](https://opensvm.github.io/svmseek) - automatically deployed from main branch
 
 ### Building for Production
 

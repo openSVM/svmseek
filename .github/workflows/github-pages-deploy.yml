@@ -1,0 +1,296 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual deployment
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  # Customize the build environment
+  NODE_ENV: production
+  GENERATE_SOURCEMAP: false
+  INLINE_RUNTIME_CHUNK: true
+  PUBLIC_URL: /svmseek
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for better caching
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Restore build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            build
+            node_modules/.cache
+          key: ${{ runner.os }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('src/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ hashFiles('**/yarn.lock') }}-
+            ${{ runner.os }}-build-
+
+      - name: Install dependencies
+        run: |
+          echo "Installing dependencies with retry logic..."
+          for i in 1 2 3; do
+            if yarn install --frozen-lockfile --network-timeout 300000; then
+              echo "✅ Dependencies installed successfully"
+              break
+            else
+              echo "❌ Installation attempt $i failed, retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+
+      - name: Build with GitHub Pages optimization
+        run: |
+          echo "🚀 Building SVMSeek Wallet for GitHub Pages..."
+          
+          # Set homepage for GitHub Pages
+          npm pkg set homepage="https://${{ github.repository_owner }}.github.io/svmseek"
+          
+          # Build the application
+          if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "Building for production (main/master branch)"
+            yarn buildMaster
+          else
+            echo "Building for preview"
+            yarn build
+          fi
+          
+          # Verify build output
+          if [ ! -d "build" ]; then
+            echo "❌ Build directory not found!"
+            exit 1
+          fi
+          
+          echo "✅ Build completed successfully"
+          ls -la build/
+
+      - name: Add GitHub Pages compatibility
+        run: |
+          echo "🔧 Adding GitHub Pages compatibility fixes..."
+          
+          # Add .nojekyll to prevent Jekyll processing
+          touch build/.nojekyll
+          
+          # Create CNAME file if custom domain is set
+          if [ -n "${{ vars.CUSTOM_DOMAIN }}" ]; then
+            echo "${{ vars.CUSTOM_DOMAIN }}" > build/CNAME
+            echo "✅ CNAME file created for custom domain: ${{ vars.CUSTOM_DOMAIN }}"
+          fi
+          
+          # Add 404.html for SPA routing
+          if [ ! -f "build/404.html" ]; then
+            cp build/index.html build/404.html
+            echo "✅ SPA routing fallback (404.html) created"
+          fi
+          
+          # Fix asset paths for GitHub Pages subdirectory
+          find build -name "*.html" -type f -exec sed -i 's|"/static/|"./static/|g' {} \;
+          find build -name "*.css" -type f -exec sed -i 's|url(/static/|url(./static/|g' {} \;
+          
+          echo "✅ GitHub Pages compatibility applied"
+
+      - name: Generate build report
+        run: |
+          echo "📊 Generating build analysis..."
+          
+          BUILD_SIZE=$(du -sh build | cut -f1)
+          FILE_COUNT=$(find build -type f | wc -l)
+          
+          echo "Build Statistics:"
+          echo "- Total size: $BUILD_SIZE"
+          echo "- File count: $FILE_COUNT files"
+          echo
+          
+          echo "Largest files:"
+          find build -type f -exec du -h {} \; | sort -rh | head -10
+          
+          echo "Asset breakdown:"
+          echo "- JavaScript files: $(find build -name "*.js" | wc -l)"
+          echo "- CSS files: $(find build -name "*.css" | wc -l)"
+          echo "- Images: $(find build -name "*.png" -o -name "*.jpg" -o -name "*.svg" -o -name "*.ico" | wc -l)"
+          echo "- Other files: $(find build -type f ! -name "*.js" ! -name "*.css" ! -name "*.png" ! -name "*.jpg" ! -name "*.svg" ! -name "*.ico" ! -name "*.html" | wc -l)"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  # Preview deployment job for pull requests
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ./preview
+
+      - name: Extract and prepare preview
+        run: |
+          echo "🔍 Preparing preview deployment..."
+          cd preview
+          tar -xf artifact.tar
+          ls -la
+          
+          echo "Preview build ready for deployment"
+
+      - name: Comment PR with preview info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Calculate build size
+            const { execSync } = require('child_process');
+            const buildSize = execSync('du -sh preview', { encoding: 'utf-8' }).split('\t')[0];
+            
+            const comment = `## 🚀 GitHub Pages Preview Build
+            
+            **Build Status**: ✅ Success
+            **Build Size**: ${buildSize}
+            **Commit**: ${context.sha.substring(0, 7)}
+            
+            ### Build Details
+            - Build completed successfully for GitHub Pages
+            - SPA routing configured with 404.html fallback
+            - Assets optimized for subdirectory deployment
+            - GitHub Pages compatibility applied
+            
+            **Note**: This is a preview build. The actual GitHub Pages deployment only occurs on pushes to the main branch.
+            
+            ### Preview URL
+            Once merged to main, this will be available at:
+            \`https://${{ github.repository_owner }}.github.io/svmseek\`
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Deployment job (only for main/master branch)
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify deployment
+        run: |
+          echo "🎉 Deployment completed!"
+          echo "Site URL: ${{ steps.deployment.outputs.page_url }}"
+          
+          # Wait a moment for deployment to be ready
+          sleep 30
+          
+          # Verify the site is accessible
+          echo "🔍 Verifying deployment..."
+          SITE_URL="${{ steps.deployment.outputs.page_url }}"
+          
+          # Check if site responds with 200
+          if curl -f -s -o /dev/null "$SITE_URL"; then
+            echo "✅ Site is accessible at $SITE_URL"
+          else
+            echo "⚠️ Site may still be deploying. Check $SITE_URL in a few minutes."
+          fi
+
+      - name: Update deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ GitHub Pages deployment successful!"
+            echo "🌐 SVMSeek Wallet is now live at: ${{ steps.deployment.outputs.page_url }}"
+            echo
+            echo "🚀 Features available:"
+            echo "- Multi-language support (11 languages)"
+            echo "- 11 visual themes including E-Ink Grayscale"
+            echo "- Multi-account wallet management"
+            echo "- Transaction history and CSV export"
+            echo "- Hardware wallet support"
+            echo "- Mobile-responsive design"
+          else
+            echo "❌ GitHub Pages deployment failed"
+            echo "Check the logs above for error details"
+          fi
+
+  # Health check job (runs after successful deployment)
+  health-check:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Site health check
+        run: |
+          echo "🏥 Running post-deployment health checks..."
+          
+          SITE_URL="https://${{ github.repository_owner }}.github.io/svmseek"
+          
+          # Wait for deployment to stabilize
+          sleep 60
+          
+          echo "Checking site accessibility..."
+          
+          # Check main page
+          if curl -f -s -L "$SITE_URL" > /dev/null; then
+            echo "✅ Main page accessible"
+          else
+            echo "❌ Main page not accessible"
+          fi
+          
+          # Check for critical files
+          if curl -f -s -L "$SITE_URL/static/css/" > /dev/null; then
+            echo "✅ CSS assets accessible"
+          else
+            echo "⚠️ CSS assets may not be accessible"
+          fi
+          
+          if curl -f -s -L "$SITE_URL/static/js/" > /dev/null; then
+            echo "✅ JavaScript assets accessible"
+          else
+            echo "⚠️ JavaScript assets may not be accessible"
+          fi
+          
+          echo "🎯 Health check completed"
+          echo "🌐 SVMSeek Wallet: $SITE_URL"

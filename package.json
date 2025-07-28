@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "SVMSeek Wallet - Secure Solana wallet for SPL tokens and DeFi applications",
-  "homepage": "https://svmseek.com",
+  "homepage": "https://opensvm.github.io/svmseek",
   "author": {
     "name": "OpenSVM",
     "email": "dev@opensvm.com"
@@ -66,6 +66,7 @@
   "scripts": {
     "predeploy": "git pull --ff-only && yarn && yarn build",
     "deploy": "gh-pages -d build",
+    "deploy:github-pages": "cross-env PUBLIC_URL=/svmseek yarn build && gh-pages -d build",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.js\" \"extension/src/*.js\" --write",
     "start": "craco start",
