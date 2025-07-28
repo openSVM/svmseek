@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
 import {
   Dialog,
   DialogTitle,
@@ -140,7 +141,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
       });
       setShowCreateGroupDialog(false);
     } catch (error) {
-      console.error('Failed to create group:', error);
+      logError('Failed to create group:', error);
     }
   };
 
@@ -161,7 +162,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
       );
       setShowImportWalletDialog(false);
     } catch (error) {
-      console.error('Failed to import wallet:', error);
+      logError('Failed to import wallet:', error);
     }
   };
 
@@ -176,7 +177,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
       }
       setShowExportDialog(false);
     } catch (error) {
-      console.error('Export failed:', error);
+      logError('Export failed:', error);
     }
   };
 
@@ -207,7 +208,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
         }
       );
     } catch (error) {
-      console.error('Batch operation failed:', error);
+      logError('Batch operation failed:', error);
     }
   };
 

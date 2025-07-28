@@ -6,6 +6,7 @@ import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import { safeCreateImportsEncryptionKey } from './crypto-browser-compatible';
+import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -59,7 +60,7 @@ let unlockedMnemonicAndSeed = (async () => {
         'null',
     );
   } catch (e) {
-    console.error('unlockedMnemonicAndSeed error', e);
+    logError('unlockedMnemonicAndSeed error', e);
   }
 
   if (stored === null) {
@@ -251,7 +252,7 @@ function deriveImportsEncryptionKey(seed) {
   try {
     return safeCreateImportsEncryptionKey(seed);
   } catch (error) {
-    console.error('deriveImportsEncryptionKey failed:', error);
+    logError('deriveImportsEncryptionKey failed:', error);
     // Return a deterministic fallback key
     const fallbackKey = Buffer.alloc(32);
     fallbackKey.write('fallback_encryption_key_12345678');

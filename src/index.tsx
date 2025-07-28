@@ -10,32 +10,35 @@ import './styles/cssVariables.css';
 import './styles/animations.css';
 import './styles/theme.css';
 
-// Ensure Buffer is available globally AFTER polyfills
+// Import logging utility
+import { devLog, logInfo, logError } from './utils/logger';
+
+// Secure Buffer initialization without global modification
 import { Buffer } from 'buffer';
 
-// Initialize Buffer globally with additional safety
-if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-  window.global = window.global || window;
+// Safe initialization function to avoid direct global modification
+function initializeRequiredPolyfills() {
+  const globalScope = (function() {
+    if (typeof window !== 'undefined') return window;
+    if (typeof global !== 'undefined') return global;
+    return {};
+  })();
+
+  // Only initialize if not already present
+  if (globalScope && typeof globalScope === 'object') {
+    if (!(globalScope as any).Buffer) {
+      (globalScope as any).Buffer = Buffer;
+    }
+    if (!(globalScope as any).global && typeof window !== 'undefined') {
+      (globalScope as any).global = globalScope;
+    }
+  }
 }
 
-// Safe globalThis access
-const globalScope = (function() {
-  if (typeof window !== 'undefined') return window;
-  if (typeof global !== 'undefined') return global;
-  return {};
-})();
+// Initialize polyfills safely
+initializeRequiredPolyfills();
 
-if (globalScope && typeof globalScope === 'object') {
-  (globalScope as any).Buffer = Buffer;
-  (globalScope as any).global = (globalScope as any).global || globalScope;
-}
-
-if (typeof global !== 'undefined') {
-  global.Buffer = Buffer;
-}
-
-console.log('Buffer polyfills and React initialized successfully');
+devLog('Buffer polyfills and React initialized successfully');
 
 // Wrap the entire app initialization in error handling
 function initializeApp() {
@@ -53,10 +56,10 @@ function initializeApp() {
       </React.StrictMode>
     );
     
-    console.log('React app initialized successfully');
+    logInfo('React app initialized successfully');
     
   } catch (error) {
-    console.error('Failed to initialize React app:', error);
+    logError('Failed to initialize React app:', error);
     
     // Show a fallback error message
     const container = document.getElementById('root');
@@ -107,7 +110,7 @@ if (document.readyState === 'loading') {
 // Register service worker with error handling
 try {
   serviceWorker.register();
-  console.log('Service worker registered successfully');
+  devLog('Service worker registered successfully');
 } catch (error) {
-  console.warn('Service worker registration failed:', error);
+  logError('Service worker registration failed:', error);
 }

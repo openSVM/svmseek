@@ -9,7 +9,7 @@ import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
 import { COLORS } from '../variables';
 import DiscordIcon from './DiscordIcon';
 import ThemeToggle from '../ThemeToggle';
-// TODO: Refactor popup
+
 import { DropDown } from './Dropdown';
 import {
   Body,

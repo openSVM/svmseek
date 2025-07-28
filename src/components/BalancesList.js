@@ -3,6 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../utils/logger';
 import {
   refreshWalletPublicKeys,
   useBalanceInfo,
@@ -227,7 +228,7 @@ export default function BalancesList() {
                     setSortAccounts(SortAccounts.None);
                     return;
                   default:
-                    console.error('invalid sort type', sortAccounts);
+                    logError('invalid sort type', sortAccounts);
                 }
               }}
             >
@@ -324,7 +325,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
               setPrice(price);
             })
             .catch((err) => {
-              console.error(err);
+              logError(err);
               setPrice(null);
             });
         }

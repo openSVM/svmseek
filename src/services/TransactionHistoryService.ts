@@ -1,5 +1,6 @@
 import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 import { v4 as uuidv4 } from 'uuid';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 export interface TransactionRecord {
   id: string;
@@ -116,7 +117,7 @@ class TransactionHistoryService {
     }
 
     if (syncStatus.isSyncing) {
-      console.log(`Wallet ${walletId} is already syncing`);
+      devLog(`Wallet ${walletId} is already syncing`);
       return;
     }
 
@@ -148,7 +149,7 @@ class TransactionHistoryService {
           // Add small delay to prevent rate limiting
           await new Promise(resolve => setTimeout(resolve, 100));
         } catch (error) {
-          console.error(`Failed to process transaction ${signatureInfo.signature}:`, error);
+          logError(`Failed to process transaction ${signatureInfo.signature}:`, error);
           syncStatus.errors.push(`Transaction ${signatureInfo.signature}: ${error}`);
         }
       }
@@ -158,7 +159,7 @@ class TransactionHistoryService {
       syncStatus.syncProgress = 100;
 
     } catch (error) {
-      console.error(`Failed to sync wallet ${walletId}:`, error);
+      logError(`Failed to sync wallet ${walletId}:`, error);
       syncStatus.errors.push(`Sync failed: ${error}`);
     } finally {
       syncStatus.isSyncing = false;
@@ -210,7 +211,7 @@ class TransactionHistoryService {
       this.transactions.set(record.id, record);
       
     } catch (error) {
-      console.error(`Failed to process transaction ${signatureInfo.signature}:`, error);
+      logError(`Failed to process transaction ${signatureInfo.signature}:`, error);
     }
   }
 
@@ -442,7 +443,7 @@ class TransactionHistoryService {
       const transactionsData = JSON.stringify(Array.from(this.transactions.entries()));
       localStorage.setItem(this.storageKey, transactionsData);
     } catch (error) {
-      console.error('Failed to save transaction history to storage:', error);
+      logError('Failed to save transaction history to storage:', error);
     }
   }
 
@@ -451,7 +452,7 @@ class TransactionHistoryService {
       const syncData = JSON.stringify(Array.from(this.syncStatuses.entries()));
       localStorage.setItem(this.syncStatusKey, syncData);
     } catch (error) {
-      console.error('Failed to save sync status to storage:', error);
+      logError('Failed to save sync status to storage:', error);
     }
   }
 
@@ -482,7 +483,7 @@ class TransactionHistoryService {
         ]));
       }
     } catch (error) {
-      console.error('Failed to load transaction history from storage:', error);
+      logError('Failed to load transaction history from storage:', error);
     }
   }
 

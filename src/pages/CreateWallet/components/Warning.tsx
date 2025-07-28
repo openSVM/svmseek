@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
 import {
   Card,
   VioletButton,
@@ -38,7 +39,7 @@ const Warning = ({
     const origin = sessionStorage.getItem('origin');
 
     if (!!origin) {
-      console.log('add to location');
+      devLog('add to location');
       window.location.href += `#origin=${origin}`;
     }
 

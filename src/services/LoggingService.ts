@@ -1,3 +1,4 @@
+import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
 /**
  * Centralized logging service for error reporting and monitoring
  * Integrates with external services like Sentry in production
@@ -246,16 +247,16 @@ class LoggingService {
 
     switch (log.level) {
       case 'error':
-        console.error(prefix, log.message, log.error, log.context);
+        logError(prefix, log.message, log.error, log.context);
         break;
       case 'warn':
-        console.warn(prefix, log.message, log.context);
+        logWarn(prefix, log.message, log.context);
         break;
       case 'info':
-        console.info(prefix, log.message, log.context);
+        logInfo(prefix, log.message, log.context);
         break;
       case 'debug':
-        console.debug(prefix, log.message, log.context);
+        logDebug(prefix, log.message, log.context);
         break;
     }
   }
@@ -268,7 +269,7 @@ class LoggingService {
       const recentLogs = this.logs.slice(-this.config.maxLocalLogs);
       localStorage.setItem('svmseek_logs', JSON.stringify(recentLogs));
     } catch (error) {
-      console.error('Failed to save logs to localStorage:', error);
+      logError('Failed to save logs to localStorage:', error);
     }
   }
 
@@ -285,7 +286,7 @@ class LoggingService {
         );
       }
     } catch (error) {
-      console.error('Failed to load logs from localStorage:', error);
+      logError('Failed to load logs from localStorage:', error);
     }
   }
 
@@ -312,7 +313,7 @@ class LoggingService {
         }),
       });
     } catch (error) {
-      console.error('Failed to send log to remote service:', error);
+      logError('Failed to send log to remote service:', error);
     }
   }
 
@@ -323,7 +324,7 @@ class LoggingService {
     try {
       // This would require installing @sentry/react
       // For now, we'll just log that Sentry would be initialized
-      console.info('Sentry would be initialized here with DSN:', this.config.sentryDsn);
+      logInfo('Sentry would be initialized here with DSN:', this.config.sentryDsn);
       
       /*
       // Example Sentry initialization:
@@ -343,7 +344,7 @@ class LoggingService {
       });
       */
     } catch (error) {
-      console.error('Failed to initialize Sentry:', error);
+      logError('Failed to initialize Sentry:', error);
     }
   }
 

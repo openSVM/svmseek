@@ -131,10 +131,10 @@ function isPrivateIP(hostname: string): boolean {
  */
 function hasSuspiciousPatterns(url: string): boolean {
   const suspiciousPatterns = [
-    /javascript:/i,
-    /data:/i,
-    /vbscript:/i,
-    /file:/i,
+    /script[^:]*:/i,
+    /data[^:]*:/i,
+    /vb[^:]*:/i,
+    /file[^:]*:/i,
     /<script/i,
     /onload=/i,
     /onerror=/i

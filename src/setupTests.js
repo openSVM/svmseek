@@ -4,61 +4,148 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-// Polyfill for TextEncoder/TextDecoder in Jest
-global.TextEncoder = require('util').TextEncoder;
-global.TextDecoder = require('util').TextDecoder;
+// Safe test environment initialization
+function initializeTestGlobals() {
+  // Polyfill for TextEncoder/TextDecoder in Jest
+  if (typeof global !== 'undefined' && !global.TextEncoder) {
+    global.TextEncoder = require('util').TextEncoder;
+  }
+  if (typeof global !== 'undefined' && !global.TextDecoder) {
+    global.TextDecoder = require('util').TextDecoder;
+  }
 
-// Mock crypto for tests
-Object.defineProperty(global, 'crypto', {
-  value: {
-    getRandomValues: jest.fn((arr) => {
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = Math.floor(Math.random() * 256);
+  // Mock crypto for tests if not already present
+  if (typeof global !== 'undefined' && !global.crypto) {
+    Object.defineProperty(global, 'crypto', {
+      value: {
+        getRandomValues: jest.fn((arr) => {
+          for (let i = 0; i < arr.length; i++) {
+            arr[i] = Math.floor(Math.random() * 256);
+          }
+          return arr;
+        }),
+        subtle: {
+          digest: jest.fn(),
+          encrypt: jest.fn(),
+          decrypt: jest.fn(),
+        },
+      },
+    });
+  }
+
+  // Mock clipboard API if not configured
+  if (typeof navigator !== 'undefined' && !navigator.clipboard) {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: jest.fn(() => Promise.resolve()),
+        readText: jest.fn(() => Promise.resolve('')),
+      },
+      configurable: true, // Allow reconfiguration for tests
+    });
+  }
+
+  // Mock ResizeObserver if not present
+  if (typeof global !== 'undefined' && !global.ResizeObserver) {
+    global.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  }
+
+  // Mock matchMedia if not present
+  if (typeof window !== 'undefined' && !window.matchMedia) {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(), // deprecated
+        removeListener: jest.fn(), // deprecated
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+  }
+
+  // Mock URL methods if not present
+  if (typeof global !== 'undefined' && global.URL) {
+    if (!global.URL.createObjectURL) {
+      global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
+    }
+    if (!global.URL.revokeObjectURL) {
+      global.URL.revokeObjectURL = jest.fn();
+    }
+  }
+
+  // Mock browser storage APIs if not present
+  const mockStorage = {
+    getItem: jest.fn((key) => null),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+    length: 0,
+    key: jest.fn(),
+  };
+
+  if (typeof window !== 'undefined') {
+    if (!window.localStorage) {
+      Object.defineProperty(window, 'localStorage', {
+        value: mockStorage,
+      });
+    }
+    if (!window.sessionStorage) {
+      Object.defineProperty(window, 'sessionStorage', {
+        value: mockStorage,
+      });
+    }
+    if (!window.opener) {
+      Object.defineProperty(window, 'opener', {
+        value: null,
+        writable: true,
+      });
+    }
+  }
+
+  // Mock fetch for network requests if not present
+  if (typeof global !== 'undefined' && !global.fetch) {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({}),
+        text: () => Promise.resolve(''),
+      })
+    );
+  }
+
+  // Mock Intersection Observer if not present
+  if (typeof global !== 'undefined' && !global.IntersectionObserver) {
+    global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  }
+
+  // Mock BeforeInstallPrompt event if not present
+  if (typeof global !== 'undefined' && !global.BeforeInstallPromptEvent) {
+    global.BeforeInstallPromptEvent = class {
+      constructor() {
+        this.platforms = ['web'];
+        this.userChoice = Promise.resolve({ outcome: 'dismissed', platform: 'web' });
       }
-      return arr;
-    }),
-    subtle: {
-      digest: jest.fn(),
-      encrypt: jest.fn(),
-      decrypt: jest.fn(),
-    },
-  },
-});
-
-// Mock clipboard API
-Object.defineProperty(navigator, 'clipboard', {
-  value: {
-    writeText: jest.fn(() => Promise.resolve()),
-    readText: jest.fn(() => Promise.resolve('')),
-  },
-  configurable: true, // Allow reconfiguration for tests
-});
-
-// Mock ResizeObserver
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}));
-
-// Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
-
-// Mock URL.createObjectURL
-global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
-global.URL.revokeObjectURL = jest.fn();
+      
+      prompt() {
+        return Promise.resolve();
+      }
+      
+      preventDefault() {}
+    };
+  }
+}
 
 // Mock crypto libraries to avoid flakiness
 jest.mock('tweetnacl', () => {
@@ -183,57 +270,5 @@ jest.mock('qrcode.react', () => ({
   }),
 }));
 
-// Mock browser storage APIs
-const mockStorage = {
-  getItem: jest.fn((key) => null),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-  length: 0,
-  key: jest.fn(),
-};
-
-Object.defineProperty(window, 'localStorage', {
-  value: mockStorage,
-});
-
-Object.defineProperty(window, 'sessionStorage', {
-  value: mockStorage,
-});
-
-// Mock fetch for network requests
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    status: 200,
-    json: () => Promise.resolve({}),
-    text: () => Promise.resolve(''),
-  })
-);
-
-// Mock Intersection Observer for animation triggers
-global.IntersectionObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}));
-
-// Mock window.opener for popup detection
-Object.defineProperty(window, 'opener', {
-  value: null,
-  writable: true,
-});
-
-// Mock BeforeInstallPrompt event for PWA testing
-global.BeforeInstallPromptEvent = class {
-  constructor() {
-    this.platforms = ['web'];
-    this.userChoice = Promise.resolve({ outcome: 'dismissed', platform: 'web' });
-  }
-  
-  prompt() {
-    return Promise.resolve();
-  }
-  
-  preventDefault() {}
-};
+// Initialize test globals safely
+initializeTestGlobals();

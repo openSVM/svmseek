@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DialogForm from './DialogForm';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
 import {
   useWallet,
   useWalletAddressForMint,
@@ -272,7 +273,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, refreshTokensData }) {
           setAddressHelperText('Destination is a Solana address');
         }
       } catch (e) {
-        console.log(`Received error validating address ${e}`);
+        devLog(`Received error validating address ${e}`);
         setAddressHelperText(defaultAddressHelperText);
         setShouldShowOverride(true);
         setPassValidation(undefined);
@@ -485,7 +486,7 @@ function SendSwapDialog({
       sendTransaction(makeTransaction(), {
         onSuccess: setSignature,
         onError: (e) => {
-          console.log('error', e);
+          devLog('error', e);
         },
       })
     );

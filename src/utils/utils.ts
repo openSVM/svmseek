@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum'
 import { useMediaQuery } from '@mui/material';
+import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -97,7 +98,7 @@ export async function confirmTransaction(
       'Error confirming transaction: ' + JSON.stringify(result.value.err),
     );
   }
-  console.log(
+  devLog(
     'Transaction confirmed after %sms',
     new Date().getTime() - startTime.getTime(),
   );

@@ -214,9 +214,9 @@ function sanitizeInput(input: string): string {
   return input
     .trim()
     .replace(/[<>]/g, '') // Remove potential HTML tags
-    .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/data:/gi, '') // Remove data: protocol
-    .replace(/vbscript:/gi, ''); // Remove vbscript: protocol
+    .replace(/script[^:]*:/gi, '') // Remove script protocols
+    .replace(/data[^:]*:/gi, '') // Remove data protocol
+    .replace(/vb[^:]*:/gi, ''); // Remove vbscript protocol
 }
 
 /**

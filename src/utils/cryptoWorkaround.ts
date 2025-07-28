@@ -2,6 +2,7 @@
 // This file provides fallback implementations when the main crypto libraries fail
 
 import { Buffer } from 'buffer';
+import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 
 /**
  * Safe buffer access helper that handles undefined cases
@@ -13,7 +14,7 @@ export function safeBufferAccess(obj: any, fallback: ArrayBuffer = new ArrayBuff
     }
     return fallback;
   } catch (error) {
-    console.warn('Buffer access failed, using fallback:', error);
+    logWarn('Buffer access failed, using fallback:', error);
     return fallback;
   }
 }
@@ -32,7 +33,7 @@ export function safeBufferFrom(data: any, encoding?: BufferEncoding): Buffer {
     }
     return Buffer.alloc(0);
   } catch (error) {
-    console.warn('Buffer.from failed, using empty buffer:', error);
+    logWarn('Buffer.from failed, using empty buffer:', error);
     return Buffer.alloc(0);
   }
 }
@@ -46,10 +47,10 @@ export function initializeCryptoSafely(): boolean {
     safeBufferFrom('test');
     safeBufferAccess(new Uint8Array(4));
     
-    console.log('Crypto workaround initialized successfully');
+    devLog('Crypto workaround initialized successfully');
     return true;
   } catch (error) {
-    console.error('Crypto workaround initialization failed:', error);
+    logError('Crypto workaround initialization failed:', error);
     return false;
   }
 }
@@ -70,7 +71,7 @@ export function applyBufferSafetyPatches(): void {
           try {
             return originalBufferGetter.get?.call(this) || new ArrayBuffer(0);
           } catch (error) {
-            console.warn('Uint8Array buffer access patched due to error:', error);
+            logWarn('Uint8Array buffer access patched due to error:', error);
             return new ArrayBuffer(0);
           }
         },
@@ -80,5 +81,5 @@ export function applyBufferSafetyPatches(): void {
     }
   }
   
-  console.log('Buffer safety patches applied');
+  devLog('Buffer safety patches applied');
 }

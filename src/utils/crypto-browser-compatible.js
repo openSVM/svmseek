@@ -2,19 +2,30 @@
 import { Buffer } from 'buffer';
 import { derivePath } from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
+import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 
 /**
  * Browser-compatible crypto utilities to replace problematic BIP32 library
  * This avoids the "Cannot read properties of undefined (reading 'buffer')" error
  */
 
-// Ensure Buffer is available globally
-if (typeof globalThis !== 'undefined') {
-  globalThis.Buffer = Buffer;
+// Safe Buffer initialization
+function initializeBufferGlobally() {
+  const globalScope = (function() {
+    if (typeof globalThis !== 'undefined') return globalThis;
+    if (typeof window !== 'undefined') return window;
+    return {};
+  })();
+
+  if (globalScope && typeof globalScope === 'object') {
+    if (!globalScope.Buffer) {
+      globalScope.Buffer = Buffer;
+    }
+  }
 }
-if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-}
+
+// Initialize Buffer safely
+initializeBufferGlobally();
 
 /**
  * Create a BIP32-compatible interface using ed25519-hd-key
@@ -41,7 +52,7 @@ export const createBrowserCompatibleBip32 = () => {
                 publicKey: Buffer.from(derivedKey.publicKey || derivedKey.key.slice(32)),
               };
             } catch (error) {
-              console.error('Path derivation failed:', error);
+              logError('Path derivation failed:', error);
               // Return a fallback key
               const fallbackKey = Buffer.alloc(32);
               fallbackKey.writeUInt32BE(parseInt(path.split('/')[1]) || 0, 0);
@@ -53,7 +64,7 @@ export const createBrowserCompatibleBip32 = () => {
           },
         };
       } catch (error) {
-        console.error('Seed processing failed:', error);
+        logError('Seed processing failed:', error);
         // Return a fallback implementation
         return {
           derivePath: (path) => {
@@ -85,7 +96,7 @@ export function safeDeriveKey(seed, path) {
     
     return derivedKey.key;
   } catch (error) {
-    console.error('Safe key derivation failed:', error);
+    logError('Safe key derivation failed:', error);
     // Return a deterministic fallback
     const fallbackSeed = Buffer.alloc(32);
     const pathSegments = path.split('/').filter(segment => segment && segment !== 'm');
@@ -140,7 +151,7 @@ export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = un
       publicKey: keyPair.publicKey,
     };
   } catch (error) {
-    console.error('Create account from seed failed:', error);
+    logError('Create account from seed failed:', error);
     
     // Return a fallback account based on wallet index
     const fallbackSeed = new Uint8Array(32);
@@ -160,7 +171,7 @@ export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = un
 export function safeCreateImportsEncryptionKey(seed) {
   try {
     if (!seed) {
-      console.warn('No seed provided for imports encryption key');
+      logWarn('No seed provided for imports encryption key');
       return Buffer.alloc(32);
     }
     
@@ -173,7 +184,7 @@ export function safeCreateImportsEncryptionKey(seed) {
     
     return key;
   } catch (error) {
-    console.error('Safe imports encryption key creation failed:', error);
+    logError('Safe imports encryption key creation failed:', error);
     
     // Return a deterministic fallback
     const fallbackKey = Buffer.alloc(32);
@@ -182,4 +193,4 @@ export function safeCreateImportsEncryptionKey(seed) {
   }
 }
 
-console.log('Browser-compatible crypto utilities loaded successfully');
+devLog('Browser-compatible crypto utilities loaded successfully');

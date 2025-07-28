@@ -2,6 +2,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import { WalletGroup, EnhancedWallet, walletGroupService, GroupOperationResult } from './WalletGroupService';
 import { TransactionHistoryService, TransactionRecord, HistorySyncStatus } from './TransactionHistoryService';
 import { ExportService, ExportOptions } from './ExportService';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 export interface MultiAccountState {
   wallets: EnhancedWallet[];
@@ -299,7 +300,7 @@ class MultiAccountManager {
       this.refreshState();
       
     } catch (error) {
-      console.error(`Failed to sync wallet ${walletId}:`, error);
+      logError(`Failed to sync wallet ${walletId}:`, error);
       this.addError(`Failed to sync wallet: ${error}`);
     }
   }
@@ -319,7 +320,7 @@ class MultiAccountManager {
           this.updateSyncProgress(walletId, progress);
         },
         onOverallProgress: (progress) => {
-          console.log(`Overall sync progress: ${progress}%`);
+          devLog(`Overall sync progress: ${progress}%`);
         },
       }
     );
@@ -337,7 +338,7 @@ class MultiAccountManager {
           this.updateSyncProgress(walletId, progress);
         },
         onOverallProgress: (progress) => {
-          console.log(`Overall sync progress: ${progress}%`);
+          devLog(`Overall sync progress: ${progress}%`);
         },
       }
     );

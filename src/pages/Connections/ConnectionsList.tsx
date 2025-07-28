@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
 import {
   Button,
   Collapse,
@@ -37,7 +38,7 @@ const Text = styled.span`
 
 export default function ConnectionsList({ theme, close, open }) {
   const connectedWallets = useConnectedWallets();
-  console.log('connectedWallets', connectedWallets);
+  devLog('connectedWallets', connectedWallets);
   return (
     <DialogForm
       theme={theme}
@@ -98,12 +99,12 @@ const ListItemImage = styled.img`
 
 function ConnectionsListItem({ origin, connectedWallet }) {
   const [open, setOpen] = useState(false);
-  // TODO better way to get high res icon?
+  
   const appleIconUrl = origin + '/apple-touch-icon.png';
   const faviconUrl = origin + '/favicon.ico';
   const [iconUrl, setIconUrl] = useState(appleIconUrl);
   const { accounts } = useWalletSelector();
-  // TODO better way to do this
+  
   const account = accounts.find(
     (account) => account.address.toBase58() === connectedWallet.publicKey,
   );

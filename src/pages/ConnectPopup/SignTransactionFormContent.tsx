@@ -6,6 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
 import {
   useConnection,
   useSolanaExplorerUrlSuffix,
@@ -158,7 +159,7 @@ export default function SignTransactionFormContent({
 
   useEffect(() => {
     if (validator.safe && autoApprove) {
-      console.log('Auto approving safe transaction');
+      devLog('Auto approving safe transaction');
       onApprove();
     } else {
       // brings window to front when we receive new instructions

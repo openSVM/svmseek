@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { v4 as uuidv4 } from 'uuid';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 export interface WalletGroup {
   id: string;
@@ -316,7 +317,7 @@ class WalletGroupService {
       localStorage.setItem(this.storageKey, groupsData);
       localStorage.setItem(this.walletsStorageKey, walletsData);
     } catch (error) {
-      console.error('Failed to save wallet groups to storage:', error);
+      logError('Failed to save wallet groups to storage:', error);
     }
   }
 
@@ -350,7 +351,7 @@ class WalletGroupService {
         ]));
       }
     } catch (error) {
-      console.error('Failed to load wallet groups from storage:', error);
+      logError('Failed to load wallet groups from storage:', error);
     }
   }
 

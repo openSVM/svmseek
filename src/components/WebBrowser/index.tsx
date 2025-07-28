@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
 import {
   IconButton,
   TextField,
@@ -297,13 +298,13 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         
         if (result.success) {
           setWalletInjected(true);
-          console.log('Wallet providers injected successfully:', result.injectedProviders);
+          devLog('Wallet providers injected successfully:', result.injectedProviders);
         } else {
-          console.warn('Wallet injection failed:', result.error);
+          logWarn('Wallet injection failed:', result.error);
           setConnectionError(result.error || 'Failed to inject wallet providers');
         }
       } catch (error) {
-        console.error('Wallet injection error:', error);
+        logError('Wallet injection error:', error);
         setConnectionError('Failed to setup wallet connection');
       }
     }

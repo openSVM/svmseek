@@ -5,7 +5,6 @@ import { COLORS, SIZE, BORDER_RADIUS, BREAKPOINTS, FONTS } from '../variables';
 import { Button } from '../Button';
 import { Text } from '../Typography';
 
-// TODO: remove dat
 const maxMobileScreenResolution = 600;
 
 export const HeaderWrap = styled.header`

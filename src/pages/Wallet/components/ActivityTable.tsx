@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { 
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
+import {
   useTheme,
   Table,
   TableBody,
@@ -135,7 +136,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
           const txns = multiAccountManager.getWalletTransactions(walletId);
           setTransactions(txns);
         } catch (error) {
-          console.error('Failed to load transactions:', error);
+          logError('Failed to load transactions:', error);
         } finally {
           setIsLoading(false);
         }
@@ -221,7 +222,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
         setTransactions(txns);
       }
     } catch (error) {
-      console.error('Failed to sync transactions:', error);
+      logError('Failed to sync transactions:', error);
     } finally {
       setIsLoading(false);
       setSyncProgress(0);
@@ -271,7 +272,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
       });
       setShowExportDialog(false);
     } catch (error) {
-      console.error('Export failed:', error);
+      logError('Export failed:', error);
     }
   };
 

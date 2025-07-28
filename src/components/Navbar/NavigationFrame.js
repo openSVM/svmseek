@@ -24,6 +24,7 @@ import { Navbar } from './Navbar';
 import { isExtension } from '../../utils/utils';
 import { useLocation } from 'react-router-dom';
 import { MobileFooter } from '../Footer/MobileFooter';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 export const footerHeight = isExtension ? 0 : 6;
 
@@ -239,7 +240,7 @@ const FooterComponentForExtension = styled.footer`
 function Footer() {
   const isConnectPopup = window.opener;
   const location = useLocation();
-  console.log('location', location);
+  devLog('location', location);
 
   if (isConnectPopup) return null
 

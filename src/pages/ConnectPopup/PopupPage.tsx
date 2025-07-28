@@ -23,6 +23,7 @@ import AccountsSelector from '../Wallet/components/AccountsSelector';
 import AttentionComponent from '../../components/Attention';
 import { PublicKey } from '@solana/web3.js';
 import LogoComponent from '../../components/Logo';
+import { devLog, logError } from '../../utils/logger';
 import { isExtension } from '../../utils/utils';
 import SignTransactionFormContent from './SignTransactionFormContent';
 import SignFormContent from './SignFormContent';
@@ -197,7 +198,7 @@ export default function PopupPage() {
       setConnectedAccount(wallet.publicKey);
       if (isExtension) {
         chrome.storage.local.get('connectedWallets', (result) => {
-          // TODO better way to do this
+          
           const account = accounts.find((account) =>
             account.address.equals(wallet.publicKey),
           );
@@ -289,7 +290,7 @@ export default function PopupPage() {
   }
 
   async function sendAllSignatures(messages) {
-    console.log('wallet', wallet);
+    devLog('wallet', wallet);
     let signatures;
     // Ledger must sign one by one.
     if (wallet.type === 'ledger') {
@@ -351,7 +352,7 @@ function focusParent() {
     const parent = window.open('', 'parent');
     parent?.focus();
   } catch (err) {
-    console.log('err', err);
+    devLog('err', err);
   }
 }
 
@@ -366,15 +367,13 @@ function getInitialRequests(hash: string) {
     return [];
   }
 
-  // TODO CHECK OPENER (?)
-
   const urlParams = new URLSearchParams(hash.slice(1));
   let request;
 
   try {
     request = JSON.parse(urlParams?.get('request') || 'null');
   } catch (e) {
-    console.error('getInitialRequests error', e);
+    logError('getInitialRequests error', e);
   }
 
   if (request?.method === 'sign') {
@@ -402,7 +401,7 @@ function ApproveConnectionForm({
 }) {
   const wallet = useWallet();
   const { accounts, hardwareWalletAccount } = useWalletSelector();
-  // TODO better way to do this
+  
   const allAccounts = hardwareWalletAccount
     ? [hardwareWalletAccount, ...accounts]
     : accounts;
@@ -549,7 +548,7 @@ function ApproveSignatureForm({
         >
           Approve{isMultiTx ? ' All' : ''}
         </VioletButton>
-        {/* TODO: add ref to approve button */}
+        {}
         <InvisibleButton
           component={Button}
           ref={(b) => (buttonRef.current = b)}

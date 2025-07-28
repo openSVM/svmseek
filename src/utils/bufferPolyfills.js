@@ -1,5 +1,6 @@
 // Comprehensive buffer polyfills and fixes for crypto library compatibility
 import { Buffer } from 'buffer';
+import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 
 // Override problematic bip32 methods that cause buffer access errors
 export function initializeCryptoLibraryPatches() {
@@ -16,12 +17,12 @@ export function initializeCryptoLibraryPatches() {
     Buffer.from = function(data, encoding) {
       try {
         if (data === undefined || data === null) {
-          console.warn('Buffer.from called with undefined/null, using empty buffer');
+          logWarn('Buffer.from called with undefined/null, using empty buffer');
           return Buffer.alloc(0);
         }
         return originalBufferFrom.call(this, data, encoding);
       } catch (error) {
-        console.warn('Buffer.from failed, using empty buffer:', error);
+        logWarn('Buffer.from failed, using empty buffer:', error);
         return Buffer.alloc(0);
       }
     };
@@ -38,7 +39,7 @@ export function initializeCryptoLibraryPatches() {
               const result = originalBufferGetter.call(this);
               return result || new ArrayBuffer(0);
             } catch (error) {
-              console.warn('Uint8Array.buffer access failed, using empty buffer:', error);
+              logWarn('Uint8Array.buffer access failed, using empty buffer:', error);
               return new ArrayBuffer(0);
             }
           },
@@ -48,10 +49,10 @@ export function initializeCryptoLibraryPatches() {
       }
     }
 
-    console.log('Crypto library patches applied successfully');
+    devLog('Crypto library patches applied successfully');
     return true;
   } catch (error) {
-    console.error('Failed to apply crypto library patches:', error);
+    logError('Failed to apply crypto library patches:', error);
     return false;
   }
 }

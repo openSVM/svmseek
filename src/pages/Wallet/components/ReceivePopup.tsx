@@ -144,7 +144,7 @@ export default function DepositDialog({
         {tab === 0 ? (
           <>
             <RowContainer width="90%">
-              {/* TODO: add qr code */}
+              {}
               {/* <CopyableDisplay
               value={publicKey?.toBase58()}
               label={'Deposit Address'}

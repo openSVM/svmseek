@@ -1,4 +1,5 @@
 import { PublicKey, Connection } from '@solana/web3.js';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
 
 // Simplified types for the SVMSeek integration
 export interface Agent {
@@ -153,13 +154,13 @@ export class SolanaAIRegistriesClient {
   
   async registerAgent(agent: Partial<Agent>): Promise<{ signature: string }> {
     // Mock registration
-    console.log('Registering agent:', agent);
+    devLog('Registering agent:', agent);
     return { signature: 'mock-signature-' + Date.now() };
   }
   
   async registerMCPServer(server: Partial<MCPServer>): Promise<{ signature: string }> {
     // Mock registration
-    console.log('Registering MCP server:', server);
+    devLog('Registering MCP server:', server);
     return { signature: 'mock-signature-' + Date.now() };
   }
 }

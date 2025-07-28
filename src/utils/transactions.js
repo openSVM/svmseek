@@ -1,6 +1,7 @@
 
 import bs58 from 'bs58';
 import { Message, SystemInstruction, SystemProgram } from '@solana/web3.js';
+import { devLog, logDebug, logInfo, logWarn, logError  } from './logger';
 import {
   decodeInstruction,
   decodeTokenInstructionData,
@@ -95,10 +96,10 @@ const toInstruction = async (
 
   try {
     if (programId.equals(SystemProgram.programId)) {
-      console.log('[' + index + '] Handled as system instruction');
+      devLog('[' + index + '] Handled as system instruction');
       return handleSystemInstruction(publicKey, instruction, accountKeys);
     } else if (programId.equals(TOKEN_PROGRAM_ID)) {
-      console.log('[' + index + '] Handled as token instruction');
+      devLog('[' + index + '] Handled as token instruction');
       let decodedInstruction = decodeTokenInstruction(decoded);
       return handleTokenInstruction(
         publicKey,
@@ -111,7 +112,7 @@ const toInstruction = async (
         (market) => market.programId && market.programId.equals(programId),
       )
     ) {
-      console.log('[' + index + '] Handled as dex instruction');
+      devLog('[' + index + '] Handled as dex instruction');
       let decodedInstruction = decodeInstruction(decoded);
       return await handleDexInstruction(
         connection,
@@ -120,7 +121,7 @@ const toInstruction = async (
         decodedInstruction,
       );
     } else if (programId.equals(RAYDIUM_STAKE_PROGRAM_ID)) {
-      console.log('[' + index + '] Handled as raydium stake instruction');
+      devLog('[' + index + '] Handled as raydium stake instruction');
       const decodedInstruction = decodeStakeInstruction(decoded);
       return await handleRayStakeInstruction(
         connection,
@@ -129,7 +130,7 @@ const toInstruction = async (
         decodedInstruction,
       );
     } else if (programId.equals(RAYDIUM_LP_PROGRAM_ID)) {
-      console.log('[' + index + '] Handled as raydium lp instruction');
+      devLog('[' + index + '] Handled as raydium lp instruction');
       const decodedInstruction = decodeLpInstruction(decoded);
       return await handleRayLpInstruction(
         connection,
@@ -138,7 +139,7 @@ const toInstruction = async (
         decodedInstruction,
       );
     } else if (programId.equals(MANGO_PROGRAM_ID) || programId.equals(MANGO_PROGRAM_ID_V2)) {
-      console.log('[' + index + '] Handled as mango markets instruction');
+      devLog('[' + index + '] Handled as mango markets instruction');
       let decodedInstruction = decodeMangoInstruction(decoded);
       return await handleMangoInstruction(
         connection,
@@ -159,7 +160,7 @@ const toInstruction = async (
   } catch {}
 
   // all decodings failed
-  console.log('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
+  devLog('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
 
   return;
 };
@@ -170,7 +171,7 @@ const handleMangoInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  // TODO
+  
   return {
     type: 'mango',
   };
@@ -182,7 +183,7 @@ const handleRayStakeInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  // TODO
+  
   return {
     type: 'raydium',
   };
@@ -194,24 +195,24 @@ const handleRayLpInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  // TODO
+  
   return {
     type: 'raydium',
   };
 };
 
 const decodeMangoInstruction = () => {
-  // TODO
+  
   return undefined;
 };
 
 const decodeStakeInstruction = () => {
-  // TODO
+  
   return undefined;
 };
 
 const decodeLpInstruction = () => {
-  // TODO
+  
   return undefined;
 };
 
@@ -255,7 +256,7 @@ const handleDexInstruction = async (
       )
     ) {
       marketCacheConnection = connection;
-      console.log('Loading market', strAddress);
+      devLog('Loading market', strAddress);
       marketCache[strAddress] = {
         market: await Market.load(
           connection,
@@ -268,7 +269,7 @@ const handleDexInstruction = async (
     }
     market = marketCache[strAddress].market;
   } catch (e) {
-    console.log('Error loading market: ' + e.message);
+    devLog('Error loading market: ' + e.message);
   }
 
   // get data

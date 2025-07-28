@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Transaction, PublicKey } from '@solana/web3.js';
 import { useWallet } from '../../utils/wallet';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../../utils/logger';
 
 interface WalletProviderState {
   isConnected: boolean;
@@ -53,7 +54,7 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
 
   const disconnect = useCallback(async () => {
     // In a real implementation, this would disconnect the wallet
-    console.log('Wallet disconnect requested');
+    devLog('Wallet disconnect requested');
   }, []); // No dependencies - function is static
 
   const signTransaction = useCallback(async (transaction: Transaction) => {

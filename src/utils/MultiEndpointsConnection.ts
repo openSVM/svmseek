@@ -1,4 +1,5 @@
 import { Commitment, Connection } from '@solana/web3.js'
+import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 
 type RateLimitedEndpoint = {
   url: string
@@ -33,7 +34,7 @@ class MultiEndpointsConnection implements Connection {
           const connection = this.getConnection();
           return connection[functionName](...args)
         } catch (e) {
-          console.error(functionName, e)
+          logError(functionName, e)
         }
       }
     }

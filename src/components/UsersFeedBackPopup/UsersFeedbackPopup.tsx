@@ -5,6 +5,7 @@ import { Theme } from '@mui/material';
 import CloseIcon from '../../images/closeIcon.svg';
 import CoolIcon from '../../images/Emoji.svg';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
 import {
   BlueButton,
   Form,
@@ -63,10 +64,10 @@ export const FeedbackPopup = ({
     })
       .then(() => {
         submitFeedback(true);
-        console.log('Success!');
+        devLog('Success!');
       })
       .catch((error) => {
-        console.log(error);
+        devLog(error);
         enqueueSnackbar('Something went wrong, please try again.', {
           variant: 'error',
         });

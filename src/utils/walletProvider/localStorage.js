@@ -4,6 +4,7 @@ import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { Buffer } from 'buffer';
 import { createAccountFromSeed } from '../crypto-browser-compatible';
+import { devLog, logDebug, logInfo, logWarn, logError } from '../logger';
 
 export const DERIVATION_PATH = {
   deprecated: undefined,
@@ -27,7 +28,7 @@ export function getAccountFromSeed(
     
     return new Account(accountData.secretKey);
   } catch (error) {
-    console.error('getAccountFromSeed failed:', error);
+    logError('getAccountFromSeed failed:', error);
     // Return a fallback account with a deterministic key based on wallet index
     const fallbackSeed = new Uint8Array(32);
     fallbackSeed[0] = (walletIndex || 0) % 256;
@@ -51,7 +52,7 @@ export class LocalStorageWalletProvider {
       
       // Validate that we have a valid seed
       if (!seed) {
-        console.warn('LocalStorageWalletProvider: No seed available, using fallback');
+        logWarn('LocalStorageWalletProvider: No seed available, using fallback');
       }
 
       this.listAddresses = async (walletCount) => {
@@ -62,7 +63,7 @@ export class LocalStorageWalletProvider {
           } else {
             // Fallback seed if none available
             seedBuffer = Buffer.alloc(32);
-            console.warn('Using fallback seed for address listing');
+            logWarn('Using fallback seed for address listing');
           }
           
           return [...Array(walletCount).keys()].map((walletIndex) => {
@@ -71,7 +72,7 @@ export class LocalStorageWalletProvider {
               let name = localStorage.getItem(`name${walletIndex}`);
               return { index: walletIndex, address, name };
             } catch (error) {
-              console.error(`Failed to generate address for wallet ${walletIndex}:`, error);
+              logError(`Failed to generate address for wallet ${walletIndex}:`, error);
               // Return a fallback address structure
               return { 
                 index: walletIndex, 
@@ -81,18 +82,18 @@ export class LocalStorageWalletProvider {
             }
           });
         } catch (error) {
-          console.error('Failed to list addresses:', error);
+          logError('Failed to list addresses:', error);
           return [];
         }
       };
 
       return this;
     } catch (error) {
-      console.error('LocalStorageWalletProvider initialization failed:', error);
+      logError('LocalStorageWalletProvider initialization failed:', error);
       
       // Provide fallback implementation
       this.listAddresses = async (walletCount) => {
-        console.warn('Using fallback listAddresses implementation');
+        logWarn('Using fallback listAddresses implementation');
         return [...Array(walletCount).keys()].map((walletIndex) => ({
           index: walletIndex,
           address: null,

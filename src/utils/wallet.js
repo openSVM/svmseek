@@ -3,6 +3,7 @@ import bs58 from 'bs58';
 import { Account, PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { Buffer } from 'buffer';
+import { devLog, logDebug, logInfo, logWarn, logError  } from './logger';
 import {
   setInitialAccountInfo,
   useAccountInfo,
@@ -198,7 +199,7 @@ export function WalletProvider({ children }) {
           };
           wallet = await Wallet.create(connection, 'ledger', args);
         } catch (e) {
-          console.log(`received error using ledger wallet: ${e}`);
+          devLog(`received error using ledger wallet: ${e}`);
           let message = 'Received error unlocking ledger';
           if (e.statusCode) {
             message += `: ${e.statusCode}`;
@@ -223,7 +224,7 @@ export function WalletProvider({ children }) {
                     derivationPath,
                   );
                 } catch (error) {
-                  console.error('Failed to create account from seed:', error);
+                  logError('Failed to create account from seed:', error);
                   // Return a fallback account
                   const fallbackSeed = new Uint8Array(32);
                   fallbackSeed[0] = (walletSelector.walletIndex || 0) % 256;
@@ -245,7 +246,7 @@ export function WalletProvider({ children }) {
                   }
                   return new Account(decryptedKey);
                 } catch (error) {
-                  console.error('Failed to create account from imported key:', error);
+                  logError('Failed to create account from imported key:', error);
                   // Return a fallback account
                   const fallbackSeed = new Uint8Array(32);
                   return new Account(nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey);
@@ -326,7 +327,7 @@ export function WalletProvider({ children }) {
             name: idx === 0 ? 'Main account' : name || `Account ${idx}`,
           };
         } catch (error) {
-          console.error(`Failed to create derived account ${idx}:`, error);
+          logError(`Failed to create derived account ${idx}:`, error);
           return {
             selector: {
               walletIndex: idx,
@@ -349,7 +350,7 @@ export function WalletProvider({ children }) {
             ledger: false,
           },
           address: new PublicKey(bs58.decode(pubkey)),
-          name: `${name} (imported)`, // TODO: do this in the Component with styling.
+          name: `${name} (imported)`, 
           isSelected: walletSelector.importedPubkey === pubkey,
         };
       });
@@ -357,7 +358,7 @@ export function WalletProvider({ children }) {
       const accounts = derivedAccounts.concat(importedAccounts);
       return [accounts, derivedAccounts];
     } catch (error) {
-      console.error('Failed to create wallet accounts:', error);
+      logError('Failed to create wallet accounts:', error);
       return [[], []];
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

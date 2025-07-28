@@ -3,6 +3,7 @@ import DialogForm from './DialogForm';
 import { LedgerWalletProvider } from '../../../utils/walletProvider/ledger';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
+import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
 import {
   RowContainer,
   Title,
@@ -94,7 +95,7 @@ function ConfirmHardwareWallet({ account, onDone, onBack }) {
         .confirmPublicKey()
         .then(() => setDidConfirm(true))
         .catch((err) => {
-          console.error('Error confirming', err);
+          logError('Error confirming', err);
           // onBack();
         });
     }
@@ -270,7 +271,7 @@ function LedgerAccounts({ onContinue, onClose, open }) {
         setAccounts(accounts);
       };
       fetch().catch((err) => {
-        console.log(`received error when attempting to connect ledger: ${err}`);
+        devLog(`received error when attempting to connect ledger: ${err}`);
         if (err && err.statusCode === 0x6804) {
           enqueueSnackbar('Unlock ledger device', { variant: 'error' });
           onClose();

@@ -1,3 +1,4 @@
+import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
 /**
  * Dedicated service for secure wallet injection into iframe-based Web3 browser
  * Handles all wallet provider functionality and security concerns
@@ -40,7 +41,7 @@ export class WalletInjectionService {
       // Enhanced security: Check iframe source origin
       const iframeSrc = iframe.src;
       if (iframeSrc && !this.isAllowedOrigin(iframeSrc)) {
-        console.warn('Wallet injection blocked for untrusted origin:', iframeSrc);
+        logWarn('Wallet injection blocked for untrusted origin:', iframeSrc);
         return {
           success: false,
           error: 'Wallet injection blocked for security reasons: untrusted origin'
@@ -78,7 +79,7 @@ export class WalletInjectionService {
         };
       }
     } catch (error) {
-      console.error('Wallet injection failed:', error);
+      logError('Wallet injection failed:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
@@ -120,10 +121,10 @@ export class WalletInjectionService {
       }
       
       // Block all other origins for security
-      console.warn('Blocked wallet injection for untrusted origin:', origin);
+      logWarn('Blocked wallet injection for untrusted origin:', origin);
       return false;
     } catch (error) {
-      console.error('Failed to parse URL for origin check:', url, error);
+      logError('Failed to parse URL for origin check:', url, error);
       return false;
     }
   }
@@ -313,14 +314,18 @@ export class WalletInjectionService {
             configurable: false
           });
           
-          // Mark as injected
-          window.svmseekWalletInjected = true;
+          // Mark as injected using property descriptor
+          Object.defineProperty(window, 'svmseekWalletInjected', {
+            value: true,
+            writable: false,
+            configurable: false
+          });
           
           // Dispatch ready event
           window.dispatchEvent(new CustomEvent('svmseek-wallet-ready'));
           
         } catch (error) {
-          console.error('Wallet injection failed:', error);
+          logError('Wallet injection failed:', error);
         }
       })();
     `;
@@ -344,7 +349,7 @@ export class WalletInjectionService {
         
         iframe.contentDocument?.head.appendChild(script);
       } catch (error) {
-        console.error('Script injection failed:', error);
+        logError('Script injection failed:', error);
         resolve(false);
       }
     });
