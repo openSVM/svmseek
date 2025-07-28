@@ -32,7 +32,7 @@ export function useSendTransaction(): [SendTransactionFunction, boolean] {
     {
       onSuccess = () => {},
       onError = (e: Error) => {
-        logError(e);
+        logError(e.message || String(e));
       },
     }: TransactionCallbacks = {},
   ): Promise<void> {
@@ -113,7 +113,7 @@ export function useCallAsync() {
       successMessage = 'Success',
       onSuccess = () => {},
       onError = (e: Error) => {
-        logError(e);
+        logError(e.message || String(e));
       },
     } = notificationObj || {};
 
@@ -136,7 +136,7 @@ export function useCallAsync() {
       }
       onSuccess(result);
     } catch (e) {
-      logWarn(e);
+      logWarn(e instanceof Error ? e.message : String(e));
       closeSnackbar(id);
       let message = (e as Error).message;
 

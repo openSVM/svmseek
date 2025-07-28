@@ -126,7 +126,7 @@ class FetchLoopInternal<T = any> {
       ++this.errors;
       globalCache.delete(this.cacheKey);
       errorCache.set(this.cacheKey, error);
-      logWarn(error);
+      logWarn(error instanceof Error ? error.message : String(error));
     } finally {
       this.notifyListeners();
       if (!this.timeoutId && !this.stopped) {
