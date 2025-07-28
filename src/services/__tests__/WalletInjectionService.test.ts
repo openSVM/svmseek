@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { WalletInjectionService } from '../WalletInjectionService';
 
 // Mock wallet object

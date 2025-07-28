@@ -83,10 +83,10 @@ export default function DepositDialog({
   const [tab, setTab] = useState(0);
   const theme = useTheme();
   const tokenSymbolForCheck =
-    (tokenSymbol ?? abbreviateAddress(mint)) === 'wUSDT' ||
-    (tokenSymbol ?? abbreviateAddress(mint)) === 'wUSDC'
-      ? (tokenSymbol ?? abbreviateAddress(mint)).replace('w', 'Wrapped ')
-      : tokenSymbol ?? abbreviateAddress(mint);
+    (tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'Unknown')) === 'wUSDT' ||
+    (tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'Unknown')) === 'wUSDC'
+      ? (tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'Unknown')).replace('w', 'Wrapped ')
+      : tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'Unknown');
 
   const displaySolAddress = ((owner && publicKey.equals(owner)) || isAssociatedToken);
   const depositAddressStr = displaySolAddress
@@ -179,10 +179,10 @@ export default function DepositDialog({
                 text={
                   !displaySolAddress && isAssociatedToken === false
                     ? `This address can only be used to receive ${
-                        tokenSymbol ?? abbreviateAddress(mint)
+                        tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'this token')
                       }. Do not send other tokens to this address.`
                     : `This address can be used to receive ${
-                        tokenSymbol ?? abbreviateAddress(mint)
+                        tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'this token')
                       }.`
                 }
                 blockHeight={'8rem'}
@@ -277,7 +277,7 @@ function SolletSwapDepositAddress({
               !!owner && publicKey?.equals(owner)
                 ? 'This address can only be used to receive SOL. Do not send other tokens to this address.'
                 : `This address can only be used to receive ${
-                    tokenSymbol ?? abbreviateAddress(mint)
+                    tokenSymbol ?? (mint ? abbreviateAddress(mint) : 'this token')
                   }. Do not send SOL to this address.`
             }
             blockHeight={'8rem'}

@@ -18,6 +18,53 @@ module.exports = {
           }
         });
       }
+
+      // Optimize code splitting for better bundle size
+      webpackConfig.optimization = {
+        ...webpackConfig.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+            },
+            crypto: {
+              test: /[\\/]node_modules[\\/](bip32|bip39|ed25519-hd-key|tweetnacl|argon2-browser|scrypt-js|tiny-secp256k1)[\\/]/,
+              name: 'crypto',
+              chunks: 'all',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            solana: {
+              test: /[\\/]node_modules[\\/](@solana|@coral-xyz|@project-serum)[\\/]/,
+              name: 'solana',
+              chunks: 'all',
+              priority: 15,
+              reuseExistingChunk: true,
+            },
+            mui: {
+              test: /[\\/]node_modules[\\/]@mui[\\/]/,
+              name: 'mui',
+              chunks: 'all',
+              priority: 12,
+              reuseExistingChunk: true,
+            },
+            common: {
+              minChunks: 2,
+              chunks: 'all',
+              priority: 5,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+          },
+        },
+        usedExports: true,
+        sideEffects: false,
+      };
       
       // Add polyfills for node modules
       webpackConfig.resolve.fallback = {

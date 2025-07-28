@@ -3,9 +3,6 @@ import { Buffer } from 'buffer';
 
 // Pre-patch BIP32 libraries BEFORE they're imported anywhere
 function patchCryptoLibraries() {
-  // Store original BIP32 constructor if it exists
-  let originalBIP32Factory;
-  
   // Create a safer BIP32 wrapper
   const createSafeBIP32Factory = (originalFactory) => {
     return (ecc) => {
@@ -79,21 +76,23 @@ function patchCryptoLibraries() {
     };
   };
   
-  // Use module system to intercept BIP32 imports
-  const moduleCache = require.cache || {};
+  // Use safer approach that doesn't modify global require
   const originalRequire = require;
   
-  // Override module resolution for BIP32
-  require = function(id) {
-    if (id === 'bip32') {
-      const originalModule = originalRequire(id);
-      if (originalModule && originalModule.BIP32Factory) {
-        originalModule.BIP32Factory = createSafeBIP32Factory(originalModule.BIP32Factory);
+  // Create safe BIP32 patching function
+  const patchBIP32Module = () => {
+    try {
+      const bip32Module = originalRequire('bip32');
+      if (bip32Module && bip32Module.BIP32Factory) {
+        bip32Module.BIP32Factory = createSafeBIP32Factory(bip32Module.BIP32Factory);
       }
-      return originalModule;
+    } catch (e) {
+      // Module not available yet
     }
-    return originalRequire(id);
   };
+
+  // Apply patches immediately and set up for future imports
+  patchBIP32Module();
 
   // Also patch if BIP32Factory is already loaded
   try {

@@ -235,8 +235,8 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
         <Title color={theme.customPalette.green.light}>{`${stripDigitPlaces(
           amount / Math.pow(10, decimals),
           decimals,
-        )} ${tokenName ?? abbreviateAddress(mint)} ${
-          tokenSymbol ? ` (${tokenSymbol})` : null
+        )} ${tokenName ?? (mint ? abbreviateAddress(mint) : 'Unknown')} ${
+          tokenSymbol ? ` (${tokenSymbol})` : ''
         }`}</Title>
 
         <StyledTitle>

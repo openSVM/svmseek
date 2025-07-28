@@ -306,8 +306,8 @@ export default function AddTokenDialog({
                       key={tokenInfo.address}
                       {...tokenInfo}
                       mintAddress={tokenInfo.address}
-                      existingAccount={([...allTokensData.values()] || []).find(
-                        (tokenData) => tokenData.mint === tokenInfo.address,
+                      existingAccount={Array.from(allTokensData.values()).find(
+                        (tokenData: any) => tokenData.mint === tokenInfo.address,
                       )}
                       disabled={sending}
                       selectedTokens={selectedTokens}

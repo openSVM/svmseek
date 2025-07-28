@@ -92,13 +92,15 @@ jest.mock('scrypt-js', () => jest.fn((password, salt, N, r, p, keylen, callback)
   callback(null, new Uint8Array(keylen));
 }));
 jest.mock('@solana/web3.js', () => {
+  const mockBuffer = require('buffer').Buffer;
+  
   const mockPublicKey = {
     toBase58: jest.fn(() => 'mock-public-key'),
     toString: jest.fn(() => 'mock-public-key'),
     equals: jest.fn(() => false),
     toJSON: jest.fn(() => 'mock-public-key'),
     toBytes: jest.fn(() => new Uint8Array(32)),
-    toBuffer: jest.fn(() => Buffer.alloc(32)),
+    toBuffer: jest.fn(() => mockBuffer.alloc(32)),
     isOnCurve: jest.fn(() => true),
   };
 

@@ -4,8 +4,6 @@ import './i18n'; // Initialize i18n
 import LoadingIndicator from './components/LoadingIndicator';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
-import OnboardingTutorial from './components/OnboardingTutorial';
-import PWAInstallPrompt from './components/PWAInstallPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './context/ThemeContext';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
@@ -15,17 +13,19 @@ import { isExtension } from './utils/utils';
 import { useWallet, WalletProvider } from './utils/wallet';
 import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import useOnboarding from './utils/useOnboarding';
-// Import OnboardingSetup component synchronously since it's needed immediately
-import { OnboardingSetup } from './components/OnboardingSetup';
-// import { MASTER_BUILD } from './utils/config';
-// import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
+// Lazy load all route components and heavy dependencies
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
 const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));  
 const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
+
+// Lazy load heavy components
+const OnboardingTutorial = lazy(() => import('./components/OnboardingTutorial'));
+const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
+const OnboardingSetup = lazy(() => import('./components/OnboardingSetup'));
 
 interface CustomPalette {
   text: {
@@ -163,24 +163,30 @@ const Pages = () => {
   // Show onboarding setup first if not completed
   if (showOnboardingSetup) {
     return (
-      <OnboardingSetup onComplete={handleOnboardingSetupComplete} />
+      <Suspense fallback={<LoadingIndicator />}>
+        <OnboardingSetup onComplete={handleOnboardingSetupComplete} />
+      </Suspense>
     );
   }
 
   return (
     <>
       {/* Onboarding Tutorial */}
-      <OnboardingTutorial
-        isOpen={showOnboarding}
-        onClose={completeOnboarding}
-      />
+      <Suspense fallback={null}>
+        <OnboardingTutorial
+          isOpen={showOnboarding}
+          onClose={completeOnboarding}
+        />
+      </Suspense>
       
       {/* PWA Install Prompt */}
       {showPWAPrompt && (
-        <PWAInstallPrompt
-          onInstall={handlePWAInstall}
-          onDismiss={dismissPWAPrompt}
-        />
+        <Suspense fallback={null}>
+          <PWAInstallPrompt
+            onInstall={handlePWAInstall}
+            onDismiss={dismissPWAPrompt}
+          />
+        </Suspense>
       )}
       
       {/* {!MASTER_BUILD && !LOCAL_BUILD && (

@@ -314,3 +314,5 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
     </OnboardingContainer>
   );
 };
+
+export default OnboardingSetup;

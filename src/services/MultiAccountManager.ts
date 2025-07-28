@@ -87,14 +87,22 @@ class MultiAccountManager {
     }
   }
 
-  // State Management
+  // State Management with debounced updates
   private setState(updates: Partial<MultiAccountState>): void {
     this.state = { ...this.state, ...updates };
-    this.notifyListeners();
+    this.debouncedNotifyListeners();
   }
 
-  private notifyListeners(): void {
+  private debouncedNotifyListeners = this.debounce(() => {
     this.listeners.forEach(listener => listener(this.state));
+  }, 100);
+
+  private debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
+    let timeout: NodeJS.Timeout;
+    return ((...args: any[]) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    }) as T;
   }
 
   public subscribe(listener: (state: MultiAccountState) => void): () => void {

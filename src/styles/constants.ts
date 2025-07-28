@@ -102,7 +102,8 @@ export const RESPONSIVE_BREAKPOINTS = {
   reducedMotion: '(prefers-reduced-motion: reduce)',
 } as const;
 
-export default {
+// Export constants object with a proper name
+const styleConstants = {
   ANIMATION_DURATIONS,
   ANIMATION_EASINGS,
   ANIMATION_DELAYS,
@@ -111,3 +112,5 @@ export default {
   LOADING_CONFIGS,
   RESPONSIVE_BREAKPOINTS,
 };
+
+export default styleConstants;

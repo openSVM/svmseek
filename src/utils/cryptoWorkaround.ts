@@ -42,9 +42,9 @@ export function safeBufferFrom(data: any, encoding?: BufferEncoding): Buffer {
  */
 export function initializeCryptoSafely(): boolean {
   try {
-    // Test basic crypto operations
-    const testBuffer = safeBufferFrom('test');
-    const testAccess = safeBufferAccess(new Uint8Array(4));
+    // Test basic crypto operations to ensure they work
+    safeBufferFrom('test');
+    safeBufferAccess(new Uint8Array(4));
     
     console.log('Crypto workaround initialized successfully');
     return true;
