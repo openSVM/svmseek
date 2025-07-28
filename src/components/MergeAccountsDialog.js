@@ -7,7 +7,7 @@ import { TokenInstructions } from '@project-serum/serum';
 import { useWalletPublicKeys } from '../utils/wallet';
 import { useTheme } from '@mui/material';
 import AttentionComponent from '../components/Attention';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../utils/logger';
+import { devLog, logError } from '../utils/logger';
 import {
   Card,
   VioletButton,

@@ -1,4 +1,4 @@
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { logError } from '../utils/logger';
 /**
  * Real Solana RPC service for fetching live blockchain data
  */

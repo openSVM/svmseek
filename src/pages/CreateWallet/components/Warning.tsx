@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
+import { devLog } from '../../../utils/logger';
 import {
   Card,
   VioletButton,

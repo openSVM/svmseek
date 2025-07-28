@@ -1,6 +1,6 @@
 import { Connection, PublicKey, SystemProgram } from '@solana/web3.js';
 import { v4 as uuidv4 } from 'uuid';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { devLog, logError } from '../utils/logger';
 
 export interface TransactionRecord {
   id: string;

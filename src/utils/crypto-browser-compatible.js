@@ -2,7 +2,7 @@
 import { Buffer } from 'buffer';
 import { derivePath } from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
-import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
+import { devLog, logWarn, logError } from './logger';
 
 /**
  * Browser-compatible crypto utilities to replace problematic BIP32 library

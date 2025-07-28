@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { useEffect, useReducer } from 'react';
 import tuple from 'immutable-tuple';
-import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
+import { logWarn } from './logger';
 
 const pageLoadTime = new Date();
 

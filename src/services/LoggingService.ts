@@ -1,4 +1,4 @@
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { logDebug, logInfo, logWarn, logError } from '../utils/logger';
 /**
  * Centralized logging service for error reporting and monitoring
  * Integrates with external services like Sentry in production

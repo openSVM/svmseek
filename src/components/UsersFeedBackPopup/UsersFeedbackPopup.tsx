@@ -5,7 +5,7 @@ import { Theme } from '@mui/material';
 import CloseIcon from '../../images/closeIcon.svg';
 import CoolIcon from '../../images/Emoji.svg';
 import DialogForm from '../../pages/Wallet/components/DialogForm';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
+import { devLog } from '../../utils/logger';
 import {
   BlueButton,
   Form,

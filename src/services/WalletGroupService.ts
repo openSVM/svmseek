@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { v4 as uuidv4 } from 'uuid';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { logError } from '../utils/logger';
 
 export interface WalletGroup {
   id: string;

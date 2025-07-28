@@ -3,7 +3,7 @@ import { useSnackbar } from 'notistack';
 import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@mui/material/Button';
 import { confirmTransaction } from './utils';
-import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
+import { logWarn, logError } from './logger';
 
 interface TransactionCallbacks {
   onSuccess?: (signature: string) => void;

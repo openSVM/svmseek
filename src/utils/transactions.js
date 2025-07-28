@@ -1,7 +1,7 @@
 
 import bs58 from 'bs58';
 import { Message, SystemInstruction, SystemProgram } from '@solana/web3.js';
-import { devLog, logDebug, logInfo, logWarn, logError  } from './logger';
+import { devLog } from './logger';
 import {
   decodeInstruction,
   decodeTokenInstructionData,

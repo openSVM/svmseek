@@ -1,5 +1,5 @@
 import { Commitment, Connection } from '@solana/web3.js'
-import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
+import { logError } from './logger';
 
 type RateLimitedEndpoint = {
   url: string

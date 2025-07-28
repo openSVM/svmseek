@@ -3,7 +3,7 @@ import bs58 from 'bs58';
 import { Account, PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { Buffer } from 'buffer';
-import { devLog, logDebug, logInfo, logWarn, logError  } from './logger';
+import { devLog, logError } from './logger';
 import {
   setInitialAccountInfo,
   useAccountInfo,

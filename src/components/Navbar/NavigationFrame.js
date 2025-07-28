@@ -24,7 +24,7 @@ import { Navbar } from './Navbar';
 import { isExtension } from '../../utils/utils';
 import { useLocation } from 'react-router-dom';
 import { MobileFooter } from '../Footer/MobileFooter';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+import { devLog } from '../../utils/logger';
 
 export const footerHeight = isExtension ? 0 : 6;
 

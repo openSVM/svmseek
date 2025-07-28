@@ -1,4 +1,4 @@
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { logWarn, logError } from '../utils/logger';
 /**
  * Dedicated service for secure wallet injection into iframe-based Web3 browser
  * Handles all wallet provider functionality and security concerns

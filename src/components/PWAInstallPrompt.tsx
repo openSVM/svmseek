@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Button, Typography, IconButton, Box } from '@mui/material';
 import { Close, GetApp, Smartphone } from '@mui/icons-material';
 import { GlassContainer } from './GlassContainer';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { logWarn } from '../utils/logger';
 
 const PWAPrompt = styled(GlassContainer)`
   position: fixed;

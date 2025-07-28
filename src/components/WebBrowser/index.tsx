@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
+import { devLog, logWarn, logError } from '../../utils/logger';
 import {
   IconButton,
   TextField,

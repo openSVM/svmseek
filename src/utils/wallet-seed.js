@@ -6,7 +6,7 @@ import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import { safeCreateImportsEncryptionKey } from './crypto-browser-compatible';
-import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
+import { logError } from './logger';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');

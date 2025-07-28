@@ -7,7 +7,7 @@ import DialogForm from '../pages/Wallet/components/DialogForm';
 import { LedgerWalletProvider } from '../utils/walletProvider/ledger';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { devLog } from '../utils/logger';
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
   const [pubKey, setPubKey] = useState();

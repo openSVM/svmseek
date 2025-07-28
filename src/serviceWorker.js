@@ -1,4 +1,4 @@
-import { devLog, logDebug, logInfo, logWarn, logError } from './utils/logger';
+import { devLog, logError } from './utils/logger';
 // This optional code is used to register a service worker.
 // register() is not called by default.
 

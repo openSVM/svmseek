@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DialogForm from './DialogForm';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
+import { devLog  } from '../../../utils/logger';
 import {
   useWallet,
   useWalletAddressForMint,

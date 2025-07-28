@@ -8,7 +8,7 @@ import TransactionList from './TransactionList';
 import { GlassContainer } from '../GlassContainer';
 import ErrorBoundary, { RPCErrorBoundary, NetworkErrorBoundary } from '../ErrorBoundary';
 import { solanaRPCService, NetworkStats as NetworkStatsType } from '../../services/SolanaRPCService';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../../utils/logger';
+import { devLog, logError } from '../../utils/logger';
 
 const ExplorerContainer = styled(GlassContainer)(({ theme }) => ({
   height: '100%',

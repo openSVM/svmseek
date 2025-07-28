@@ -4,7 +4,7 @@ import { Account } from '@solana/web3.js';
 import bs58 from 'bs58';
 import { Buffer } from 'buffer';
 import { createAccountFromSeed } from '../crypto-browser-compatible';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../logger';
+import { logWarn, logError } from '../logger';
 
 export const DERIVATION_PATH = {
   deprecated: undefined,

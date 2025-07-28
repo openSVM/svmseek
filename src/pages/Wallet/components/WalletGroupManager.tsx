@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../../utils/logger';
+import { logError  } from '../../../utils/logger';
 import {
   Dialog,
   DialogTitle,

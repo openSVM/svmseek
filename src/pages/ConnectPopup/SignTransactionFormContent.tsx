@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
+import { devLog } from '../../utils/logger';
 import {
   useConnection,
   useSolanaExplorerUrlSuffix,

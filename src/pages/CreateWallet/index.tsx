@@ -11,7 +11,7 @@ import SaveSeedPhrase from './components/SaveSeedPhrase';
 import ConfirmSeedPhrase from './components/ConfirmSeedPhrase';
 import AddTokens from './components/AddTokens';
 import Warning from './components/Warning';
-import { devLog, logDebug, logInfo, logWarn, logError  } from '../../utils/logger';
+import { devLog } from '../../utils/logger';
 import {
   generateMnemonicAndSeed,
   useHasLockedMnemonicAndSeed,

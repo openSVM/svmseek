@@ -4,7 +4,7 @@ import { ErrorOutline, Refresh } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { GlassContainer } from './GlassContainer';
 import { loggingService } from '../services/LoggingService';
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { logError } from '../utils/logger';
 
 const ErrorContainer = styled(GlassContainer)(({ theme }) => ({
   display: 'flex',

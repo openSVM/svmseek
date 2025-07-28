@@ -1,6 +1,6 @@
 import { getTokensData } from "../utils/ccai";
 import { sleep } from "../utils/utils";
-import { devLog, logDebug, logInfo, logWarn, logError } from '../utils/logger';
+import { devLog } from '../utils/logger';
 
 export class TokensDataSingleton {
   public static isDataLoading = false
