@@ -6,7 +6,6 @@ import StakeBtn from '../../images/stakeBtn.png';
 import { Row, RowContainer } from '../../pages/commonStyles';
 import { Button } from '../Button';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
-import { COLORS } from '../variables';
 import DiscordIcon from './DiscordIcon';
 import ThemeToggle from '../ThemeToggle';
 
@@ -31,7 +30,7 @@ const Socials = styled(Row)`
     svg {
       g {
         path {
-          fill: #4679f4;
+          fill: var(--interactive-primary);
         }
       }
     }
@@ -116,8 +115,8 @@ export const Navbar = () => {
             </NavLink>
             <NavLink
               style={{
-                color: COLORS.navLinkActive,
-                background: COLORS.navLinkActiveBg,
+                color: 'var(--text-inverse)',
+                background: 'var(--interactive-primary)',
               }}
               to="/wallet"
               activeClassName="selected"

@@ -25,7 +25,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
 import Link from '@mui/material/Link';
 
-import logoAstronaut from '../../images/logoAstronaut.svg';
+import SVMSeekLogo from '../../images/SVMSeek.svg';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
@@ -223,8 +223,8 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
   return (
     <RowContainer>
       <img
-        src={logoAstronaut}
-        alt={'logo'}
+        src={SVMSeekLogo}
+        alt={'SVMSeek logo'}
         style={{
           borderRadius: '0',
           height: '6rem',

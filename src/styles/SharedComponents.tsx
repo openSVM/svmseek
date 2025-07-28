@@ -85,19 +85,19 @@ export const ActionButton = styled(Button)(({ theme }) => ({
   textTransform: 'none',
   fontWeight: 600,
   padding: theme.spacing(1.5, 3),
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  color: 'white',
+  background: `linear-gradient(135deg, var(--interactive-primary) 0%, var(--interactive-secondary) 100%)`,
+  color: 'var(--text-inverse)',
   border: 'none',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   
   '&:hover': {
-    background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+    background: `linear-gradient(135deg, var(--interactive-hover) 0%, var(--interactive-active) 100%)`,
     transform: 'translateY(-2px)',
-    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
+    boxShadow: 'var(--shadow-lg)',
   },
   
   '&:disabled': {
-    background: 'rgba(255, 255, 255, 0.1)',
+    background: 'var(--interactive-disabled)',
     color: 'rgba(255, 255, 255, 0.5)',
   },
 }));
@@ -167,7 +167,7 @@ export const GlassLinearProgress = styled(LinearProgress)(({ theme }) => ({
   
   '& .MuiLinearProgress-bar': {
     borderRadius: 3,
-    background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+    background: `linear-gradient(90deg, var(--interactive-primary) 0%, var(--interactive-secondary) 100%)`,
   },
 }));
 

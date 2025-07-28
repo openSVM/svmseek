@@ -93,7 +93,7 @@ function ViewTransactionOnExplorerButton({ signature }: ViewTransactionButtonPro
   const urlSuffix = useSolanaExplorerUrlSuffix();
   return (
     <Button
-      style={{ color: '#fff' }}
+      style={{ color: 'var(--text-inverse)' }}
       component="a"
       target="_blank"
       rel="noopener"

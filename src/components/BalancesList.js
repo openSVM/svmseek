@@ -14,12 +14,11 @@ import {
 import { findAssociatedTokenAddress } from '../utils/tokens';
 import LoadingIndicator from './LoadingIndicator';
 import Collapse from '@mui/material/Collapse';
-import { Typography, useTheme } from '@mui/material';
+import { Typography, useTheme, styled } from '@mui/material';
 import TokenInfoDialog from './TokenInfoDialog';
 import Link from '@mui/material/Link';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { makeStyles } from '@mui/material/styles';
 import { abbreviateAddress } from '../utils/utils';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
@@ -277,29 +276,28 @@ export default function BalancesList() {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
-  address: {
-    textOverflow: 'ellipsis',
-    overflowX: 'hidden',
-  },
-  itemDetails: {
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
-    marginBottom: theme.spacing(2),
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
+const AddressText = styled('div')(({ theme }) => ({
+  textOverflow: 'ellipsis',
+  overflowX: 'hidden',
+}));
+
+const ItemDetails = styled('div')(({ theme }) => ({
+  marginLeft: theme.spacing(3),
+  marginRight: theme.spacing(3),
+  marginBottom: theme.spacing(2),
+}));
+
+const ButtonContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-evenly',
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
 }));
 
 export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
   const theme = useTheme()
-  const classes = useStyles();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
   const [, setForceUpdate] = useState(false);
@@ -431,8 +429,9 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
                 {tokenSymbol ? ` (${tokenSymbol})` : null}
               </Title>
             }
-            secondary={subtitle}
-            secondaryTypographyProps={{ className: classes.address }}
+            secondary={
+              <AddressText>{subtitle}</AddressText>
+            }
           />
           <div
             style={{
@@ -463,7 +462,6 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
 
 function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
   const urlSuffix = useSolanaExplorerUrlSuffix();
-  const classes = useStyles();
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const [, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
@@ -519,8 +517,8 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
           open={exportAccDialogOpen}
         />
       )}
-      <div className={classes.itemDetails}>
-        <div className={classes.buttonContainer}>
+      <ItemDetails>
+        <ButtonContainer>
           {!publicKey.equals(owner) && showTokenInfoDialog ? (
             <Button
               variant="outlined"
@@ -558,9 +556,9 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
               Delete
             </Button>
           ) : null}
-        </div>
-        <Typography variant="body2" className={classes.address}>
-          Deposit Address: {publicKey.toBase58()}
+        </ButtonContainer>
+        <Typography variant="body2" component="div">
+          Deposit Address: <AddressText style={{ display: 'inline' }}>{publicKey.toBase58()}</AddressText>
         </Typography>
         <Typography variant="body2">
           Token Name: {tokenName ?? 'Unknown'}
@@ -569,8 +567,8 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
           Token Symbol: {tokenSymbol ?? 'Unknown'}
         </Typography>
         {mint ? (
-          <Typography variant="body2" className={classes.address}>
-            Token Address: {mint.toBase58()}
+          <Typography variant="body2" component="div">
+            Token Address: <AddressText style={{ display: 'inline' }}>{mint.toBase58()}</AddressText>
           </Typography>
         ) : null}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -623,7 +621,7 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
             </div>
           )}
         </div>
-      </div>
+      </ItemDetails>
       <SendDialog
         open={sendDialogOpen}
         onClose={() => setSendDialogOpen(false)}

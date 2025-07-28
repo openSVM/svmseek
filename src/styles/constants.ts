@@ -66,16 +66,15 @@ export const GLASS_EFFECTS = {
   },
 } as const;
 
-// Color constants for consistent theming
+// Color constants for consistent theming - now using theme variables
 export const THEME_COLORS = {
-  primary: '#8B5CF6',
-  primaryAlpha: 'rgba(139, 92, 246, 0.3)',
-  primaryLight: '#A78BFA',
-  secondary: '#06B6D4',
-  success: '#10B981',
-  error: '#EF4444',
-  warning: '#F59E0B',
-  info: '#3B82F6',
+  primary: 'var(--interactive-primary)',
+  primaryLight: 'var(--interactive-secondary)',
+  secondary: 'var(--interactive-secondary)',
+  success: 'var(--status-success)',
+  error: 'var(--status-error)',
+  warning: 'var(--status-warning)',
+  info: 'var(--status-info)',
 } as const;
 
 // Loading state configurations
