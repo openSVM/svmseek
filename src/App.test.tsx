@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { Connection } from '@solana/web3.js';
 import App from './App';
 import { ConnectionProvider } from './utils/connection';
 import { WalletProvider } from './utils/wallet';
@@ -21,10 +20,13 @@ jest.mock('./utils/connection', () => ({
   ConnectionProvider: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="connection-provider">{children}</div>
   ),
-  useConnection: () => ({
-    connection: new Connection('https://api.devnet.solana.com'),
-    endpoint: 'https://api.devnet.solana.com',
-  }),
+  useConnection: () => {
+    const { Connection } = require('@solana/web3.js'); // Move import inside mock factory
+    return {
+      connection: new Connection('https://api.devnet.solana.com'),
+      endpoint: 'https://api.devnet.solana.com',
+    };
+  },
 }));
 
 // Mock wallet

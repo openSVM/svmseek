@@ -3,7 +3,6 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-import { Buffer } from 'buffer';
 
 // Polyfill for TextEncoder/TextDecoder in Jest
 global.TextEncoder = require('util').TextEncoder;
@@ -32,6 +31,7 @@ Object.defineProperty(navigator, 'clipboard', {
     writeText: jest.fn(() => Promise.resolve()),
     readText: jest.fn(() => Promise.resolve('')),
   },
+  configurable: true, // Allow reconfiguration for tests
 });
 
 // Mock ResizeObserver
@@ -92,7 +92,7 @@ jest.mock('scrypt-js', () => jest.fn((password, salt, N, r, p, keylen, callback)
   callback(null, new Uint8Array(keylen));
 }));
 jest.mock('@solana/web3.js', () => {
-  const mockBuffer = require('buffer').Buffer;
+  const { Buffer } = require('buffer'); // Move Buffer import inside mock factory
   
   const mockPublicKey = {
     toBase58: jest.fn(() => 'mock-public-key'),
@@ -100,7 +100,7 @@ jest.mock('@solana/web3.js', () => {
     equals: jest.fn(() => false),
     toJSON: jest.fn(() => 'mock-public-key'),
     toBytes: jest.fn(() => new Uint8Array(32)),
-    toBuffer: jest.fn(() => mockBuffer.alloc(32)),
+    toBuffer: jest.fn(() => Buffer.alloc(32)),
     isOnCurve: jest.fn(() => true),
   };
 
@@ -126,9 +126,45 @@ jest.mock('@solana/web3.js', () => {
     SystemProgram: {
       transfer: jest.fn(() => ({})),
     },
+    clusterApiUrl: jest.fn((cluster) => `https://api.${cluster}.solana.com`),
     LAMPORTS_PER_SOL: 1000000000,
   };
 });
+
+// Mock Ledger hardware wallet libraries to avoid hardware-specific dependencies
+jest.mock('@ledgerhq/hw-transport-webhid', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getPublicKey: jest.fn(() => Promise.resolve('mock-ledger-public-key')),
+    signTransaction: jest.fn(() => Promise.resolve('mock-signature')),
+    close: jest.fn(() => Promise.resolve()),
+  })),
+}));
+
+jest.mock('@ledgerhq/hw-transport-webusb', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    getPublicKey: jest.fn(() => Promise.resolve('mock-ledger-public-key')),
+    signTransaction: jest.fn(() => Promise.resolve('mock-signature')),
+    close: jest.fn(() => Promise.resolve()),
+  })),
+}));
+
+// Mock @project-serum/serum to avoid initialization issues
+jest.mock('@project-serum/serum', () => ({
+  TokenInstructions: {
+    initializeMint: jest.fn(),
+    initializeAccount: jest.fn(),
+    transfer: jest.fn(),
+  },
+  Market: {
+    load: jest.fn(() => Promise.resolve({
+      address: 'mock-market-address',
+      baseMintAddress: 'mock-base-mint',
+      quoteMintAddress: 'mock-quote-mint',
+    })),
+  },
+}));
 
 // Mock SVM-Pay to avoid network calls in tests
 jest.mock('svm-pay', () => ({
