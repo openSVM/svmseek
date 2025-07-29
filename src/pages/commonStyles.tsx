@@ -16,6 +16,7 @@ export type RowProps = {
   mediaJustify?: string;
   mediaMargin?: string;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 };
 
 export const Row = styled(
@@ -29,8 +30,9 @@ export const Row = styled(
     margin,
     padding,
     children,
+    style,
     ...props
-  }: RowProps) => <div {...props}>{children}</div>,
+  }: RowProps) => <div style={style} {...props}>{children}</div>,
 )<RowProps>`
   display: flex;
   flex-wrap: ${(props) => props.wrap || 'nowrap'};
@@ -64,8 +66,8 @@ export const GridContainer = styled(({ wallet, theme, ...rest }: GridContainerPr
   position: relative;
   padding: 0rem 3rem;
   margin: 0rem;
-  border-bottom: ${(props) => props.theme.customPalette.border.new};
-  background: ${(props) => props.theme.customPalette.dark.background};
+  border-bottom: 1px solid var(--border-main);
+  background: var(--bg-primary);
 
   @media (max-width: 850px) {
     display: flex;
@@ -339,15 +341,15 @@ export const VioletButton = styled((props) => (
     textTransform={'capitalize'}
     backgroundColor={
       props.disabled
-        ? props.theme.customPalette.grey.dark
-        : props.background || props.theme.customPalette.blue.serum
+        ? var(--bg-secondary)
+        : props.background || var(--interactive-primary)
     }
     borderColor={
       props.disabled
-        ? props.theme.customPalette.grey.dark
-        : props.background || props.theme.customPalette.blue.serum
+        ? var(--bg-secondary)
+        : props.background || var(--interactive-primary)
     }
-    btnColor={props.color || props.theme.customPalette.white.main}
+    btnColor={props.color || var(--text-inverse)}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     hoverBackground={props.hoverBackground || 'none'}
@@ -369,7 +371,7 @@ export const RedButton = styled((props) => (
     textTransform={'capitalize'}
     backgroundColor={props.background || 'transparent'}
     borderColor={props.background || 'transparent'}
-    btnColor={props.color || props.theme.customPalette.red.main}
+    btnColor={props.color || var(--error-main)}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -390,15 +392,15 @@ export const RedFilledButton = styled((props) => (
     textTransform={'capitalize'}
     backgroundColor={
       props.disabled
-        ? props.theme.customPalette.grey.dark
-        : props.background || props.theme.customPalette.red.main
+        ? var(--bg-secondary)
+        : props.background || var(--error-main)
     }
     borderColor={
       props.disabled
-        ? props.theme.customPalette.grey.dark
-        : props.background || props.theme.customPalette.red.main
+        ? var(--bg-secondary)
+        : props.background || var(--error-main)
     }
-    btnColor={props.color || props.theme.customPalette.white.main}
+    btnColor={props.color || var(--text-inverse)}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -418,8 +420,8 @@ export const WhiteButton = styled((props) => (
     height={'4.5rem'}
     textTransform={'capitalize'}
     backgroundColor={props.background || 'transparent'}
-    borderColor={props.background || props.theme.customPalette.white.main}
-    btnColor={props.color || props.theme.customPalette.white.main}
+    borderColor={props.background || var(--text-inverse)}
+    btnColor={props.color || var(--text-inverse)}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -501,8 +503,8 @@ export const StyledCheckbox = styled(Checkbox)`
   &&& {
     color: ${(props) =>
       props.disabled
-        ? props.theme.customPalette.grey.light
-        : props.color || props.theme.customPalette.blue.new};
+        ? var(--text-secondary)
+        : props.color || var(--interactive-primary)};
     &:hover {
       background-color: rgba(54, 108, 229, 0.1);
     }
@@ -516,7 +518,7 @@ export const StyledCheckbox = styled(Checkbox)`
 
 export const StyledRadio = styled(Radio)`
   &&& {
-    color: ${(props) => props.color || props.theme.customPalette.blue.new};
+    color: ${(props) => props.color || var(--interactive-primary)};
     &:hover {
       background-color: rgba(54, 108, 229, 0.1);
     }
