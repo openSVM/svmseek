@@ -169,7 +169,7 @@ export default function PopupPage() {
 
     return (
       <RowContainer height={`calc(100% - ${footerHeight}rem)`}>
-        <Title style={{ fontSize: '2rem' }}>
+        <Title fontSize="2rem">
           {isExtension
             ? 'Submitting...'
             : 'Please keep this window open in the background.'}
@@ -181,7 +181,7 @@ export default function PopupPage() {
   if (!wallet) {
     return (
       <RowContainer height={`calc(100% - ${footerHeight}rem)`}>
-        <Title style={{ fontSize: '2rem' }}>Loading wallet...</Title>
+        <Title fontSize="2rem">Loading wallet...</Title>
       </RowContainer>
     );
   }
@@ -425,7 +425,7 @@ function ApproveConnectionForm({
         <Title
           fontSize="2.4rem"
           fontFamily="Avenir Next Demi"
-          style={{ marginBottom: '3rem' }}
+          margin="0 0 3rem 0"
         >
           Allow this site to access your Wallet™?
         </Title>
@@ -507,7 +507,7 @@ function ApproveSignatureForm({
   autoApprove,
 }) {
   const theme = useTheme();
-  const buttonRef = useRef();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const isMultiTx = messageDisplay === 'tx' && messages.length > 1;
 
@@ -550,8 +550,7 @@ function ApproveSignatureForm({
         </VioletButton>
         {}
         <InvisibleButton
-          component={Button}
-          ref={(b) => (buttonRef.current = b)}
+          ref={buttonRef}
         ></InvisibleButton>
       </RowContainer>
     </>

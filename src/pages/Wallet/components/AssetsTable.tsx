@@ -32,8 +32,8 @@ import { Loading } from '../../../components/Loading';
 export const TableContainer = styled(({ theme, isActive, ...props }) => (
   <Row {...props} />
 ))`
-  background: ${(props) => props.theme.customPalette.grey.background};
-  border: ${(props) => props.theme.customPalette.border.new};
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-main);
   border-radius: 1.2rem;
   height: 100%;
 
@@ -79,7 +79,7 @@ const StyledTable = styled.table`
 export const HeadRow = styled(Row)`
   text-align: right;
   width: 10%;
-  border-bottom: ${(props) => props.theme.customPalette.border.new};
+  border-bottom: 1px solid var(--border-main);
 `;
 
 const RefreshButton = styled(BtnCustom)`
@@ -154,7 +154,7 @@ const StyledTr = styled.tr`
 
   &:nth-child(2n) td {
     background: ${(props) =>
-      props.disableHover ? '' : props.theme.customPalette.dark.background};
+      props.disableHover ? '' : 'var(--bg-tertiary)'};
   }
 
   @media (max-width: 540px) {
@@ -202,7 +202,7 @@ const AssetSymbol = styled(Title)`
 `;
 
 const AssetName = styled(Title)`
-  color: ${(props) => props.theme.customPalette.grey.light};
+  color: var(--text-secondary);
   font-size: 1.4rem;
   font-family: Avenir Next;
   margin-left: 0.5rem;
@@ -211,7 +211,7 @@ const AssetName = styled(Title)`
 `;
 
 const AssetAmount = styled(Title)`
-  color: ${(props) => props.theme.customPalette.green.light};
+  color: var(--success-main);
   font-size: 1.4rem;
   font-family: Avenir Next;
   @media (max-width: 540px) {

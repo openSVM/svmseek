@@ -39,15 +39,15 @@ export const StyledTabs = styled(Tabs)`
   }
   
   & > div > span {
-    background: ${props => props.theme.customPalette.blue.serum} !important;
+    background: var(--interactive-primary) !important;
   }
 `
 
 export const StyledTab = styled(Tab)`
   &&& {
     min-width: auto;
-    color: ${props => props.theme.customPalette.blue.serum};
-    border-color: ${props => props.theme.customPalette.blue.serum};
+    color: var(--interactive-primary);
+    border-color: var(--interactive-primary);
     text-transform: capitalize;
     font-size: 1.4rem;
     font-family: Avenir Next Demi;

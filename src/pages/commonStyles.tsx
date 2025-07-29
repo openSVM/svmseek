@@ -341,15 +341,15 @@ export const VioletButton = styled((props) => (
     textTransform={'capitalize'}
     backgroundColor={
       props.disabled
-        ? var(--bg-secondary)
-        : props.background || var(--interactive-primary)
+        ? 'var(--bg-secondary)'
+        : props.background || 'var(--interactive-primary)'
     }
     borderColor={
       props.disabled
-        ? var(--bg-secondary)
-        : props.background || var(--interactive-primary)
+        ? 'var(--bg-secondary)'
+        : props.background || 'var(--interactive-primary)'
     }
-    btnColor={props.color || var(--text-inverse)}
+    btnColor={props.color || 'var(--text-inverse)'}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     hoverBackground={props.hoverBackground || 'none'}
@@ -371,7 +371,7 @@ export const RedButton = styled((props) => (
     textTransform={'capitalize'}
     backgroundColor={props.background || 'transparent'}
     borderColor={props.background || 'transparent'}
-    btnColor={props.color || var(--error-main)}
+    btnColor={props.color || 'var(--error-main)'}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -392,15 +392,15 @@ export const RedFilledButton = styled((props) => (
     textTransform={'capitalize'}
     backgroundColor={
       props.disabled
-        ? var(--bg-secondary)
-        : props.background || var(--error-main)
+        ? 'var(--bg-secondary)'
+        : props.background || 'var(--error-main)'
     }
     borderColor={
       props.disabled
-        ? var(--bg-secondary)
-        : props.background || var(--error-main)
+        ? 'var(--bg-secondary)'
+        : props.background || 'var(--error-main)'
     }
-    btnColor={props.color || var(--text-inverse)}
+    btnColor={props.color || 'var(--text-inverse)'}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -420,8 +420,8 @@ export const WhiteButton = styled((props) => (
     height={'4.5rem'}
     textTransform={'capitalize'}
     backgroundColor={props.background || 'transparent'}
-    borderColor={props.background || var(--text-inverse)}
-    btnColor={props.color || var(--text-inverse)}
+    borderColor={props.background || 'var(--text-inverse)'}
+    btnColor={props.color || 'var(--text-inverse)'}
     borderRadius={'1rem'}
     border={props.border || 'none'}
     {...props}
@@ -503,8 +503,8 @@ export const StyledCheckbox = styled(Checkbox)`
   &&& {
     color: ${(props) =>
       props.disabled
-        ? var(--text-secondary)
-        : props.color || var(--interactive-primary)};
+        ? 'var(--text-secondary)'
+        : props.color || 'var(--interactive-primary)'};
     &:hover {
       background-color: rgba(54, 108, 229, 0.1);
     }
@@ -518,7 +518,7 @@ export const StyledCheckbox = styled(Checkbox)`
 
 export const StyledRadio = styled(Radio)`
   &&& {
-    color: ${(props) => props.color || var(--interactive-primary)};
+    color: ${(props) => props.color || 'var(--interactive-primary)'};
     &:hover {
       background-color: rgba(54, 108, 229, 0.1);
     }
@@ -574,7 +574,7 @@ export type ExclamationMarkProps = {
 export const ExclamationMark = styled(({ fontSize, lineHeight, ...props }: ExclamationMarkProps) => (
   <span {...props}>!</span>
 ))<ExclamationMarkProps>`
-  color: ${(props) => props.color || props.theme.customPalette.orange.dark};
+  color: ${(props) => props.color || 'var(--error-main)'};
   font-family: Avenir Next Demi;
   font-size: ${(props) => props.fontSize || '5rem'};
   line-height: ${(props) => props.lineHeight || '6rem'};

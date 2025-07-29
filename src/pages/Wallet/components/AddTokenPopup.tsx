@@ -38,7 +38,7 @@ const WhiteText = styled(Title)`
 `;
 
 const GreenText = styled(WhiteText)`
-  color: ${(props) => props.theme.customPalette.green.light};
+  color: var(--success-main);
 `;
 
 export const feeFormat = new Intl.NumberFormat(undefined, {
