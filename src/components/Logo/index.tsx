@@ -1,7 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const LogoContainer = styled.div`
+type LogoContainerProps = {
+  width?: string;
+  height?: string;
+  margin?: string;
+  currentStep?: boolean;
+};
+
+const LogoContainer = styled.div<LogoContainerProps>`
   width: ${(props) => props.width || '28rem'};
   height: ${(props) => props.width || 'auto'};
   margin: ${(props) => (props.currentStep ? '0 0 4rem 0' : '0')};

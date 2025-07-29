@@ -28,7 +28,14 @@ const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   border-radius: 2rem;
 `;
 
-const Text = styled.span`
+type TextProps = {
+  fontSize?: string;
+  paddingBottom?: string;
+  fontFamily?: string;
+  color?: string;
+};
+
+const Text = styled.span<TextProps>`
   font-size: ${(props) => props.fontSize || '1.5rem'};
   padding-bottom: ${(props) => props.paddingBottom || ''};
   text-transform: none;

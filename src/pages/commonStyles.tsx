@@ -113,6 +113,11 @@ export type TextareaProps = {
   width?: string;
   height?: string;
   padding?: string;
+  type?: string;
+  value?: any;
+  onChange?: (e: any) => void;
+  placeholder?: string;
+  style?: React.CSSProperties;
 };
 
 export const Textarea = styled(({ ...props }: TextareaProps) => (
@@ -205,6 +210,15 @@ export const Card = styled.div<CardProps>`
 export type InputProps = {
   width?: string;
   height?: string;
+  type?: string;
+  value?: string;
+  autoFocus?: boolean;
+  onChange?: (e: any) => void;
+  placeholder?: string;
+  style?: React.CSSProperties;
+  autoComplete?: string;
+  disabled?: boolean;
+  onKeyDown?: (e: any) => void;
 };
 
 export const Input = styled(({ ...props }: InputProps) => (

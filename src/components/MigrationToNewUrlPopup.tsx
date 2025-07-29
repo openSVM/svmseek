@@ -23,7 +23,14 @@ const BoldHeader = styled.h1`
   color: #f5f5fb;
 `;
 
-const Text = styled.span`
+type TextProps = {
+  fontSize?: string;
+  paddingBottom?: string;
+  fontFamily?: string;
+  color?: string;
+};
+
+const Text = styled.span<TextProps>`
   font-size: ${(props) => props.fontSize || '1.5rem'};
   padding-bottom: ${(props) => props.paddingBottom || ''};
   text-transform: none;
@@ -31,11 +38,33 @@ const Text = styled.span`
   color: ${(props) => props.color || '#ecf0f3'};
 `;
 
+type BlueButtonProps = {
+  isUserConfident?: boolean;
+  showLoader?: boolean;
+  children?: React.ReactNode;
+  onClick?: () => void;
+};
+
 const BlueButton = styled(
-  ({ isUserConfident, showLoader, children, ...props }) => (
-    <BtnCustom {...props}>{children}</BtnCustom>
+  ({ isUserConfident, showLoader, children, onClick, ...props }: BlueButtonProps) => (
+    <BtnCustom 
+      btnWidth="100%"
+      height="4.5rem"
+      fontSize="1.4rem"
+      textTransform="capitalize"
+      backgroundColor="#651CE4"
+      borderRadius="1rem"
+      borderColor="none"
+      btnColor="#fbf2f2"
+      border="none"
+      hoverBackground="#651CE4"
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </BtnCustom>
   ),
-)`
+)<BlueButtonProps>`
   font-size: 1.4rem;
   height: 4.5rem;
   text-transform: capitalize;
