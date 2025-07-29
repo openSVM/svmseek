@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { devLog } from '../../utils/logger';
 import {
   Button,
   Collapse,
@@ -27,7 +28,14 @@ const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   border-radius: 2rem;
 `;
 
-const Text = styled.span`
+type TextProps = {
+  fontSize?: string;
+  paddingBottom?: string;
+  fontFamily?: string;
+  color?: string;
+};
+
+const Text = styled.span<TextProps>`
   font-size: ${(props) => props.fontSize || '1.5rem'};
   padding-bottom: ${(props) => props.paddingBottom || ''};
   text-transform: none;
@@ -37,7 +45,7 @@ const Text = styled.span`
 
 export default function ConnectionsList({ theme, close, open }) {
   const connectedWallets = useConnectedWallets();
-  console.log('connectedWallets', connectedWallets);
+  devLog('connectedWallets', connectedWallets);
   return (
     <DialogForm
       theme={theme}
@@ -98,12 +106,12 @@ const ListItemImage = styled.img`
 
 function ConnectionsListItem({ origin, connectedWallet }) {
   const [open, setOpen] = useState(false);
-  // TODO better way to get high res icon?
+  
   const appleIconUrl = origin + '/apple-touch-icon.png';
   const faviconUrl = origin + '/favicon.ico';
   const [iconUrl, setIconUrl] = useState(appleIconUrl);
   const { accounts } = useWalletSelector();
-  // TODO better way to do this
+  
   const account = accounts.find(
     (account) => account.address.toBase58() === connectedWallet.publicKey,
   );
@@ -132,7 +140,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
               alt=""
             />
         </StyledListItemIcon>
-        <div style={{ display: 'flex', flex: 1 }}>
+        <div >
           <ListItemText primary={origin} secondary={account.name} />
         </div>
         {open ? <ExpandLess /> : <ExpandMore />}

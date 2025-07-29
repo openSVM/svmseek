@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import PopupPage from '../pages/ConnectPopup/PopupPage';
 
-export default function LoginRoutes({ match, location }) {
+export default function LoginRoutes() {
   return (
-    <Switch>
-      <Route path={match.url} component={PopupPage} />
-    </Switch>
+    <Routes>
+      <Route path="/*" element={<PopupPage />} />
+    </Routes>
   );
 }

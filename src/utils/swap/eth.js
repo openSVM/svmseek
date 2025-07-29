@@ -240,7 +240,7 @@ export function ConnectToMetamaskButton() {
       <VioletButton
         theme={theme}
         component="a"
-        href={isExtension ? 'http://svmseek.com/' : 'https://metamask.io/'}
+        href={isExtension ? 'https://svmseek.com/' : 'https://metamask.io/'}
         target="_blank"
         rel="noopener"
         width={'calc(50% - .5rem)'}

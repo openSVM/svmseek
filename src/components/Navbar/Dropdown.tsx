@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  NavLink,
   DropdownWrap,
   DropdownContent,
   DropdownInner,
@@ -18,9 +17,9 @@ export const DropDown: React.FC<DropdownProps> = (props) => {
   const { text, children, hide, isActive } = props;
   return (
     <DropdownWrap hide={hide}>
-      <NavLink className={isActive ? 'selected' : ''} as="a">
+      <button className={isActive ? 'selected' : ''} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
         {text}
-      </NavLink>
+      </button>
       <DropdownContent>
         <DropdownInner>{children}</DropdownInner>
       </DropdownContent>

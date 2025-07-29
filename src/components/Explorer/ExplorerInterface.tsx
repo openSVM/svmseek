@@ -8,6 +8,7 @@ import TransactionList from './TransactionList';
 import { GlassContainer } from '../GlassContainer';
 import ErrorBoundary, { RPCErrorBoundary, NetworkErrorBoundary } from '../ErrorBoundary';
 import { solanaRPCService, NetworkStats as NetworkStatsType } from '../../services/SolanaRPCService';
+import { devLog, logError } from '../../utils/logger';
 
 const ExplorerContainer = styled(GlassContainer)(({ theme }) => ({
   height: '100%',
@@ -92,7 +93,7 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
         const stats = await solanaRPCService.getNetworkStats();
         setNetworkStats(stats);
       } catch (error) {
-        console.error('Failed to load network stats:', error);
+        logError('Failed to load network stats:', error);
         // Keep default stats on error
       } finally {
         setStatsLoading(false);
@@ -159,7 +160,7 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
 
       setSearchResults(searchResult);
     } catch (error) {
-      console.error('Search failed:', error);
+      logError('Search failed:', error);
       setSearchResults([{
         type: 'search',
         id: query,
@@ -172,8 +173,8 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
   }, []);
 
   const handleSearchResultClick = useCallback((result: SearchResult) => {
-    console.log('Navigate to:', result);
-    // TODO: Implement navigation to detailed views
+    devLog('Navigate to:', result);
+    
   }, []);
 
   if (!isActive) {

@@ -7,6 +7,7 @@ import DialogForm from '../pages/Wallet/components/DialogForm';
 import { LedgerWalletProvider } from '../utils/walletProvider/ledger';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSnackbar } from 'notistack';
+import { devLog } from '../utils/logger';
 
 export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
   const [pubKey, setPubKey] = useState();
@@ -20,7 +21,7 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
           await provider.init();
           setPubKey(provider.publicKey);
         } catch (err) {
-          console.log(
+          devLog(
             `received error when attempting to connect ledger: ${err}`,
           );
           if (err.statusCode === 0x6804) {

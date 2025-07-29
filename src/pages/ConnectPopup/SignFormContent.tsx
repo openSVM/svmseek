@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import CardContent from '@mui/material/CardContent';
 import Warning from '@mui/icons-material/Warning';
-import { Tooltip, Divider } from '@mui/material';
+import { Tooltip, Divider, Typography } from '@mui/material';
 import { useWallet } from '../../utils/wallet';
-import { Title } from '../commonStyles';
 
 function toHex(buffer) {
   return Array.prototype.map
@@ -60,7 +59,7 @@ export default function SignFormContent({
               title="Be especially cautious when signing arbitrary data, you must trust the requester."
               arrow
             >
-              <Warning style={{ marginBottom: '-7px' }} />
+              <Warning  />
             </Tooltip>{' '}
             {`Sign data with account ${wallet.publicKey}`}
           </>
@@ -72,19 +71,19 @@ export default function SignFormContent({
 
   return (
     <CardContent>
-      <Title variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom>
         {`${origin} wants to:`}
-      </Title>
-      <Title
+      </Typography>
+      <Typography
         variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
+        
         gutterBottom
       >
         {renderAction()}
-      </Title>
-      <Divider style={{ margin: 20 }} />
-      <Title style={{ wordBreak: 'break-all' }}>{messageTxt}</Title>
-      <Divider style={{ margin: 20 }} />
+      </Typography>
+      <Divider  />
+      <Typography >{messageTxt}</Typography>
+      <Divider  />
     </CardContent>
   );
 }

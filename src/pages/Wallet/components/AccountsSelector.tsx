@@ -29,6 +29,29 @@ import MergeAccountsDialog from '../../../components/MergeAccountsDialog';
 import ConnectionsPage from '../../Connections';
 // import { isExtension } from '../../../utils/utils';
 
+const AccountNameTitle = styled(Title)`
+  text-transform: capitalize;
+  margin-right: 1rem;
+  white-space: nowrap;
+`;
+
+const SectionTitle = styled(Title)`
+  white-space: nowrap;
+  padding-right: 1rem;
+`;
+
+const ClickableRow = styled(Row).attrs({ as: 'div' })<{ showBorder?: boolean }>`
+  cursor: pointer;
+  border-bottom: ${(props) => (props.showBorder ? '1px solid var(--border-main)' : 'none')};
+`;
+
+const AccountListName = styled(Title)`
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
 const ExportPrivateKeyButton = styled(BtnCustom)`
   @media (max-width: 540px) {
     font-size: 1.2rem;
@@ -78,14 +101,14 @@ export const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
       borderWidth="0"
       height={'100%'}
       padding={'1.2rem 0 1.2rem 1rem'}
-      style={{ justifyContent: 'flex-start' }}
+      
       btnWidth="100%"
       onClick={openPopup}
     >
       <img
         src={icon}
         alt={buttonText}
-        style={{ marginRight: '1rem', width: '2rem', height: '2rem' }}
+        
       />
       <GreyTitle theme={theme}>{buttonText}</GreyTitle>
     </BtnCustom>
@@ -126,29 +149,23 @@ const AccountsSelector = ({
 
   return (
     <RowWithSelector isFromPopup={isFromPopup}>
-      <Title
+      <AccountNameTitle
         fontSize={accountNameSize}
         fontFamily="Avenir Next Demi"
-        style={{
-          textTransform: 'capitalize',
-          marginRight: '1rem',
-          whiteSpace: 'nowrap',
-        }}
       >
         {selectedAccount && selectedAccount.name}
-      </Title>
+      </AccountNameTitle>
       <ExpandMoreIcon fontSize="large" />
 
       <StyledCard isFromPopup={isFromPopup} id="accountSelector">
         <RowContainer align="flex-start" direction="column" padding="1.6rem 0">
           <RowContainer padding="0 1.6rem" margin="1rem 0 0 0">
-            <Title
+            <SectionTitle
               fontFamily="Avenir Next Demi"
               fontSize="1.4rem"
-              style={{ whiteSpace: 'nowrap', paddingRight: '1rem' }}
             >
               Your Accounts
-            </Title>
+            </SectionTitle>
             <Legend />
           </RowContainer>
           <RowContainer
@@ -164,19 +181,13 @@ const AccountsSelector = ({
           >
             {accountsToShow.map(({ isSelected, name, selector }, i) => {
               return (
-                <RowContainer
+                <ClickableRow
                   key={`${name}-${i}`}
                   direction="row"
                   align={'center'}
                   justify={isFromPopup ? 'flex-start' : 'space-between'}
                   padding=".5rem 1.6rem .5rem 0"
-                  style={{
-                    cursor: 'pointer',
-                    borderBottom:
-                      accounts.length === i + 1
-                        ? 'none'
-                        : theme.customPalette.border.new,
-                  }}
+                  showBorder={accounts.length !== i + 1}
                   onClick={() => {
                     if (!isSelected) {
                       setWalletSelector(selector);
@@ -185,25 +196,18 @@ const AccountsSelector = ({
                 >
                   <Row justify="flex-start">
                     <StyledRadio theme={theme} checked={isSelected} />
-                    <Title
-                      style={{
-                        width: '100%',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis ',
-                      }}
-                    >
+                    <AccountListName>
                       {name && name.length > 14
                         ? name.slice(0, 10) + '...'
                         : name}
-                    </Title>
+                    </AccountListName>
                   </Row>
                   {!isFromPopup && (
                     <Row>
                       <ExportPrivateKeyButton
                         btnWidth="auto"
                         textTransform="capitalize"
-                        color={theme.customPalette.blue.serum}
+                        color="var(--interactive-primary)"
                         borderWidth="0"
                         fontFamily="Avenir Next Demi"
                         fontSize="1rem"
@@ -213,7 +217,7 @@ const AccountsSelector = ({
                       </ExportPrivateKeyButton>
                     </Row>
                   )}
-                </RowContainer>
+                </ClickableRow>
               );
             })}
           </RowContainer>

@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import { useConnection, useSolanaExplorerUrlSuffix } from './connection';
 import Button from '@mui/material/Button';
 import { confirmTransaction } from './utils';
+import { logWarn, logError } from './logger';
 
 interface TransactionCallbacks {
   onSuccess?: (signature: string) => void;
@@ -31,7 +32,7 @@ export function useSendTransaction(): [SendTransactionFunction, boolean] {
     {
       onSuccess = () => {},
       onError = (e: Error) => {
-        console.error(e);
+        logError(e.message || String(e));
       },
     }: TransactionCallbacks = {},
   ): Promise<void> {
@@ -75,7 +76,7 @@ export function useSendTransaction(): [SendTransactionFunction, boolean] {
         message = 'Insufficient SOL balance for this transaction';
       }
 
-      console.warn(message);
+      logWarn(message);
       enqueueSnackbar(message, { variant: 'error' });
       onError(e as Error);
     }
@@ -92,7 +93,7 @@ function ViewTransactionOnExplorerButton({ signature }: ViewTransactionButtonPro
   const urlSuffix = useSolanaExplorerUrlSuffix();
   return (
     <Button
-      style={{ color: '#fff' }}
+      
       component="a"
       target="_blank"
       rel="noopener"
@@ -112,7 +113,7 @@ export function useCallAsync() {
       successMessage = 'Success',
       onSuccess = () => {},
       onError = (e: Error) => {
-        console.error(e);
+        logError(e.message || String(e));
       },
     } = notificationObj || {};
 
@@ -135,7 +136,7 @@ export function useCallAsync() {
       }
       onSuccess(result);
     } catch (e) {
-      console.warn(e);
+      logWarn(e instanceof Error ? e.message : String(e));
       closeSnackbar(id);
       let message = (e as Error).message;
 

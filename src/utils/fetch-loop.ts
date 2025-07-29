@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { useEffect, useReducer } from 'react';
 import tuple from 'immutable-tuple';
+import { logWarn } from './logger';
 
 const pageLoadTime = new Date();
 
@@ -125,7 +126,7 @@ class FetchLoopInternal<T = any> {
       ++this.errors;
       globalCache.delete(this.cacheKey);
       errorCache.set(this.cacheKey, error);
-      console.warn(error);
+      logWarn(error instanceof Error ? error.message : String(error));
     } finally {
       this.notifyListeners();
       if (!this.timeoutId && !this.stopped) {

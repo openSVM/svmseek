@@ -1,19 +1,20 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Theme } from '@mui/material'
-import { CSSProperties } from 'react'
 
-const Text = styled.span`
-  color: ${(props) => props.theme.customPalette.white.text || '#F5F5FB'};
-  background: #f79894;
-  font-family: Avenir Next Demi;
+type TextProps = {
+  theme?: Theme;
+};
+
+const Text = styled.span<TextProps>`
+  color: var(--text-inverse);
+  background: var(--status-warning);
+  font-family: var(--font-primary);
   font-size: 1.4rem;
   height: 2rem;
   line-height: 2rem;
-  border-radius: 1.6rem;
+  border-radius: var(--radius-full);
   padding: 0 0.6rem;
-
-  ${(props) => props.style}
 `
 
 export const BetaLabel = ({
@@ -21,7 +22,7 @@ export const BetaLabel = ({
   style = {},
 }: {
   theme: Theme
-  style?: CSSProperties
+  style?: React.CSSProperties
 }) => {
   return (
     <Text theme={theme} style={style}>

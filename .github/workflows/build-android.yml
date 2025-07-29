@@ -42,7 +42,14 @@ jobs:
         for i in 1 2 3; do
           yarn install --frozen-lockfile && break || sleep 10
         done
-      
+        
+    - name: Verify craco installation
+      run: |
+        echo "Checking craco installation..."
+        yarn list @craco/craco
+        echo "Checking if craco command is available..."
+        npx craco --version || echo "Craco not found via npx"
+        
     - name: Build web application
       run: yarn build
       
@@ -74,13 +81,13 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
         
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        api-level: 34
-        build-tools: 34.0.0
+        api-level: 35
+        build-tools: 35.0.0
         
     - name: Cache Gradle packages
       uses: actions/cache@v4

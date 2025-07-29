@@ -1,15 +1,16 @@
 import { useTheme } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { Search } from '@mui/icons-material';
 import SVMSeekLogo from '../../images/SVMSeek.svg';
 import StakeBtn from '../../images/stakeBtn.png';
 import { Row, RowContainer } from '../../pages/commonStyles';
 import { Button } from '../Button';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
-import { COLORS } from '../variables';
+import { SearchBar } from '../SearchBar';
 import DiscordIcon from './DiscordIcon';
 import ThemeToggle from '../ThemeToggle';
-// TODO: Refactor popup
+
 import { DropDown } from './Dropdown';
 import {
   Body,
@@ -31,7 +32,7 @@ const Socials = styled(Row)`
     svg {
       g {
         path {
-          fill: #4679f4;
+          fill: var(--interactive-primary);
         }
       }
     }
@@ -42,17 +43,125 @@ const StyledLink = styled.a`
   height: 100%;
 `;
 
+const SearchButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-main);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  margin-right: 16px;
+  
+  &:hover {
+    background: var(--bg-primary);
+    border-color: var(--interactive-primary);
+    color: var(--text-primary);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 8px;
+    span {
+      display: none;
+    }
+  }
+`;
+
+const ShortcutKeys = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  opacity: 0.7;
+  
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const Key = styled.span`
+  background: var(--bg-primary);
+  border: 1px solid var(--border-main);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-family: monospace;
+  font-size: 11px;
+`;
+
+interface ExternalLinkProps {
+  show?: string;
+}
+
+const ExternalLink = styled.a<ExternalLinkProps>`
+  text-decoration: none;
+  font-size: 0.7em;
+  padding: 8px 12px;
+  margin: 0px 4px;
+  text-align: center;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  transition: all ease-in 0.2s;
+  cursor: pointer;
+  
+  &:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+  
+  @media (max-width: 768px) {
+    display: ${props => props.show === 'md' ? 'none' : 'block'};
+  }
+`;
+
 export const Navbar = () => {
   const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const theme = useTheme();
+
+  // Global keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // const { pathname } = useLocation();
 
   const feedbackLinks = (
     <>
-      <NavLink as="button" onClick={() => setFeedbackPopupOpen(true)}>
+      <button 
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'var(--text-primary)',
+          cursor: 'pointer',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          fontSize: '14px',
+          fontWeight: '500',
+          transition: 'background 0.2s',
+        }}
+        onClick={() => setFeedbackPopupOpen(true)}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--bg-secondary)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'none';
+        }}
+      >
         Feedback &amp; Support
-      </NavLink>
+      </button>
     </>
   );
 
@@ -71,93 +180,111 @@ export const Navbar = () => {
             padding="md"
             borderRadius="xxl"
           >
-            Stake RIN
+            Stake SVMAI
           </Button>
         </LogoBlock>
         <LinksBlock>{feedbackLinks}</LinksBlock>
         <MainLinksWrap>
           <MainLinksBlock>
-            <NavLink
-              as="a"
-              href="https://svmseek.com/chart/spot/RIN_USDC"
-              activeClassName="selected"
+            <ExternalLink
+              href="https://svmseek.com/chart/spot/SVMAI_USDC"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Trade
-            </NavLink>
-            <NavLink
-              as="a"
+            </ExternalLink>
+            <ExternalLink
               href="https://svmseek.com/swap"
-              activeClassName="selected"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Swap
-            </NavLink>
-            <NavLink
-              new
-              show="md"
-              as="a"
+            </ExternalLink>
+            <ExternalLink
               href="https://svmseek.com/pools"
-              activeClassName="selected"
+              target="_blank"
+              rel="noopener noreferrer"
+              show="md"
             >
               Pools
-            </NavLink>
-            <NavLink
-              as="a"
+            </ExternalLink>
+            <ExternalLink
               href="https://svmseek.com/rebalance"
-              activeClassName="selected"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Rebalance
-            </NavLink>
-            <NavLink
-              as="a"
+            </ExternalLink>
+            <ExternalLink
               href="https://svmseek.com/dashboard"
-              activeClassName="selected"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Dashboard
-            </NavLink>
+            </ExternalLink>
             <NavLink
               style={{
-                color: COLORS.navLinkActive,
-                background: COLORS.navLinkActiveBg,
+                color: 'var(--text-inverse)',
+                background: 'var(--interactive-primary)',
               }}
               to="/wallet"
-              activeClassName="selected"
             >
               Wallet
             </NavLink>
 
             <NavLink
-              show="md"
-              as="a"
-              target="_blank"
+              to="/help"
+            >
+              Help
+            </NavLink>
+
+            <ExternalLink
               href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
+              target="_blank"
+              rel="noopener noreferrer"
+              show="md"
             >
               FAQ
-            </NavLink>
+            </ExternalLink>
 
             <DropDown hide="lg" text="···">
               {feedbackLinks}
-              <NavLink hide="md" activeClassName="selected" to="/pools">
-                Liquidity Pools
-              </NavLink>
-              <NavLink
-                hide="md"
-                as="a"
+              <ExternalLink 
+                href="https://svmseek.com/pools"
                 target="_blank"
+                rel="noopener noreferrer"
+                
+              >
+                Liquidity Pools
+              </ExternalLink>
+              <ExternalLink
                 href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
+                target="_blank"
+                rel="noopener noreferrer"
+                
               >
                 FAQ
-              </NavLink>
+              </ExternalLink>
             </DropDown>
           </MainLinksBlock>
         </MainLinksWrap>
         <WalletContainer>
           <RowContainer padding="0">
-            <div style={{ marginRight: '2rem' }}>
+            <SearchButton onClick={() => setSearchOpen(true)}>
+              <Search fontSize="small" />
+              <span>Search</span>
+              <ShortcutKeys>
+                <Key>⌘</Key>
+                <Key>K</Key>
+              </ShortcutKeys>
+            </SearchButton>
+            
+            <div >
               <ThemeToggle />
             </div>
             <Socials justify={'space-around'} height="100%" width={'auto'}>
               <StyledLink
-                style={{ marginRight: '3rem', height: '2.5rem' }}
+                
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://twitter.com/svmseek"
@@ -165,7 +292,7 @@ export const Navbar = () => {
                 <TwitterIcon />
               </StyledLink>
               <StyledLink
-                style={{ marginRight: '3rem', height: '2.5rem' }}
+                
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://t.me/svmseek"
@@ -176,7 +303,7 @@ export const Navbar = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://discord.gg/4VZyNxT2WU"
-                style={{ height: '2.5rem' }}
+                
               >
                 <DiscordIcon />
               </StyledLink>
@@ -184,6 +311,9 @@ export const Navbar = () => {
           </RowContainer>
         </WalletContainer>
       </HeaderWrap>
+      
+      <SearchBar open={searchOpen} onClose={() => setSearchOpen(false)} />
+      
       <FeedbackPopup
         theme={theme}
         open={feedbackPopupOpen}

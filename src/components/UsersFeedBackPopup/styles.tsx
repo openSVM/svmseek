@@ -4,7 +4,12 @@ import styled from 'styled-components';
 import { BtnCustom } from '../BtnCustom';
 import { Loading } from '../Loading';
 
-export const TextField = styled.input`
+export type TextFieldProps = {
+  height?: string;
+  theme?: any;
+};
+
+export const TextField = styled.input<TextFieldProps>`
   width: 100%;
   height: ${(props) => props.height || '3.5rem'};
   background: #383b45;
@@ -21,8 +26,7 @@ export const TextField = styled.input`
   margin-top: 1rem;
 
   &:focus {
-    border: ${(props) =>
-      `0.1rem solid ${props.theme.customPalette.blue.serum}`};
+    border: 0.1rem solid var(--interactive-primary);
   }
   &::placeholder {
     padding-top: 1rem;
@@ -39,7 +43,12 @@ export const MainTitle = styled.span`
   margin-bottom: 2rem;
 `;
 
-export const StyledTextArea = styled.textarea`
+export type StyledTextAreaProps = {
+  height?: string;
+  theme?: any;
+};
+
+export const StyledTextArea = styled.textarea<StyledTextAreaProps>`
   width: 100%;
   height: ${(props) => props.height || '3.5rem'};
   background: #383b45;
@@ -58,8 +67,7 @@ export const StyledTextArea = styled.textarea`
   resize: none;
 
   &:focus {
-    border: ${(props) =>
-      `0.1rem solid ${props.theme.customPalette.blue.serum}`};
+    border: 0.1rem solid var(--interactive-primary);
   }
 `;
 
@@ -77,8 +85,7 @@ export const Label = styled.label`
 export const SubmitButton = styled.button`
   width: 48%;
   height: 4.5rem;
-  background: ${(props) =>
-    props.isDisabled ? '#93A0B2' : props.theme.customPalette.blue.serum};
+  background: var(--interactive-primary);
   font-size: 1.4rem;
   text-transform: capitalize;
   border-radius: 1rem;
@@ -143,7 +150,7 @@ export const BlueButton = styled(
         <Loading
           color={'#fff'}
           size={24}
-          style={{ display: 'flex', alignItems: 'center', height: '4.5rem' }}
+          
         />
       ) : (
         children
@@ -155,7 +162,7 @@ export const BlueButton = styled(
   height: 4.5rem;
   text-transform: capitalize;
   background-color: ${(props) =>
-    props.background || props.theme.customPalette.blue.serum};
+    props.background || 'var(--interactive-primary)'};
   border-radius: 1rem;
   border-color: none;
   cursor: pointer;
@@ -163,7 +170,16 @@ export const BlueButton = styled(
   border: none;
 `;
 
-export const Text = styled.span`
+export type TextProps = {
+  fontSize?: string;
+  paddingBottom?: string;
+  fontFamily?: string;
+  color?: string;
+  whiteSpace?: string;
+  padding?: string;
+};
+
+export const Text = styled.span<TextProps>`
   font-size: ${(props) => props.fontSize || '1.5rem'};
   padding-bottom: ${(props) => props.paddingBottom || '0'};
   text-transform: none;

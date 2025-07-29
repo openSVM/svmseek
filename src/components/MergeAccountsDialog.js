@@ -7,6 +7,7 @@ import { TokenInstructions } from '@project-serum/serum';
 import { useWalletPublicKeys } from '../utils/wallet';
 import { useTheme } from '@mui/material';
 import AttentionComponent from '../components/Attention';
+import { devLog, logError } from '../utils/logger';
 import {
   Card,
   VioletButton,
@@ -111,7 +112,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
             const symbol = tokenInfo.symbol
               ? tokenInfo.symbol
               : mint.toString();
-            console.log(`Merging ${symbol}`);
+            devLog(`Merging ${symbol}`);
             enqueueSnackbar(`Merging ${symbol}`, {
               variant: 'info',
             });
@@ -137,7 +138,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
       // Exit dialogue.
       close();
     } catch (err) {
-      console.error('There was a problem merging accounts', err);
+      logError('There was a problem merging accounts', err);
       enqueueSnackbar('Could not confirm transaction. Please wait.', {
         variant: 'info',
       });

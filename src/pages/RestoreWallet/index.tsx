@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Helmet from 'react-helmet';
 
 import {
@@ -67,8 +67,8 @@ export const RestorePage = () => {
         <title>Restore SVMSeek Wallet by seed phrase</title>
       </Helmet>
       <FakeInputs />
-      {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
-      {redirectToWallet && <Redirect to="/wallet" />}
+      {}
+      {redirectToWallet && <Navigate to="/wallet" replace />}
       {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}
       <RowContainer height={'80%'} direction={'column'}>
@@ -103,7 +103,7 @@ export const RestorePage = () => {
                 direction={'column'}
                 height={'50%'}
                 justify={'space-evenly'}
-                style={{ position: 'relative' }}
+                
               >
                 <InputWithPaste
                   type="text"
@@ -128,7 +128,7 @@ export const RestorePage = () => {
                 />
               </RowContainer>
               <Row width={'90%'} height={'20%'} justify={'space-between'}>
-                <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+                <Link  to="/">
                   <WhiteButton width={'100%'} theme={theme}>
                     Cancel
                   </WhiteButton>

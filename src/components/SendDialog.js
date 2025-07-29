@@ -15,6 +15,7 @@ import { showSwapAddress } from '../utils/config';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import DialogContentText from '@mui/material/DialogContentText';
+import { devLog } from '../utils/logger';
 import {
   ConnectToMetamaskButton,
   getErc20Balance,
@@ -200,7 +201,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
           setAddressHelperText('Destination is a Solana address');
         }
       } catch (e) {
-        console.log(`Received error validating address ${e}`);
+        devLog(`Received error validating address ${e}`);
         setAddressHelperText(defaultAddressHelperText);
         setShouldShowOverride(true);
         setPassValidation(undefined);

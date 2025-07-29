@@ -23,7 +23,14 @@ const BoldHeader = styled.h1`
   color: #f5f5fb;
 `;
 
-export const Text = styled.span`
+export type TextProps = {
+  fontSize?: string;
+  paddingBottom?: string;
+  fontFamily?: string;
+  color?: string;
+};
+
+export const Text = styled.span<TextProps>`
   font-size: ${(props) => props.fontSize || '1.5rem'};
   padding-bottom: ${(props) => props.paddingBottom || ''};
   text-transform: none;
@@ -31,11 +38,36 @@ export const Text = styled.span`
   color: ${(props) => props.color || '#ecf0f3'};
 `;
 
+export type BlueButtonProps = {
+  isUserConfident?: boolean;
+  showLoader?: boolean;
+  children?: React.ReactNode;
+  onClick?: () => void;
+  style?: React.CSSProperties;
+  theme?: any;
+};
+
 const BlueButton = styled(
-  ({ isUserConfident, showLoader, children, ...props }) => (
-    <BtnCustom {...props}>{children}</BtnCustom>
+  ({ isUserConfident, showLoader, children, onClick, style, theme, ...props }: BlueButtonProps) => (
+    <BtnCustom 
+      btnWidth="100%"
+      height="4.5rem"
+      fontSize="1.4rem"
+      textTransform="capitalize"
+      backgroundColor="#651CE4"
+      borderRadius="1rem"
+      borderColor="none"
+      btnColor="#fbf2f2"
+      border="none"
+      hoverBackground="#651CE4"
+      onClick={onClick}
+      style={style}
+      {...props}
+    >
+      {children}
+    </BtnCustom>
   ),
-)`
+)<BlueButtonProps>`
   font-size: 1.4rem;
   height: 4.5rem;
   text-transform: capitalize;
@@ -79,13 +111,13 @@ export const DevUrlPopup = ({
         <BoldHeader>Warning!</BoldHeader>
         <img
           alt="Warning."
-          style={{ width: '4rem', height: '4rem' }}
+          
           src={Warning}
           onClick={close}
         />
       </Row>
       <RowContainer margin={'3rem 0'} align={'start'} direction={'column'}>
-        <BoldHeader style={{ textAlign: 'left', marginBottom: '6rem' }}>
+        <BoldHeader >
           Hello, this page is for developers only.
         </BoldHeader>
         <Text>
@@ -108,19 +140,13 @@ export const DevUrlPopup = ({
       </RowContainer>
       <RowContainer justify="space-between" margin={'3rem 0 2rem 0'}>
         <a
-          style={{ textDecoration: 'none', width: '100%' }}
+          
           target="_blank"
           rel="noopener noreferrer"
           href={'https://svmseek.com'}
         >
           {' '}
           <BlueButton
-            style={{
-              width: '100%',
-              fontFamily: 'Avenir Next Medium',
-              textTransform: 'none',
-              color: '#fbf2f2',
-            }}
             isUserConfident={true}
             theme={theme}
             onClick={() => {}}

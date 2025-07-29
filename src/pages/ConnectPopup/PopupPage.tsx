@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useWallet, useWalletSelector } from '../../utils/wallet';
 import { Button, useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -23,6 +23,7 @@ import AccountsSelector from '../Wallet/components/AccountsSelector';
 import AttentionComponent from '../../components/Attention';
 import { PublicKey } from '@solana/web3.js';
 import LogoComponent from '../../components/Logo';
+import { devLog, logError } from '../../utils/logger';
 import { isExtension } from '../../utils/utils';
 import SignTransactionFormContent from './SignTransactionFormContent';
 import SignFormContent from './SignFormContent';
@@ -168,7 +169,7 @@ export default function PopupPage() {
 
     return (
       <RowContainer height={`calc(100% - ${footerHeight}rem)`}>
-        <Title style={{ fontSize: '2rem' }}>
+        <Title fontSize="2rem">
           {isExtension
             ? 'Submitting...'
             : 'Please keep this window open in the background.'}
@@ -180,7 +181,7 @@ export default function PopupPage() {
   if (!wallet) {
     return (
       <RowContainer height={`calc(100% - ${footerHeight}rem)`}>
-        <Title style={{ fontSize: '2rem' }}>Loading wallet...</Title>
+        <Title fontSize="2rem">Loading wallet...</Title>
       </RowContainer>
     );
   }
@@ -197,7 +198,7 @@ export default function PopupPage() {
       setConnectedAccount(wallet.publicKey);
       if (isExtension) {
         chrome.storage.local.get('connectedWallets', (result) => {
-          // TODO better way to do this
+          
           const account = accounts.find((account) =>
             account.address.equals(wallet.publicKey),
           );
@@ -289,7 +290,7 @@ export default function PopupPage() {
   }
 
   async function sendAllSignatures(messages) {
-    console.log('wallet', wallet);
+    devLog('wallet', wallet);
     let signatures;
     // Ledger must sign one by one.
     if (wallet.type === 'ledger') {
@@ -326,7 +327,7 @@ export default function PopupPage() {
         height: 'auto%',
       }}
     >
-      <StyledCard style={{ textAlign: 'left' }}>
+      <StyledCard >
         <ApproveSignatureForm
           key={request.id}
           autoApprove={autoApprove}
@@ -351,7 +352,7 @@ function focusParent() {
     const parent = window.open('', 'parent');
     parent?.focus();
   } catch (err) {
-    console.log('err', err);
+    devLog('err', err);
   }
 }
 
@@ -366,15 +367,13 @@ function getInitialRequests(hash: string) {
     return [];
   }
 
-  // TODO CHECK OPENER (?)
-
   const urlParams = new URLSearchParams(hash.slice(1));
   let request;
 
   try {
     request = JSON.parse(urlParams?.get('request') || 'null');
   } catch (e) {
-    console.error('getInitialRequests error', e);
+    logError('getInitialRequests error', e);
   }
 
   if (request?.method === 'sign') {
@@ -402,7 +401,7 @@ function ApproveConnectionForm({
 }) {
   const wallet = useWallet();
   const { accounts, hardwareWalletAccount } = useWalletSelector();
-  // TODO better way to do this
+  
   const allAccounts = hardwareWalletAccount
     ? [hardwareWalletAccount, ...accounts]
     : accounts;
@@ -416,8 +415,8 @@ function ApproveConnectionForm({
 
   return (
     <StyledCard>
-      {(!window.opener || !wallet) && <Redirect to="/" />}
-      <CardContent style={{ padding: 0 }}>
+      {(!window.opener || !wallet) && <Navigate to="/" replace />}
+      <CardContent >
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
           <LogoComponent width="12rem" height="auto" margin="0" />
           <NetworkDropdown popupPage={true} width={'14rem'} />
@@ -426,7 +425,7 @@ function ApproveConnectionForm({
         <Title
           fontSize="2.4rem"
           fontFamily="Avenir Next Demi"
-          style={{ marginBottom: '3rem' }}
+          margin="0 0 3rem 0"
         >
           Allow this site to access your Wallet™?
         </Title>
@@ -441,7 +440,7 @@ function ApproveConnectionForm({
             </RowContainer>
             <img
               alt={'import export icon'}
-              style={{ margin: '2rem 0' }}
+              
               src={ImportExportIcon}
             />
             <Title fontSize="1.6rem">{account?.name}</Title>
@@ -456,14 +455,14 @@ function ApproveConnectionForm({
             checked={autoApprove}
             onChange={() => setAutoApprove(!autoApprove)}
           />
-          <Row style={{ textAlign: 'left' }}>
+          <Row >
             <StyledLabel
               theme={theme}
               htmlFor="autoApprove"
-              style={{ fontSize: '1.6rem' }}
+              
             >
               Automatically approve transactions from{' '}
-              <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
+              <span >{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>
           </Row>
@@ -508,7 +507,7 @@ function ApproveSignatureForm({
   autoApprove,
 }) {
   const theme = useTheme();
-  const buttonRef = useRef();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const isMultiTx = messageDisplay === 'tx' && messages.length > 1;
 
@@ -549,10 +548,9 @@ function ApproveSignatureForm({
         >
           Approve{isMultiTx ? ' All' : ''}
         </VioletButton>
-        {/* TODO: add ref to approve button */}
+        {}
         <InvisibleButton
-          component={Button}
-          ref={(b) => (buttonRef.current = b)}
+          ref={buttonRef}
         ></InvisibleButton>
       </RowContainer>
     </>

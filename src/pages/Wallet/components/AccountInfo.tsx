@@ -21,6 +21,7 @@ import { PublicKey } from '@solana/web3.js';
 
 const MobilePublicKeyTitle = styled(Title)`
   display: none;
+  white-space: nowrap;
 
   @media (max-width: 540px) {
     display: inline;
@@ -119,9 +120,23 @@ const BalanceCard = styled(({ needLeftMargin, ...props }) => (
 `;
 
 const InstructionTitle = styled(Title)`
+  white-space: nowrap;
   @media (max-width: 540px) {
     font-size: 1.3rem;
   }
+`;
+
+const CopyButton = styled(Title).attrs({
+  as: 'button'
+})`
+  margin-left: 2rem;
+  color: var(--interactive-primary);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
 `;
 
 const InstructionsBlock = ({ theme, showOnMobile = false }) => {
@@ -136,30 +151,27 @@ const InstructionsBlock = ({ theme, showOnMobile = false }) => {
         <InstructionTitle
           fontFamily="Avenir Next"
           fontSize="1.4rem"
-          color={theme.customPalette.green.main}
-          style={{ whiteSpace: 'nowrap' }}
+          color="var(--success-main)"
         >
           SOL is the fuel for transactions on Solana.
         </InstructionTitle>
         <InstructionTitle
           fontFamily="Avenir Next"
           fontSize="1.4rem"
-          color={theme.customPalette.green.main}
-          style={{ whiteSpace: 'nowrap' }}
+          color="var(--success-main)"
         >
           You must have some SOL in your wallet for
         </InstructionTitle>
         <InstructionTitle
           fontFamily="Avenir Next"
           fontSize="1.4rem"
-          color={theme.customPalette.green.main}
-          style={{ whiteSpace: 'nowrap' }}
+          color="var(--success-main)"
         >
           DEX trading or other transactions.
         </InstructionTitle>
       </Row>
       <ExclamationMark
-        color={theme.customPalette.green.main}
+        color="var(--success-main)"
         theme={theme}
         margin={'0 0 0 2rem'}
         fontSize="7rem"
@@ -195,14 +207,9 @@ const AccountInfo = ({
       <AccountInfoFirstContainer justify="flex-start">
         <AccountInfoSubContainer>
           <AccountsSelector />
-          <DesktopPublicKeyTitle color={theme.customPalette.grey.light}>
+          <DesktopPublicKeyTitle color="var(--text-secondary)">
             {publicKey}{' '}
-            <Title
-              style={{
-                marginLeft: '2rem',
-                color: '#651CE4',
-                cursor: 'pointer',
-              }}
+            <CopyButton
               onClick={() => {
                 copy(publicKey);
 
@@ -210,19 +217,13 @@ const AccountInfo = ({
               }}
             >
               Copy
-            </Title>
+            </CopyButton>
           </DesktopPublicKeyTitle>
           <MobilePublicKeyTitle
-            style={{ whiteSpace: 'nowrap' }}
-            color={theme.customPalette.grey.light}
+            color="var(--text-secondary)"
           >
             {abbreviateAddress(new PublicKey(publicKey))}
-            <Title
-              style={{
-                marginLeft: '2rem',
-                color: '#651CE4',
-                cursor: 'pointer',
-              }}
+            <CopyButton
               onClick={() => {
                 copy(publicKey);
 
@@ -230,7 +231,7 @@ const AccountInfo = ({
               }}
             >
               Copy
-            </Title>
+            </CopyButton>
           </MobilePublicKeyTitle>
         </AccountInfoSubContainer>
         <InstructionsBlock showOnMobile theme={theme} />
@@ -244,7 +245,7 @@ const AccountInfo = ({
           <Title
             fontSize="1.4rem"
             fontFamily={'Avenir Next Demi'}
-            color={theme.customPalette.grey.light}
+            color="var(--text-secondary)"
             maxFont={'2rem'}
           >
             Total Balance
@@ -265,7 +266,7 @@ const AccountInfo = ({
           <Title
             fontSize="1.4rem"
             fontFamily={'Avenir Next Demi'}
-            color={theme.customPalette.grey.light}
+            color="var(--text-secondary)"
             maxFont={'2rem'}
           >
             SOL Balance

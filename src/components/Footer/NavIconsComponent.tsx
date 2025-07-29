@@ -30,7 +30,7 @@ export const TradeLink = ({ isActive }: { isActive: boolean }) => {
           fill={isActive ? '#651CE4' : '#F5F5FB'}
         />
       </svg>
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Trade</span>
+      <span >Trade</span>
     </StyledA>
   );
 };
@@ -69,7 +69,7 @@ export const AnalyticsLink = ({ isActive }: { isActive: boolean }) => {
           </linearGradient>
         </defs>
       </svg>{' '}
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Analytics</span>
+      <span >Analytics</span>
     </StyledLink>
   );
 };
@@ -96,7 +96,7 @@ export const PoolsLink = ({ isActive }: { isActive: boolean }) => {
           fill={isActive ? '#651CE4' : '#F5F5FB'}
         />
       </svg>
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Pools</span>
+      <span >Pools</span>
     </StyledA>
   );
 };
@@ -118,7 +118,7 @@ export const SwapsLink = ({ isActive }: { isActive: boolean }) => {
           fill={isActive ? '#651CE4' : '#F8FAFF'}
         />
       </svg>
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Swap</span>
+      <span >Swap</span>
     </StyledA>
   );
 };
@@ -140,7 +140,7 @@ export const RebalanceLink = ({ isActive }: { isActive: boolean }) => {
           fill={isActive ? '#651CE4' : '#F8FAFF'}
         />
       </svg>
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Rebalance</span>
+      <span >Rebalance</span>
     </StyledA>
   );
 };
@@ -160,7 +160,7 @@ export const WalletLink = ({ isActive }) => {
           fill={isActive ? '#651CE4' : '#F5F5FB'}
         />
       </svg>
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Wallet™</span>
+      <span >Wallet™</span>
     </StyledLink>
   );
 };
@@ -193,7 +193,7 @@ export const DashboardLink = ({ isActive }: { isActive: boolean }) => {
         />
       </svg>
 
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Dashboard</span>
+      <span >Dashboard</span>
     </StyledA>
   );
 };
@@ -241,7 +241,7 @@ export const StakingLink = ({ isActive }: { isActive: boolean }) => {
           stroke={isActive ? '#651CE4' : '#F5F5FB'}
         />
       </svg>
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Staking</span>
+      <span >Staking</span>
     </StyledA>
   );
 };
@@ -268,7 +268,7 @@ export const FeedbackBtn = ({
         />
       </svg>
 
-      <span style={{ color: isActive ? '#651CE4' : '#F5F5FB' }}>Feedback</span>
+      <span >Feedback</span>
     </StyledButton>
   );
 };

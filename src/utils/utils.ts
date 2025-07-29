@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { TokenInstructions } from '@project-serum/serum'
 import { useMediaQuery } from '@mui/material';
+import { devLog } from './logger';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -97,7 +98,7 @@ export async function confirmTransaction(
       'Error confirming transaction: ' + JSON.stringify(result.value.err),
     );
   }
-  console.log(
+  devLog(
     'Transaction confirmed after %sms',
     new Date().getTime() - startTime.getTime(),
   );
@@ -197,7 +198,7 @@ export const getAllTokensData = async (
 
     const dataForToken = {
       name: name === 'Cryptocurrencies.Ai' ? 'SVMSeek' : name,
-      symbol: symbol === 'CCAI' ? 'RIN' : symbol,
+      symbol: symbol === 'CCAI' ? 'SVMAI' : symbol,
       decimals: el.account.data.parsed.info.tokenAmount.decimals,
       amount: el.account.data.parsed.info.tokenAmount.uiAmount,
       mint: el.account.data.parsed.info.mint,
@@ -221,8 +222,8 @@ export const isUSDToken = (token: string): boolean => {
 }
 
 
-export function useInterval(callback, delay) {
-  const savedCallback = useRef();
+export function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef<(() => void) | null>(null);
 
   // Remember the latest callback.
   useEffect(() => {
@@ -232,8 +233,9 @@ export function useInterval(callback, delay) {
   // Set up the interval.
   useEffect(() => {
     function tick() {
-      // @ts-ignore
-      savedCallback.current();
+      if (savedCallback.current) {
+        savedCallback.current();
+      }
     }
     if (delay !== null) {
       let id = setInterval(tick, delay);

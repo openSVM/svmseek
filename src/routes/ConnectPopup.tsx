@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import ConnectPopup from '../pages/ConnectPopup/PopupPage';
 
-export default function ConnectPopupRoute({ match, origin }) {
+export default function ConnectPopupRoute() {
   return (
-    <Switch>
+    <Routes>
       <Route
-        path={match.url}
-        component={ConnectPopup}
+        path="/*"
+        element={<ConnectPopup />}
       />
-    </Switch>
+    </Routes>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { devLog, logError  } from '../../utils/logger';
 import {
   Box,
   List,
@@ -113,7 +114,7 @@ const TransactionList: React.FC = () => {
       }));
       setTransactions(enhancedTransactions);
     } catch (error) {
-      console.error('Failed to fetch transactions:', error);
+      logError('Failed to fetch transactions:', error);
       // Keep existing transactions on error
     } finally {
       setIsLoading(false);
@@ -137,8 +138,8 @@ const TransactionList: React.FC = () => {
   };
 
   const handleTransactionClick = (transaction: Transaction) => {
-    console.log('Navigate to transaction:', transaction.signature);
-    // TODO: Implement navigation to transaction detail view
+    devLog('Navigate to transaction:', transaction.signature);
+    
   };
 
   const formatTimeAgo = (timestamp: Date): string => {

@@ -1,5 +1,6 @@
 import { getTokensData } from "../utils/ccai";
 import { sleep } from "../utils/utils";
+import { devLog } from '../utils/logger';
 
 export class TokensDataSingleton {
   public static isDataLoading = false
@@ -22,7 +23,7 @@ export class TokensDataSingleton {
   private static async requestData() {
       this.isDataLoading = true
       await getTokensData().then((data) => {
-        console.log('set to false', data)
+        devLog('set to false', data)
         this.isDataLoading = false
         this.tokensDataMap = data
       });

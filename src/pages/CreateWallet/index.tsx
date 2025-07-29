@@ -11,6 +11,7 @@ import SaveSeedPhrase from './components/SaveSeedPhrase';
 import ConfirmSeedPhrase from './components/ConfirmSeedPhrase';
 import AddTokens from './components/AddTokens';
 import Warning from './components/Warning';
+import { devLog } from '../../utils/logger';
 import {
   generateMnemonicAndSeed,
   useHasLockedMnemonicAndSeed,
@@ -68,7 +69,7 @@ export const CreateWalletPage = () => {
       },
     );
   };
-  console.log('currentStep', currentStep);
+  devLog('currentStep', currentStep);
   return (
     <Body>
       <Helmet>

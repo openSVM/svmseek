@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Buffer } from 'buffer';
 import { storeMnemonicAndSeed } from '../../utils/wallet-seed';
 import {
   getAccountFromSeed,
@@ -24,7 +25,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useCallAsync } from '../../utils/notifications';
 import Link from '@mui/material/Link';
 
-import logoAstronaut from '../../images/logoAstronaut.svg';
+import SVMSeekLogo from '../../images/SVMSeek.svg';
 import { useBalanceInfo } from '../../utils/wallet';
 import { abbreviateAddress, stripDigitPlaces } from '../../utils/utils';
 import { findAssociatedTokenAddress } from '../../utils/tokens';
@@ -90,26 +91,26 @@ export default function DerivedAccounts({
       <RowContainer width="90%" direction="column">
         <StyledRowContainer justify="space-between" margin="0 0 2rem 0">
           <Title fontSize="1.6rem">Derivable Accounts</Title>
-          <FormControl variant="outlined" style={{ borderColor: '#fff' }}>
+          <FormControl variant="outlined" >
             <Select
-              style={{ borderColor: '#fff', fontSize: '1.3rem' }}
+              
               value={dPathMenuItem}
               onChange={(e: any) => setDPathMenuItem(e.target.value)}
             >
               <MenuItem
-                style={{ fontSize: '1.3rem' }}
+                
                 value={DerivationPathMenuItem.Bip44Change}
               >
                 {`m/44'/501'/0'/0'`}
               </MenuItem>
               <MenuItem
-                style={{ fontSize: '1.3rem' }}
+                
                 value={DerivationPathMenuItem.Bip44}
               >
                 {`m/44'/501'/0'`}
               </MenuItem>
               <MenuItem
-                style={{ fontSize: '1.3rem' }}
+                
                 value={DerivationPathMenuItem.Deprecated}
               >
                 {`m/501'/0'/0/0 (deprecated)`}
@@ -132,7 +133,7 @@ export default function DerivedAccounts({
               <RowContainer
                 justify="flex-start"
                 padding=".5rem 0"
-                style={{ borderBottom: theme.customPalette.border.new }}
+                
               >
                 <Link
                   href={
@@ -141,7 +142,7 @@ export default function DerivedAccounts({
                   }
                   target="_blank"
                   rel="noopener"
-                  style={{ textDecoration: 'none' }}
+                  
                 >
                   <AccountItem
                     theme={theme}
@@ -222,8 +223,8 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
   return (
     <RowContainer>
       <img
-        src={logoAstronaut}
-        alt={'logo'}
+        src={SVMSeekLogo}
+        alt={'SVMSeek logo'}
         style={{
           borderRadius: '0',
           height: '6rem',
@@ -231,17 +232,17 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
         }}
       />
       <Row margin="0 0 0 1rem" direction="column" align="flex-start">
-        <Title color={theme.customPalette.green.light}>{`${stripDigitPlaces(
+        <Title color={'var(--success-main)'}>{`${stripDigitPlaces(
           amount / Math.pow(10, decimals),
           decimals,
-        )} ${tokenName ?? abbreviateAddress(mint)} ${
-          tokenSymbol ? ` (${tokenSymbol})` : null
+        )} ${tokenName ?? (mint ? abbreviateAddress(mint) : 'Unknown')} ${
+          tokenSymbol ? ` (${tokenSymbol})` : ''
         }`}</Title>
 
         <StyledTitle>
           {isAssociatedToken && (
             <Row margin="0 1rem 0 0">
-              <FingerprintIcon style={{ width: '2rem' }} />
+              <FingerprintIcon  />
             </Row>
           )}
           {publicKey.toBase58()}

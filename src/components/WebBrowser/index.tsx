@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { devLog, logWarn, logError } from '../../utils/logger';
 import {
   IconButton,
   TextField,
@@ -297,13 +298,13 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
         
         if (result.success) {
           setWalletInjected(true);
-          console.log('Wallet providers injected successfully:', result.injectedProviders);
+          devLog('Wallet providers injected successfully:', result.injectedProviders);
         } else {
-          console.warn('Wallet injection failed:', result.error);
+          logWarn('Wallet injection failed:', result.error);
           setConnectionError(result.error || 'Failed to inject wallet providers');
         }
       } catch (error) {
-        console.error('Wallet injection error:', error);
+        logError('Wallet injection error:', error);
         setConnectionError('Failed to setup wallet connection');
       }
     }
@@ -362,7 +363,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
             'aria-label': 'Address bar - enter URL or search terms'
           }}
           InputProps={{
-            startAdornment: <Search style={{ marginRight: '0.5rem', opacity: 0.7 }} />,
+            startAdornment: <Search  />,
           }}
         />
         
@@ -408,7 +409,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
           <NetworkErrorBoundary onRetry={() => setShowDApps(true)}>
             <DAppsGrid container spacing={2}>
               {POPULAR_DAPPS.map((dapp) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={dapp.name}>
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={dapp.name}>
                   <DAppCard onClick={() => navigateToUrl(dapp.url)} data-testid="dapp-card">
                     <CardContent>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>

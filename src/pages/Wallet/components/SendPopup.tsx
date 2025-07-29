@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DialogForm from './DialogForm';
+import { devLog  } from '../../../utils/logger';
 import {
   useWallet,
   useWalletAddressForMint,
@@ -137,7 +138,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo, refr
             </Title>
             {/* {ethAccount && (
               <div>
-                <Typography color="textSecondary" style={{ fontSize: '14px' }}>
+                <Typography color="textSecondary" >
                   Metamask connected: {ethAccount}
                 </Typography>
               </div>
@@ -272,7 +273,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, refreshTokensData }) {
           setAddressHelperText('Destination is a Solana address');
         }
       } catch (e) {
-        console.log(`Received error validating address ${e}`);
+        devLog(`Received error validating address ${e}`);
         setAddressHelperText(defaultAddressHelperText);
         setShouldShowOverride(true);
         setPassValidation(undefined);
@@ -485,7 +486,7 @@ function SendSwapDialog({
       sendTransaction(makeTransaction(), {
         onSuccess: setSignature,
         onError: (e) => {
-          console.log('error', e);
+          devLog('error', e);
         },
       })
     );
@@ -547,7 +548,7 @@ function SendSwapDialog({
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
         {/* {insufficientEthBalance && (
           <RowContainer margin="2rem 0 0 0">
-            <Title color={theme.customPalette.red.main}>
+            <Title color={'var(--error-main)'}>
               Insufficient {swapCoinInfo?.ticker} for withdrawal transaction fee
             </Title>
           </RowContainer>
@@ -555,9 +556,9 @@ function SendSwapDialog({
         <RowContainer
           justify="space-between"
           margin={
-            !ethAccount &&
+            (!ethAccount)
             // || insufficientEthBalance
-            '2rem 0 0 0'
+            ? '2rem 0 0 0' : undefined
           }
         >
           <WhiteButton
@@ -643,10 +644,10 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
               : 'Transaction Pending'
           }
           thirdStepText={'Withdraw Funds'}
-          style={{ padding: '7rem 0 10rem 0' }}
+          
         />
         {!ethTxid && blockchain === 'eth' ? (
-          <DialogContentText style={{ marginTop: 16, marginBottom: 0 }}>
+          <DialogContentText >
             Please keep this window open. You will need to approve the request
             on MetaMask to complete the transaction.
           </DialogContentText>
@@ -654,10 +655,10 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
         <WhiteButton
           theme={theme}
           onClick={onClose}
-          style={{ display: 'flex', flexDirection: 'column' }}
+          
         >
           Close Popup
-          <span style={{ fontSize: '.9rem' }}>
+          <span >
             (the conversion process will not be stopped)
           </span>
         </WhiteButton>
@@ -679,7 +680,6 @@ function useForm(
 
   const parsedAmount = parseFloat(transferAmountString);
   const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
-  const theme = useTheme();
   const tokenSymbolForCheck =
     tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
       ? tokenSymbol.replace('w', 'Wrapped ')
@@ -703,7 +703,7 @@ function useForm(
         <InputWithPaste
           placeholder="Recipient Address"
           type="text"
-          style={{ fontSize: '1.2rem' }}
+          
           containerStyle={{ width: '100%' }}
           onChange={(e) => setDestinationAddress(e.target.value)}
           value={destinationAddress}
@@ -717,7 +717,7 @@ function useForm(
 
       {!passAddressValidation && (
         <RowContainer margin="0 0 2rem 0">
-          <Title fontSize="1.4rem" color={theme.customPalette.red.main}>
+          <Title fontSize="1.4rem" color={'var(--error-main)'}>
             {addressHelperText}
           </Title>
         </RowContainer>

@@ -12,9 +12,9 @@ import ExitToApp from '@mui/icons-material/ExitToApp';
 import AccountIcon from '@mui/icons-material/AccountCircle';
 import UsbIcon from '@mui/icons-material/Usb';
 import Divider from '@mui/material/Divider';
-import Hidden from '@mui/material/Hidden';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useMediaQuery, useTheme } from '@mui/material';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import AddAccountDialog from '../AddAccountDialog';
 import DeleteMnemonicDialog from '../DeleteMnemonicDialog';
@@ -24,6 +24,7 @@ import { Navbar } from './Navbar';
 import { isExtension } from '../../utils/utils';
 import { useLocation } from 'react-router-dom';
 import { MobileFooter } from '../Footer/MobileFooter';
+import { devLog } from '../../utils/logger';
 
 export const footerHeight = isExtension ? 0 : 6;
 
@@ -78,6 +79,9 @@ export function WalletSelector() {
   const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
 
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   if (accounts.length === 0) {
     return null;
   }
@@ -123,7 +127,7 @@ export function WalletSelector() {
         open={deleteMnemonicOpen}
         onClose={() => setDeleteMnemonicOpen(false)}
       />
-      <Hidden xsDown>
+      {!isSmallScreen && (
         <Button
           color="inherit"
           onClick={(e) => setAnchorEl(e.target)}
@@ -131,14 +135,14 @@ export function WalletSelector() {
         >
           Account
         </Button>
-      </Hidden>
-      <Hidden smUp>
+      )}
+      {isSmallScreen && (
         <Tooltip title="Select Account" arrow>
           <IconButton color="inherit" onClick={(e) => setAnchorEl(e.target)}>
             <AccountIcon />
           </IconButton>
         </Tooltip>
-      </Hidden>
+      )}
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
@@ -239,7 +243,7 @@ const FooterComponentForExtension = styled.footer`
 function Footer() {
   const isConnectPopup = window.opener;
   const location = useLocation();
-  console.log('location', location);
+  devLog('location', location);
 
   if (isConnectPopup) return null
 

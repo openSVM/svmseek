@@ -6,6 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
+import { devLog } from '../../utils/logger';
 import {
   useConnection,
   useSolanaExplorerUrlSuffix,
@@ -158,7 +159,7 @@ export default function SignTransactionFormContent({
 
   useEffect(() => {
     if (validator.safe && autoApprove) {
-      console.log('Auto approving safe transaction');
+      devLog('Auto approving safe transaction');
       onApprove();
     } else {
       // brings window to front when we receive new instructions
@@ -247,16 +248,16 @@ export default function SignTransactionFormContent({
         <Typography variant="h6" gutterBottom>
           Transaction {idx.toString()}
         </Typography>
-        <Divider style={{ marginTop: 20 }} />
+        <Divider  />
       </>
     );
   };
 
   const txListItem = (instructions, txIdx) => {
     const ixs = instructions.map((instruction, i) => (
-      <Box style={{ marginTop: 20 }} key={i}>
+      <Box  key={i}>
         {getContent(instruction)}
-        <Divider style={{ marginTop: 20 }} />
+        <Divider  />
       </Box>
     ));
 
@@ -265,7 +266,7 @@ export default function SignTransactionFormContent({
     }
 
     return (
-      <Box style={{ marginTop: 20 }} key={txIdx}>
+      <Box  key={txIdx}>
         {txLabel(txIdx)}
         {ixs}
       </Box>
@@ -283,17 +284,17 @@ export default function SignTransactionFormContent({
               marginBottom: 20,
             }}
           >
-            <CircularProgress style={{ marginRight: 20 }} />
+            <CircularProgress  />
             <Typography
               variant="subtitle1"
-              style={{ fontWeight: 'bold' }}
+              
               gutterBottom
             >
               Parsing transaction{isMultiTx ? 's' : ''}:
             </Typography>
           </div>
           {messages.map((message, idx) => (
-            <Typography key={idx} style={{ wordBreak: 'break-all' }}>
+            <Typography key={idx} >
               {bs58.encode(message)}
             </Typography>
           ))}
@@ -313,13 +314,13 @@ export default function SignTransactionFormContent({
             <>
               <Typography
                 variant="subtitle1"
-                style={{ fontWeight: 'bold' }}
+                
                 gutterBottom
               >
                 Unknown transaction{isMultiTx ? 's' : ''}:
               </Typography>
               {messages.map((message) => (
-                <Typography style={{ wordBreak: 'break-all' }}>
+                <Typography >
                   {bs58.encode(message)}
                 </Typography>
               ))}

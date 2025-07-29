@@ -6,13 +6,13 @@ import {
   Button,
   CircularProgress,
   Alert,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Tabs,
   Tab,
+  Grid,
 } from '@mui/material';
 import {
   SmartToy as AgentIcon,
@@ -271,7 +271,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
         <>
           <Grid container spacing={3} sx={{ marginTop: 2 }}>
             {agentPagination.paginatedItems.map((agent) => (
-              <Grid item xs={12} md={6} lg={4} key={agent.id}>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={agent.id}>
                 <AgentCard agent={agent} onView={handleViewItem} />
               </Grid>
             ))}
@@ -333,7 +333,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
         <>
           <Grid container spacing={3} sx={{ marginTop: 2 }}>
             {mcpPagination.paginatedItems.map((server) => (
-              <Grid item xs={12} md={6} lg={4} key={server.id}>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={server.id}>
                 <MCPServerCard server={server} onView={handleViewItem} />
               </Grid>
             ))}

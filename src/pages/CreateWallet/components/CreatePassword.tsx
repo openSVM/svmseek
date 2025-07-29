@@ -40,12 +40,12 @@ const CreatePassword = ({
       <FakeInputs />
       <Card minHeight={'50rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
-          <BoldTitle style={{ marginBottom: '1.5rem' }}>
+          <BoldTitle >
             Create a password or type your
           </BoldTitle>
           <BoldTitle>password if you have created it already:</BoldTitle>
         </RowContainer>
-        <RowContainer style={{ position: 'relative' }}>
+        <RowContainer >
           <InputWithEye
             type={showPassword ? 'text' : 'password'}
             value={password}
@@ -59,7 +59,7 @@ const CreatePassword = ({
           />
         </RowContainer>
         <RowContainer justify="space-between" width="90%">
-          <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+          <Link  to="/">
             <WhiteButton theme={theme} width={'100%'}>
               Back
             </WhiteButton>

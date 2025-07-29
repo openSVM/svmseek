@@ -1,14 +1,14 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { RestorePage } from '../pages/RestoreWallet/index';
 
-export default function RestoreWalletRoute({ match }) {
+export default function RestoreWalletRoute() {
   return (
-    <Switch>
+    <Routes>
       <Route
-        path={match.url}
-        component={RestorePage}
+        path="/*"
+        element={<RestorePage />}
       />
-    </Switch>
+    </Routes>
   );
 }

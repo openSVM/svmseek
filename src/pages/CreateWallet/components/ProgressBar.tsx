@@ -27,7 +27,11 @@ const Percent = styled.div`
   transition: width 1s;
 `;
 
-const ProgressBar = styled.div`
+type ProgressBarProps = {
+  currentStep?: number;
+};
+
+const ProgressBar = styled.div<ProgressBarProps>`
   position: absolute;
   width: 100%;
   height: 50%;
@@ -42,7 +46,12 @@ const ProgressBar = styled.div`
   z-index: -1;
 `;
 
-const Step = styled.div`
+type StepProps = {
+  isCompleted?: boolean;
+  isSelected?: boolean;
+};
+
+const Step = styled.div<StepProps>`
   width: 3.5rem;
   height: 3.5rem;
   background: ${(props) => (props.isCompleted ? '#406EDC' : '#17181a')};
@@ -59,7 +68,11 @@ const Step = styled.div`
   transition: background 1s;
 `;
 
-const Steps = styled.div`
+type StepsProps = {
+  isCompleted?: boolean;
+};
+
+const Steps = styled.div<StepsProps>`
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -81,7 +94,11 @@ const AlignedTitle = styled(Title)`
   white-space: nowrap;
 `;
 
-const ProgressBarRow = styled(RowContainer)`
+type ProgressBarRowProps = {
+  currentStep?: number;
+};
+
+const ProgressBarRow = styled(RowContainer)<ProgressBarRowProps>`
   flex-direction: row;
   justify-content: flex-start;
   align-items: baseline;
@@ -89,7 +106,6 @@ const ProgressBarRow = styled(RowContainer)`
   @media (max-width: 540px) {
     margin-top: ${(props) => (props.currentStep === 3 ? '45rem' : 'none')};
   }
-  ${(props) => props.style}
 `;
 
 const ProgressBarComponent = ({
@@ -103,7 +119,7 @@ const ProgressBarComponent = ({
   firstStepText?: string;
   secondStepText?: string;
   thirdStepText?: string;
-  style?: any;
+  style?: React.CSSProperties;
 }) => {
   return (
     <ProgressBarRow currentStep={currentStep} style={style}>

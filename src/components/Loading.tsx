@@ -27,7 +27,7 @@ const RawLoading = ({
     style={style}
   >
     <CircularProgress
-      style={{ color: color || theme.palette.secondary.main}}
+      
       size={size}
     />
   </SpinnerContainer>
@@ -35,7 +35,15 @@ const RawLoading = ({
 
 export const Loading = RawLoading
 
-const SpinnerContainer = styled.div`
+type SpinnerContainerProps = {
+  size?: number;
+  theme?: any;
+  margin?: string | number;
+  centerAligned?: boolean;
+  style?: CSSProperties;
+};
+
+const SpinnerContainer = styled.div<SpinnerContainerProps>`
   z-index: 10000;
   margin: ${(props) => (props.margin ? props.margin : '0 auto')};
   position: ${(props) => (props.centerAligned ? 'absolute' : 'static')};

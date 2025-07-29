@@ -27,13 +27,14 @@ const AttentionComponent = ({
             padding: '.5rem 0',
           }}
         >
-          <Title
-            fontSize={'1.2rem'}
-            textAlign={'inherit'}
-            style={{ ...textStyle, paddingRight: '1rem' }}
-          >
-            {text}
-          </Title>
+          <div >
+            <Title
+              fontSize={'1.2rem'}
+              textAlign={'inherit'}
+            >
+              {text}
+            </Title>
+          </div>
         </span>
       </ColorText>
     </RowContainer>

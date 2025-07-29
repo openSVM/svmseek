@@ -1,3 +1,4 @@
+import { logError } from '../utils/logger';
 /**
  * Real Solana RPC service for fetching live blockchain data
  */
@@ -120,7 +121,7 @@ export class SolanaRPCService {
       this.setCache(cacheKey, stats);
       return stats;
     } catch (error) {
-      console.error('Failed to fetch network stats:', error);
+      logError('Failed to fetch network stats:', error);
       // Return fallback mock data
       return {
         blocksProcessed: 0,
@@ -173,7 +174,7 @@ export class SolanaRPCService {
       this.setCache(cacheKey, blocks);
       return blocks;
     } catch (error) {
-      console.error('Failed to fetch recent blocks:', error);
+      logError('Failed to fetch recent blocks:', error);
       return [];
     }
   }
@@ -219,7 +220,7 @@ export class SolanaRPCService {
       this.setCache(cacheKey, transactions);
       return transactions;
     } catch (error) {
-      console.error('Failed to fetch recent transactions:', error);
+      logError('Failed to fetch recent transactions:', error);
       return [];
     }
   }
@@ -340,7 +341,7 @@ export class SolanaRPCService {
         tokens: tokens.filter(token => token.amount > 0),
       };
     } catch (error) {
-      console.error('Failed to fetch account details:', error);
+      logError('Failed to fetch account details:', error);
       return null;
     }
   }

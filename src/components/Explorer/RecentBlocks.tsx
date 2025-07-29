@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { devLog, logError } from '../../utils/logger';
 import {
   Box,
   List,
@@ -104,7 +105,7 @@ const RecentBlocks: React.FC = () => {
       }));
       setBlocks(blocksWithSize);
     } catch (error) {
-      console.error('Failed to fetch blocks:', error);
+      logError('Failed to fetch blocks:', error);
       // Keep existing blocks on error
     } finally {
       setIsLoading(false);
@@ -128,8 +129,8 @@ const RecentBlocks: React.FC = () => {
   };
 
   const handleBlockClick = (block: Block) => {
-    console.log('Navigate to block:', block.blockHeight);
-    // TODO: Implement navigation to block detail view
+    devLog('Navigate to block:', block.blockHeight);
+    
   };
 
   const formatTimeAgo = (timestamp: Date): string => {

@@ -34,7 +34,7 @@ export default function DeleteMnemonicDialog({ open, onClose, openExportMnemonic
         </RowContainer>
         <RowContainer width="90%" direction="column">
           <RowContainer justify="flex-start" margin="2rem 0 0 0">
-            <Title style={{ textAlign: 'left' }}>
+            <Title >
               You will not be able to recover the current accounts without the
               seed phrase, and the account private key. This action will delete
               all current accounts from your browser.

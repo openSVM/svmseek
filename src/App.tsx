@@ -1,10 +1,9 @@
 import React, { lazy, Suspense, useMemo } from 'react';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import './i18n'; // Initialize i18n
 import LoadingIndicator from './components/LoadingIndicator';
 import NavigationFrame from './components/Navbar/NavigationFrame';
 import SnackbarProvider from './components/SnackbarProvider';
-import OnboardingTutorial from './components/OnboardingTutorial';
-import PWAInstallPrompt from './components/PWAInstallPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './context/ThemeContext';
 import { ConnectedWalletsProvider } from './utils/connected-wallets';
@@ -14,20 +13,20 @@ import { isExtension } from './utils/utils';
 import { useWallet, WalletProvider } from './utils/wallet';
 import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import useOnboarding from './utils/useOnboarding';
-// import { MASTER_BUILD } from './utils/config';
-// import { MigrationToNewUrlPopup } from './components/MigrationToNewUrlPopup';
 
+// Lazy load all route components and heavy dependencies
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
-const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
+const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));  
 const Wallet = lazy(() => import('./routes/WalletRouter'));
-
-// const ConnectingWallet = lazy(() => import('./routes/ConnectingWallet'));
-// const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
-// const ImportWalletPage = lazy(() => import('./routes/ImportWallet'));
-// const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
+const HelpPage = lazy(() => import('./routes/Help'));
+
+// Lazy load heavy components
+const OnboardingTutorial = lazy(() => import('./components/OnboardingTutorial'));
+const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
+const OnboardingSetup = lazy(() => import('./components/OnboardingSetup'));
 
 interface CustomPalette {
   text: {
@@ -128,6 +127,15 @@ const Pages = () => {
     dismissPWAPrompt,
     handlePWAInstall,
   } = useOnboarding();
+  
+  // Check if user needs to complete initial setup (language/theme selection)
+  const [showOnboardingSetup, setShowOnboardingSetup] = React.useState(() => {
+    return !localStorage.getItem('onboarding-setup-complete');
+  });
+
+  const handleOnboardingSetupComplete = () => {
+    setShowOnboardingSetup(false);
+  };
   // const [isDevUrlPopupOpen, openDevUrlPopup] = useState(true);
 
   // const [isMigrationToNewUrlPopupOpen, openMigrationToNewUrlPopup] = useState(
@@ -153,20 +161,33 @@ const Pages = () => {
     }
   }, []);
 
+  // Show onboarding setup first if not completed
+  if (showOnboardingSetup) {
+    return (
+      <Suspense fallback={<LoadingIndicator />}>
+        <OnboardingSetup onComplete={handleOnboardingSetupComplete} />
+      </Suspense>
+    );
+  }
+
   return (
     <>
       {/* Onboarding Tutorial */}
-      <OnboardingTutorial
-        isOpen={showOnboarding}
-        onClose={completeOnboarding}
-      />
+      <Suspense fallback={null}>
+        <OnboardingTutorial
+          isOpen={showOnboarding}
+          onClose={completeOnboarding}
+        />
+      </Suspense>
       
       {/* PWA Install Prompt */}
       {showPWAPrompt && (
-        <PWAInstallPrompt
-          onInstall={handlePWAInstall}
-          onDismiss={dismissPWAPrompt}
-        />
+        <Suspense fallback={null}>
+          <PWAInstallPrompt
+            onInstall={handlePWAInstall}
+            onDismiss={dismissPWAPrompt}
+          />
+        </Suspense>
       )}
       
       {/* {!MASTER_BUILD && !LOCAL_BUILD && (
@@ -176,73 +197,82 @@ const Pages = () => {
         />
       )} */}
 
-      <Switch>
+      <Routes>
         <Route 
-          path="/wallet" 
-          render={(routeProps) => (
+          path="/wallet/*" 
+          element={
             <ErrorBoundary context="wallet interface">
-              <Wallet {...routeProps} />
+              <Wallet />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/restore_wallet" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="wallet restoration">
-              <RestorePage {...routeProps} />
+              <RestorePage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/welcome" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="welcome page">
-              <WelcomePage {...routeProps} />
+              <WelcomePage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/create_wallet" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="wallet creation">
-              <CreateWalletPage {...routeProps} />
+              <CreateWalletPage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
-          exact 
           path="/welcome_back" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="welcome back page">
-              <WelcomeBackPage {...routeProps} />
+              <WelcomeBackPage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/connect_popup" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="wallet connection">
-              <ConnectPopup {...routeProps} />
+              <ConnectPopup />
             </ErrorBoundary>
-          )} 
+          } 
+        />
+        <Route 
+          path="/help" 
+          element={
+            <ErrorBoundary context="help center">
+              <HelpPage />
+            </ErrorBoundary>
+          } 
         />
 
         {/* popup if connecting from dex UI */}
-        {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
-        {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
+        {window.opener && !!wallet && <Route path="/" element={<Navigate to="/connect_popup" replace />} />}
 
         {/* if wallet exists - for case when we'll have unlocked wallet */}
-        {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
-        {!!wallet && <Redirect from="/" to="/wallet" />}
+        {!!wallet && <Route path="/" element={<Navigate to="/wallet" replace />} />}
 
         {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-        {/* TODO: Migrate to React Router v6 - Replace Redirect with Navigate component */}
-        {hasLockedMnemonicAndSeed ? (
-          <Redirect from="/" to="/welcome_back" />
-        ) : (
-          <Redirect from="/" to="/welcome" />
-        )}
-      </Switch>
+        <Route 
+          path="/" 
+          element={
+            hasLockedMnemonicAndSeed ? (
+              <Navigate to="/welcome_back" replace />
+            ) : (
+              <Navigate to="/welcome" replace />
+            )
+          }
+        />
+      </Routes>
     </>
   );
 };

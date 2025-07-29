@@ -91,6 +91,12 @@ yarn start
 
 The application will open at `http://localhost:3000`
 
+### 🌐 Live Web Version
+
+The production web application is available at:
+- **Primary**: [wallet.cryptocurrencies.ai](https://wallet.cryptocurrencies.ai) - no installation required!
+- **GitHub Pages**: [opensvm.github.io/svmseek](https://opensvm.github.io/svmseek) - automatically deployed from main branch
+
 ### Building for Production
 
 ```bash
@@ -235,6 +241,20 @@ const StyledComponent = styled(Box)(({ theme }) => ({
 - **Manifest optimization** - Browser-specific manifest files for optimal compatibility
 
 ## 🚀 Deployment
+
+### Web Application (Netlify)
+
+The web version is automatically deployed to [wallet.cryptocurrencies.ai](https://wallet.cryptocurrencies.ai) via Netlify:
+
+- **Production**: Automatic deployment from `main` branch
+- **Preview**: Automatic preview deployments for pull requests  
+- **Configuration**: See [Netlify Deployment Guide](docs/NETLIFY_DEPLOYMENT.md)
+
+```bash
+# Manual Netlify deployment
+./scripts/build-netlify.sh
+netlify deploy --prod --dir=build
+```
 
 ### Production Deployment
 ```bash

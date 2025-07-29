@@ -11,7 +11,7 @@ function FeeContentText({ ethFee, ethPrice, warning = false, prefix = "", bold =
     <Title
       color={warning ? 'secondary' : 'textPrimary'}
       // @ts-ignore
-      style={{ marginBottom: '0px', fontWeight: bold ? '500' : undefined, ...style }}
+      
     >
       {prefix}
       {ethFee.toFixed(4)}
@@ -49,7 +49,7 @@ export function EthFeeEstimate({ ethFeeData, insufficientEthBalance }) {
     return (
       <DialogContentText>
         <FeeContentText ethFee={approveFee} ethPrice={ethPrice} prefix={"Approve: "} />
-        <FeeContentText style={{ margin: '0 1rem'}} ethFee={swapFee} ethPrice={ethPrice} prefix={"Swap: "} />
+        <FeeContentText  ethFee={swapFee} ethPrice={ethPrice} prefix={"Swap: "} />
         <FeeContentText
           warning={insufficientEthBalance}
           ethFee={approveFee + swapFee}

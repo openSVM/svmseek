@@ -1,25 +1,18 @@
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
-import { withStyles } from '@mui/styles';
-import { IconButton } from '@mui/material';
+import { IconButton, styled } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 import errorIcon from '../images/errorIcon.svg';
 import successIcon from '../images/successIcon.svg';
 import infoIcon from '../images/infoIcon.svg';
 
-const cancelStyles = (theme) => ({
-  icon: {
+const CloseButton = styled(IconButton)(({ theme }) => ({
+  '& .MuiSvgIcon-root': {
     fontSize: 20,
     color: '#fff'
   },
-});
-
-const CloseButton = withStyles(cancelStyles)((props: any): any => {
-  return <IconButton key="close" aria-label="Close" {...props}>
-    <CloseIcon className={props.classes.icon} />
-  </IconButton>
-});
+}));
 
 const IntegrationNotistack = ({ ...props }) => {
   return (
@@ -66,7 +59,11 @@ const IntegrationNotistack = ({ ...props }) => {
         horizontal: 'left',
       }}
       // @ts-ignore
-      action={<CloseButton />}
+      action={(snackbarKey) => (
+        <CloseButton key="close" aria-label="Close">
+          <CloseIcon />
+        </CloseButton>
+      )}
       // classes={{
       //   variantSuccess: snackStyles.success,
       //   variantError: snackStyles.error,

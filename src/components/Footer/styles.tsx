@@ -1,4 +1,4 @@
-import { Link } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { RowContainer } from '../../pages/commonStyles';
 
@@ -12,7 +12,7 @@ export const FooterComponent = styled(RowContainer)`
     justify-content: space-between;
   }
 `;
-export const StyledLink = styled(Link)`
+export const StyledLink = styled(RouterLink)`
   width: 6rem;
   height: 5rem;
   display: flex;

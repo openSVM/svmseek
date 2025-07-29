@@ -11,8 +11,8 @@ import { MAINNET_URL } from "../connection";
 export const TOKENS = {
   [MAINNET_URL]: [
     {
-      mintAddress: 'E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp',
-      tokenSymbol: 'RIN',
+      mintAddress: 'Cpzvdx6pppc9TNArsGsqgShCsKC9NCCjA2gtzHvUpump',
+      tokenSymbol: 'SVMAI',
     },
     {
       mintAddress: '4pk3pf9nJDN1im1kNwWJN1ThjE8pCYCTexXYGyFjqKVf',

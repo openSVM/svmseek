@@ -44,7 +44,7 @@ const NetworkChip = styled(Chip)`
   margin: 0 0.5rem 0.5rem 0;
   background: rgba(139, 92, 246, 0.1) !important;
   border: 1px solid rgba(139, 92, 246, 0.3) !important;
-  color: ${props => props.theme?.mode === 'dark' ? '#A78BFA' : '#8B5CF6'} !important;
+  color: var(--interactive-primary) !important;
   
   &.active {
     background: rgba(139, 92, 246, 0.3) !important;
@@ -57,13 +57,9 @@ const ActionCard = styled(Paper)`
   text-align: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: ${props => props.theme?.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.05)' 
-    : 'rgba(255, 255, 255, 0.8)'} !important;
+  background: var(--bg-secondary) !important;
   backdrop-filter: blur(20px);
-  border: 1px solid ${props => props.theme?.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.1)'};
+  border: 1px solid var(--border-main);
   
   &:hover {
     transform: translateY(-4px);
@@ -74,9 +70,7 @@ const ActionCard = styled(Paper)`
 
 const StyledTextField = styled(TextField)`
   .MuiOutlinedInput-root {
-    background: ${props => props.theme?.mode === 'dark' 
-      ? 'rgba(255, 255, 255, 0.05)' 
-      : 'rgba(255, 255, 255, 0.8)'};
+    background: var(--bg-secondary);
     backdrop-filter: blur(10px);
   }
 `;
@@ -430,7 +424,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
 
       {/* Action Selection */}
       <Grid container spacing={2} mb={3}>
-        <Grid item xs={12} sm={4}>
+        <Grid size={{ xs: 12, sm: 4 }}>
           <ActionCard 
             onClick={() => setActiveTab('send')}
             elevation={activeTab === 'send' ? 8 : 2}
@@ -442,7 +436,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
             </Typography>
           </ActionCard>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid size={{ xs: 12, sm: 4 }}>
           <ActionCard 
             onClick={() => setActiveTab('request')}
             elevation={activeTab === 'request' ? 8 : 2}
@@ -454,7 +448,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
             </Typography>
           </ActionCard>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid size={{ xs: 12, sm: 4 }}>
           <ActionCard 
             onClick={() => setActiveTab('process')}
             elevation={activeTab === 'process' ? 8 : 2}
@@ -488,7 +482,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
               Send Payment
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <StyledTextField
                   fullWidth
                   label="Recipient Address"
@@ -506,7 +500,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <StyledTextField
                   fullWidth
                   label="Amount"
@@ -521,7 +515,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <StyledTextField
                   fullWidth
                   label="Memo (Optional)"
@@ -530,7 +524,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   placeholder="Payment description"
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Button
                   fullWidth
                   variant="contained"
@@ -555,7 +549,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
               Generate Payment Request
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <StyledTextField
                   fullWidth
                   label="Amount"
@@ -570,7 +564,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <StyledTextField
                   fullWidth
                   label="Memo (Optional)"
@@ -579,7 +573,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   placeholder="Payment description"
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Button
                   fullWidth
                   variant="contained"
@@ -592,7 +586,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                 </Button>
               </Grid>
               {generatedUrl && (
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <StyledTextField
                     fullWidth
                     label="Generated Payment URL"
@@ -638,7 +632,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
               Process Payment URL
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <StyledTextField
                   fullWidth
                   label="Payment URL"
@@ -649,7 +643,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
                   rows={2}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Button
                   fullWidth
                   variant="contained"

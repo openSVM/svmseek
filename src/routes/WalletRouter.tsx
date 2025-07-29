@@ -1,23 +1,23 @@
 import * as React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Wallet from '../pages/Wallet';
 import { useWallet } from '../utils/wallet';
 import { useHasLockedMnemonicAndSeed } from '../utils/wallet-seed';
 
-export default function LoginRoutes({ match, location }) {
+export default function LoginRoutes() {
   const wallet = useWallet();
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
 
   return (
-    <Switch>
+    <Routes>
       {!wallet ? (
         hasLockedMnemonicAndSeed ? (
-          <Redirect to="/welcome_back" />
+          <Route path="/*" element={<Navigate to="/welcome_back" replace />} />
         ) : (
-          <Redirect to="/welcome" />
+          <Route path="/*" element={<Navigate to="/welcome" replace />} />
         )
       ) : null}
-      <Route path={match.url} component={Wallet} />
-    </Switch>
+      <Route path="/*" element={<Wallet />} />
+    </Routes>
   );
 }

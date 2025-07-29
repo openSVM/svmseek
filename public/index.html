@@ -24,10 +24,13 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <!-- <link
+    <!-- Unicode fonts for all supported languages -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-    /> -->
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Noto+Serif:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@300;400;500;600;700&family=Noto+Sans+Mono:wght@300;400;500;600;700&display=swap"
+    />
 
     <link
       rel="preload"
@@ -198,7 +201,28 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <!-- Load Buffer polyfill first -->
+    <script src="%PUBLIC_URL%/buffer-polyfill.js"></script>
+    <div id="root">
+      <!-- Fallback content for debugging -->
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #17181a;
+        color: #ffffff;
+        font-family: 'Avenir Next Medium', sans-serif;
+        text-align: center;
+        padding: 20px;
+      ">
+        <div>
+          <div style="font-size: 24px; margin-bottom: 20px;">🔄</div>
+          <div style="font-size: 18px; margin-bottom: 10px;">Loading SVMSeek Wallet...</div>
+          <div style="font-size: 14px; color: #888;">If this message persists, please check browser console for errors</div>
+        </div>
+      </div>
+    </div>
     <form name="walletFeedback" netlify netlify-honeypot="bot-field" hidden>
       <input type="text" name="message" />
       <input type="text" name="contact" />

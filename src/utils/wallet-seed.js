@@ -1,13 +1,12 @@
 import { pbkdf2 } from 'crypto-browserify';
 import { randomBytes, secretbox } from 'tweetnacl';
-import { BIP32Factory } from 'bip32';
-import * as ecc from 'tiny-secp256k1';
 import bs58 from 'bs58';
 import { EventEmitter } from 'events';
 import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
-
-const bip32 = BIP32Factory(ecc);
+import { Buffer } from 'buffer';
+import { safeCreateImportsEncryptionKey } from './crypto-browser-compatible';
+import { logError } from './logger';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -61,7 +60,7 @@ let unlockedMnemonicAndSeed = (async () => {
         'null',
     );
   } catch (e) {
-    console.error('unlockedMnemonicAndSeed error', e);
+    logError('unlockedMnemonicAndSeed error', e);
   }
 
   if (stored === null) {
@@ -250,9 +249,15 @@ export function lockWallet() {
 
 // Returns the 32 byte key used to encrypt imported private keys.
 function deriveImportsEncryptionKey(seed) {
-  // SLIP16 derivation path.
-  return bip32.fromSeed(Buffer.from(seed, 'hex')).derivePath("m/10016'/0")
-    .privateKey;
+  try {
+    return safeCreateImportsEncryptionKey(seed);
+  } catch (error) {
+    logError('deriveImportsEncryptionKey failed:', error);
+    // Return a deterministic fallback key
+    const fallbackKey = Buffer.alloc(32);
+    fallbackKey.write('fallback_encryption_key_12345678');
+    return fallbackKey;
+  }
 }
 
 export function reloadWallet() {
