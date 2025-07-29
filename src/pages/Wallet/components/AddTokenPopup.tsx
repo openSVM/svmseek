@@ -41,6 +41,10 @@ const GreenText = styled(WhiteText)`
   color: var(--success-main);
 `;
 
+const BalanceText = styled(WhiteText)<{ isLowBalance?: boolean }>`
+  color: ${(props) => (props.isLowBalance ? 'var(--error-main)' : 'var(--success-main)')};
+`;
+
 export const feeFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 6,
   maximumFractionDigits: 6,
@@ -238,7 +242,7 @@ export default function AddTokenDialog({
             </RowContainer>
             {tokenName.length > 16 && (
               <RowContainer width="90%" margin="2rem 0 0 0">
-                <Title color={theme.customPalette.red.main}>
+                <Title color={var(--error-main)}>
                   Sorry, token name shouldn't be longer than 16 symbols
                 </Title>
               </RowContainer>
@@ -254,7 +258,7 @@ export default function AddTokenDialog({
             </RowContainer>
             {tokenSymbol.length > 8 && (
               <RowContainer width="90%" margin="2rem 0 0 0">
-                <Title color={theme.customPalette.red.main}>
+                <Title color={var(--error-main)}>
                   Sorry, token symbol shouldn't be longer than 8 symbols
                 </Title>
               </RowContainer>
@@ -343,21 +347,14 @@ export default function AddTokenDialog({
           </>
         ) : null}
         <RowContainer width="90%" justify="space-between" margin="2rem 0 0 0">
-          <WhiteText theme={theme}>
+          <WhiteText>
             Your SOL Balance:{' '}
-            <WhiteText
-              theme={theme}
-              style={{
-                color: isBalanceLowerCost
-                  ? theme.customPalette.red.main
-                  : theme.customPalette.green.light,
-              }}
-            >
+            <BalanceText isLowBalance={isBalanceLowerCost}>
               {formatNumberToUSFormat(stripDigitPlaces(amount, decimals))} SOL
-            </WhiteText>
+            </BalanceText>
           </WhiteText>
-          <WhiteText theme={theme}>
-            Cost: <GreenText theme={theme}>{cost} SOL</GreenText>
+          <WhiteText>
+            Cost: <GreenText>{cost} SOL</GreenText>
           </WhiteText>
         </RowContainer>
         <RowContainer width="90%" justify="space-between" margin="2rem 0 0 0">
@@ -443,7 +440,7 @@ export function TokenListItem({
             tokenName={tokenName}
             size={'2rem'}
           />
-          <WhiteText theme={theme} style={{ marginLeft: '1rem' }}>
+          <WhiteText theme={theme} >
             {tokenName ?? abbreviateAddress(address)}
             {tokenSymbol ? ` (${tokenSymbol})` : null}
           </WhiteText>

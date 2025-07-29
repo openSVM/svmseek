@@ -253,37 +253,37 @@ const Wallet = () => {
         />
 
         {activeTab === 'multiAccount' && multiAccountManager && (
-          <div style={{ height: '100%', width: '100%', padding: '1rem' }} className="fade-in">
+          <div  className="fade-in">
             <WalletGroupManager multiAccountManager={multiAccountManager} />
           </div>
         )}
         
         {activeTab === 'chat' && (
-          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+          <div  className="fade-in">
             <ChatInterface />
           </div>
         )}
         
         {activeTab === 'explorer' && (
-          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+          <div  className="fade-in">
             <ExplorerInterface isActive={true} />
           </div>
         )}
         
         {activeTab === 'browser' && (
-          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+          <div  className="fade-in">
             <WebBrowser isActive={true} />
           </div>
         )}
         
         {activeTab === 'svmpay' && (
-          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+          <div  className="fade-in">
             <SVMPayInterface isActive={true} />
           </div>
         )}
         
         {activeTab === 'aea' && (
-          <div style={{ height: '100%', padding: '2rem 0' }} className="fade-in">
+          <div  className="fade-in">
             <AEANetworkInterface isActive={true} />
           </div>
         )}

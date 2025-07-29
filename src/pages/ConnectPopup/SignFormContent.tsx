@@ -60,7 +60,7 @@ export default function SignFormContent({
               title="Be especially cautious when signing arbitrary data, you must trust the requester."
               arrow
             >
-              <Warning style={{ marginBottom: '-7px' }} />
+              <Warning  />
             </Tooltip>{' '}
             {`Sign data with account ${wallet.publicKey}`}
           </>
@@ -77,14 +77,14 @@ export default function SignFormContent({
       </Typography>
       <Typography
         variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
+        
         gutterBottom
       >
         {renderAction()}
       </Typography>
-      <Divider style={{ margin: 20 }} />
-      <Typography style={{ wordBreak: 'break-all' }}>{messageTxt}</Typography>
-      <Divider style={{ margin: 20 }} />
+      <Divider  />
+      <Typography >{messageTxt}</Typography>
+      <Divider  />
     </CardContent>
   );
 }

@@ -131,7 +131,7 @@ const AddTokenButton = ({
       <ImgContainer
         src={AddIcon}
         alt="addIcon"
-        style={{ marginRight: '1rem' }}
+        
       />
       <GreyTitle theme={theme}>Add token</GreyTitle>
     </AddTokenStyledButton>
@@ -140,7 +140,7 @@ const AddTokenButton = ({
 
 export const GreyTitle = styled(({ theme, ...props }) => (
   <Title
-    color={theme.customPalette.grey.light}
+    color={var(--text-secondary)}
     fontFamily="Avenir Next Demi"
     fontSize="1.4rem"
     {...props}
@@ -356,7 +356,7 @@ const AssetsTable = ({
         <HeadRow
           theme={theme}
           justify="flex-start"
-          style={{ width: '80%', padding: '1.4rem 0 1.4rem 2.4rem' }}
+          
         >
           <GreyTitle theme={theme}>Assets</GreyTitle>
         </HeadRow>
@@ -379,14 +379,14 @@ const AssetsTable = ({
             <img
               src={RefreshIcon}
               alt="refreshIcon"
-              style={{ marginRight: '1rem' }}
+              
             />
             <GreyTitle theme={theme}>Refresh</GreyTitle>
           </RefreshButton>
         </HeadRow>
       </MainHeaderRow>
       <RowContainer
-        style={{ display: 'block', overflowY: 'auto' }}
+        
         height="calc(100% - 5rem)"
       >
         <StyledTable theme={theme}>
@@ -407,10 +407,10 @@ const AssetsTable = ({
             {sortedPublicKeys.length === 0 && (
               <Loading
                 color={'#651CE4'}
-                style={{ padding: '2rem 0 2rem 4.8rem' }}
+                
               />
             )}
-            <StyledTr disableHover theme={theme} style={{ width: '100%' }}>
+            <StyledTr disableHover theme={theme} >
               <LastStyledTd colSpan={2}>
                 <AddTokenBtnRow>
                   <AddTokenButton
@@ -591,7 +591,7 @@ const AssetItem = ({
         </ValuesContainerForExtension>
       </StyledTd>
 
-      <StyledTd style={{ paddingRight: '2rem' }}>
+      <StyledTd >
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>Total:</GreyTitle>
           <AssetAmountUSD theme={theme}>
@@ -601,7 +601,7 @@ const AssetItem = ({
           </AssetAmountUSD>
         </RowContainer>
       </StyledTd>
-      {/* <StyledTd style={{ paddingRight: '2rem' }}>
+      {/* <StyledTd >
         <RowContainer direction="column" align="flex-start">
           <GreyTitle theme={theme}>P&L 24h:</GreyTitle>
           <Title fontSize="1.4rem" fontFamily="Avenir Next Demi">
@@ -671,7 +671,7 @@ const AssetItem = ({
             <img
               src={ReceiveIcon}
               alt="receive"
-              style={{ marginRight: '.5rem' }}
+              
             />
             <span>Receive</span>
           </VioletButton>
@@ -692,7 +692,7 @@ const AssetItem = ({
               setSendDialogOpen(true);
             }}
           >
-            <img src={SendIcon} alt="send" style={{ marginRight: '.5rem' }} />
+            <img src={SendIcon} alt="send"  />
             Send
           </VioletButton>
 
@@ -713,7 +713,7 @@ const AssetItem = ({
                 setCloseTokenAccountDialogOpen(true);
               }}
             >
-              <img src={SendIcon} alt="send" style={{ marginRight: '.5rem' }} />
+              <img src={SendIcon} alt="send"  />
               Delete
             </VioletButton>
           )}
@@ -734,7 +734,7 @@ const AssetItem = ({
             <img
               src={ExplorerIcon}
               alt="Explorer Icon"
-              style={{ marginRight: '.5rem' }}
+              
             />
             View Explorer
           </VioletButton>
@@ -767,7 +767,7 @@ const AssetItem = ({
           </VioletButton> */}
         </RowContainer>
       </StyledTd>
-      <StyledTdMenu style={{ textAlign: 'end', cursor: 'pointer' }}>
+      <StyledTdMenu >
         <DropdownContainer>
           <img alt={'open menu'} src={Dots} />
           <ActivitiesDropdown

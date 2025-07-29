@@ -363,7 +363,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
             'aria-label': 'Address bar - enter URL or search terms'
           }}
           InputProps={{
-            startAdornment: <Search style={{ marginRight: '0.5rem', opacity: 0.7 }} />,
+            startAdornment: <Search  />,
           }}
         />
         

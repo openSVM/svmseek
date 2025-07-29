@@ -55,11 +55,11 @@ export default function ExportAccountDialog({ open, onClose }) {
           height: '3rem',
           right: '2rem',
           top: '2rem',
-          color: theme.customPalette.red.main,
+          color: var(--error-main),
         }}
         onClick={onClose}
       >
-        <CloseIcon style={{ width: '100%', height: '100%' }} />
+        <CloseIcon  />
       </BtnCustom>
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
         <Title>
@@ -94,7 +94,7 @@ export default function ExportAccountDialog({ open, onClose }) {
           value={keyOutput}
           height={'17.2rem'}
           placeholder={'***'}
-          style={{ fontSize: '1.3rem', overflowY: 'auto' }}
+          
         />
       </RowContainer>
     </DialogForm>
@@ -147,11 +147,11 @@ export function ExportMnemonicDialog({ open, onClose }) {
           height: '3rem',
           right: '2rem',
           top: '2rem',
-          color: theme.customPalette.red.main,
+          color: var(--error-main),
         }}
         onClick={onClose}
       >
-        <CloseIcon style={{ width: '100%', height: '100%' }} />
+        <CloseIcon  />
       </BtnCustom>
       <RowContainer width="90%" justify="flex-start" margin="2rem 0">
         <Title>
@@ -186,7 +186,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
           value={mnemonic}
           height={'11.4rem'}
           placeholder={'***'}
-          style={{ fontSize: '1.3rem', overflowY: 'auto' }}
+          
         />
       </RowContainer>
     </DialogForm>

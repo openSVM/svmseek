@@ -126,10 +126,17 @@ const InstructionTitle = styled(Title)`
   }
 `;
 
-const CopyButton = styled(Title)`
+const CopyButton = styled(Title).attrs({
+  as: 'button'
+})`
   margin-left: 2rem;
   color: var(--interactive-primary);
   cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
 `;
 
 const InstructionsBlock = ({ theme, showOnMobile = false }) => {

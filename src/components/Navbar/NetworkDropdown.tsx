@@ -118,10 +118,10 @@ const WalletStatusButton = ({
     height={'3.5rem'}
     padding={'1.25rem 0'}
     fontSize={'1.2rem'}
-    style={{ whiteSpace: 'nowrap' }}
+    
   >
     {connection}
-    <ExpandMoreIcon fontSize="small" style={{ marginLeft: '.5rem' }} />
+    <ExpandMoreIcon fontSize="small"  />
   </BtnCustom>
 );
 
@@ -174,7 +174,7 @@ const NetworkDropdown = ({
             : '38rem'
         }
       >
-        <MenuList style={{ padding: 0 }}>
+        <MenuList >
           {networkLabels.map((endpoint) => (
             <StyledMenuItem
               theme={theme}

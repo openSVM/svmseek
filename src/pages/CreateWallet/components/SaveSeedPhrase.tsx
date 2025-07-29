@@ -79,7 +79,7 @@ const CreatePassword = ({
           </RowContainer>
           <RowContainer>
             <ColorText
-              style={{ fontSize: '1.3rem', fontFamily: 'Avenir Next Demi' }}
+              
               background={'rgba(164, 231, 151, 0.5)'}
               needBackground={true}
             >
@@ -87,11 +87,11 @@ const CreatePassword = ({
               place:
             </ColorText>
           </RowContainer>
-          <RowContainer style={{ position: 'relative' }}>
+          <RowContainer >
             <TextareaWithCopy
               height={'11.4rem'}
               value={seedPhrase}
-              style={{ fontSize: '1.3rem', overflowY: 'auto' }}
+              
               onCopy={() => clipboardCopy(seedPhrase)}
             />
           </RowContainer>
@@ -114,7 +114,7 @@ const CreatePassword = ({
               <StyledLabel
                 htmlFor="savedSeedPhrase"
                 fontSize={'1.4rem'}
-                style={{ paddingRight: '2rem' }}
+                
               >
                 I have saved these words in a safe place.
               </StyledLabel>

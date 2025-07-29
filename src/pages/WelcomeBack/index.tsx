@@ -121,7 +121,7 @@ const WelcomeBack = () => {
             <RowContainer
               direction={'column'}
               height={'5rem'}
-              style={{ position: 'relative' }}
+              
             >
               <InputWithEye
                 value={password}

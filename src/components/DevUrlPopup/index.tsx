@@ -111,13 +111,13 @@ export const DevUrlPopup = ({
         <BoldHeader>Warning!</BoldHeader>
         <img
           alt="Warning."
-          style={{ width: '4rem', height: '4rem' }}
+          
           src={Warning}
           onClick={close}
         />
       </Row>
       <RowContainer margin={'3rem 0'} align={'start'} direction={'column'}>
-        <BoldHeader style={{ textAlign: 'left', marginBottom: '6rem' }}>
+        <BoldHeader >
           Hello, this page is for developers only.
         </BoldHeader>
         <Text>
@@ -140,7 +140,7 @@ export const DevUrlPopup = ({
       </RowContainer>
       <RowContainer justify="space-between" margin={'3rem 0 2rem 0'}>
         <a
-          style={{ textDecoration: 'none', width: '100%' }}
+          
           target="_blank"
           rel="noopener noreferrer"
           href={'https://svmseek.com'}

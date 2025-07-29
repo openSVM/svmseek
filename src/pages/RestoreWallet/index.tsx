@@ -103,7 +103,7 @@ export const RestorePage = () => {
                 direction={'column'}
                 height={'50%'}
                 justify={'space-evenly'}
-                style={{ position: 'relative' }}
+                
               >
                 <InputWithPaste
                   type="text"
@@ -128,7 +128,7 @@ export const RestorePage = () => {
                 />
               </RowContainer>
               <Row width={'90%'} height={'20%'} justify={'space-between'}>
-                <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+                <Link  to="/">
                   <WhiteButton width={'100%'} theme={theme}>
                     Cancel
                   </WhiteButton>

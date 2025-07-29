@@ -168,10 +168,10 @@ export const WelcomePage = () => {
                       />
                     </StyledIcon>
                     <RestoreTitle
-                      style={{ marginLeft: isExtension ? '2rem' : '0' }}
+                      
                     >
                       <BoldTitle>Restore Existing Wallet </BoldTitle>
-                      <Title style={{ textAlign: 'start' }}>
+                      <Title >
                         by seed phrase
                       </Title>
                     </RestoreTitle>

@@ -6,7 +6,7 @@ const EyeIcon = ({ style, alt, src, onClick }) => {
       src={src}      
       alt={alt}
       onClick={onClick}
-      style={{ ...style }}
+      
     />
   );
 };

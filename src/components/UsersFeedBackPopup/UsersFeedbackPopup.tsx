@@ -98,7 +98,7 @@ export const FeedbackPopup = ({
       aria-labelledby="responsive-dialog-title"
     >
       <RowContainer
-        style={{ marginBottom: '2rem' }}
+        
         justify={isMobile ? 'center' : 'space-between'}
       >
         <Title fontSize={'2.8rem'}>
@@ -109,7 +109,7 @@ export const FeedbackPopup = ({
         <img
           onClick={() => onClose()}
           src={CloseIcon}
-          style={{ cursor: 'pointer', display: isMobile ? 'none' : 'auto' }}
+          
           alt={'close'}
           width={'5%'}
           height={'auto'}
@@ -124,7 +124,7 @@ export const FeedbackPopup = ({
             src={CoolIcon}
             width={isMobile ? '17rem' : '9rem'}
             height={isMobile ? '19rem' : '10rem'}
-            style={{ marginTop: isMobile ? '15rem' : '6rem' }}
+            
             alt={'cool'}
           />
           <Text
@@ -175,7 +175,7 @@ export const FeedbackPopup = ({
                   setIsProblemReport(true);
                 }}
                 id="problem-report-btn"
-                style={{ padding: '1rem 1rem 1rem 0' }}
+                
               />
               <StyledLabel htmlFor="problem-report-btn">
                 I want to report a problem.
@@ -189,7 +189,7 @@ export const FeedbackPopup = ({
                   setIsProblemReport(false);
                 }}
                 id="idea-suggest-btn"
-                style={{ padding: '1rem 1rem 1rem 0' }}
+                
               />
               <StyledLabel htmlFor="idea-suggest-btn">
                 I want to suggest an idea.

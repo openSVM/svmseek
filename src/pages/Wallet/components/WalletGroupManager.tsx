@@ -354,7 +354,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box display="flex" alignItems="center" gap={2}>
-                    <FolderIcon style={{ color: group.color }} />
+                    <FolderIcon  />
                     <div>
                       <Typography variant="h6">{group.name}</Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -430,7 +430,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
                             key={groupId}
                             label={group.name}
                             size="small"
-                            style={{ backgroundColor: group.color, color: 'white', margin: 2 }}
+                            
                           />
                         ) : null;
                       })}

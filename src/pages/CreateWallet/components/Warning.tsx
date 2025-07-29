@@ -60,7 +60,7 @@ const Warning = ({
       <FakeInputs />
       <Card minHeight={'50rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
-          <StyledTitle fontSize={'2.4rem'} style={{ marginBottom: '1.5rem' }}>
+          <StyledTitle fontSize={'2.4rem'} >
             Warning
           </StyledTitle>
         </RowContainer>
@@ -74,7 +74,7 @@ const Warning = ({
             blockHeight={'10rem'}
           />
         </RowContainer>
-        <RowContainer width="90%" style={{ position: 'relative' }}>
+        <RowContainer width="90%" >
           <Input
             value={text}
             onChange={(e) => {
@@ -84,11 +84,11 @@ const Warning = ({
               'Type CONFIRM to forget your current wallet and create new one'
             }
             onKeyDown={handleKeyDown}
-            style={{ paddingRight: '0', fontSize: '1.2rem' }}
+            
           />
         </RowContainer>
         <RowContainer justify="space-between" width="90%">
-          <Link style={{ width: 'calc(50% - .5rem)' }} to="/">
+          <Link  to="/">
             <WhiteButton theme={theme} width={'100%'}>
               Cancel
             </WhiteButton>

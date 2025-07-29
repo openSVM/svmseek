@@ -102,21 +102,21 @@ export const MigrationToNewUrlPopup = ({
         <BoldHeader>CCAI Wallet is SunWallet now!</BoldHeader>
         <img
           alt="Warning."
-          style={{ width: '15rem', height: 'auto' }}
+          
           src={SunLogo}
         />
       </Row>
       <RowContainer margin={'3rem 0'} align={'start'} direction={'column'}>
-        <Text style={{ margin: '1.5rem 0' }}>
+        <Text >
           Our wallet has changed its name and moved to a new domain:
           SunWallet.io
         </Text>
-        <Text style={{ margin: '1.5rem 0' }}>
+        <Text >
           For old users almost nothing will change, your accounts and seed
           phrases will remain the same. The old domain will redirect to the new
           domain.
         </Text>
-        <Text style={{ margin: '1.5rem 0' }}>
+        <Text >
           Stay tuned for more updates! Let’s build the best DeFi experience
           together!
         </Text>

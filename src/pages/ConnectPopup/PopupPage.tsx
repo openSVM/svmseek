@@ -327,7 +327,7 @@ export default function PopupPage() {
         height: 'auto%',
       }}
     >
-      <StyledCard style={{ textAlign: 'left' }}>
+      <StyledCard >
         <ApproveSignatureForm
           key={request.id}
           autoApprove={autoApprove}
@@ -416,7 +416,7 @@ function ApproveConnectionForm({
   return (
     <StyledCard>
       {(!window.opener || !wallet) && <Navigate to="/" replace />}
-      <CardContent style={{ padding: 0 }}>
+      <CardContent >
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
           <LogoComponent width="12rem" height="auto" margin="0" />
           <NetworkDropdown popupPage={true} width={'14rem'} />
@@ -440,7 +440,7 @@ function ApproveConnectionForm({
             </RowContainer>
             <img
               alt={'import export icon'}
-              style={{ margin: '2rem 0' }}
+              
               src={ImportExportIcon}
             />
             <Title fontSize="1.6rem">{account?.name}</Title>
@@ -455,14 +455,14 @@ function ApproveConnectionForm({
             checked={autoApprove}
             onChange={() => setAutoApprove(!autoApprove)}
           />
-          <Row style={{ textAlign: 'left' }}>
+          <Row >
             <StyledLabel
               theme={theme}
               htmlFor="autoApprove"
-              style={{ fontSize: '1.6rem' }}
+              
             >
               Automatically approve transactions from{' '}
-              <span style={{ color: '#ECF0F3' }}>{origin}</span>.<br />
+              <span >{origin}</span>.<br />
               This will allow you to use the auto-settle function.
             </StyledLabel>
           </Row>

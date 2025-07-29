@@ -113,19 +113,19 @@ const AddTokens = () => {
         <RowForStepComponents height={'100%'}>
           {' '}
           <RowContainer
-            style={{ borderRight: '0.2rem solid #383B45' }}
+            
             height={'96%'}
             direction={'column'}
             justify={'space-evenly'}
           >
             <Row width={'85%'} justify={'flex-start'}>
-              <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
+              <BoldTitle color={'#96999C'} >
                 Step 1:
               </BoldTitle>
               <BoldTitle>Deposit some SOL to activate your wallet.</BoldTitle>
             </Row>
             <Row justify={'end'} width={'85%'}>
-              <BoldTitle style={{ width: '25%' }} fontSize={'1.3rem'}>
+              <BoldTitle  fontSize={'1.3rem'}>
                 Your SOL address
               </BoldTitle>
               <Legend />
@@ -168,7 +168,7 @@ const AddTokens = () => {
             </Row>
             <Row width={'85%'} justify={'space-between'}>
               <VioletButton
-                style={{ height: '3.5rem' }}
+                
                 theme={theme}
                 btnWidth={'31%'}
                 height={'3.5rem'}
@@ -182,14 +182,14 @@ const AddTokens = () => {
               >
                 Refresh Balance
               </VioletButton>
-              <span style={{ display: 'flex' }}>
+              <span >
                 <BoldTitle fontSize={'1.5rem'}>Your Balance:&nbsp;</BoldTitle>
                 <BoldTitle
                   fontSize={'1.5rem'}
                   style={{
                     color: isBalanceLowerCost
-                      ? theme.customPalette.red.main
-                      : theme.customPalette.green.light,
+                      ? var(--error-main)
+                      : var(--success-main),
                   }}
                 >
                   {formatNumberToUSFormat(
@@ -206,7 +206,7 @@ const AddTokens = () => {
             direction={'column'}
           >
             <Row margin={'0'} width={'85%'} justify={'flex-start'}>
-              <BoldTitle color={'#96999C'} style={{ marginRight: '1rem' }}>
+              <BoldTitle color={'#96999C'} >
                 Step 2:
               </BoldTitle>
               <BoldTitle>
@@ -271,7 +271,7 @@ const AddTokens = () => {
               justify={'space-between'}
             >
               <Row>
-                <span style={{ display: 'flex' }}>
+                <span >
                   <BoldTitle fontSize={'1.5rem'}>Cost: &nbsp;</BoldTitle>
                   <BoldTitle fontSize={'1.5rem'} color={'#53DF11'}>
                     {stripDigitPlaces(cost, 8)} SOL
@@ -280,7 +280,7 @@ const AddTokens = () => {
               </Row>
               <VioletButton
                 theme={theme}
-                style={{ height: '3.5rem' }}
+                
                 background={'#651CE4'}
                 disabled={isBalanceLowerCost || selectedTokens.length === 0}
                 onClick={() => {
@@ -302,7 +302,7 @@ const AddTokens = () => {
       </Card>{' '}
       <BottomLink
         needOr={false}
-        linkColor={theme.customPalette.green.light}
+        linkColor={var(--success-main)}
         toText={'Skip for now'}
         to={'/wallet'}
       />

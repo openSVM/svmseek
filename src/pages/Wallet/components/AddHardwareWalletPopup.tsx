@@ -10,7 +10,7 @@ import {
   VioletButton,
   WhiteButton,
 } from '../../commonStyles';
-import { FormControl, Select, MenuItem, useTheme } from '@mui/material';
+import { FormControl, Select, MenuItem, useTheme, Typography } from '@mui/material';
 import { DERIVATION_PATH } from '../../../utils/walletProvider/localStorage';
 import { BalanceListItem } from '../../../components/BalancesList';
 
@@ -141,7 +141,7 @@ function AddHardwareWalletSplash({ onContinue, onClose }) {
   return (
     <RowContainer direction="column" width="90%">
       <RowContainer>
-        <Title style={{ fontSize: '2.4rem' }}>
+        <Title fontSize="2.4rem">
           Confirm your wallet address
         </Title>
       </RowContainer>
@@ -182,9 +182,9 @@ export function AccountsSelector({
   return (
     <>
       <RowContainer width="90%" justify="space-between">
-        <Title variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           Derivable Accounts
-        </Title>
+        </Typography>
         <FormControl variant="outlined">
           <Select
             value={dPathMenuItem}
@@ -283,8 +283,8 @@ function LedgerAccounts({ onContinue, onClose, open }) {
   return (
     <>
       {accounts === null ? (
-        <div style={{ padding: '24px' }}>
-          <Title align="center">
+        <div >
+          <Title textAlign="center">
             Loading accounts from your hardware wallet
           </Title>
           <CircularProgress

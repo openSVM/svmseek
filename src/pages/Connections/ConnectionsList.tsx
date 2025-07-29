@@ -140,7 +140,7 @@ function ConnectionsListItem({ origin, connectedWallet }) {
               alt=""
             />
         </StyledListItemIcon>
-        <div style={{ display: 'flex', flex: 1 }}>
+        <div >
           <ListItemText primary={origin} secondary={account.name} />
         </div>
         {open ? <ExpandLess /> : <ExpandMore />}

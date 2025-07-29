@@ -183,7 +183,7 @@ export const WelcomePage = () => {
           onClick={() => {
             window.close();
           }}
-          style={{ textDecoration: 'none', color: 'inherit' }}
+          
         >
           <CreateWalletOption />
         </a>
@@ -196,7 +196,7 @@ export const WelcomePage = () => {
       );
     } else {
       return (
-        <Link to="/create_wallet" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to="/create_wallet" >
           <CreateWalletOption />
         </Link>
       );
@@ -243,7 +243,7 @@ export const WelcomePage = () => {
           </Grid>
           
           <Grid size={{ xs: 12, sm: 6 }} md={5}>
-            <Link to="/restore_wallet" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link to="/restore_wallet" >
               <RestoreWalletOption />
             </Link>
           </Grid>

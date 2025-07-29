@@ -166,7 +166,7 @@ export default function DepositDialog({
                 target="_blank"
                 rel="noopener"
                 style={{
-                  color: theme.customPalette.blue.serum,
+                  color: var(--interactive-primary),
                   fontSize: '1rem',
                   fontFamily: 'Avenir Next Demi',
                 }}
@@ -262,7 +262,7 @@ function SolletSwapDepositAddress({
   if (blockchain === 'btc' && memo === null) {
     return (
       <RowContainer direction="column" width="90%">
-        <Title style={{ marginBottom: '2rem' }}>
+        <Title >
           Native BTC can be converted to SPL {tokenName} by sending it to the
           following address:
         </Title>
@@ -307,7 +307,7 @@ function SolletSwapDepositAddress({
           <Title
             fontSize="1.4rem"
             fontFamily="Avenir Next Demi"
-            style={{ padding: '1rem 0' }}
+            
           >
             To convert, you must already have SOL in your wallet
           </Title>
@@ -426,7 +426,7 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
           {ethAccount && (
             <>
               <Title color={theme.customPalette.grey.dark} fontSize="1.2rem">
-                <span style={{ fontFamily: 'Avenir Next Demi' }}>
+                <span >
                   Metamask connected:
                 </span>{' '}
                 {ethAccount}
@@ -454,7 +454,7 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         />
         {insufficientEthBalance && (
           <RowContainer width="90%" margin="2rem 0 0 0">
-            <Title color={theme.customPalette.red.main}>
+            <Title color={var(--error-main)}>
               Insufficient {swapInfo?.coin?.ticker} for withdrawal transaction
               fee
             </Title>
@@ -486,20 +486,20 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
           alignItems: 'flex-start',
         }}
       >
-        <Step style={{ margin: '1rem 0', fontSize: '1.4rem' }}>
+        <Step >
           <StyledStepLabel>Approve Conversion</StyledStepLabel>
         </Step>
-        <Step style={{ margin: '1rem 0' }}>
+        <Step >
           <StyledStepLabel>Send Funds</StyledStepLabel>
         </Step>
-        <Step style={{ margin: '1rem 0' }}>
+        <Step >
           <StyledStepLabel>Wait for Confirmations</StyledStepLabel>
         </Step>
       </Stepper>
       {status.step === 2 ? (
         <>
           <RowContainer margin="2rem 0 0 0">
-            <div style={{ marginRight: 16 }}>
+            <div >
               <CircularProgress />
             </div>
             <div>
@@ -508,7 +508,7 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
               ) : (
                 <Title>Transaction Pending</Title>
               )}
-              <Title style={{ marginLeft: '2rem' }}>
+              <Title >
                 <Link
                   href={`https://etherscan.io/tx/${status.txid}`}
                   target="_blank"

@@ -36,7 +36,7 @@ const SmallButton = styled(({ theme, isSelected, ...props }) => (
     }
     borderColor={
       isSelected
-        ? theme.customPalette.blue.serum
+        ? var(--interactive-primary)
         : theme.customPalette.grey.dark
     }
     btnWidth="auto"
@@ -112,7 +112,7 @@ const ConfirmSeedPhrase = ({
             background={'rgba(164, 231, 151, 0.5)'}
             height={'6rem'}
             needBackground={true}
-            style={{ background: 'rgba(164, 231, 151, 0.5)' }}
+            
           >
             <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
               Place first 12 words from your Seed Phrase in the correct order by

@@ -150,7 +150,7 @@ export const BlueButton = styled(
         <Loading
           color={'#fff'}
           size={24}
-          style={{ display: 'flex', alignItems: 'center', height: '4.5rem' }}
+          
         />
       ) : (
         children

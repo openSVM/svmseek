@@ -55,7 +55,7 @@ const ActivityHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  border-bottom: 1px solid ${props => props.theme.palette?.divider || '#e0e0e0'};
+  border-bottom: 1px solid var(--border-main);
 `;
 
 const FilterBar = styled.div`
@@ -64,13 +64,13 @@ const FilterBar = styled.div`
   padding: 16px;
   flex-wrap: wrap;
   align-items: center;
-  background: ${props => props.theme.palette?.background?.paper || '#fff'};
-  border-bottom: 1px solid ${props => props.theme.palette?.divider || '#e0e0e0'};
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-main);
 `;
 
 const TransactionRow = styled(TableRow)<{ txType?: string }>`
   &:hover {
-    background-color: ${props => props.theme.palette?.action?.hover || '#f5f5f5'};
+    background-color: var(--bg-secondary);
   }
   
   & .type-indicator {
@@ -94,7 +94,7 @@ const SyncStatus = styled.div`
   gap: 8px;
   margin-bottom: 16px;
   padding: 8px 16px;
-  background: ${props => props.theme.palette?.info?.light || '#e3f2fd'};
+  background: var(--bg-tertiary);
   border-radius: 4px;
 `;
 

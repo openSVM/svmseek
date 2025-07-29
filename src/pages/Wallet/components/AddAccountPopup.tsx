@@ -63,7 +63,7 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
           </RowContainer>
           {name.length > 16 && (
               <RowContainer width="90%" margin="2rem 0 0 0">
-                <Title color={theme.customPalette.red.main}>
+                <Title color={var(--error-main)}>
                   Sorry, your account name shouldn't be longer than 16 symbols
                 </Title>
               </RowContainer>

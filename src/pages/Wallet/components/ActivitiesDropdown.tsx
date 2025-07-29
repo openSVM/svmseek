@@ -61,7 +61,7 @@ const ActivitiesDropdown = ({
       <RowContainer>
         <RowContainer padding="0 1.6rem" direction="column">
           <StyledTd
-            style={{ width: '100%', paddingLeft: '0', paddingRight: '0' }}
+            
           >
             <ButtonsContainer>
               <VioletButton
@@ -85,7 +85,7 @@ const ActivitiesDropdown = ({
                 <img
                   src={Receive}
                   alt="receive"
-                  style={{ marginRight: '.5rem' }}
+                  
                 />
                 <span>Receive</span>
               </VioletButton>
@@ -108,7 +108,7 @@ const ActivitiesDropdown = ({
                   setSendDialogOpen(true);
                 }}
               >
-                <img src={Send} alt="send" style={{ marginRight: '.5rem' }} />
+                <img src={Send} alt="send"  />
                 Send
               </VioletButton>
 
@@ -136,7 +136,7 @@ const ActivitiesDropdown = ({
                 <img
                   src={BlueExplorer}
                   alt="Explorer Icon"
-                  style={{ marginRight: '.5rem' }}
+                  
                 />
                 View Explorer
               </VioletButton>
@@ -166,7 +166,7 @@ const ActivitiesDropdown = ({
                 <img
                   src={TradeIcon}
                   alt="trade"
-                  style={{ marginRight: '.5rem' }}
+                  
                 />
                 Trade
               </VioletButton>

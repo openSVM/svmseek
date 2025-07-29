@@ -27,7 +27,7 @@ const AttentionComponent = ({
             padding: '.5rem 0',
           }}
         >
-          <div style={{ ...textStyle, paddingRight: '1rem' }}>
+          <div >
             <Title
               fontSize={'1.2rem'}
               textAlign={'inherit'}

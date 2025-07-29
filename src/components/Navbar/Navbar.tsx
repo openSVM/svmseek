@@ -253,7 +253,7 @@ export const Navbar = () => {
                 href="https://svmseek.com/pools"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: 'block' }}
+                
               >
                 Liquidity Pools
               </ExternalLink>
@@ -261,7 +261,7 @@ export const Navbar = () => {
                 href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: 'block' }}
+                
               >
                 FAQ
               </ExternalLink>
@@ -279,12 +279,12 @@ export const Navbar = () => {
               </ShortcutKeys>
             </SearchButton>
             
-            <div style={{ marginRight: '2rem' }}>
+            <div >
               <ThemeToggle />
             </div>
             <Socials justify={'space-around'} height="100%" width={'auto'}>
               <StyledLink
-                style={{ marginRight: '3rem', height: '2.5rem' }}
+                
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://twitter.com/svmseek"
@@ -292,7 +292,7 @@ export const Navbar = () => {
                 <TwitterIcon />
               </StyledLink>
               <StyledLink
-                style={{ marginRight: '3rem', height: '2.5rem' }}
+                
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://t.me/svmseek"
@@ -303,7 +303,7 @@ export const Navbar = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://discord.gg/4VZyNxT2WU"
-                style={{ height: '2.5rem' }}
+                
               >
                 <DiscordIcon />
               </StyledLink>

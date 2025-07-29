@@ -47,7 +47,7 @@ const InputWithComponent = ({
   onKeyDown?: (e: any) => void
 }) => {
   return (
-    <RowContainer style={{ position: 'relative', width: '90%', ...containerStyle }}>
+    <RowContainer >
       <Input
         type={type}
         value={value}
@@ -136,7 +136,7 @@ const InputWithPaste = ({
           onClick={() => {
             onPasteClick()
           }}
-          style={{ padding: '1.2rem 2rem' }}
+          
         >
           Paste
         </TextButton>
@@ -172,7 +172,7 @@ const InputWithMax = ({
           onClick={() => {
             onMaxClick()
           }}
-          style={{ padding: '1.2rem 2rem 1.2rem .5rem', whiteSpace: 'nowrap' }}
+          
         >
           {maxText}
         </TextButton>
@@ -197,7 +197,7 @@ const SearchInputWithLoupe = ({
   ComponentToShow: any;
 }) => {
   return (
-    <RowContainer style={{ position: 'relative', width: '100%' }}>
+    <RowContainer >
       <SearchInput
         type={type}
         value={value}
@@ -232,7 +232,7 @@ const InputWithSearch = ({
     <SearchInputWithLoupe
       ComponentToShow={
         <img
-          style={{ padding: '.5rem', cursor: 'pointer' }}
+          
           onClick={onSearchClick}
           src={Loupe}
           alt="search icon"
@@ -261,7 +261,7 @@ const TextareaWithComponent = ({
   style?: any
 }) => {
   return (
-    <RowContainer style={{ position: 'relative', width: '100%' }}>
+    <RowContainer >
       <Textarea
         type={type}
         value={value}
