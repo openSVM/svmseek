@@ -198,7 +198,7 @@ export const getAllTokensData = async (
 
     const dataForToken = {
       name: name === 'Cryptocurrencies.Ai' ? 'SVMSeek' : name,
-      symbol: symbol === 'CCAI' ? 'RIN' : symbol,
+      symbol: symbol === 'CCAI' ? 'SVMAI' : symbol,
       decimals: el.account.data.parsed.info.tokenAmount.decimals,
       amount: el.account.data.parsed.info.tokenAmount.uiAmount,
       mint: el.account.data.parsed.info.mint,

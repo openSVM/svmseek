@@ -70,7 +70,7 @@ export const Navbar = () => {
             padding="md"
             borderRadius="xxl"
           >
-            Stake RIN
+            Stake SVMAI
           </Button>
         </LogoBlock>
         <LinksBlock>{feedbackLinks}</LinksBlock>
@@ -78,7 +78,7 @@ export const Navbar = () => {
           <MainLinksBlock>
             <NavLink
               as="a"
-              href="https://svmseek.com/chart/spot/RIN_USDC"
+              href="https://svmseek.com/chart/spot/SVMAI_USDC"
               activeClassName="selected"
             >
               Trade

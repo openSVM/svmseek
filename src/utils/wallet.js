@@ -475,7 +475,7 @@ export function useBalanceInfo(publicKey) {
         mint,
         owner,
         tokenName: name === 'Cryptocurrencies.Ai' ? 'SVMSeek' : name,
-        tokenSymbol: symbol === 'CCAI' ? 'RIN' : symbol,
+        tokenSymbol: symbol === 'CCAI' ? 'SVMAI' : symbol,
         tokenLogoUri: logoUri,
         valid: true,
       };

@@ -106,7 +106,7 @@ const RebrandingPopup = ({
             We are happy to announce that we have rebranded CCAI and are ready to present – SVMSeek!
           </WhiteText>
           <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
-            The CCAI token has also been renamed to RIN. CCAI tokens in your wallets are automatically changed to RIN.
+            The CCAI token has also been renamed to SVMAI. CCAI tokens in your wallets are automatically changed to SVMAI.
           </WhiteText>
           <WhiteText theme={theme} style={{ color: theme.customPalette.text.grey, marginBottom: '2rem' }}>
             The new name comes with exciting developments for future holders of tokens and traders like you, so make sure to follow us on twitter as we announce these new features.

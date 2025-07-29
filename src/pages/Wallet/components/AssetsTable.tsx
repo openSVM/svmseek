@@ -470,7 +470,7 @@ const AssetItem = ({
   };
 
   if (tokenSymbol === 'CCAI') {
-    tokenSymbol = 'RIN';
+    tokenSymbol = 'SVMAI';
   }
 
   if (tokenName === 'Cryptocurrencies.Ai') {

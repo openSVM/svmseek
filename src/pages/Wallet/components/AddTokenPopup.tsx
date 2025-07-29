@@ -245,7 +245,7 @@ export default function AddTokenDialog({
             )}
             <RowContainer width="90%" margin={'2rem 0 0 0'}>
               <Input
-                placeholder={'Token Symbol (e.g. RIN)'}
+                placeholder={'Token Symbol (e.g. SVMAI)'}
                 value={tokenSymbol}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => setTokenSymbol(e.target.value)}
