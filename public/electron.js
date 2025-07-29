@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, shell, ipcMain } = require('electron');
 const path = require('path');
-const isDev = require('electron-is-dev');
+const isDev = !app.isPackaged;
 
 // Keep a global reference of the window object
 let mainWindow;
