@@ -238,11 +238,11 @@ export const WelcomePage = () => {
         </WelcomeHeader>
 
         <OptionsGrid container spacing={0} justifyContent="center">
-          <Grid item xs={12} sm={6} md={5}>
+          <Grid size={{ xs: 12, sm: 6 }} md={5}>
             {renderCreateWalletLink()}
           </Grid>
           
-          <Grid item xs={12} sm={6} md={5}>
+          <Grid size={{ xs: 12, sm: 6 }} md={5}>
             <Link to="/restore_wallet" style={{ textDecoration: 'none', color: 'inherit' }}>
               <RestoreWalletOption />
             </Link>

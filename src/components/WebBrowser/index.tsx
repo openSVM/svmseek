@@ -409,7 +409,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
           <NetworkErrorBoundary onRetry={() => setShowDApps(true)}>
             <DAppsGrid container spacing={2}>
               {POPULAR_DAPPS.map((dapp) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={dapp.name}>
+                <Grid size={{ xs: 12, sm: 6 }} md={4} lg={3} key={dapp.name}>
                   <DAppCard onClick={() => navigateToUrl(dapp.url)} data-testid="dapp-card">
                     <CardContent>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>

@@ -523,7 +523,7 @@ const CreateGroupDialog: React.FC<{
       <DialogTitle>{t('multiAccount.createGroup')}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label={t('multiAccount.groupName')}
@@ -531,7 +531,7 @@ const CreateGroupDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               type="color"
@@ -540,7 +540,7 @@ const CreateGroupDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, color: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               fullWidth
               multiline
@@ -550,7 +550,7 @@ const CreateGroupDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <FormControl fullWidth>
               <InputLabel>{t('multiAccount.selectWallets')}</InputLabel>
               <Select
@@ -603,7 +603,7 @@ const ImportWalletDialog: React.FC<{
       <DialogTitle>{t('multiAccount.importWallet')}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               fullWidth
               label={t('multiAccount.publicKey')}
@@ -612,7 +612,7 @@ const ImportWalletDialog: React.FC<{
               placeholder="Enter Solana public key..."
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               fullWidth
               label={t('multiAccount.walletName')}
@@ -620,7 +620,7 @@ const ImportWalletDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <FormControl fullWidth>
               <InputLabel>{t('multiAccount.assignToGroups')}</InputLabel>
               <Select
@@ -673,7 +673,7 @@ const EditGroupDialog: React.FC<{
       <DialogTitle>{t('multiAccount.editGroup')}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label={t('multiAccount.groupName')}
@@ -681,7 +681,7 @@ const EditGroupDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               type="color"
@@ -690,7 +690,7 @@ const EditGroupDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, color: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               fullWidth
               multiline
@@ -700,7 +700,7 @@ const EditGroupDialog: React.FC<{
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <FormControl fullWidth>
               <InputLabel>{t('multiAccount.selectWallets')}</InputLabel>
               <Select
@@ -751,7 +751,7 @@ const ExportDialog: React.FC<{
       <DialogTitle>{t('multiAccount.exportData')}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <FormControl fullWidth>
               <InputLabel>{t('multiAccount.format')}</InputLabel>
               <Select
@@ -764,7 +764,7 @@ const ExportDialog: React.FC<{
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <FormControlLabel
               control={
                 <Switch
@@ -775,7 +775,7 @@ const ExportDialog: React.FC<{
               label={t('multiAccount.includeTransactions')}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <FormControlLabel
               control={
                 <Switch
@@ -786,7 +786,7 @@ const ExportDialog: React.FC<{
               label={t('multiAccount.includeMetadata')}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Typography variant="body2" color="text.secondary">
               {selectedWallets.length > 0 && `${selectedWallets.length} wallets selected`}
               {selectedGroups.length > 0 && `${selectedGroups.length} groups selected`}

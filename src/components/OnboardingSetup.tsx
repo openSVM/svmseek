@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { Card, CardContent, Typography, Button, Grid, Box } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Grid } from '@mui/material';
 import { CheckCircle as CheckIcon } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
 import { supportedLanguages } from '../i18n';
@@ -287,7 +287,7 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
 
       <OptionGrid container spacing={2}>
         {supportedLanguages.map((language) => (
-          <Grid item xs={6} sm={4} key={language.code}>
+          <Grid size={{ xs: 6, sm: 4 }} key={language.code}>
             <OptionCard
               selected={selectedLanguage === language.code}
               onClick={() => handleLanguageSelect(language.code)}
@@ -324,7 +324,7 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
 
       <OptionGrid container spacing={2}>
         {Object.entries(availableThemes).map(([themeKey, theme]) => (
-          <Grid item xs={6} sm={4} key={themeKey}>
+          <Grid size={{ xs: 6, sm: 4 }} key={themeKey}>
             <OptionCard
               selected={selectedTheme === themeKey}
               onClick={() => handleThemeSelect(themeKey as ThemeName)}
