@@ -4,7 +4,12 @@ import styled from 'styled-components';
 import { BtnCustom } from '../BtnCustom';
 import { Loading } from '../Loading';
 
-export const TextField = styled.input`
+export type TextFieldProps = {
+  height?: string;
+  theme?: any;
+};
+
+export const TextField = styled.input<TextFieldProps>`
   width: 100%;
   height: ${(props) => props.height || '3.5rem'};
   background: #383b45;
@@ -39,7 +44,12 @@ export const MainTitle = styled.span`
   margin-bottom: 2rem;
 `;
 
-export const StyledTextArea = styled.textarea`
+export type StyledTextAreaProps = {
+  height?: string;
+  theme?: any;
+};
+
+export const StyledTextArea = styled.textarea<StyledTextAreaProps>`
   width: 100%;
   height: ${(props) => props.height || '3.5rem'};
   background: #383b45;
@@ -163,7 +173,16 @@ export const BlueButton = styled(
   border: none;
 `;
 
-export const Text = styled.span`
+export type TextProps = {
+  fontSize?: string;
+  paddingBottom?: string;
+  fontFamily?: string;
+  color?: string;
+  whiteSpace?: string;
+  padding?: string;
+};
+
+export const Text = styled.span<TextProps>`
   font-size: ${(props) => props.fontSize || '1.5rem'};
   padding-bottom: ${(props) => props.paddingBottom || '0'};
   text-transform: none;

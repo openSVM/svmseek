@@ -45,9 +45,14 @@ export const RowContainer = styled((props) => <Row {...props} />)`
   width: ${(props: RowProps) => props.width || '100%'};
 `;
 
-export const GridContainer = styled(({ wallet, theme, ...rest }) => (
+export type GridContainerProps = {
+  wallet?: any;
+  theme?: any;
+};
+
+export const GridContainer = styled(({ wallet, theme, ...rest }: GridContainerProps) => (
   <Grid {...rest} />
-))`
+))<GridContainerProps>`
   position: relative;
   display: flex;
   flex: auto;
@@ -67,7 +72,19 @@ export const GridContainer = styled(({ wallet, theme, ...rest }) => (
   }
 `;
 
-export const ColorText = styled.div`
+export type ColorTextProps = {
+  width?: string;
+  height?: string;
+  margin?: string;
+  background?: string;
+  radius?: string;
+  justify?: string;
+  direction?: string;
+  align?: string;
+  needBackground?: boolean;
+};
+
+export const ColorText = styled.div<ColorTextProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
   margin: ${(props) => props.margin || '0'};
@@ -92,9 +109,15 @@ export const ColorText = styled.div`
   }
 `;
 
-export const Textarea = styled(({ style, ...props }) => (
+export type TextareaProps = {
+  width?: string;
+  height?: string;
+  padding?: string;
+};
+
+export const Textarea = styled(({ ...props }: TextareaProps) => (
   <textarea {...props} />
-))`
+))<TextareaProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '5rem'};
   font-family: Avenir Next;
@@ -113,8 +136,6 @@ export const Textarea = styled(({ style, ...props }) => (
   &::placeholder {
     font-size: 1.4rem;
   }
-
-  ${(props) => props.style};
 
   @media (max-width: 540px) {
     font-size: 1.4rem;
@@ -139,13 +160,27 @@ export const ContainerForIcon = styled.div`
   }
 `;
 
-export const Img = styled.div`
+export type ImgProps = {
+  width?: string;
+  margin?: string;
+};
+
+export const Img = styled.div<ImgProps>`
   width: ${(props) => props.width || 'auto'};
   height: ${(props) => props.width || 'auto'};
   margin-bottom: ${(props) => props.margin || '0rem'};
 `;
 
-export const Card = styled.div`
+export type CardProps = {
+  width?: string;
+  height?: string;
+  padding?: string;
+  justify?: string;
+  minHeight?: string;
+  minWidth?: string;
+};
+
+export const Card = styled.div<CardProps>`
   width: ${(props) => props.width || '50rem'};
   height: ${(props) => props.height || '40rem'};
   padding: ${(props) => props.padding || '0'};
@@ -167,14 +202,19 @@ export const Card = styled.div`
   }
 `;
 
-export const Input = styled(({ style, ...props }) => (
+export type InputProps = {
+  width?: string;
+  height?: string;
+};
+
+export const Input = styled(({ ...props }: InputProps) => (
   <input
     {...props}
     autoComplete="off"
     onFocus={(e) => e.target.removeAttribute('readonly')}
     readOnly
   />
-))`
+))<InputProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
   color: #fff;
@@ -197,8 +237,6 @@ export const Input = styled(({ style, ...props }) => (
     -webkit-text-fill-color: #fff;
   }
 
-  ${(props) => props.style};
-
   @media (max-width: 540px) {
     font-size: 16px;
     height: 6rem;
@@ -214,7 +252,12 @@ export const Body = styled.div`
   align-items: center;
 `;
 
-export const TextButton = styled.button`
+export type TextButtonProps = {
+  color?: string;
+  width?: string;
+};
+
+export const TextButton = styled.button<TextButtonProps>`
   font-family: Avenir Next Medium;
   font-style: normal;
   font-weight: 500;
@@ -230,6 +273,18 @@ export const TextButton = styled.button`
   cursor: pointer;
 `;
 
+export type TitleProps = {
+  width?: string;
+  fontFamily?: string;
+  fontSize?: string;
+  color?: string;
+  textAlign?: string;
+  margin?: string;
+  maxFont?: string;
+  mediaTextAlign?: string;
+  children?: React.ReactNode;
+};
+
 export const Title = styled(
   ({
     width,
@@ -238,11 +293,12 @@ export const Title = styled(
     color,
     textAlign,
     margin,
-    style,
     maxFont,
+    mediaTextAlign,
+    children,
     ...props
-  }) => <span {...props} />,
-)`
+  }: TitleProps) => <span {...props}>{children}</span>,
+)<TitleProps>`
   width: ${(props) => props.width || 'auto'};
   font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
   font-style: normal;
@@ -252,7 +308,6 @@ export const Title = styled(
   color: ${(props) => props.color || '#ecf0f3'};
   text-align: ${(props) => props.textAlign || 'center'};
   margin: ${(props) => props.margin || '0'};
-  ${(props) => props.style};
 
   @media (max-width: 540px) {
     font-size: ${(props) => props.maxFont || '1.6rem'};
@@ -361,7 +416,16 @@ export const WhiteButton = styled((props) => (
   }
 `;
 
-export const CardButton = styled.div`
+export type CardButtonProps = {
+  width?: string;
+  height?: string;
+  margin?: string;
+  background?: string;
+  radius?: string;
+  opacity?: string;
+};
+
+export const CardButton = styled.div<CardButtonProps>`
   width: ${(props) => props.width || '20rem'};
   height: ${(props) => props.height || '20rem'};
   margin: ${(props) => props.margin || '0'};
@@ -381,7 +445,12 @@ export const CardButton = styled.div`
   }
 `;
 
-export const BoldTitle = styled.div`
+export type BoldTitleProps = {
+  fontSize?: string;
+  color?: string;
+};
+
+export const BoldTitle = styled.div<BoldTitleProps>`
   font-family: Avenir Next Demi;
   font-size: ${(props) => props.fontSize || '1.6rem'};
   letter-spacing: -0.523077px;
@@ -398,7 +467,11 @@ export const Legend = styled.div`
   background: #383b45;
 `;
 
-export const StyledLabel = styled.label`
+export type StyledLabelProps = {
+  fontSize?: string;
+};
+
+export const StyledLabel = styled.label<StyledLabelProps>`
   font-family: Avenir Next;
   font-size: ${(props) => props.fontSize || '1.2rem'};
   color: #93a0b2;
@@ -454,7 +527,12 @@ export const SearchInput = styled.input`
   }
 `; 
 
-export const ListCard = styled.div`
+export type ListCardProps = {
+  width?: string;
+  height?: string;
+};
+
+export const ListCard = styled.div<ListCardProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '20rem'};
   background: #222429;
@@ -468,9 +546,16 @@ export const ListCard = styled.div`
   padding: 0 1.6rem;
 `;
 
-export const ExclamationMark = styled(({ fontSize, lineHeight, ...props }) => (
+export type ExclamationMarkProps = {
+  fontSize?: string;
+  lineHeight?: string;
+  color?: string;
+  margin?: string;
+};
+
+export const ExclamationMark = styled(({ fontSize, lineHeight, ...props }: ExclamationMarkProps) => (
   <span {...props}>!</span>
-))`
+))<ExclamationMarkProps>`
   color: ${(props) => props.color || props.theme.customPalette.orange.dark};
   font-family: Avenir Next Demi;
   font-size: ${(props) => props.fontSize || '5rem'};

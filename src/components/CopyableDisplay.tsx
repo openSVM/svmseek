@@ -82,7 +82,7 @@ const CopyableDisplay: React.FC<CopyableDisplayProps> = ({
   helperText = '',
 }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const textareaRef = useRef<HTMLInputElement>();
+  const textareaRef = useRef<HTMLInputElement>(null);
 
   const copyToClipboard = async () => {
     try {
