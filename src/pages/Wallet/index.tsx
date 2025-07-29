@@ -14,6 +14,7 @@ import { ExplorerInterface } from '../../components/Explorer';
 import WebBrowser from '../../components/WebBrowser';
 import { SVMPayInterface } from '../../components/SVMPay';
 import { AEANetworkInterface } from '../../components/AEANetwork';
+import VaultAccessButton from '../../components/VaultAccessButton';
 
 import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
@@ -331,6 +332,9 @@ const Wallet = () => {
           )}
         />
       )}
+
+      {/* Floating Vault Access Button */}
+      <VaultAccessButton />
     </MainWalletContainer>
   );
 };
