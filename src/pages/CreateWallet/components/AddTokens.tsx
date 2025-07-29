@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import {
   Card,
   Row,
@@ -306,7 +306,7 @@ const AddTokens = () => {
         toText={'Skip for now'}
         to={'/wallet'}
       />
-      {redirectToWallet && <Redirect to="/wallet" />}
+      {redirectToWallet && <Navigate to="/wallet" replace />}
     </>
   );
 };

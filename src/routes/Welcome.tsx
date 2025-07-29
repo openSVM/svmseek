@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { WelcomePage } from '../pages/WelcomePage/index';
 
-export default function LoginRoutes({ match, location }) {
+export default function LoginRoutes() {
   return (
-    <Switch>
-      <Route path={match.url} component={WelcomePage} />
-    </Switch>
+    <Routes>
+      <Route path="/*" element={<WelcomePage />} />
+    </Routes>
   );
 }

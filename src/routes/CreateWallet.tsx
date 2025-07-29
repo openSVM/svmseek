@@ -1,11 +1,11 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { CreateWalletPage } from '../pages/CreateWallet/index';
 
-export default function CreateWalletRoute({ match, location }) {
+export default function CreateWalletRoute() {
   return (
-    <Switch>
-      <Route path={match.url} component={CreateWalletPage} />
-    </Switch>
+    <Routes>
+      <Route path="/*" element={<CreateWalletPage />} />
+    </Routes>
   );
 }

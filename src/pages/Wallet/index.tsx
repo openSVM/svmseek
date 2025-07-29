@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import AccountInfo from './components/AccountInfo';
 import AssetsTable from './components/AssetsTable';
@@ -164,7 +164,7 @@ const Wallet = () => {
 
   return (
     <MainWalletContainer data-testid="wallet-interface">
-      {window.opener && <Redirect to={'/connect_popup'} />}
+      {window.opener && <Navigate to={'/connect_popup'} replace />}
       <AccountInfo tokensData={tokensData} allTokensData={allTokensData} />
       <TableContainer>
         <SwitcherRow>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Helmet from 'react-helmet';
 
 import {
@@ -68,7 +68,7 @@ export const RestorePage = () => {
       </Helmet>
       <FakeInputs />
       {}
-      {redirectToWallet && <Redirect to="/wallet" />}
+      {redirectToWallet && <Navigate to="/wallet" replace />}
       {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}
       <RowContainer height={'80%'} direction={'column'}>

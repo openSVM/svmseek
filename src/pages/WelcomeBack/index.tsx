@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Redirect, Link } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import {
   loadMnemonicAndSeed,
   useHasLockedMnemonicAndSeed,
@@ -93,8 +93,8 @@ const WelcomeBack = () => {
   return (
     <Body>
       <FakeInputs />
-      {!!wallet && window.opener && <Redirect to={'/connect_popup'} />}
-      {!!wallet && <Redirect to={'/wallet'} />}
+      {!!wallet && window.opener && <Navigate to={'/connect_popup'} replace />}
+      {!!wallet && <Navigate to={'/wallet'} replace />}
       <StyledLogoContainer>{/* <Logo /> */}</StyledLogoContainer>
       <RowContainer height={'80%'} direction={'column'}>
         <Card minHeight={'50rem'}>

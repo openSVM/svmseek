@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useWallet, useWalletSelector } from '../../utils/wallet';
 import { Button, useTheme } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -415,7 +415,7 @@ function ApproveConnectionForm({
 
   return (
     <StyledCard>
-      {(!window.opener || !wallet) && <Redirect to="/" />}
+      {(!window.opener || !wallet) && <Navigate to="/" replace />}
       <CardContent style={{ padding: 0 }}>
         <RowContainer margin={'0 0 2rem 0'} justify={'space-between'}>
           <LogoComponent width="12rem" height="auto" margin="0" />

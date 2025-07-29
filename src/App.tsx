@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useMemo } from 'react';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './i18n'; // Initialize i18n
 import LoadingIndicator from './components/LoadingIndicator';
 import NavigationFrame from './components/Navbar/NavigationFrame';
@@ -196,73 +196,74 @@ const Pages = () => {
         />
       )} */}
 
-      <Switch>
+      <Routes>
         <Route 
-          path="/wallet" 
-          render={(routeProps) => (
+          path="/wallet/*" 
+          element={
             <ErrorBoundary context="wallet interface">
-              <Wallet {...routeProps} />
+              <Wallet />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/restore_wallet" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="wallet restoration">
-              <RestorePage {...routeProps} />
+              <RestorePage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/welcome" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="welcome page">
-              <WelcomePage {...routeProps} />
+              <WelcomePage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/create_wallet" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="wallet creation">
-              <CreateWalletPage {...routeProps} />
+              <CreateWalletPage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
-          exact 
           path="/welcome_back" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="welcome back page">
-              <WelcomeBackPage {...routeProps} />
+              <WelcomeBackPage />
             </ErrorBoundary>
-          )} 
+          } 
         />
         <Route 
           path="/connect_popup" 
-          render={(routeProps) => (
+          element={
             <ErrorBoundary context="wallet connection">
-              <ConnectPopup {...routeProps} />
+              <ConnectPopup />
             </ErrorBoundary>
-          )} 
+          } 
         />
 
         {/* popup if connecting from dex UI */}
-        {}
-        {window.opener && !!wallet && <Redirect from="/" to="/connect_popup" />}
+        {window.opener && !!wallet && <Route path="/" element={<Navigate to="/connect_popup" replace />} />}
 
         {/* if wallet exists - for case when we'll have unlocked wallet */}
-        {}
-        {!!wallet && <Redirect from="/" to="/wallet" />}
+        {!!wallet && <Route path="/" element={<Navigate to="/wallet" replace />} />}
 
         {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-        {}
-        {hasLockedMnemonicAndSeed ? (
-          <Redirect from="/" to="/welcome_back" />
-        ) : (
-          <Redirect from="/" to="/welcome" />
-        )}
-      </Switch>
+        <Route 
+          path="/" 
+          element={
+            hasLockedMnemonicAndSeed ? (
+              <Navigate to="/welcome_back" replace />
+            ) : (
+              <Navigate to="/welcome" replace />
+            )
+          }
+        />
+      </Routes>
     </>
   );
 };
