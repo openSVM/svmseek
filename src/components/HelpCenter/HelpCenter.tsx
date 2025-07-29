@@ -7,12 +7,8 @@ import {
   Search, 
   AccountBalanceWallet,
   Send,
-  GetApp,
-  History,
   Settings,
   TrendingUp,
-  SwapHoriz,
-  Pool,
   Security,
   Help
 } from '@mui/icons-material';

@@ -548,7 +548,7 @@ function SendSwapDialog({
         {needMetamask && !ethAccount ? <ConnectToMetamaskButton /> : fields}
         {/* {insufficientEthBalance && (
           <RowContainer margin="2rem 0 0 0">
-            <Title color={var(--error-main)}>
+            <Title color={'var(--error-main)'}>
               Insufficient {swapCoinInfo?.ticker} for withdrawal transaction fee
             </Title>
           </RowContainer>
@@ -556,9 +556,9 @@ function SendSwapDialog({
         <RowContainer
           justify="space-between"
           margin={
-            !ethAccount &&
+            (!ethAccount)
             // || insufficientEthBalance
-            '2rem 0 0 0'
+            ? '2rem 0 0 0' : undefined
           }
         >
           <WhiteButton
@@ -718,7 +718,7 @@ function useForm(
 
       {!passAddressValidation && (
         <RowContainer margin="0 0 2rem 0">
-          <Title fontSize="1.4rem" color={var(--error-main)}>
+          <Title fontSize="1.4rem" color={'var(--error-main)'}>
             {addressHelperText}
           </Title>
         </RowContainer>

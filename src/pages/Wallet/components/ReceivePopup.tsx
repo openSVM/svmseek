@@ -166,7 +166,7 @@ export default function DepositDialog({
                 target="_blank"
                 rel="noopener"
                 style={{
-                  color: var(--interactive-primary),
+                  color: 'var(--interactive-primary)',
                   fontSize: '1rem',
                   fontFamily: 'Avenir Next Demi',
                 }}
@@ -454,7 +454,7 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
         />
         {insufficientEthBalance && (
           <RowContainer width="90%" margin="2rem 0 0 0">
-            <Title color={var(--error-main)}>
+            <Title color={'var(--error-main)'}>
               Insufficient {swapInfo?.coin?.ticker} for withdrawal transaction
               fee
             </Title>

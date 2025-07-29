@@ -242,7 +242,7 @@ export default function AddTokenDialog({
             </RowContainer>
             {tokenName.length > 16 && (
               <RowContainer width="90%" margin="2rem 0 0 0">
-                <Title color={var(--error-main)}>
+                <Title color={'var(--error-main)'}>
                   Sorry, token name shouldn't be longer than 16 symbols
                 </Title>
               </RowContainer>
@@ -258,7 +258,7 @@ export default function AddTokenDialog({
             </RowContainer>
             {tokenSymbol.length > 8 && (
               <RowContainer width="90%" margin="2rem 0 0 0">
-                <Title color={var(--error-main)}>
+                <Title color={'var(--error-main)'}>
                   Sorry, token symbol shouldn't be longer than 8 symbols
                 </Title>
               </RowContainer>

@@ -34,7 +34,7 @@ const MainWalletContainer = styled(RowContainer)`
   }
 `;
 
-const Switcher = styled.button`
+const Switcher = styled.button<{ isTabActive?: boolean }>`
   display: none;
 
   @media (max-width: 540px) {

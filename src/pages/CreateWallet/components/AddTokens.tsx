@@ -188,8 +188,8 @@ const AddTokens = () => {
                   fontSize={'1.5rem'}
                   style={{
                     color: isBalanceLowerCost
-                      ? var(--error-main)
-                      : var(--success-main),
+                      ? 'var(--error-main)'
+                      : 'var(--success-main)',
                   }}
                 >
                   {formatNumberToUSFormat(
@@ -302,7 +302,7 @@ const AddTokens = () => {
       </Card>{' '}
       <BottomLink
         needOr={false}
-        linkColor={var(--success-main)}
+        linkColor={'var(--success-main)'}
         toText={'Skip for now'}
         to={'/wallet'}
       />

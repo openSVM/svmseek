@@ -140,7 +140,7 @@ const AddTokenButton = ({
 
 export const GreyTitle = styled(({ theme, ...props }) => (
   <Title
-    color={var(--text-secondary)}
+    color={'var(--text-secondary)'}
     fontFamily="Avenir Next Demi"
     fontSize="1.4rem"
     {...props}
@@ -149,7 +149,7 @@ export const GreyTitle = styled(({ theme, ...props }) => (
   white-space: nowrap;
 `;
 
-const StyledTr = styled.tr`
+const StyledTr = styled.tr<{ disableHover?: boolean }>`
   height: 7rem;
 
   &:nth-child(2n) td {

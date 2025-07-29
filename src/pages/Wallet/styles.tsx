@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, StepLabel, Tab, Tabs } from '@mui/material'
 import styled from 'styled-components'
 
-export const StyledDialogContent = styled(DialogContent)`
+export const StyledDialogContent = styled(DialogContent)<{ width?: string; height?: string; justify?: string }>`
   &&& {
     width: ${(props) => props.width || '50rem'};
     height: ${(props) => props.height || '40rem'};
@@ -16,7 +16,7 @@ export const StyledDialogContent = styled(DialogContent)`
   }
 `
 
-export const StyledDialog = styled(Dialog)`
+export const StyledDialog = styled(Dialog)<{ width?: string; height?: string; justify?: string }>`
   &&& {
     width: ${(props) => props.width || '50rem'};
     height: ${(props) => props.height || '40rem'};

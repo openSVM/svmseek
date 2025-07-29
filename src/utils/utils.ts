@@ -222,8 +222,8 @@ export const isUSDToken = (token: string): boolean => {
 }
 
 
-export function useInterval(callback, delay) {
-  const savedCallback = useRef();
+export function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef<(() => void) | null>(null);
 
   // Remember the latest callback.
   useEffect(() => {
@@ -233,8 +233,9 @@ export function useInterval(callback, delay) {
   // Set up the interval.
   useEffect(() => {
     function tick() {
-      // @ts-ignore
-      savedCallback.current();
+      if (savedCallback.current) {
+        savedCallback.current();
+      }
     }
     if (delay !== null) {
       let id = setInterval(tick, delay);

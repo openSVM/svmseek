@@ -17,6 +17,7 @@ export type RowProps = {
   mediaMargin?: string;
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 };
 
 export const Row = styled(

@@ -232,7 +232,7 @@ const AccountItem = ({ theme, publicKey, setForceUpdate }) => {
         }}
       />
       <Row margin="0 0 0 1rem" direction="column" align="flex-start">
-        <Title color={var(--success-main)}>{`${stripDigitPlaces(
+        <Title color={'var(--success-main)'}>{`${stripDigitPlaces(
           amount / Math.pow(10, decimals),
           decimals,
         )} ${tokenName ?? (mint ? abbreviateAddress(mint) : 'Unknown')} ${

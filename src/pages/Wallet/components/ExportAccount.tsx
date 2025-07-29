@@ -55,7 +55,7 @@ export default function ExportAccountDialog({ open, onClose }) {
           height: '3rem',
           right: '2rem',
           top: '2rem',
-          color: var(--error-main),
+          color: 'var(--error-main)',
         }}
         onClick={onClose}
       >
@@ -147,7 +147,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
           height: '3rem',
           right: '2rem',
           top: '2rem',
-          color: var(--error-main),
+          color: 'var(--error-main)',
         }}
         onClick={onClose}
       >

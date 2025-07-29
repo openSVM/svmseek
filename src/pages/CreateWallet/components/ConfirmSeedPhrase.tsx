@@ -36,7 +36,7 @@ const SmallButton = styled(({ theme, isSelected, ...props }) => (
     }
     borderColor={
       isSelected
-        ? var(--interactive-primary)
+        ? 'var(--interactive-primary)'
         : theme.customPalette.grey.dark
     }
     btnWidth="auto"
