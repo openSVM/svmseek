@@ -3,7 +3,6 @@ import CardContent from '@mui/material/CardContent';
 import Warning from '@mui/icons-material/Warning';
 import { Tooltip, Divider, Typography } from '@mui/material';
 import { useWallet } from '../../utils/wallet';
-import { Title } from '../commonStyles';
 
 function toHex(buffer) {
   return Array.prototype.map

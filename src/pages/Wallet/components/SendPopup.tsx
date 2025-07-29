@@ -680,7 +680,6 @@ function useForm(
 
   const parsedAmount = parseFloat(transferAmountString);
   const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
-  const theme = useTheme();
   const tokenSymbolForCheck =
     tokenSymbol === 'wUSDT' || tokenSymbol === 'wUSDC'
       ? tokenSymbol.replace('w', 'Wrapped ')

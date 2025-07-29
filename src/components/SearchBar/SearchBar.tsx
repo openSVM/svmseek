@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { Search, Close, ArrowUpward, ArrowDownward } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 
 const SearchOverlay = styled.div<{ open: boolean }>`
   position: fixed;
@@ -113,7 +113,7 @@ const ShortcutKey = styled.span`
   font-family: monospace;
 `;
 
-interface SearchItem {
+interface SearchItemData {
   id: string;
   title: string;
   description: string;
@@ -134,7 +134,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ open, onClose }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const searchItems: SearchItem[] = [
+  const searchItems: SearchItemData[] = [
     {
       id: 'wallet',
       title: t('search.wallet'),
@@ -260,7 +260,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ open, onClose }) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, selectedIndex, filteredItems, onClose]);
 
-  const handleItemClick = (item: SearchItem) => {
+  const handleItemClick = (item: SearchItemData) => {
     item.action();
     onClose();
   };
