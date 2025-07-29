@@ -28,15 +28,11 @@ export const BlueButton = styled(
   font-size: 1.4rem;
   height: 4.5rem;
   text-transform: capitalize;
-  background-color: ${(props: { disabled: boolean; theme: Theme }) =>
-    !props.disabled
-      ? props.theme.customPalette.blue.serum
-      : props.theme.customPalette.grey.dark};
+  background-color: var(--interactive-primary);
   border-radius: 1rem;
   border-color: none;
   cursor: pointer;
-  color: ${(props: { disabled: boolean }) =>
-    !props.disabled ? '#f8faff' : '#222429'};
+  color: var(--text-inverse);
   border: none;
 `;
 

@@ -19,7 +19,7 @@ export const StyledDropdown = styled.div`
     display: block !important;
   }
   padding: 1rem 3rem 1rem 0;
-  border-right: ${(props) => props.theme.customPalette.border.new};
+  border-right: 1px solid var(--border-main);
   @media (max-width: 540px) {
     border: none;
   }
@@ -53,8 +53,8 @@ export const StyledPaper = styled(
     width: calc(14rem);
     height: auto;
     box-shadow: 0px 0.4rem 0.8rem rgba(10, 19, 43, 0.1);
-    border: ${(props) => props.theme.customPalette.border.main};
-    background: ${(props) => props.theme.customPalette.white.background};
+    border: 1px solid var(--border-main);
+    background: var(--bg-primary);
     border-radius: 0rem;
     /* border-top-left-radius: 0;
     border-top-right-radius: 0; */
@@ -73,8 +73,8 @@ export const StyledMenuItem = styled(MenuItem)`
   /* padding: 0.3rem 0 0.3rem 0.4rem; */
   padding: 0;
   height: auto;
-  color: ${(props) => props.theme.customPalette.grey.light};
-  background: ${(props) => props.theme.customPalette.white.background};
+  color: var(--text-secondary);
+  background: var(--bg-primary);
 
   svg {
     font-size: 14px;
@@ -111,7 +111,7 @@ const WalletStatusButton = ({
   width: string;
 }) => (
   <BtnCustom
-    btnColor={theme.customPalette.white.main}
+    btnColor="var(--text-primary)"
     borderWidth={'0'}
     textTransform={'capitalize'}
     btnWidth={width ? width : '10rem'}

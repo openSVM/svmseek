@@ -208,7 +208,6 @@ export const FeedbackPopup = ({
             <RowContainer justify={'space-between'}>
               <StyledTextArea
                 height={'20rem'}
-                type="text"
                 name="message"
                 id="message"
                 autoComplete="off"
@@ -267,7 +266,6 @@ export const FeedbackPopup = ({
               </WhiteButton>
             ) : null}
             <SubmitButton
-              isDisabled={isDisabled}
               disabled={isDisabled}
               theme={theme}
               type="submit"

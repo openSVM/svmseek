@@ -21,6 +21,7 @@ const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
+const HelpPage = lazy(() => import('./routes/Help'));
 
 // Lazy load heavy components
 const OnboardingTutorial = lazy(() => import('./components/OnboardingTutorial'));
@@ -242,6 +243,14 @@ const Pages = () => {
           element={
             <ErrorBoundary context="wallet connection">
               <ConnectPopup />
+            </ErrorBoundary>
+          } 
+        />
+        <Route 
+          path="/help" 
+          element={
+            <ErrorBoundary context="help center">
+              <HelpPage />
             </ErrorBoundary>
           } 
         />

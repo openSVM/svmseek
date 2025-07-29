@@ -124,12 +124,6 @@ export const MigrationToNewUrlPopup = ({
       <RowContainer justify="flex-start" margin={'3rem 0 2rem 0'}>
         {' '}
         <BlueButton
-          style={{
-            width: '30%',
-            fontFamily: 'Avenir Next Medium',
-            textTransform: 'none',
-            color: '#fbf2f2',
-          }}
           isUserConfident={true}
           theme={theme}
           onClick={() => {

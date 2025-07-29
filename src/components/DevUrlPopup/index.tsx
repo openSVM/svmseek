@@ -147,12 +147,6 @@ export const DevUrlPopup = ({
         >
           {' '}
           <BlueButton
-            style={{
-              width: '100%',
-              fontFamily: 'Avenir Next Medium',
-              textTransform: 'none',
-              color: '#fbf2f2',
-            }}
             isUserConfident={true}
             theme={theme}
             onClick={() => {}}

@@ -26,8 +26,7 @@ export const TextField = styled.input<TextFieldProps>`
   margin-top: 1rem;
 
   &:focus {
-    border: ${(props) =>
-      `0.1rem solid ${props.theme.customPalette.blue.serum}`};
+    border: 0.1rem solid var(--interactive-primary);
   }
   &::placeholder {
     padding-top: 1rem;
@@ -68,8 +67,7 @@ export const StyledTextArea = styled.textarea<StyledTextAreaProps>`
   resize: none;
 
   &:focus {
-    border: ${(props) =>
-      `0.1rem solid ${props.theme.customPalette.blue.serum}`};
+    border: 0.1rem solid var(--interactive-primary);
   }
 `;
 
@@ -87,8 +85,7 @@ export const Label = styled.label`
 export const SubmitButton = styled.button`
   width: 48%;
   height: 4.5rem;
-  background: ${(props) =>
-    props.isDisabled ? '#93A0B2' : props.theme.customPalette.blue.serum};
+  background: var(--interactive-primary);
   font-size: 1.4rem;
   text-transform: capitalize;
   border-radius: 1rem;
@@ -165,7 +162,7 @@ export const BlueButton = styled(
   height: 4.5rem;
   text-transform: capitalize;
   background-color: ${(props) =>
-    props.background || props.theme.customPalette.blue.serum};
+    props.background || 'var(--interactive-primary)'};
   border-radius: 1rem;
   border-color: none;
   cursor: pointer;

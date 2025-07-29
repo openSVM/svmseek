@@ -7,6 +7,7 @@ interface GlassContainerProps extends BoxProps {
   opacity?: number;
   borderRadius?: number;
   animationType?: 'fade-in' | 'slide-up' | 'scale-in';
+  show?: boolean;
 }
 
 const StyledGlassContainer = styled(Box)<GlassContainerProps>(({ 

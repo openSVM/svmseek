@@ -15,6 +15,7 @@ export type RowProps = {
   mediaDirection?: string;
   mediaJustify?: string;
   mediaMargin?: string;
+  children?: React.ReactNode;
 };
 
 export const Row = styled(
@@ -27,22 +28,23 @@ export const Row = styled(
     height,
     margin,
     padding,
+    children,
     ...props
-  }) => <div {...props} />,
-)`
+  }: RowProps) => <div {...props}>{children}</div>,
+)<RowProps>`
   display: flex;
-  flex-wrap: ${(props: RowProps) => props.wrap || 'nowrap'};
-  justify-content: ${(props: RowProps) => props.justify || 'center'};
-  flex-direction: ${(props: RowProps) => props.direction || 'row'};
-  align-items: ${(props: RowProps) => props.align || 'center'};
-  width: ${(props: RowProps) => props.width || 'auto'};
-  height: ${(props: RowProps) => props.height || 'auto'};
-  margin: ${(props: RowProps) => props.margin || '0'};
-  padding: ${(props: RowProps) => props.padding || '0'};
+  flex-wrap: ${(props) => props.wrap || 'nowrap'};
+  justify-content: ${(props) => props.justify || 'center'};
+  flex-direction: ${(props) => props.direction || 'row'};
+  align-items: ${(props) => props.align || 'center'};
+  width: ${(props) => props.width || 'auto'};
+  height: ${(props) => props.height || 'auto'};
+  margin: ${(props) => props.margin || '0'};
+  padding: ${(props) => props.padding || '0'};
 `;
 
-export const RowContainer = styled((props) => <Row {...props} />)`
-  width: ${(props: RowProps) => props.width || '100%'};
+export const RowContainer = styled((props: RowProps) => <Row {...props} />)<RowProps>`
+  width: ${(props) => props.width || '100%'};
 `;
 
 export type GridContainerProps = {
