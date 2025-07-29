@@ -46,9 +46,9 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
   
-  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-  --font-display: Georgia, "Times New Roman", serif;
+  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans CJK", "Noto Sans KR", "Noto Sans JP", "Noto Sans SC", "Noto Sans TC", "Noto Sans Thai", "Noto Sans Devanagari", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, "Noto Sans Mono", "Noto Sans Mono CJK", monospace;
+  --font-display: Georgia, "Times New Roman", "Noto Serif", "Noto Serif CJK", serif;
   
   --animation-duration-fast: 150ms;
   --animation-duration-normal: 250ms;

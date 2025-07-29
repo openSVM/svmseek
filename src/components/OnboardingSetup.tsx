@@ -24,12 +24,45 @@ const OnboardingContainer = styled(Box)`
 const OnboardingCard = styled(Card)`
   max-width: 600px;
   width: 90vw;
-  max-height: 80vh;
-  overflow-y: auto;
+  max-height: 85vh;
   background: var(--bg-glass) !important;
   backdrop-filter: var(--glass-backdrop) !important;
   border: 1px solid var(--border-glass) !important;
   box-shadow: var(--shadow-glass) !important;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ScrollableContent = styled(Box)`
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  
+  /* Enhanced scrollbar styling for better visibility */
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    margin: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--interactive-primary);
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--bg-secondary);
+    transition: background var(--animation-duration-normal) var(--animation-easing-default);
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--interactive-hover);
+  }
+  
+  /* Firefox scrollbar styling */
+  scrollbar-width: auto;
+  scrollbar-color: var(--interactive-primary) var(--bg-secondary);
 `;
 
 const StepHeader = styled(Box)`
@@ -93,6 +126,34 @@ const SelectedIcon = styled(CheckIcon)`
 const LanguageFlag = styled(Box)`
   font-size: 2rem;
   margin-bottom: 0.5rem;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+`;
+
+const LanguageText = styled(Typography)`
+  font-family: var(--font-primary) !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  line-height: 1.2 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  
+  /* Ensure proper rendering for all Unicode ranges */
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+`;
+
+const LanguageSubtext = styled(Typography)`
+  font-family: var(--font-primary) !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.2 !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  
+  /* Ensure proper rendering for all Unicode ranges */
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
 `;
 
 const ThemePreview = styled(Box)<{ theme: string }>`
@@ -134,8 +195,11 @@ const ThemePreview = styled(Box)<{ theme: string }>`
 const ActionButtons = styled(Box)`
   display: flex;
   justify-content: space-between;
-  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
   gap: 1rem;
+  flex-shrink: 0;
 `;
 
 const ActionButton = styled(Button)`
@@ -211,7 +275,7 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
   };
 
   const renderLanguageStep = () => (
-    <>
+    <ScrollableContent data-testid="language-selection-scrollable">
       <StepHeader>
         <StepTitle variant="h4">
           {t('onboarding.languageSelection.title')}
@@ -233,22 +297,22 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
                 <LanguageFlag>
                   {languageFlags[language.code] || '🌐'}
                 </LanguageFlag>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                <LanguageText variant="subtitle2">
                   {language.nativeName}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'var(--text-secondary)' }}>
+                </LanguageText>
+                <LanguageSubtext variant="caption">
                   {language.name}
-                </Typography>
+                </LanguageSubtext>
               </OptionContent>
             </OptionCard>
           </Grid>
         ))}
       </OptionGrid>
-    </>
+    </ScrollableContent>
   );
 
   const renderThemeStep = () => (
-    <>
+    <ScrollableContent data-testid="theme-selection-scrollable">
       <StepHeader>
         <StepTitle variant="h4">
           {t('onboarding.themeSelection.title')}
@@ -276,40 +340,38 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
           </Grid>
         ))}
       </OptionGrid>
-    </>
+    </ScrollableContent>
   );
 
   return (
     <OnboardingContainer>
       <OnboardingCard>
-        <CardContent sx={{ padding: '2rem' }}>
-          {step === 'language' ? renderLanguageStep() : renderThemeStep()}
+        {step === 'language' ? renderLanguageStep() : renderThemeStep()}
+        
+        <ActionButtons>
+          <ActionButton
+            variant="outlined"
+            onClick={handleBack}
+            disabled={step === 'language'}
+            sx={{ 
+              opacity: step === 'language' ? 0 : 1,
+              visibility: step === 'language' ? 'hidden' : 'visible'
+            }}
+          >
+            {t('common.back')}
+          </ActionButton>
           
-          <ActionButtons>
-            <ActionButton
-              variant="outlined"
-              onClick={handleBack}
-              disabled={step === 'language'}
-              sx={{ 
-                opacity: step === 'language' ? 0 : 1,
-                visibility: step === 'language' ? 'hidden' : 'visible'
-              }}
-            >
-              {t('common.back')}
-            </ActionButton>
-            
-            <ActionButton
-              variant="contained"
-              onClick={handleNext}
-              disabled={
-                (step === 'language' && !selectedLanguage) ||
-                (step === 'theme' && !selectedTheme)
-              }
-            >
-              {step === 'theme' ? t('common.confirm') : t('common.next')}
-            </ActionButton>
-          </ActionButtons>
-        </CardContent>
+          <ActionButton
+            variant="contained"
+            onClick={handleNext}
+            disabled={
+              (step === 'language' && !selectedLanguage) ||
+              (step === 'theme' && !selectedTheme)
+            }
+          >
+            {step === 'theme' ? t('common.confirm') : t('common.next')}
+          </ActionButton>
+        </ActionButtons>
       </OnboardingCard>
     </OnboardingContainer>
   );
