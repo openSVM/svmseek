@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { 
@@ -61,16 +61,16 @@ const VaultStats: React.FC<VaultStatsProps> = ({
   totalParticipants, 
   nextDrawTime 
 }) => {
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = useCallback((amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
+  }, []);
 
-  const formatTimeUntilDraw = (drawTime: Date) => {
+  const formatTimeUntilDraw = useCallback((drawTime: Date) => {
     const now = new Date();
     const diff = drawTime.getTime() - now.getTime();
     
@@ -83,7 +83,11 @@ const VaultStats: React.FC<VaultStatsProps> = ({
       return `${hours}h ${minutes}m`;
     }
     return `${minutes}m`;
-  };
+  }, []);
+
+  // Memoize formatted values for performance
+  const formattedJackpot = useMemo(() => formatCurrency(jackpot), [formatCurrency, jackpot]);
+  const formattedDrawTime = useMemo(() => formatTimeUntilDraw(nextDrawTime), [formatTimeUntilDraw, nextDrawTime]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -95,7 +99,7 @@ const VaultStats: React.FC<VaultStatsProps> = ({
                 <WalletIcon />
                 <Typography variant="h6">Jackpot</Typography>
               </IconWrapper>
-              <StatValue>{formatCurrency(jackpot)}</StatValue>
+              <StatValue>{formattedJackpot}</StatValue>
               <StatLabel>Current prize pool</StatLabel>
             </CardContent>
           </StatsCard>
@@ -136,7 +140,7 @@ const VaultStats: React.FC<VaultStatsProps> = ({
               Next Draw In
             </Typography>
             <StatValue style={{ fontSize: '1.8rem' }}>
-              {formatTimeUntilDraw(nextDrawTime)}
+              {formattedDrawTime}
             </StatValue>
             <StatLabel>
               {nextDrawTime.toLocaleDateString()} at {nextDrawTime.toLocaleTimeString()}

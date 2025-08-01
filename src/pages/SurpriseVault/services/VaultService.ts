@@ -87,12 +87,13 @@ class VaultService {
     this.updateInterval = setInterval(() => {
       // Gradually update jackpot and other stats
       const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
+      const updateSeed = `update_${this.sessionId}_${Math.floor(Date.now() / 60000)}`;
       const incrementChance = 0.3; // 30% chance to increment each period
       
-      if (Math.random() < incrementChance) {
+      if (generateStableRandom(updateSeed + '_chance') < incrementChance) {
         const increment = this.getStableValue('increment' + Date.now(), 10, 100);
         savedStats.jackpot = (savedStats.jackpot || 0) + increment;
-        savedStats.tradesToday = (savedStats.tradesToday || 0) + Math.floor(Math.random() * 3);
+        savedStats.tradesToday = (savedStats.tradesToday || 0) + Math.floor(generateStableRandom(updateSeed + '_trades') * 3);
         savedStats.lastUpdate = Date.now();
         
         VaultStorage.set('vaultStats', savedStats);
@@ -333,17 +334,18 @@ class VaultService {
   async getUserData(address: string): Promise<UserVaultData> {
     await new Promise(resolve => setTimeout(resolve, 300));
     
+    const userSeed = `user_${address}`;
     return {
       address,
-      totalTickets: Math.floor(Math.random() * 100) + 10,
-      ticketsToday: Math.floor(Math.random() * 20) + 1,
-      totalWinnings: Math.floor(Math.random() * 5000),
+      totalTickets: Math.floor(generateStableRandom(userSeed + '_tickets') * 100) + 10,
+      ticketsToday: Math.floor(generateStableRandom(userSeed + '_today') * 20) + 1,
+      totalWinnings: Math.floor(generateStableRandom(userSeed + '_winnings') * 5000),
       referralCode: address.slice(-8),
       referrals: [], // Simplified for demo
-      guild: Math.random() > 0.7 ? `guild_${Math.floor(Math.random() * 3)}` : undefined,
-      lastTradeTime: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000),
+      guild: generateStableRandom(userSeed + '_guild') > 0.7 ? `guild_${Math.floor(generateStableRandom(userSeed + '_guildId') * 3)}` : undefined,
+      lastTradeTime: new Date(Date.now() - generateStableRandom(userSeed + '_lastTrade') * 24 * 60 * 60 * 1000),
       isEligible: true,
-      kycVerified: Math.random() > 0.3,
+      kycVerified: generateStableRandom(userSeed + '_kyc') > 0.3,
     };
   }
 
@@ -351,26 +353,27 @@ class VaultService {
   async simulateDraw(): Promise<Winner[]> {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const winnerCount = Math.floor(Math.random() * 5) + 1;
+    const drawSeed = `draw_${this.sessionId}_${Date.now()}`;
+    const winnerCount = Math.floor(generateStableRandom(drawSeed + '_count') * 5) + 1;
     const winners: Winner[] = [];
     
     for (let i = 0; i < winnerCount; i++) {
-      const seed = `draw_${Date.now()}_${i}`;
-      const isNFT = Math.random() > 0.6;
+      const seed = `${drawSeed}_${i}`;
+      const isNFT = generateStableRandom(seed + '_type') > 0.6;
       winners.push({
         id: `draw_winner_${i}`,
         address: this.generateStableAddress(seed + '_winner'),
         reward: {
           type: isNFT ? 'nft' : 'token',
           name: isNFT 
-            ? nftNames[Math.floor(Math.random() * nftNames.length)]
-            : `${tokenAmounts[Math.floor(Math.random() * tokenAmounts.length)]} $SVM`,
+            ? nftNames[Math.floor(generateStableRandom(seed + '_nft') * nftNames.length)]
+            : `${tokenAmounts[Math.floor(generateStableRandom(seed + '_token') * tokenAmounts.length)]} $SVM`,
           value: isNFT 
-            ? Math.floor(Math.random() * 1000) + 100
-            : tokenAmounts[Math.floor(Math.random() * tokenAmounts.length)],
+            ? Math.floor(generateStableRandom(seed + '_value') * 1000) + 100
+            : tokenAmounts[Math.floor(generateStableRandom(seed + '_amount') * tokenAmounts.length)],
         },
         timestamp: new Date(),
-        transactionSignature: `tx_${Math.random().toString(36).substring(7)}`,
+        transactionSignature: `tx_${generateStableRandom(seed + '_tx').toString().substring(2, 9)}`,
       });
     }
     
@@ -476,6 +479,18 @@ class VaultService {
   private async getGuildById(guildId: string) {
     const guilds = await this.getGuilds();
     return guilds.find(g => g.id === guildId);
+  }
+
+  // Check if user has joined a specific guild
+  isUserInGuild(guildId: string, userAddress: string): boolean {
+    const userGuilds = VaultStorage.get('userGuilds', []) as any[];
+    return userGuilds.some(g => g.id === guildId && g.userAddress === userAddress);
+  }
+
+  // Get all guilds user has joined
+  getUserGuilds(userAddress: string): any[] {
+    const userGuilds = VaultStorage.get('userGuilds', []) as any[];
+    return userGuilds.filter(g => g.userAddress === userAddress);
   }
 
   // Add cleanup method

@@ -80,7 +80,7 @@ const GuildSection: React.FC = () => {
         maxMembers: guild.maxMembers,
         totalReferrals: guild.totalReferrals,
         milestone: guild.milestone,
-        isJoined: Math.random() > 0.7, // Mock join status
+        isJoined: walletAddress ? vaultService.isUserInGuild(guild.id, walletAddress) : false,
       }));
       setGuilds(transformedGuilds);
       setError(null);
@@ -90,7 +90,7 @@ const GuildSection: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [vaultService]);
+  }, [vaultService, walletAddress]);
 
   useEffect(() => {
     loadGuilds();
