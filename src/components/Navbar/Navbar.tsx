@@ -22,6 +22,7 @@ import {
   MainLinksBlock,
   MainLinksWrap,
   NavLink,
+  VaultNavLink,
   WalletContainer,
 } from './styles';
 import TelegramIcon from './TelegramIcon';
@@ -232,17 +233,9 @@ export const Navbar = () => {
               Wallet
             </NavLink>
 
-            <NavLink
-              to="/vault"
-              style={{
-                background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                color: '#000',
-                fontWeight: 'bold',
-                borderRadius: '8px',
-              }}
-            >
+            <VaultNavLink to="/vault">
               🎰 Vault
-            </NavLink>
+            </VaultNavLink>
 
             <NavLink
               to="/help"

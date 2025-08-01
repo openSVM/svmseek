@@ -23,6 +23,14 @@ const VaultFab = styled(Fab)(({ theme }) => ({
   '&:active': {
     transform: 'translateY(-2px) scale(1.02)',
   },
+  // Keyboard focus styling for accessibility
+  '&:focus-visible': {
+    outline: '3px solid rgba(255, 215, 0, 0.8)',
+    outlineOffset: '2px',
+    background: 'linear-gradient(135deg, #FFA500, #FFD700)',
+    transform: 'translateY(-2px) scale(1.02)',
+    boxShadow: '0 12px 40px rgba(255, 215, 0, 0.7)',
+  },
   // Pulsing animation to draw attention
   animation: 'vault-pulse 3s ease-in-out infinite',
   '@keyframes vault-pulse': {
@@ -49,6 +57,13 @@ const VaultAccessButton: React.FC = () => {
     navigate('/vault');
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleVaultClick();
+    }
+  };
+
   return (
     <Tooltip 
       title="🎰 Surprise Vault - Lottery rewards for every trade!"
@@ -57,7 +72,10 @@ const VaultAccessButton: React.FC = () => {
     >
       <VaultFab
         onClick={handleVaultClick}
-        aria-label="Access Surprise Vault"
+        onKeyDown={handleKeyDown}
+        aria-label="Access Surprise Vault - Lottery rewards for every trade"
+        tabIndex={0}
+        role="button"
       >
         <CasinoIcon sx={{ fontSize: 28 }} />
       </VaultFab>

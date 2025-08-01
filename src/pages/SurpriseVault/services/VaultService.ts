@@ -3,6 +3,7 @@ import {
   Winner, 
   LeaderboardEntry, 
   Guild, 
+  GuildMember,
   UserVaultData, 
   VaultConfig
 } from '../types';
@@ -30,6 +31,7 @@ class VaultService {
   };
 
   private eventSubscribers: Array<(event: any) => void> = [];
+  private static readonly MAX_SUBSCRIBERS = 50; // Prevent memory leaks
   private updateInterval: NodeJS.Timeout | null = null;
 
   public static getInstance(): VaultService {
@@ -259,12 +261,25 @@ class VaultService {
       const maxMembers = Math.floor(memberCount * 1.5) + 10;
       const totalReferrals = Math.floor(generateStableRandom(seed + '_referrals', 50, 300));
       
+      // Generate realistic member data for demo
+      const members: GuildMember[] = [];
+      for (let j = 0; j < memberCount; j++) {
+        const memberAddress = this.generateStableAddress(`${seed}_member_${j}`);
+        members.push({
+          address: memberAddress,
+          joinDate: new Date(Date.now() - generateStableRandom(`${seed}_member_${j}_join`, 0, 60 * 24 * 60 * 60 * 1000)),
+          referrals: Math.floor(generateStableRandom(`${seed}_member_${j}_refs`, 0, 20)),
+          earnings: Math.floor(generateStableRandom(`${seed}_member_${j}_earnings`, 100, 2000)),
+          role: j === 0 ? 'owner' : (j === 1 && generateStableRandom(`${seed}_member_${j}_admin`) > 0.7 ? 'admin' : 'member'),
+        });
+      }
+      
       guilds.push({
         id: `guild_${i}`,
         name: guildNames[i % guildNames.length],
         description: `${guildNames[i % guildNames.length]} guild focused on maximizing rewards and community growth`,
         creator: this.generateStableAddress(seed + '_creator'),
-        members: [], // Simplified for demo
+        members,
         maxMembers,
         totalReferrals,
         totalEarnings: Math.floor(generateStableRandom(seed + '_earnings', 5000, 50000)),
@@ -382,6 +397,12 @@ class VaultService {
 
   // Real-time event simulation
   subscribeToEvents(callback: (event: any) => void): () => void {
+    // Prevent memory leaks by limiting subscribers
+    if (this.eventSubscribers.length >= VaultService.MAX_SUBSCRIBERS) {
+      console.warn('VaultService: Maximum subscribers reached, removing oldest subscriber');
+      this.eventSubscribers.shift(); // Remove oldest subscriber
+    }
+    
     this.eventSubscribers.push(callback);
     
     // Return unsubscribe function
@@ -434,16 +455,16 @@ class VaultService {
     try {
       // TODO: Replace with actual on-chain guild joining
       const userGuilds = VaultStorage.get('userGuilds', []) as any[];
-      const existingGuild = userGuilds.find(g => g.id === guildId);
+      const existingUserGuild = userGuilds.find(g => g.id === guildId && g.members && g.members.includes(userAddress));
       
-      if (existingGuild && existingGuild.members.includes(userAddress)) {
+      if (existingUserGuild) {
         return {
           success: false,
           message: 'You are already a member of this guild.',
         };
       }
       
-      // Simulate guild capacity check
+      // Get current guild data to check capacity
       const guildData = await this.getGuildById(guildId);
       if (guildData && guildData.members.length >= guildData.maxMembers) {
         return {
@@ -452,6 +473,7 @@ class VaultService {
         };
       }
       
+      // Update user's guild list
       userGuilds.push({
         id: guildId,
         name: guildData?.name || 'Unknown Guild',
@@ -463,6 +485,27 @@ class VaultService {
       });
       
       VaultStorage.set('userGuilds', userGuilds);
+      
+      // Update the guild's member list in cache (sync the two data stores)
+      const cacheKey = 'guilds';
+      const cached = VaultStorage.get(cacheKey, null) as { guilds: Guild[]; timestamp: number } | null;
+      if (cached && cached.guilds) {
+        const guildIndex = cached.guilds.findIndex(g => g.id === guildId);
+        if (guildIndex !== -1) {
+          // Add user to guild's member list if not already present
+          const existingMember = cached.guilds[guildIndex].members.find(m => m.address === userAddress);
+          if (!existingMember) {
+            cached.guilds[guildIndex].members.push({
+              address: userAddress,
+              joinDate: new Date(),
+              referrals: 0,
+              earnings: 0,
+              role: 'member',
+            });
+            VaultStorage.set(cacheKey, cached);
+          }
+        }
+      }
       
       return {
         success: true,
@@ -484,13 +527,13 @@ class VaultService {
   // Check if user has joined a specific guild
   isUserInGuild(guildId: string, userAddress: string): boolean {
     const userGuilds = VaultStorage.get('userGuilds', []) as any[];
-    return userGuilds.some(g => g.id === guildId && g.userAddress === userAddress);
+    return userGuilds.some(g => g.id === guildId && g.members && g.members.includes(userAddress));
   }
 
   // Get all guilds user has joined
   getUserGuilds(userAddress: string): any[] {
     const userGuilds = VaultStorage.get('userGuilds', []) as any[];
-    return userGuilds.filter(g => g.userAddress === userAddress);
+    return userGuilds.filter(g => g.members && g.members.includes(userAddress));
   }
 
   // Add cleanup method
