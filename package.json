@@ -257,6 +257,6 @@
     "node": ">=20.18.0"
   },
   "resolutions": {
-    "elliptic": "6.6.0"
+    "elliptic": "6.6.1"
   }
 }
