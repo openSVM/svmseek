@@ -2,13 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
-  Button, 
-  Card,
   CardContent,
   IconButton,
   Snackbar,
-  Alert,
-  Chip
+  Alert
 } from '@mui/material';
 import { 
   PersonAdd as PersonAddIcon,
@@ -108,7 +105,7 @@ const InviteSection: React.FC = () => {
               Wallet Status:
             </Typography>
             <StatusChip 
-              variant={isConnected ? 'success' : 'warning'}
+              status={isConnected ? 'success' : 'warning'}
               label={isConnected ? 'Connected' : 'Mock Address'}
               size="small"
             />
@@ -141,10 +138,10 @@ const InviteSection: React.FC = () => {
             Referral Benefits:
           </Typography>
           <Box>
-            <StatusChip variant="info" size="small" label="Bonus Lottery Tickets" sx={{ m: 0.5 }} />
-            <StatusChip variant="success" size="small" label="Fee Share Rewards" sx={{ m: 0.5 }} />
-            <StatusChip variant="warning" size="small" label="Streak Multipliers" sx={{ m: 0.5 }} />
-            <StatusChip variant="error" size="small" label="Exclusive NFT Badges" sx={{ m: 0.5 }} />
+            <StatusChip status="info" size="small" label="Bonus Lottery Tickets" sx={{ m: 0.5 }} />
+            <StatusChip status="success" size="small" label="Fee Share Rewards" sx={{ m: 0.5 }} />
+            <StatusChip status="warning" size="small" label="Streak Multipliers" sx={{ m: 0.5 }} />
+            <StatusChip status="error" size="small" label="Exclusive NFT Badges" sx={{ m: 0.5 }} />
           </Box>
         </Box>
 

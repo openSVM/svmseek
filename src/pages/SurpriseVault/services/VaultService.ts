@@ -86,7 +86,7 @@ class VaultService {
     
     this.updateInterval = setInterval(() => {
       // Gradually update jackpot and other stats
-      const savedStats = VaultStorage.get('vaultStats', {});
+      const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
       const incrementChance = 0.3; // 30% chance to increment each period
       
       if (Math.random() < incrementChance) {
@@ -122,7 +122,7 @@ class VaultService {
     // Simulate API delay but reduce flicker
     await new Promise(resolve => setTimeout(resolve, 200));
     
-    const savedStats = VaultStorage.get('vaultStats', {});
+    const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
     const userStats = VaultStorage.get('userStats', {
       userTickets: this.getStableValue('userTickets', 1, 20),
     });
@@ -142,7 +142,7 @@ class VaultService {
     
     // Use cached winners if available and recent
     const cacheKey = `recentWinners_${limit}`;
-    const cached = VaultStorage.get(cacheKey, null);
+    const cached = VaultStorage.get(cacheKey, null) as { winners: Winner[]; timestamp: number } | null;
     
     if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 300000) { // 5 minutes cache
       return cached.winners;
@@ -186,7 +186,7 @@ class VaultService {
     
     // Use cached leaderboard if available and recent
     const cacheKey = `leaderboard_${limit}`;
-    const cached = VaultStorage.get(cacheKey, null);
+    const cached = VaultStorage.get(cacheKey, null) as { leaders: LeaderboardEntry[]; timestamp: number } | null;
     
     if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 600000) { // 10 minutes cache
       return cached.leaders;
@@ -235,7 +235,7 @@ class VaultService {
     
     // Use cached guilds if available and recent
     const cacheKey = 'guilds';
-    const cached = VaultStorage.get(cacheKey, null);
+    const cached = VaultStorage.get(cacheKey, null) as { guilds: Guild[]; timestamp: number } | null;
     
     if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 300000) { // 5 minutes cache
       return cached.guilds;
@@ -299,7 +299,7 @@ class VaultService {
     const tickets = Math.floor(entryFee / 10) + 1; // Simplified ticket calculation
     
     // Update persistent data
-    const savedStats = VaultStorage.get('vaultStats', {});
+    const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
     const userStats = VaultStorage.get('userStats', { userTickets: 0 });
     
     savedStats.jackpot = (savedStats.jackpot || 0) + entryFee;
@@ -355,6 +355,7 @@ class VaultService {
     const winners: Winner[] = [];
     
     for (let i = 0; i < winnerCount; i++) {
+      const seed = `draw_${Date.now()}_${i}`;
       const isNFT = Math.random() > 0.6;
       winners.push({
         id: `draw_winner_${i}`,
@@ -396,7 +397,7 @@ class VaultService {
     try {
       // TODO: Replace with actual on-chain guild creation
       const guildId = `guild_${Date.now()}_${userAddress.slice(-4)}`;
-      const guilds = VaultStorage.get('userGuilds', []);
+      const guilds = VaultStorage.get('userGuilds', []) as any[];
       
       guilds.push({
         id: guildId,
@@ -429,7 +430,7 @@ class VaultService {
     
     try {
       // TODO: Replace with actual on-chain guild joining
-      const userGuilds = VaultStorage.get('userGuilds', []);
+      const userGuilds = VaultStorage.get('userGuilds', []) as any[];
       const existingGuild = userGuilds.find(g => g.id === guildId);
       
       if (existingGuild && existingGuild.members.includes(userAddress)) {

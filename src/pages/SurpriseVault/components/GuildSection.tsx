@@ -2,10 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   Box, 
   Typography, 
-  Button, 
-  Card,
   CardContent,
-  Chip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -42,6 +39,7 @@ interface Guild {
   id: string;
   name: string;
   description: string;
+  creator: string;
   members: number;
   maxMembers: number;
   totalReferrals: number;
@@ -77,6 +75,7 @@ const GuildSection: React.FC = () => {
         id: guild.id,
         name: guild.name,
         description: guild.description,
+        creator: guild.creator,
         members: guild.members.length,
         maxMembers: guild.maxMembers,
         totalReferrals: guild.totalReferrals,
@@ -232,7 +231,7 @@ const GuildSection: React.FC = () => {
                           {guild.name}
                           {guild.isJoined && (
                             <StatusChip 
-                              variant="success"
+                              status="success"
                               size="small" 
                               label="JOINED" 
                               sx={{ ml: 1 }} 
@@ -278,7 +277,7 @@ const GuildSection: React.FC = () => {
                           Milestone Progress
                         </Typography>
                         <StatusChip 
-                          variant="warning"
+                          status="warning"
                           size="small" 
                           icon={<TrophyIcon />}
                           label={guild.milestone.reward}

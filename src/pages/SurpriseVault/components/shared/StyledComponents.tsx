@@ -13,7 +13,7 @@ export const GlassCard = styled(Card)(({ theme }) => ({
   background: theme.palette.background.paper,
   backdropFilter: 'blur(20px)',
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius * 2,
+  borderRadius: (theme.shape.borderRadius as number) * 2,
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
     transform: 'translateY(-2px)',
@@ -46,7 +46,7 @@ export const VaultButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(135deg, #FFD700, #FFA500)',
   color: '#000',
   fontWeight: 'bold',
-  borderRadius: theme.shape.borderRadius * 3,
+  borderRadius: (theme.shape.borderRadius as number) * 3,
   textTransform: 'none',
   boxShadow: '0 8px 32px rgba(255, 215, 0, 0.3)',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -83,7 +83,7 @@ export const SecondaryButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
   color: '#fff',
   fontWeight: 'bold',
-  borderRadius: theme.shape.borderRadius * 1.5,
+  borderRadius: (theme.shape.borderRadius as number) * 1.5,
   textTransform: 'none',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
@@ -97,7 +97,7 @@ export const DangerButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)',
   color: '#fff',
   fontWeight: 'bold',
-  borderRadius: theme.shape.borderRadius * 1.5,
+  borderRadius: (theme.shape.borderRadius as number) * 1.5,
   textTransform: 'none',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
@@ -111,7 +111,7 @@ export const VaultTextField = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     background: theme.palette.background.paper,
     backdropFilter: 'blur(10px)',
-    borderRadius: theme.shape.borderRadius * 1.5,
+    borderRadius: (theme.shape.borderRadius as number) * 1.5,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     '&:hover': {
       background: theme.palette.action.hover,
@@ -134,8 +134,8 @@ export const VaultProgress = styled(CircularProgress)(({ theme }) => ({
 }));
 
 // Status chip variants
-export const StatusChip = styled(Chip)<{ variant?: 'success' | 'warning' | 'error' | 'info' }>(
-  ({ theme, variant = 'info' }) => {
+export const StatusChip = styled(Chip)<{ status?: 'success' | 'warning' | 'error' | 'info' }>(
+  ({ theme, status = 'info' }) => {
     const variants = {
       success: {
         background: 'linear-gradient(135deg, #4CAF50, #66BB6A)',
@@ -156,7 +156,7 @@ export const StatusChip = styled(Chip)<{ variant?: 'success' | 'warning' | 'erro
     };
 
     return {
-      ...variants[variant],
+      ...variants[status],
       fontWeight: 'bold',
       fontSize: '0.75rem',
       height: 28,
