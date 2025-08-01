@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -10,7 +10,9 @@ import {
   Chip,
   Card,
   CardContent,
-  Button
+  Button,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { 
@@ -19,6 +21,8 @@ import {
   CollectionsBookmark as NFTIcon,
   Token as TokenIcon
 } from '@mui/icons-material';
+import VaultService from '../services/VaultService';
+import { Winner as WinnerType } from '../types';
 
 const WinnersCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',
@@ -80,41 +84,36 @@ interface Winner {
 }
 
 const RecentWinners: React.FC = () => {
-  const [winners] = useState<Winner[]>([
-    {
-      id: '1',
-      address: '0xTr4der1',
-      reward: { type: 'nft', name: 'RareDragon', value: 500 },
-      timestamp: new Date(Date.now() - 5 * 60000),
-    },
-    {
-      id: '2',
-      address: '0xUserB',
-      reward: { type: 'token', name: '100 $SVM', value: 50 },
-      timestamp: new Date(Date.now() - 15 * 60000),
-    },
-    {
-      id: '3',
-      address: '0xAlice99',
-      reward: { type: 'nft', name: 'GoldenCoin', value: 250 },
-      timestamp: new Date(Date.now() - 25 * 60000),
-    },
-    {
-      id: '4',
-      address: '0xBob777',
-      reward: { type: 'token', name: '500 $SVM', value: 125 },
-      timestamp: new Date(Date.now() - 35 * 60000),
-    },
-  ]);
-
+  const [winners, setWinners] = useState<Winner[]>([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const vaultService = VaultService.getInstance();
 
-  const handleRefresh = () => {
+  useEffect(() => {
+    loadWinners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadWinners = async () => {
+    try {
+      setLoading(true);
+      const winnersData: Winner[] = await vaultService.getRecentWinners(8);
+      setWinners(winnersData);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load recent winners');
+      console.error('Error loading winners:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
     setRefreshing(true);
-    // Mock refresh with new data
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await loadWinners();
+    setRefreshing(false);
   };
 
   const truncateAddress = (address: string) => {
@@ -144,50 +143,67 @@ const RecentWinners: React.FC = () => {
             disabled={refreshing}
             sx={{ color: '#FFD700' }}
           >
-            Refresh
+            {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
         </SectionHeader>
 
-        <List>
-          {winners.map((winner) => (
-            <WinnerItem key={winner.id}>
-              <ListItemAvatar>
-                <Avatar 
-                  sx={{ 
-                    background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                    color: '#000',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {winner.address.slice(2, 4).toUpperCase()}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Typography variant="body1" fontWeight="bold">
-                      {truncateAddress(winner.address)}
-                    </Typography>
-                    <RewardChip
-                      rewardtype={winner.reward.type}
-                      size="small"
-                      icon={winner.reward.type === 'nft' ? <NFTIcon /> : <TokenIcon />}
-                      label={winner.reward.name}
-                    />
-                  </Box>
-                }
-                secondary={
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
-                    <PrizeValue>${winner.reward.value}</PrizeValue>
-                    <Typography variant="caption" color="text.secondary">
-                      {formatTimeAgo(winner.timestamp)}
-                    </Typography>
-                  </Box>
-                }
-              />
-            </WinnerItem>
-          ))}
-        </List>
+        {loading ? (
+          <Box display="flex" justifyContent="center" py={4}>
+            <CircularProgress sx={{ color: '#FFD700' }} />
+          </Box>
+        ) : error ? (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+            <Button onClick={loadWinners} size="small" sx={{ ml: 1 }}>
+              Retry
+            </Button>
+          </Alert>
+        ) : winners.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" textAlign="center" py={4}>
+            No recent winners yet. Be the first!
+          </Typography>
+        ) : (
+          <List>
+            {winners.map((winner) => (
+              <WinnerItem key={winner.id}>
+                <ListItemAvatar>
+                  <Avatar 
+                    sx={{ 
+                      background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                      color: '#000',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {winner.address.slice(2, 4).toUpperCase()}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body1" fontWeight="bold">
+                        {truncateAddress(winner.address)}
+                      </Typography>
+                      <RewardChip
+                        rewardtype={winner.reward.type}
+                        size="small"
+                        icon={winner.reward.type === 'nft' ? <NFTIcon /> : <TokenIcon />}
+                        label={winner.reward.name}
+                      />
+                    </Box>
+                  }
+                  secondary={
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
+                      <PrizeValue>${winner.reward.value}</PrizeValue>
+                      <Typography variant="caption" color="text.secondary">
+                        {formatTimeAgo(winner.timestamp)}
+                      </Typography>
+                    </Box>
+                  }
+                />
+              </WinnerItem>
+            ))}
+          </List>
+        )}
       </CardContent>
     </WinnersCard>
   );

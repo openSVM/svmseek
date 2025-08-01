@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -10,7 +10,9 @@ import {
   Chip,
   Card,
   CardContent,
-  Badge
+  Badge,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { 
@@ -20,6 +22,8 @@ import {
   MoneyOff as RebateIcon,
   Star as StarIcon
 } from '@mui/icons-material';
+import VaultService from '../services/VaultService';
+import { LeaderboardEntry as LeaderboardEntryType } from '../types';
 
 const LeaderboardCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',
@@ -114,38 +118,30 @@ interface LeaderboardEntry {
 }
 
 const Leaderboard: React.FC = () => {
-  const [leaders] = useState<LeaderboardEntry[]>([
-    {
-      id: '1',
-      address: '0xAlice',
-      invites: 32,
-      reward: { type: 'nft', description: 'NFT Badge' },
-    },
-    {
-      id: '2',
-      address: '0xBob',
-      invites: 27,
-      reward: { type: 'rebate', description: 'Fee Rebate' },
-    },
-    {
-      id: '3',
-      address: '0xCharlie',
-      invites: 23,
-      reward: { type: 'odds', description: 'Higher Odds' },
-    },
-    {
-      id: '4',
-      address: '0xDave',
-      invites: 18,
-      reward: { type: 'nft', description: 'NFT Badge' },
-    },
-    {
-      id: '5',
-      address: '0xEve',
-      invites: 15,
-      reward: { type: 'rebate', description: 'Fee Rebate' },
-    },
-  ]);
+  const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const vaultService = VaultService.getInstance();
+
+  useEffect(() => {
+    loadLeaderboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadLeaderboard = async () => {
+    try {
+      setLoading(true);
+      const leaderboardData: LeaderboardEntry[] = await vaultService.getLeaderboard(5);
+      setLeaders(leaderboardData);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load leaderboard');
+      console.error('Error loading leaderboard:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const truncateAddress = (address: string) => {
     return `${address.slice(0, 8)}...${address.slice(-4)}`;
@@ -170,50 +166,64 @@ const Leaderboard: React.FC = () => {
           </Typography>
         </SectionHeader>
 
-        <List>
-          {leaders.map((leader, index) => {
-            const rank = index + 1;
-            return (
-              <LeaderItem key={leader.id} rank={rank}>
-                <ListItemAvatar>
-                  <Badge
-                    badgeContent={rank <= 3 ? <TrophyIcon sx={{ fontSize: 12 }} /> : null}
-                    color="primary"
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                  >
-                    <RankAvatar rank={rank}>
-                      {rank}
-                    </RankAvatar>
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="body1" fontWeight="bold">
-                        {truncateAddress(leader.address)}
-                      </Typography>
-                      <RewardBadge
-                        rewardtype={leader.reward.type}
-                        size="small"
-                        icon={getRewardIcon(leader.reward.type)}
-                        label={leader.reward.description}
-                      />
-                    </Box>
-                  }
-                  secondary={
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
-                      <InviteCount>{leader.invites} invites</InviteCount>
-                      <Typography variant="caption" color="text.secondary">
-                        Week #{Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000)) % 52}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </LeaderItem>
-            );
-          })}
-        </List>
+        {loading ? (
+          <Box display="flex" justifyContent="center" py={4}>
+            <CircularProgress sx={{ color: '#FFD700' }} />
+          </Box>
+        ) : error ? (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        ) : leaders.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" textAlign="center" py={4}>
+            No leaderboard data available
+          </Typography>
+        ) : (
+          <List>
+            {leaders.map((leader, index) => {
+              const rank = index + 1;
+              return (
+                <LeaderItem key={leader.id} rank={rank}>
+                  <ListItemAvatar>
+                    <Badge
+                      badgeContent={rank <= 3 ? <TrophyIcon sx={{ fontSize: 12 }} /> : null}
+                      color="primary"
+                      overlap="circular"
+                      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                      <RankAvatar rank={rank}>
+                        {rank}
+                      </RankAvatar>
+                    </Badge>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Typography variant="body1" fontWeight="bold">
+                          {truncateAddress(leader.address)}
+                        </Typography>
+                        <RewardBadge
+                          rewardtype={leader.reward.type}
+                          size="small"
+                          icon={getRewardIcon(leader.reward.type)}
+                          label={leader.reward.description}
+                        />
+                      </Box>
+                    }
+                    secondary={
+                      <Box display="flex" justifyContent="space-between" alignItems="center" mt={0.5}>
+                        <InviteCount>{leader.invites} invites</InviteCount>
+                        <Typography variant="caption" color="text.secondary">
+                          Week #{Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000)) % 52}
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </LeaderItem>
+              );
+            })}
+          </List>
+        )}
       </CardContent>
     </LeaderboardCard>
   );

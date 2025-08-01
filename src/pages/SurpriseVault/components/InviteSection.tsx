@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -18,6 +18,7 @@ import {
   Share as ShareIcon,
   Twitter as TwitterIcon,
 } from '@mui/icons-material';
+import VaultService from '../services/VaultService';
 
 const InviteCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',
@@ -64,8 +65,18 @@ const BenefitChip = styled(Chip)(({ theme }) => ({
 }));
 
 const InviteSection: React.FC = () => {
-  const [inviteLink] = useState('https://svmseek.com/vault?ref=0xYourWallet123');
+  const [inviteLink, setInviteLink] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  
+  const vaultService = VaultService.getInstance();
+
+  useEffect(() => {
+    // Generate invite link for current user (mock address for demo)
+    const mockUserAddress = '0xYourWallet123';
+    const link = vaultService.generateReferralLink(mockUserAddress);
+    setInviteLink(link);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCopyLink = async () => {
     try {
@@ -115,7 +126,7 @@ const InviteSection: React.FC = () => {
           </Typography>
         </SectionHeader>
 
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Share your invite link and earn bonus lottery tickets when your friends start trading!
         </Typography>
 

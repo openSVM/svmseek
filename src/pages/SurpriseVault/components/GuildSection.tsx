@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -11,7 +11,9 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  LinearProgress
+  LinearProgress,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { 
@@ -21,6 +23,8 @@ import {
   TrendingUp as TrendingIcon,
   EmojiEvents as TrophyIcon,
 } from '@mui/icons-material';
+import VaultService from '../services/VaultService';
+import { Guild as GuildType } from '../types';
 
 const GuildCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',
@@ -121,39 +125,40 @@ const GuildSection: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newGuildName, setNewGuildName] = useState('');
   const [newGuildDescription, setNewGuildDescription] = useState('');
+  const [guilds, setGuilds] = useState<Guild[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const vaultService = VaultService.getInstance();
 
-  const [guilds] = useState<Guild[]>([
-    {
-      id: '1',
-      name: 'Diamond Traders',
-      description: 'Elite traders focused on high-volume trading and maximum rewards',
-      members: 24,
-      maxMembers: 50,
-      totalReferrals: 156,
-      milestone: { current: 156, target: 200, reward: 'Exclusive Diamond NFT' },
-      isJoined: false,
-    },
-    {
-      id: '2',
-      name: 'DeFi Warriors',
-      description: 'DeFi enthusiasts building the future of decentralized finance',
-      members: 18,
-      maxMembers: 30,
-      totalReferrals: 89,
-      milestone: { current: 89, target: 100, reward: 'Team Jackpot Bonus' },
-      isJoined: true,
-    },
-    {
-      id: '3',
-      name: 'Solana Seekers',
-      description: 'Solana ecosystem pioneers seeking the best opportunities',
-      members: 31,
-      maxMembers: 40,
-      totalReferrals: 203,
-      milestone: { current: 203, target: 250, reward: 'Premium Guild Status' },
-      isJoined: false,
-    },
-  ]);
+  useEffect(() => {
+    loadGuilds();
+  }, []);
+
+  const loadGuilds = async () => {
+    try {
+      setLoading(true);
+      const guildsData = await vaultService.getGuilds();
+      // Transform the data to match our local interface
+      const transformedGuilds: Guild[] = guildsData.map(guild => ({
+        id: guild.id,
+        name: guild.name,
+        description: guild.description,
+        members: guild.members.length,
+        maxMembers: guild.maxMembers,
+        totalReferrals: guild.totalReferrals,
+        milestone: guild.milestone,
+        isJoined: Math.random() > 0.7, // Mock join status
+      }));
+      setGuilds(transformedGuilds);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load guilds');
+      console.error('Error loading guilds:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreateGuild = () => {
     // Mock guild creation
@@ -183,85 +188,99 @@ const GuildSection: React.FC = () => {
           </CreateGuildButton>
         </SectionHeader>
 
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Join or create a guild to pool referral bonuses and unlock team-based vault jackpots!
         </Typography>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {guilds.map((guild) => (
-            <GuildItem key={guild.id}>
-                <CardContent>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+        {loading ? (
+          <Box display="flex" justifyContent="center" py={4}>
+            <CircularProgress sx={{ color: '#FFD700' }} />
+          </Box>
+        ) : error ? (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        ) : guilds.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" textAlign="center" py={4}>
+            No guilds available. Create the first one!
+          </Typography>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {guilds.map((guild) => (
+              <GuildItem key={guild.id}>
+                  <CardContent>
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                      <Box>
+                        <Typography variant="h6" gutterBottom>
+                          {guild.name}
+                          {guild.isJoined && (
+                            <Chip 
+                              size="small" 
+                              label="JOINED" 
+                              sx={{ 
+                                ml: 1, 
+                                background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
+                                color: '#fff',
+                                fontWeight: 'bold'
+                              }} 
+                            />
+                          )}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {guild.description}
+                        </Typography>
+                      </Box>
+                      {!guild.isJoined && (
+                        <JoinGuildButton
+                          size="small"
+                          onClick={() => handleJoinGuild(guild.id)}
+                        >
+                          Join
+                        </JoinGuildButton>
+                      )}
+                    </Box>
+
+                    <Box display="flex" gap={2} mb={2}>
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <PeopleIcon sx={{ fontSize: 16, color: '#FFD700' }} />
+                        <Typography variant="caption">
+                          {guild.members}/{guild.maxMembers}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <TrendingIcon sx={{ fontSize: 16, color: '#FFD700' }} />
+                        <Typography variant="caption">
+                          {guild.totalReferrals} referrals
+                        </Typography>
+                      </Box>
+                    </Box>
+
                     <Box>
-                      <Typography variant="h6" gutterBottom>
-                        {guild.name}
-                        {guild.isJoined && (
-                          <Chip 
-                            size="small" 
-                            label="JOINED" 
-                            sx={{ 
-                              ml: 1, 
-                              background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
-                              color: '#fff',
-                              fontWeight: 'bold'
-                            }} 
-                          />
-                        )}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {guild.description}
-                      </Typography>
+                      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                        <Typography variant="caption" color="text.secondary">
+                          Milestone Progress
+                        </Typography>
+                        <RewardBadge 
+                          size="small" 
+                          icon={<TrophyIcon />}
+                          label={guild.milestone.reward}
+                        />
+                      </Box>
+                      <GuildProgress>
+                        <LinearProgress 
+                          variant="determinate" 
+                          value={(guild.milestone.current / guild.milestone.target) * 100}
+                        />
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                          {guild.milestone.current}/{guild.milestone.target}
+                        </Typography>
+                      </GuildProgress>
                     </Box>
-                    {!guild.isJoined && (
-                      <JoinGuildButton
-                        size="small"
-                        onClick={() => handleJoinGuild(guild.id)}
-                      >
-                        Join
-                      </JoinGuildButton>
-                    )}
-                  </Box>
-
-                  <Box display="flex" gap={2} mb={2}>
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <PeopleIcon sx={{ fontSize: 16, color: '#FFD700' }} />
-                      <Typography variant="caption">
-                        {guild.members}/{guild.maxMembers}
-                      </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <TrendingIcon sx={{ fontSize: 16, color: '#FFD700' }} />
-                      <Typography variant="caption">
-                        {guild.totalReferrals} referrals
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Box>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                      <Typography variant="caption" color="text.secondary">
-                        Milestone Progress
-                      </Typography>
-                      <RewardBadge 
-                        size="small" 
-                        icon={<TrophyIcon />}
-                        label={guild.milestone.reward}
-                      />
-                    </Box>
-                    <GuildProgress>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={(guild.milestone.current / guild.milestone.target) * 100}
-                      />
-                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                        {guild.milestone.current}/{guild.milestone.target}
-                      </Typography>
-                    </GuildProgress>
-                  </Box>
-                </CardContent>
-              </GuildItem>
-          ))}
-        </div>
+                  </CardContent>
+                </GuildItem>
+            ))}
+          </div>
+        )}
 
         {/* Create Guild Dialog */}
         <Dialog 

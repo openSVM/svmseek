@@ -50,9 +50,17 @@ interface VaultStatsProps {
   jackpot: number;
   tradesToday: number;
   userTickets: number;
+  totalParticipants: number;
+  nextDrawTime: Date;
 }
 
-const VaultStats: React.FC<VaultStatsProps> = ({ jackpot, tradesToday, userTickets }) => {
+const VaultStats: React.FC<VaultStatsProps> = ({ 
+  jackpot, 
+  tradesToday, 
+  userTickets, 
+  totalParticipants, 
+  nextDrawTime 
+}) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -60,6 +68,21 @@ const VaultStats: React.FC<VaultStatsProps> = ({ jackpot, tradesToday, userTicke
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const formatTimeUntilDraw = (drawTime: Date) => {
+    const now = new Date();
+    const diff = drawTime.getTime() - now.getTime();
+    
+    if (diff <= 0) return 'Drawing now!';
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
   };
 
   return (
@@ -83,10 +106,10 @@ const VaultStats: React.FC<VaultStatsProps> = ({ jackpot, tradesToday, userTicke
             <CardContent>
               <IconWrapper>
                 <TrendingIcon />
-                <Typography variant="h6">Trades Today</Typography>
+                <Typography variant="h6">Participants</Typography>
               </IconWrapper>
-              <StatValue>{tradesToday.toLocaleString()}</StatValue>
-              <StatLabel>Active participants</StatLabel>
+              <StatValue>{totalParticipants.toLocaleString()}</StatValue>
+              <StatLabel>{tradesToday} trades today</StatLabel>
             </CardContent>
           </StatsCard>
         </div>
@@ -103,6 +126,23 @@ const VaultStats: React.FC<VaultStatsProps> = ({ jackpot, tradesToday, userTicke
             </CardContent>
           </StatsCard>
         </div>
+      </div>
+
+      {/* Next Draw Countdown */}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <StatsCard sx={{ maxWidth: 400 }}>
+          <CardContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              Next Draw In
+            </Typography>
+            <StatValue style={{ fontSize: '1.8rem' }}>
+              {formatTimeUntilDraw(nextDrawTime)}
+            </StatValue>
+            <StatLabel>
+              {nextDrawTime.toLocaleDateString()} at {nextDrawTime.toLocaleTimeString()}
+            </StatLabel>
+          </CardContent>
+        </StatsCard>
       </div>
     </div>
   );

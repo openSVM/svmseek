@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import VaultDashboard from '../components/VaultDashboard';
 
@@ -17,6 +17,8 @@ jest.mock('../services/VaultService', () => ({
     getLeaderboard: jest.fn().mockResolvedValue([]),
     getGuilds: jest.fn().mockResolvedValue([]),
     generateReferralLink: jest.fn().mockReturnValue('https://svmseek.com/vault?ref=test'),
+    joinLottery: jest.fn().mockResolvedValue({ success: true, tickets: 2, transactionSignature: 'test' }),
+    subscribeToEvents: jest.fn().mockReturnValue(() => {}), // Mock unsubscribe function
   }),
 }));
 
@@ -55,12 +57,35 @@ describe('SurpriseVault', () => {
     expect(joinButton).toBeInTheDocument();
   });
 
-  test('has vault stats display', () => {
+  test('has vault stats display', async () => {
     renderWithProviders(<VaultDashboard />);
+    
+    // Wait for loading to complete
+    await screen.findByText(/Jackpot/i);
     
     // Stats should be present
     expect(screen.getByText(/Jackpot/i)).toBeInTheDocument();
-    expect(screen.getByText(/Trades Today/i)).toBeInTheDocument();
+    expect(screen.getByText(/Participants/i)).toBeInTheDocument();
     expect(screen.getByText(/My Tickets/i)).toBeInTheDocument();
+    expect(screen.getByText(/Next Draw/i)).toBeInTheDocument();
+  });
+
+  test('shows loading state initially', () => {
+    renderWithProviders(<VaultDashboard />);
+    
+    // Should show loading indicator
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  });
+
+  test('shows error state when service fails', async () => {
+    const mockService = require('../services/VaultService').getInstance();
+    mockService.getVaultStats.mockRejectedValueOnce(new Error('Network error'));
+    
+    renderWithProviders(<VaultDashboard />);
+    
+    // Wait for error state
+    await screen.findByText(/Failed to load vault statistics/i);
+    expect(screen.getByText(/Failed to load vault statistics/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
   });
 });

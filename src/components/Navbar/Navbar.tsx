@@ -233,6 +233,18 @@ export const Navbar = () => {
             </NavLink>
 
             <NavLink
+              to="/vault"
+              style={{
+                background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                color: '#000',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+              }}
+            >
+              🎰 Vault
+            </NavLink>
+
+            <NavLink
               to="/help"
             >
               Help
