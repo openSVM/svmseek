@@ -72,7 +72,7 @@
     "start": "craco start",
     "build": "craco build",
     "build:analyze": "yarn build && node scripts/analyze-bundle.js",
-    "buildMaster": "cross-env MASTER_BUILD=TRUE && craco build",
+    "buildMaster": "cross-env MASTER_BUILD=TRUE craco build",
     "build:extension": "yarn build && yarn build:extension-chrome && yarn build:extension-firefox && yarn build:extension-safari && yarn build:extension-edge",
     "build:extension-all": "./build-extensions.sh",
     "build:extension-enhanced": "./scripts/build-extensions.sh",
