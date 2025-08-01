@@ -134,7 +134,9 @@ export const VaultProgress = styled(CircularProgress)(({ theme }) => ({
 }));
 
 // Status chip variants
-export const StatusChip = styled(Chip)<{ status?: 'success' | 'warning' | 'error' | 'info' }>(
+export const StatusChip = styled(Chip, {
+  shouldForwardProp: (prop) => prop !== 'status',
+})<{ status?: 'success' | 'warning' | 'error' | 'info' }>(
   ({ theme, status = 'info' }) => {
     const variants = {
       success: {

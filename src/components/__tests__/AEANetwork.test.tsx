@@ -3,9 +3,19 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { AEANetworkInterface } from '../AEANetwork';
+import { ConnectionProvider } from '../../utils/connection';
 
 // Mock fetch for API calls
 global.fetch = jest.fn();
+
+// Helper function to render with ConnectionProvider
+const renderWithConnection = (ui) => {
+  return render(
+    <ConnectionProvider>
+      {ui}
+    </ConnectionProvider>
+  );
+};
 
 describe('AEANetworkInterface', () => {
   beforeEach(() => {
@@ -13,19 +23,19 @@ describe('AEANetworkInterface', () => {
   });
 
   test('renders AEA Network interface when active', () => {
-    render(<AEANetworkInterface isActive={true} />);
+    renderWithConnection(<AEANetworkInterface isActive={true} />);
     
     expect(screen.getByText('AEA Network')).toBeInTheDocument();
     expect(screen.getByText('Autonomous Economic Agent Registry and Discovery')).toBeInTheDocument();
   });
 
   test('does not render when inactive', () => {
-    const { container } = render(<AEANetworkInterface isActive={false} />);
+    const { container } = renderWithConnection(<AEANetworkInterface isActive={false} />);
     expect(container.firstChild).toBeNull();
   });
 
   test('displays agent and server tabs', () => {
-    render(<AEANetworkInterface isActive={true} />);
+    renderWithConnection(<AEANetworkInterface isActive={true} />);
     
     expect(screen.getByText('Agents')).toBeInTheDocument();
     expect(screen.getByText('MCP Servers')).toBeInTheDocument();
@@ -33,7 +43,7 @@ describe('AEANetworkInterface', () => {
 
   test('switches between tabs', async () => {
     const user = userEvent.setup();
-    render(<AEANetworkInterface isActive={true} />);
+    renderWithConnection(<AEANetworkInterface isActive={true} />);
     
     // Default should show agents tab
     expect(screen.getByText('Browse Agents')).toBeInTheDocument();
@@ -45,7 +55,7 @@ describe('AEANetworkInterface', () => {
 
   describe('Agent Registry', () => {
     test('displays agent search and filters', () => {
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       expect(screen.getByPlaceholderText('Search agents...')).toBeInTheDocument();
       expect(screen.getByText('All Categories')).toBeInTheDocument();
@@ -54,7 +64,7 @@ describe('AEANetworkInterface', () => {
 
     test('filters agents by category', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       const categoryFilter = screen.getByText('All Categories');
       await user.click(categoryFilter);
@@ -67,7 +77,7 @@ describe('AEANetworkInterface', () => {
 
     test('searches agents', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       const searchInput = screen.getByPlaceholderText('Search agents...');
       await user.type(searchInput, 'trading bot');
@@ -79,7 +89,7 @@ describe('AEANetworkInterface', () => {
     });
 
     test('displays mock agents when no search results', () => {
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       // Should show mock agents
       expect(screen.getByText('DeFi Trading Agent')).toBeInTheDocument();
@@ -89,7 +99,7 @@ describe('AEANetworkInterface', () => {
 
     test('shows agent details on click', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       const agentCard = screen.getByText('DeFi Trading Agent');
       await user.click(agentCard);
@@ -102,7 +112,7 @@ describe('AEANetworkInterface', () => {
   describe('MCP Server Registry', () => {
     test('displays server search and filters when on servers tab', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('MCP Servers'));
       
@@ -112,7 +122,7 @@ describe('AEANetworkInterface', () => {
 
     test('displays mock MCP servers', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('MCP Servers'));
       
@@ -123,7 +133,7 @@ describe('AEANetworkInterface', () => {
 
     test('connects to MCP server', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('MCP Servers'));
       
@@ -139,7 +149,7 @@ describe('AEANetworkInterface', () => {
   describe('Registration Forms', () => {
     test('shows agent registration form', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('Register Agent'));
       
@@ -150,7 +160,7 @@ describe('AEANetworkInterface', () => {
 
     test('validates agent registration form', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('Register Agent'));
       
@@ -165,7 +175,7 @@ describe('AEANetworkInterface', () => {
 
     test('submits valid agent registration', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('Register Agent'));
       
@@ -184,7 +194,7 @@ describe('AEANetworkInterface', () => {
 
     test('shows server registration form', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('MCP Servers'));
       await user.click(screen.getByText('Register Server'));
@@ -203,7 +213,7 @@ describe('AEANetworkInterface', () => {
         new Error('Network error')
       );
       
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('Register Agent'));
       
@@ -222,7 +232,7 @@ describe('AEANetworkInterface', () => {
 
     test('handles invalid server URLs', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       await user.click(screen.getByText('Register Agent'));
       
@@ -240,7 +250,7 @@ describe('AEANetworkInterface', () => {
   describe('Search and Filter Integration', () => {
     test('search updates results', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       const searchInput = screen.getByPlaceholderText('Search agents...');
       await user.type(searchInput, 'trading');
@@ -254,7 +264,7 @@ describe('AEANetworkInterface', () => {
 
     test('category filter works with search', async () => {
       const user = userEvent.setup();
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       const categoryFilter = screen.getByText('All Categories');
       await user.click(categoryFilter);
@@ -270,7 +280,7 @@ describe('AEANetworkInterface', () => {
 
   describe('Accessibility', () => {
     test('provides proper ARIA labels and roles', () => {
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       expect(screen.getByRole('searchbox')).toBeInTheDocument();
       expect(screen.getByRole('tablist')).toBeInTheDocument();
@@ -278,7 +288,7 @@ describe('AEANetworkInterface', () => {
     });
 
     test('supports keyboard navigation', async () => {
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       const serversTab = screen.getByText('MCP Servers');
       
@@ -298,7 +308,7 @@ describe('AEANetworkInterface', () => {
     test('refreshes agent list on interval', async () => {
       jest.useFakeTimers();
       
-      render(<AEANetworkInterface isActive={true} />);
+      renderWithConnection(<AEANetworkInterface isActive={true} />);
       
       // Fast-forward time to trigger refresh
       jest.advanceTimersByTime(30000);

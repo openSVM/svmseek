@@ -108,7 +108,7 @@ export class PBKDF2Provider extends EncryptionProvider {
     return new Promise((resolve, reject) => {
       pbkdf2(
         password,
-        salt,
+        Buffer.from(salt), // Convert Uint8Array to Buffer for pbkdf2 compatibility
         this.config.iterations,
         this.config.keyLength,
         this.config.digest,
@@ -150,6 +150,11 @@ export class Argon2Provider extends EncryptionProvider {
         parallelism: 1,
         type: argon2.ArgonType.Argon2id, // Use Argon2id (most secure variant)
       });
+      
+      // Validate that result exists and has the expected hash property
+      if (!result || !result.hash) {
+        throw new Error('Argon2 key derivation failed: result is undefined or missing hash');
+      }
       
       return new Uint8Array(result.hash);
     } catch (error) {

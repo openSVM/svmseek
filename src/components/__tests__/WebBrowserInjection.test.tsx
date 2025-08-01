@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { PublicKey } from '@solana/web3.js';
 import WebBrowser from '../WebBrowser';
 import { WalletProviderContext, createSolanaWalletAdapter } from '../WebBrowser/WalletProvider';
 import { useWallet } from '../../utils/wallet';
@@ -39,8 +40,9 @@ const createMockIframe = () => {
 };
 
 describe('WebBrowser Wallet Injection', () => {
+  const mockPublicKey = new PublicKey('9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM');
   const mockWallet = {
-    publicKey: { toString: () => '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM' },
+    publicKey: mockPublicKey,
     connected: true,
     signTransaction: jest.fn(),
     signAllTransactions: jest.fn(),
@@ -249,8 +251,8 @@ describe('WebBrowser Wallet Injection', () => {
     // Mock window.addEventListener for message events
     const messageHandler = jest.fn();
     window.addEventListener = jest.fn((event, handler) => {
-      if (event === 'message') {
-        messageHandler.mockImplementation(handler);
+      if (event === 'message' && typeof handler === 'function') {
+        messageHandler.mockImplementation(handler as (...args: any) => any);
       }
     });
 
