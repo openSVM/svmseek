@@ -1,13 +1,14 @@
 name: Comprehensive E2E Tests - Production
 
 on:
-  # Run on pushes to main branch
+  # Run on main branch with version tags (for releases)
   push:
     branches: [ main, master ]
+    tags: [ 'v*' ]
   
-  # Run on pull requests
-  pull_request:
-    branches: [ main, master ]
+  # Run on GitHub releases
+  release:
+    types: [published, created]
     
   # Allow manual triggering
   workflow_dispatch:
@@ -18,7 +19,7 @@ on:
         default: 'https://svmseek.com'
         type: string
 
-  # Run on schedule (daily at 2 AM UTC)
+  # Run on schedule (daily at 2 AM UTC) for production monitoring
   schedule:
     - cron: '0 2 * * *'
 
