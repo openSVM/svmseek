@@ -22,7 +22,6 @@ import {
   Token as TokenIcon
 } from '@mui/icons-material';
 import VaultService from '../services/VaultService';
-import { Winner as WinnerType } from '../types';
 
 const WinnersCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',

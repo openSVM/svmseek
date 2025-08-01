@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Box, 
   Typography, 
@@ -24,7 +24,6 @@ import {
   EmojiEvents as TrophyIcon,
 } from '@mui/icons-material';
 import VaultService from '../services/VaultService';
-import { Guild as GuildType } from '../types';
 
 const GuildCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',
@@ -131,11 +130,7 @@ const GuildSection: React.FC = () => {
   
   const vaultService = VaultService.getInstance();
 
-  useEffect(() => {
-    loadGuilds();
-  }, []);
-
-  const loadGuilds = async () => {
+  const loadGuilds = useCallback(async () => {
     try {
       setLoading(true);
       const guildsData = await vaultService.getGuilds();
@@ -158,7 +153,11 @@ const GuildSection: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [vaultService]);
+
+  useEffect(() => {
+    loadGuilds();
+  }, [loadGuilds]);
 
   const handleCreateGuild = () => {
     // Mock guild creation

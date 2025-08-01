@@ -4,10 +4,7 @@ import {
   LeaderboardEntry, 
   Guild, 
   UserVaultData, 
-  VaultConfig,
-  VaultEntry,
-  LotteryDraw,
-  ReferralData
+  VaultConfig
 } from '../types';
 
 // Mock data generation utilities

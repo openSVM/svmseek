@@ -23,7 +23,6 @@ import {
   Star as StarIcon
 } from '@mui/icons-material';
 import VaultService from '../services/VaultService';
-import { LeaderboardEntry as LeaderboardEntryType } from '../types';
 
 const LeaderboardCard = styled(Card)(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.08)',
