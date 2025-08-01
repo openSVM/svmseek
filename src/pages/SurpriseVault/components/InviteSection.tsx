@@ -3,7 +3,6 @@ import {
   Box, 
   Typography, 
   Button, 
-  TextField,
   Card,
   CardContent,
   IconButton,
@@ -11,72 +10,43 @@ import {
   Alert,
   Chip
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { 
   PersonAdd as PersonAddIcon,
   ContentCopy as CopyIcon,
   Share as ShareIcon,
   Twitter as TwitterIcon,
+  Wallet as WalletIcon,
 } from '@mui/icons-material';
 import VaultService from '../services/VaultService';
+import { useVaultWallet } from '../hooks/useVaultWallet';
+import { useTruncateAddress } from '../utils';
+import { 
+  GlassCard, 
+  VaultTextField, 
+  SecondaryButton,
+  SectionHeader,
+  StatusChip 
+} from './shared/StyledComponents';
 
-const InviteCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.08)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: 16,
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-}));
 
-const SectionHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
-  '& h6': {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-  },
-}));
-
-const InviteLink = styled(TextField)(({ theme }) => ({
-  '& .MuiOutlinedInput-root': {
-    background: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
-    '&:hover': {
-      background: 'rgba(255, 255, 255, 0.08)',
-    },
-    '&.Mui-focused': {
-      background: 'rgba(255, 255, 255, 0.08)',
-    },
-  },
-  '& .MuiOutlinedInput-input': {
-    color: '#FFD700',
-    fontFamily: 'monospace',
-    fontSize: '0.9rem',
-  },
-}));
-
-const BenefitChip = styled(Chip)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)',
-  color: '#fff',
-  fontWeight: 'bold',
-  margin: theme.spacing(0.5),
-}));
 
 const InviteSection: React.FC = () => {
   const [inviteLink, setInviteLink] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
   
+  const { walletAddress, isConnected, connectWallet, isConnecting } = useVaultWallet();
+  const truncateAddress = useTruncateAddress();
   const vaultService = VaultService.getInstance();
 
   useEffect(() => {
-    // Generate invite link for current user (mock address for demo)
-    const mockUserAddress = '0xYourWallet123';
-    const link = vaultService.generateReferralLink(mockUserAddress);
-    setInviteLink(link);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // Generate invite link for current user
+    if (walletAddress) {
+      const link = vaultService.generateReferralLink(walletAddress);
+      setInviteLink(link);
+    } else {
+      setInviteLink('');
+    }
+  }, [walletAddress, vaultService]);
 
   const handleCopyLink = async () => {
     try {
@@ -117,7 +87,7 @@ const InviteSection: React.FC = () => {
   };
 
   return (
-    <InviteCard>
+    <GlassCard>
       <CardContent>
         <SectionHeader>
           <Typography variant="h6">
@@ -130,100 +100,117 @@ const InviteSection: React.FC = () => {
           Share your invite link and earn bonus lottery tickets when your friends start trading!
         </Typography>
 
+        {/* Wallet Connection Status */}
+        <Box mb={3}>
+          <Box display="flex" alignItems="center" gap={2} mb={2}>
+            <WalletIcon sx={{ color: isConnected ? '#4CAF50' : '#FFD700' }} />
+            <Typography variant="subtitle2">
+              Wallet Status:
+            </Typography>
+            <StatusChip 
+              variant={isConnected ? 'success' : 'warning'}
+              label={isConnected ? 'Connected' : 'Mock Address'}
+              size="small"
+            />
+          </Box>
+          
+          {walletAddress && (
+            <Box mb={2}>
+              <Typography variant="caption" color="text.secondary">
+                Your Address: {truncateAddress(walletAddress)}
+              </Typography>
+            </Box>
+          )}
+          
+          {!isConnected && (
+            <SecondaryButton
+              size="small"
+              startIcon={<WalletIcon />}
+              onClick={connectWallet}
+              disabled={isConnecting}
+              sx={{ mb: 2 }}
+            >
+              {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+            </SecondaryButton>
+          )}
+        </Box>
+
         {/* Benefits */}
         <Box mb={3}>
           <Typography variant="subtitle2" gutterBottom>
             Referral Benefits:
           </Typography>
           <Box>
-            <BenefitChip size="small" label="Bonus Lottery Tickets" />
-            <BenefitChip size="small" label="Fee Share Rewards" />
-            <BenefitChip size="small" label="Streak Multipliers" />
-            <BenefitChip size="small" label="Exclusive NFT Badges" />
+            <StatusChip variant="info" size="small" label="Bonus Lottery Tickets" sx={{ m: 0.5 }} />
+            <StatusChip variant="success" size="small" label="Fee Share Rewards" sx={{ m: 0.5 }} />
+            <StatusChip variant="warning" size="small" label="Streak Multipliers" sx={{ m: 0.5 }} />
+            <StatusChip variant="error" size="small" label="Exclusive NFT Badges" sx={{ m: 0.5 }} />
           </Box>
         </Box>
 
         {/* Invite Link */}
-        <Box mb={3}>
-          <Typography variant="subtitle2" gutterBottom>
-            Your Invite Link:
-          </Typography>
-          <InviteLink
-            fullWidth
-            value={inviteLink}
-            InputProps={{
-              readOnly: true,
-              endAdornment: (
-                <IconButton onClick={handleCopyLink} sx={{ color: '#FFD700' }}>
-                  <CopyIcon />
-                </IconButton>
-              ),
-            }}
-          />
-        </Box>
+        {walletAddress && (
+          <Box mb={3}>
+            <Typography variant="subtitle2" gutterBottom>
+              Your Invite Link:
+            </Typography>
+            <VaultTextField
+              fullWidth
+              value={inviteLink}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <IconButton onClick={handleCopyLink} sx={{ color: '#FFD700' }}>
+                    <CopyIcon />
+                  </IconButton>
+                ),
+              }}
+            />
+          </Box>
+        )}
 
         {/* Share Buttons */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 16, flexWrap: 'wrap' }}>
-            <Button
-              sx={{ 
-                flex: 1, 
-                minWidth: 120,
-                background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
-                color: '#fff',
-                fontWeight: 'bold',
-                borderRadius: 3,
-                textTransform: 'none',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #44B7B8, #3BAEA3)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-              startIcon={<CopyIcon />}
-              onClick={handleCopyLink}
-            >
-              Copy Link
-            </Button>
-            <Button
-              sx={{ 
-                flex: 1, 
-                minWidth: 120,
-                background: 'linear-gradient(135deg, #1DA1F2, #0D8BD9)',
-                color: '#fff',
-                fontWeight: 'bold',
-                borderRadius: 3,
-                textTransform: 'none',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #0D8BD9, #0A7BC2)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-              startIcon={<TwitterIcon />}
-              onClick={handleShareOnTwitter}
-            >
-              Share on X
-            </Button>
-            <Button
-              sx={{ 
-                flex: 1, 
-                minWidth: 120,
-                background: 'linear-gradient(135deg, #9B59B6, #8E44AD)',
-                color: '#fff',
-                fontWeight: 'bold',
-                borderRadius: 3,
-                textTransform: 'none',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #8E44AD, #7D3C98)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-              startIcon={<ShareIcon />}
-              onClick={handleGenericShare}
-            >
-              Share
-            </Button>
-          </div>
-        </div>
+        {walletAddress && (
+          <Box display="flex" flexDirection="column" gap={2}>
+            <Box display="flex" flexDirection="row" gap={2} flexWrap="wrap">
+              <SecondaryButton
+                sx={{ flex: 1, minWidth: 120 }}
+                startIcon={<CopyIcon />}
+                onClick={handleCopyLink}
+              >
+                Copy Link
+              </SecondaryButton>
+              <SecondaryButton
+                sx={{ 
+                  flex: 1, 
+                  minWidth: 120,
+                  background: 'linear-gradient(135deg, #1DA1F2, #0D8BD9)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #0D8BD9, #0A7BC2)',
+                  },
+                }}
+                startIcon={<TwitterIcon />}
+                onClick={handleShareOnTwitter}
+              >
+                Share on X
+              </SecondaryButton>
+              <SecondaryButton
+                sx={{ 
+                  flex: 1, 
+                  minWidth: 120,
+                  background: 'linear-gradient(135deg, #9B59B6, #8E44AD)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #8E44AD, #7D3C98)',
+                  },
+                }}
+                startIcon={<ShareIcon />}
+                onClick={handleGenericShare}
+              >
+                Share
+              </SecondaryButton>
+            </Box>
+          </Box>
+        )}
 
         <Snackbar
           open={snackbar.open}
@@ -236,7 +223,7 @@ const InviteSection: React.FC = () => {
           </Alert>
         </Snackbar>
       </CardContent>
-    </InviteCard>
+    </GlassCard>
   );
 };
 

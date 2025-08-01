@@ -10,12 +10,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   LinearProgress,
   CircularProgress,
   Alert
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { 
   Groups as GroupsIcon,
   Add as AddIcon,
@@ -24,86 +22,21 @@ import {
   EmojiEvents as TrophyIcon,
 } from '@mui/icons-material';
 import VaultService from '../services/VaultService';
+import { useVaultWallet } from '../hooks/useVaultWallet';
+import { useTruncateAddress } from '../utils';
+import { 
+  GlassCard, 
+  VaultTextField, 
+  SecondaryButton, 
+  VaultButton,
+  SectionHeader,
+  StatusChip,
+  LoadingContainer,
+  ErrorContainer,
+  ProgressContainer 
+} from './shared/StyledComponents';
 
-const GuildCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.08)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: 16,
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-}));
 
-const SectionHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginBottom: theme.spacing(2),
-  '& h6': {
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-  },
-}));
-
-const GuildItem = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.04)',
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: 12,
-  marginBottom: theme.spacing(2),
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  '&:hover': {
-    background: 'rgba(255, 255, 255, 0.08)',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-  },
-}));
-
-const CreateGuildButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #9B59B6, #8E44AD)',
-  color: '#fff',
-  fontWeight: 'bold',
-  borderRadius: 12,
-  textTransform: 'none',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  '&:hover': {
-    background: 'linear-gradient(135deg, #8E44AD, #7D3C98)',
-    transform: 'translateY(-2px)',
-  },
-}));
-
-const JoinGuildButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
-  color: '#fff',
-  fontWeight: 'bold',
-  borderRadius: 8,
-  textTransform: 'none',
-  fontSize: '0.8rem',
-  padding: theme.spacing(0.5, 1.5),
-  '&:hover': {
-    background: 'linear-gradient(135deg, #44B7B8, #3BAEA3)',
-  },
-}));
-
-const GuildProgress = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(1),
-  '& .MuiLinearProgress-root': {
-    borderRadius: 4,
-    height: 6,
-    background: 'rgba(255, 255, 255, 0.1)',
-  },
-  '& .MuiLinearProgress-bar': {
-    background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-  },
-}));
-
-const RewardBadge = styled(Chip)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)',
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: '0.7rem',
-  height: 24,
-}));
 
 interface Guild {
   id: string;
@@ -127,7 +60,12 @@ const GuildSection: React.FC = () => {
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [joiningGuildId, setJoiningGuildId] = useState<string | null>(null);
+  const [actionFeedback, setActionFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   
+  const { walletAddress } = useVaultWallet();
+  const truncateAddress = useTruncateAddress();
   const vaultService = useMemo(() => VaultService.getInstance(), []);
 
   const loadGuilds = useCallback(async () => {
@@ -159,83 +97,163 @@ const GuildSection: React.FC = () => {
     loadGuilds();
   }, [loadGuilds]);
 
-  const handleCreateGuild = () => {
-    // Mock guild creation
-    setCreateDialogOpen(false);
-    setNewGuildName('');
-    setNewGuildDescription('');
+  const handleCreateGuild = async () => {
+    if (!walletAddress) {
+      setActionFeedback({ type: 'error', message: 'Please connect your wallet first' });
+      return;
+    }
+    
+    if (!newGuildName.trim()) {
+      setActionFeedback({ type: 'error', message: 'Guild name is required' });
+      return;
+    }
+    
+    setCreating(true);
+    try {
+      const result = await vaultService.createGuild(newGuildName.trim(), newGuildDescription.trim(), walletAddress);
+      
+      if (result.success) {
+        setActionFeedback({ type: 'success', message: result.message });
+        setCreateDialogOpen(false);
+        setNewGuildName('');
+        setNewGuildDescription('');
+        // Refresh guilds list
+        await loadGuilds();
+      } else {
+        setActionFeedback({ type: 'error', message: result.message });
+      }
+    } catch (error) {
+      setActionFeedback({ type: 'error', message: 'Failed to create guild. Please try again.' });
+    } finally {
+      setCreating(false);
+    }
   };
 
-  const handleJoinGuild = (guildId: string) => {
-    // Mock join guild functionality
-    console.log('Joining guild:', guildId);
+  const handleJoinGuild = async (guildId: string) => {
+    if (!walletAddress) {
+      setActionFeedback({ type: 'error', message: 'Please connect your wallet first' });
+      return;
+    }
+    
+    setJoiningGuildId(guildId);
+    try {
+      const result = await vaultService.joinGuild(guildId, walletAddress);
+      
+      if (result.success) {
+        setActionFeedback({ type: 'success', message: result.message });
+        // Refresh guilds list to update join status
+        await loadGuilds();
+      } else {
+        setActionFeedback({ type: 'error', message: result.message });
+      }
+    } catch (error) {
+      setActionFeedback({ type: 'error', message: 'Failed to join guild. Please try again.' });
+    } finally {
+      setJoiningGuildId(null);
+    }
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    loadGuilds();
+  };
+
+  const handleDismissFeedback = () => {
+    setActionFeedback(null);
   };
 
   return (
-    <GuildCard>
+    <GlassCard>
       <CardContent>
         <SectionHeader>
           <Typography variant="h6">
             <GroupsIcon sx={{ color: '#FFD700' }} />
             Guilds & Teams
           </Typography>
-          <CreateGuildButton
+          <VaultButton
             startIcon={<AddIcon />}
             onClick={() => setCreateDialogOpen(true)}
+            disabled={!walletAddress}
           >
             Form a Guild
-          </CreateGuildButton>
+          </VaultButton>
         </SectionHeader>
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Join or create a guild to pool referral bonuses and unlock team-based vault jackpots!
         </Typography>
 
-        {loading ? (
-          <Box display="flex" justifyContent="center" py={4}>
-            <CircularProgress sx={{ color: '#FFD700' }} />
-          </Box>
-        ) : error ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
+        {/* Action Feedback */}
+        {actionFeedback && (
+          <Alert 
+            severity={actionFeedback.type} 
+            sx={{ mb: 2 }}
+            onClose={handleDismissFeedback}
+          >
+            {actionFeedback.message}
           </Alert>
+        )}
+
+        {loading ? (
+          <LoadingContainer>
+            <CircularProgress sx={{ color: '#FFD700' }} />
+            <Typography variant="body2" color="text.secondary">
+              Loading guilds...
+            </Typography>
+          </LoadingContainer>
+        ) : error ? (
+          <ErrorContainer>
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+            <SecondaryButton onClick={handleRetry}>
+              Retry
+            </SecondaryButton>
+          </ErrorContainer>
         ) : guilds.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" textAlign="center" py={4}>
-            No guilds available. Create the first one!
-          </Typography>
+          <Box textAlign="center" py={4}>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              No guilds available. Create the first one!
+            </Typography>
+            {!walletAddress && (
+              <Typography variant="caption" color="text.secondary">
+                Connect your wallet to create or join guilds
+              </Typography>
+            )}
+          </Box>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Box display="flex" flexDirection="column" gap={2}>
             {guilds.map((guild) => (
-              <GuildItem key={guild.id}>
+              <GlassCard key={guild.id} sx={{ background: 'rgba(255, 255, 255, 0.04)' }}>
                   <CardContent>
                     <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
                       <Box>
                         <Typography variant="h6" gutterBottom>
                           {guild.name}
                           {guild.isJoined && (
-                            <Chip 
+                            <StatusChip 
+                              variant="success"
                               size="small" 
                               label="JOINED" 
-                              sx={{ 
-                                ml: 1, 
-                                background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
-                                color: '#fff',
-                                fontWeight: 'bold'
-                              }} 
+                              sx={{ ml: 1 }} 
                             />
                           )}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {guild.description}
                         </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                          Created by: {truncateAddress(guild.creator)}
+                        </Typography>
                       </Box>
-                      {!guild.isJoined && (
-                        <JoinGuildButton
+                      {!guild.isJoined && walletAddress && (
+                        <SecondaryButton
                           size="small"
                           onClick={() => handleJoinGuild(guild.id)}
+                          disabled={joiningGuildId === guild.id}
                         >
-                          Join
-                        </JoinGuildButton>
+                          {joiningGuildId === guild.id ? 'Joining...' : 'Join'}
+                        </SecondaryButton>
                       )}
                     </Box>
 
@@ -259,13 +277,14 @@ const GuildSection: React.FC = () => {
                         <Typography variant="caption" color="text.secondary">
                           Milestone Progress
                         </Typography>
-                        <RewardBadge 
+                        <StatusChip 
+                          variant="warning"
                           size="small" 
                           icon={<TrophyIcon />}
                           label={guild.milestone.reward}
                         />
                       </Box>
-                      <GuildProgress>
+                      <ProgressContainer>
                         <LinearProgress 
                           variant="determinate" 
                           value={(guild.milestone.current / guild.milestone.target) * 100}
@@ -273,12 +292,12 @@ const GuildSection: React.FC = () => {
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
                           {guild.milestone.current}/{guild.milestone.target}
                         </Typography>
-                      </GuildProgress>
+                      </ProgressContainer>
                     </Box>
                   </CardContent>
-                </GuildItem>
+                </GlassCard>
             ))}
-          </div>
+          </Box>
         )}
 
         {/* Create Guild Dialog */}
@@ -302,7 +321,7 @@ const GuildSection: React.FC = () => {
             </Typography>
           </DialogTitle>
           <DialogContent>
-            <TextField
+            <VaultTextField
               autoFocus
               margin="dense"
               label="Guild Name"
@@ -311,8 +330,10 @@ const GuildSection: React.FC = () => {
               value={newGuildName}
               onChange={(e) => setNewGuildName(e.target.value)}
               sx={{ mb: 2 }}
+              error={!newGuildName.trim() && newGuildName.length > 0}
+              helperText={!newGuildName.trim() && newGuildName.length > 0 ? 'Guild name is required' : ''}
             />
-            <TextField
+            <VaultTextField
               margin="dense"
               label="Description"
               fullWidth
@@ -322,18 +343,26 @@ const GuildSection: React.FC = () => {
               value={newGuildDescription}
               onChange={(e) => setNewGuildDescription(e.target.value)}
             />
+            {!walletAddress && (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                Please connect your wallet to create a guild
+              </Alert>
+            )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setCreateDialogOpen(false)}>
+            <SecondaryButton onClick={() => setCreateDialogOpen(false)}>
               Cancel
-            </Button>
-            <CreateGuildButton onClick={handleCreateGuild}>
-              Create Guild
-            </CreateGuildButton>
+            </SecondaryButton>
+            <VaultButton 
+              onClick={handleCreateGuild}
+              disabled={creating || !walletAddress || !newGuildName.trim()}
+            >
+              {creating ? 'Creating...' : 'Create Guild'}
+            </VaultButton>
           </DialogActions>
         </Dialog>
       </CardContent>
-    </GuildCard>
+    </GlassCard>
   );
 };
 

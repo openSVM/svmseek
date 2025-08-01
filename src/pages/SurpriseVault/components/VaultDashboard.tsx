@@ -8,7 +8,6 @@ import {
   Alert,
   Snackbar,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { 
   Casino as CasinoIcon,
 } from '@mui/icons-material';
@@ -19,80 +18,15 @@ import InviteSection from './InviteSection';
 import GuildSection from './GuildSection';
 import VaultService from '../services/VaultService';
 import { VaultStats as VaultStatsType } from '../types';
+import { 
+  VaultHeader, 
+  VaultButton, 
+  LoadingContainer,
+  ErrorContainer,
+  SecondaryButton 
+} from './shared/StyledComponents';
 
-const DashboardHeader = styled(Box)(({ theme }) => ({
-  textAlign: 'center',
-  marginBottom: theme.spacing(4),
-  padding: theme.spacing(3),
-  background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1))',
-  borderRadius: theme.spacing(2),
-  border: '1px solid rgba(255, 215, 0, 0.2)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: '-100%',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent)',
-    animation: 'shimmer 3s infinite',
-  },
-  '@keyframes shimmer': {
-    '0%': { left: '-100%' },
-    '100%': { left: '100%' },
-  },
-}));
 
-const JoinButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-  color: '#000',
-  fontWeight: 'bold',
-  fontSize: '1.2rem',
-  padding: theme.spacing(1.5, 4),
-  borderRadius: theme.spacing(3),
-  textTransform: 'none',
-  boxShadow: '0 8px 32px rgba(255, 215, 0, 0.3)',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  position: 'relative',
-  overflow: 'hidden',
-  '&:hover': {
-    background: 'linear-gradient(135deg, #FFA500, #FFD700)',
-    transform: 'translateY(-2px)',
-    boxShadow: '0 12px 40px rgba(255, 215, 0, 0.4)',
-  },
-  '&:disabled': {
-    background: 'linear-gradient(135deg, #888, #666)',
-    color: '#ccc',
-    transform: 'none',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
-  },
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: '-100%',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)',
-    transition: 'left 0.5s',
-  },
-  '&:hover::before': {
-    left: '100%',
-  },
-}));
-
-const StatsContainer = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-}));
-
-const LoadingContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  minHeight: '200px',
-}));
 
 const VaultDashboard: React.FC = () => {
   const [vaultStats, setVaultStats] = useState<VaultStatsType | null>(null);
@@ -173,18 +107,23 @@ const VaultDashboard: React.FC = () => {
     return (
       <LoadingContainer>
         <CircularProgress sx={{ color: '#FFD700' }} />
+        <Typography variant="body2" color="text.secondary">
+          Loading vault data...
+        </Typography>
       </LoadingContainer>
     );
   }
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ mb: 3 }}>
-        {error}
-        <Button onClick={loadVaultStats} sx={{ ml: 2 }}>
+      <ErrorContainer>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <SecondaryButton onClick={loadVaultStats}>
           Retry
-        </Button>
-      </Alert>
+        </SecondaryButton>
+      </ErrorContainer>
     );
   }
 
@@ -198,17 +137,17 @@ const VaultDashboard: React.FC = () => {
 
   return (
     <Box>
-      <DashboardHeader>
+      <VaultHeader>
         <Typography variant="h3" component="h1" gutterBottom>
           🎰 Surprise Vault Dashboard 🎰
         </Typography>
         <Typography variant="h6" color="text.secondary" gutterBottom>
           Lottery-Style Rewards for Every Trade
         </Typography>
-      </DashboardHeader>
+      </VaultHeader>
 
       {/* Stats Section */}
-      <StatsContainer>
+      <Box mb={3}>
         <VaultStats 
           jackpot={vaultStats.jackpot}
           tradesToday={vaultStats.tradesToday}
@@ -216,18 +155,18 @@ const VaultDashboard: React.FC = () => {
           totalParticipants={vaultStats.totalParticipants}
           nextDrawTime={vaultStats.nextDrawTime}
         />
-      </StatsContainer>
+      </Box>
 
       {/* Join Button */}
       <Box display="flex" justifyContent="center" mb={4}>
-        <JoinButton
+        <VaultButton
           size="large"
           startIcon={<CasinoIcon />}
           onClick={handleJoinLottery}
           disabled={joining}
         >
           {joining ? 'JOINING...' : 'JOIN THE LOTTERY'}
-        </JoinButton>
+        </VaultButton>
       </Box>
 
       <Divider sx={{ my: 4, background: 'rgba(255, 255, 255, 0.1)' }} />
