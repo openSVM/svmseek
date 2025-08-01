@@ -107,7 +107,12 @@ class VaultService {
           timestamp: new Date(),
         });
       }
-    }, 10000); // Every 10 seconds
+    }, 10000) as NodeJS.Timeout; // Every 10 seconds
+    
+    // Prevent timer from keeping process alive in tests
+    if (this.updateInterval && typeof this.updateInterval.unref === 'function') {
+      this.updateInterval.unref();
+    }
   }
 
   private notifySubscribers(event: any) {
@@ -543,6 +548,14 @@ class VaultService {
       this.updateInterval = null;
     }
     this.eventSubscribers = [];
+  }
+
+  // Reset singleton for testing
+  static reset() {
+    if (VaultService.instance) {
+      VaultService.instance.destroy();
+      VaultService.instance = null;
+    }
   }
 }
 

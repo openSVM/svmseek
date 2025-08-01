@@ -3,24 +3,35 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import VaultDashboard from '../components/VaultDashboard';
 
-// Mock the VaultService
-jest.mock('../services/VaultService', () => ({
-  getInstance: () => ({
-    getVaultStats: jest.fn().mockResolvedValue({
-      jackpot: 123456,
-      tradesToday: 987,
-      userTickets: 12,
-      totalParticipants: 2500,
-      nextDrawTime: new Date(),
-    }),
-    getRecentWinners: jest.fn().mockResolvedValue([]),
-    getLeaderboard: jest.fn().mockResolvedValue([]),
-    getGuilds: jest.fn().mockResolvedValue([]),
-    generateReferralLink: jest.fn().mockReturnValue('https://svmseek.com/vault?ref=test'),
-    joinLottery: jest.fn().mockResolvedValue({ success: true, tickets: 2, transactionSignature: 'test' }),
-    subscribeToEvents: jest.fn().mockReturnValue(() => {}), // Mock unsubscribe function
+// Create a mock VaultService class with getInstance method
+const mockVaultServiceInstance = {
+  getVaultStats: jest.fn().mockResolvedValue({
+    jackpot: 123456,
+    tradesToday: 987,
+    userTickets: 12,
+    totalParticipants: 2500,
+    nextDrawTime: new Date(),
   }),
-}));
+  getRecentWinners: jest.fn().mockResolvedValue([]),
+  getLeaderboard: jest.fn().mockResolvedValue([]),
+  getGuilds: jest.fn().mockResolvedValue([]),
+  generateReferralLink: jest.fn().mockReturnValue('https://svmseek.com/vault?ref=test'),
+  joinLottery: jest.fn().mockResolvedValue({ success: true, tickets: 2, transactionSignature: 'test' }),
+  subscribeToEvents: jest.fn().mockReturnValue(() => {}),
+  destroy: jest.fn(),
+};
+
+const MockVaultService = {
+  getInstance: jest.fn(() => mockVaultServiceInstance),
+  reset: jest.fn(() => {
+    // Reset the singleton
+    MockVaultService.getInstance.mockClear();
+    mockVaultServiceInstance.destroy();
+  }),
+};
+
+// Mock the VaultService module completely
+jest.mock('../services/VaultService', () => MockVaultService);
 
 const theme = createTheme();
 
@@ -33,6 +44,24 @@ const renderWithProviders = (component: React.ReactElement) => {
 };
 
 describe('SurpriseVault', () => {
+  beforeEach(() => {
+    // Reset mocks before each test
+    jest.clearAllMocks();
+    MockVaultService.reset();
+  });
+
+  afterEach(() => {
+    // Clean up any timers or resources after each test
+    mockVaultServiceInstance.destroy();
+    jest.clearAllTimers();
+  });
+
+  afterAll(() => {
+    // Final cleanup
+    jest.useRealTimers();
+    MockVaultService.reset();
+  });
+
   test('renders vault dashboard with main elements', async () => {
     await act(async () => {
       renderWithProviders(<VaultDashboard />);
