@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Box, 
   Typography, 
@@ -105,7 +105,21 @@ const VaultDashboard: React.FC = () => {
     severity: 'success'
   });
   
-  const vaultService = VaultService.getInstance();
+  const vaultService = useMemo(() => VaultService.getInstance(), []);
+
+  const loadVaultStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      const stats = await vaultService.getVaultStats();
+      setVaultStats(stats);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load vault statistics');
+      console.error('Error loading vault stats:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [vaultService]);
 
   useEffect(() => {
     loadVaultStats();
@@ -118,22 +132,7 @@ const VaultDashboard: React.FC = () => {
     });
 
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const loadVaultStats = async () => {
-    try {
-      setLoading(true);
-      const stats = await vaultService.getVaultStats();
-      setVaultStats(stats);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load vault statistics');
-      console.error('Error loading vault stats:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadVaultStats, vaultService]);
 
   const handleJoinLottery = async () => {
     if (!vaultStats) return;

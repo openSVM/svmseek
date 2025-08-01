@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   Box, 
   Typography, 
@@ -128,7 +128,7 @@ const GuildSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const vaultService = VaultService.getInstance();
+  const vaultService = useMemo(() => VaultService.getInstance(), []);
 
   const loadGuilds = useCallback(async () => {
     try {

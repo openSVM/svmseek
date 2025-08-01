@@ -106,9 +106,9 @@ function patchCryptoLibraries() {
       })();
 
       if (globalScope && typeof globalScope === 'object') {
-        const existingFactory = (globalScope as any).BIP32Factory;
+        const existingFactory = globalScope.BIP32Factory;
         if (existingFactory) {
-          (globalScope as any).BIP32Factory = createSafeBIP32Factory(existingFactory);
+          globalScope.BIP32Factory = createSafeBIP32Factory(existingFactory);
         }
       }
     } catch (error) {
