@@ -57,18 +57,28 @@ describe('WalletInjectionService Security Tests', () => {
         readyState: 'complete',
         createElement: jest.fn(() => {
           const script = {
-            src: '',
+            _src: '',
             onload: null as any,
-            onerror: null as any
+            onerror: null as any,
           };
-          // Simulate script load success
-          setTimeout(() => {
-            if (script.onload) script.onload();
-          }, 0);
+          // Simulate setting a blob URL when src is assigned
+          Object.defineProperty(script, 'src', {
+            set(value: string) {
+              script._src = (value && value.startsWith('blob:')) ? value : 'blob:mock-url';
+            },
+            get() {
+              return script._src || 'blob:mock-url';
+            }
+          });
           return script;
         }),
         head: {
-          appendChild: jest.fn()
+          appendChild: jest.fn((script: any) => {
+            // Immediately trigger onload when script is appended
+            if (script.onload) {
+              script.onload();
+            }
+          })
         }
       },
       writable: true
@@ -432,7 +442,7 @@ describe('WalletInjectionService Security Tests', () => {
       const result = await service.injectWalletProviders(failingIframe);
       
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Script creation failed');
+      expect(result.error).toContain('Failed to inject wallet providers');
       
       document.body.removeChild(failingIframe);
     });

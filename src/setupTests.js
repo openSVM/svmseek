@@ -403,5 +403,16 @@ if (typeof window !== 'undefined') {
   };
 }
 
+// Mock console methods to prevent test failures from logging
+const originalConsole = global.console;
+global.console = {
+  ...originalConsole,
+  error: jest.fn(),
+  warn: jest.fn(),
+  log: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
+};
+
 // Initialize test globals safely
 initializeTestGlobals();

@@ -55,7 +55,9 @@ describe('SVMPayInterface', () => {
     
     // Click on request tab
     await user.click(screen.getByText('Request Payment'));
-    expect(screen.getByText('Generate Payment Request')).toBeInTheDocument();
+    
+    // Look for the heading, not the button text
+    expect(screen.getByRole('heading', { name: 'Generate Payment Request' })).toBeInTheDocument();
     
     // Click on process tab
     await user.click(screen.getByText('Process URL'));
