@@ -17,7 +17,7 @@ const nftNames = [
 const tokenAmounts = [50, 100, 250, 500, 1000];
 
 class VaultService {
-  private static instance: VaultService;
+  private static instance: VaultService | null;
   private sessionId: string;
   private mockConfig: VaultConfig = {
     entryFeePercentage: 0.002, // 0.2%
