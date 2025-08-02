@@ -28,10 +28,10 @@ export default defineConfig({
   ],
 
   /* Run local server for testing */
-  webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
-    command: 'serve -s build -l 3000',
+  webServer: (process.env.PLAYWRIGHT_BASE_URL && !process.env.PLAYWRIGHT_BASE_URL.includes('localhost')) ? undefined : {
+    command: 'yarn build && npx serve -s build -l 3000',
     url: 'http://localhost:3000',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes
   },
 });
