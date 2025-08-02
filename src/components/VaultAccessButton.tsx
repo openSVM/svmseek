@@ -41,12 +41,22 @@ const VaultFab = styled(Fab)(({ theme }) => ({
       boxShadow: '0 8px 32px rgba(255, 215, 0, 0.7)',
     },
   },
-  // Mobile responsiveness
+  // Mobile responsiveness - progressive sizing for smaller screens
   [theme.breakpoints.down('sm')]: {
     bottom: theme.spacing(2),
     right: theme.spacing(2),
     width: 56,
     height: 56,
+  },
+  // Extra small devices (~320px) - smaller sizing as suggested
+  '@media (max-width: 360px)': {
+    width: 48,
+    height: 48,
+    bottom: theme.spacing(1.5),
+    right: theme.spacing(1.5),
+    '& .MuiSvgIcon-root': {
+      fontSize: '20px',
+    },
   },
 }));
 
@@ -74,6 +84,7 @@ const VaultAccessButton: React.FC = () => {
         onClick={handleVaultClick}
         onKeyDown={handleKeyDown}
         aria-label="Access Surprise Vault - Lottery rewards for every trade"
+        title="🎰 Access Surprise Vault" // Native tooltip fallback for accessibility
         tabIndex={0}
         role="button"
       >

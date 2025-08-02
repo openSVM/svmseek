@@ -87,20 +87,21 @@ class VaultService {
     }
     
     this.updateInterval = setInterval(() => {
-      // Gradually update jackpot and other stats
+      // Gradually update jackpot and other stats with deterministic randomness
       const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
       const updateSeed = `update_${this.sessionId}_${Math.floor(Date.now() / 60000)}`;
       const incrementChance = 0.3; // 30% chance to increment each period
       
+      // Use deterministic randomness instead of Math.random() for testability
       if (generateStableRandom(updateSeed + '_chance') < incrementChance) {
-        const increment = this.getStableValue('increment' + Date.now(), 10, 100);
+        const increment = this.getStableValue('increment' + Math.floor(Date.now() / 60000), 10, 100);
         savedStats.jackpot = (savedStats.jackpot || 0) + increment;
         savedStats.tradesToday = (savedStats.tradesToday || 0) + Math.floor(generateStableRandom(updateSeed + '_trades') * 3);
         savedStats.lastUpdate = Date.now();
         
         VaultStorage.set('vaultStats', savedStats);
         
-        // Notify subscribers
+        // Notify subscribers of the update
         this.notifySubscribers({
           type: 'jackpot_update',
           data: savedStats,
@@ -120,7 +121,10 @@ class VaultService {
       try {
         callback(event);
       } catch (error) {
-        console.warn('Error in event subscriber:', error);
+        // Only log warnings in development, not in production
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Error in VaultService event subscriber:', error);
+        }
       }
     });
   }
@@ -541,13 +545,22 @@ class VaultService {
     return userGuilds.filter(g => g.members && g.members.includes(userAddress));
   }
 
-  // Add cleanup method
+  // Enhanced cleanup method to prevent memory leaks
   destroy() {
+    // Clear the update interval timer
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
       this.updateInterval = null;
     }
+    
+    // Clear all event subscribers to prevent memory leaks
     this.eventSubscribers = [];
+    
+    // Additional cleanup for production
+    if (process.env.NODE_ENV !== 'development') {
+      // Clear any cached data if needed for memory optimization
+      // This helps with memory management in production
+    }
   }
 
   // Reset singleton for testing

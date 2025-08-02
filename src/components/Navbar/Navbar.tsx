@@ -233,7 +233,12 @@ export const Navbar = () => {
               Wallet
             </NavLink>
 
-            <VaultNavLink to="/vault">
+            <VaultNavLink 
+              to="/vault"
+              role="navigation"
+              aria-label="Navigate to Surprise Vault lottery section"
+              title="🎰 Surprise Vault - Lottery rewards for every trade"
+            >
               🎰 Vault
             </VaultNavLink>
 

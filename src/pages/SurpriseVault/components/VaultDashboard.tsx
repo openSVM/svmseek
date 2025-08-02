@@ -43,12 +43,18 @@ const VaultDashboard: React.FC = () => {
   const loadVaultStats = useCallback(async () => {
     try {
       setLoading(true);
+      if (!vaultService || !vaultService.getVaultStats) {
+        throw new Error('VaultService not properly initialized');
+      }
       const stats = await vaultService.getVaultStats();
       setVaultStats(stats);
       setError(null);
     } catch (err) {
       setError('Failed to load vault statistics');
-      console.error('Error loading vault stats:', err);
+      // Only log errors in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading vault stats:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -57,18 +63,39 @@ const VaultDashboard: React.FC = () => {
   useEffect(() => {
     loadVaultStats();
     
-    // Subscribe to real-time updates
-    const unsubscribe = vaultService.subscribeToEvents((event) => {
-      if (event.type === 'jackpot_update') {
-        setVaultStats(prev => prev ? { ...prev, ...event.data } : null);
-      }
-    });
+    // Subscribe to real-time updates with proper cleanup
+    if (vaultService && vaultService.subscribeToEvents) {
+      const unsubscribe = vaultService.subscribeToEvents((event) => {
+        if (event.type === 'jackpot_update') {
+          setVaultStats(prev => prev ? { ...prev, ...event.data } : null);
+        }
+      });
 
-    return unsubscribe;
+      // Cleanup function ensures proper memory management
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    }
   }, [loadVaultStats, vaultService]);
 
+  // Cleanup VaultService on component unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Only call destroy if we're unmounting and vaultService exists
+      if (vaultService && vaultService.destroy) {
+        const timeoutId = setTimeout(() => {
+          vaultService.destroy();
+        }, 100);
+        
+        return () => clearTimeout(timeoutId);
+      }
+    };
+  }, []); // Empty dependency array ensures this only runs on mount/unmount
+
   const handleJoinLottery = async () => {
-    if (!vaultStats) return;
+    if (!vaultStats || !vaultService || !vaultService.joinLottery) return;
     
     try {
       setJoining(true);
