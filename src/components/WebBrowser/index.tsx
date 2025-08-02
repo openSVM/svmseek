@@ -332,6 +332,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
           onClick={handleBack} 
           disabled={historyIndex <= 0}
           size="small"
+          aria-label="back"
         >
           <ArrowBack />
         </IconButton>
@@ -340,15 +341,16 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
           onClick={handleForward} 
           disabled={historyIndex >= history.length - 1}
           size="small"
+          aria-label="forward"
         >
           <ArrowForward />
         </IconButton>
         
-        <IconButton onClick={handleRefresh} size="small">
+        <IconButton onClick={handleRefresh} size="small" aria-label="refresh">
           <Refresh />
         </IconButton>
         
-        <IconButton onClick={handleHome} size="small">
+        <IconButton onClick={handleHome} size="small" aria-label="home">
           <Home />
         </IconButton>
         
