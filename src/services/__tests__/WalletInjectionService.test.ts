@@ -42,7 +42,47 @@ describe('WalletInjectionService Security Tests', () => {
       },
       writable: true
     });
+    
+    // Mock onload to be called immediately for allowed origins
+    mockIframe.onload = null;
   });
+
+  // Helper function to create a properly mocked iframe for successful injection
+  const createMockIframeForSuccessfulInjection = () => {
+    const iframe = document.createElement('iframe');
+    iframe.src = 'http://localhost:3000';
+    
+    Object.defineProperty(iframe, 'contentDocument', {
+      value: {
+        readyState: 'complete',
+        createElement: jest.fn(() => {
+          const script = {
+            src: '',
+            onload: null as any,
+            onerror: null as any
+          };
+          // Simulate script load success
+          setTimeout(() => {
+            if (script.onload) script.onload();
+          }, 0);
+          return script;
+        }),
+        head: {
+          appendChild: jest.fn()
+        }
+      },
+      writable: true
+    });
+    
+    Object.defineProperty(iframe, 'contentWindow', {
+      value: {
+        postMessage: jest.fn()
+      },
+      writable: true
+    });
+    
+    return iframe;
+  };
 
   afterEach(() => {
     service.cleanup();
@@ -51,14 +91,19 @@ describe('WalletInjectionService Security Tests', () => {
 
   describe('Injection Security', () => {
     test('should prevent multiple injections to same iframe', async () => {
-      const result1 = await service.injectWalletProviders(mockIframe);
-      const result2 = await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
+      
+      const result1 = await service.injectWalletProviders(successIframe);
+      const result2 = await service.injectWalletProviders(successIframe);
       
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(true);
       
       // Script should include prevention mechanism
       expect(service.getInjectedProviders()).toHaveLength(3); // solana, phantom, svmseek
+      
+      document.body.removeChild(successIframe);
     });
 
     test('should only inject to same-origin iframes', async () => {
@@ -77,16 +122,21 @@ describe('WalletInjectionService Security Tests', () => {
     });
 
     test('should sanitize injected script content', async () => {
-      const result = await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
+      
+      const result = await service.injectWalletProviders(successIframe);
       expect(result.success).toBe(true);
       
       // Verify script doesn't contain dangerous content
-      const createScriptCall = mockIframe.contentDocument?.createElement as jest.Mock;
+      const createScriptCall = successIframe.contentDocument?.createElement as jest.Mock;
       expect(createScriptCall).toHaveBeenCalledWith('script');
       
       // The script should be loaded via blob URL, not inline
       const scriptElement = createScriptCall.mock.results[0].value;
       expect(scriptElement.src).toMatch(/^blob:/);
+      
+      document.body.removeChild(successIframe);
     });
 
     test('should handle iframe load timeout', async () => {
@@ -151,13 +201,16 @@ describe('WalletInjectionService Security Tests', () => {
     });
 
     test('should reject unsupported methods', async () => {
-      await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
       
-      const postMessageSpy = jest.spyOn(mockIframe.contentWindow!, 'postMessage');
+      await service.injectWalletProviders(successIframe);
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
       
       // Simulate request with unsupported method
       const event = {
-        source: mockIframe.contentWindow,
+        source: successIframe.contentWindow,
         data: {
           type: 'WALLET_REQUEST',
           id: 'test-123',
@@ -175,18 +228,23 @@ describe('WalletInjectionService Security Tests', () => {
           error: 'Unsupported method: maliciousMethod'
         }, '*');
       });
+      
+      document.body.removeChild(successIframe);
     });
   });
 
   describe('Transaction Security', () => {
     test('should block transaction signing in iframe context', async () => {
-      await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
       
-      const postMessageSpy = jest.spyOn(mockIframe.contentWindow!, 'postMessage');
+      await service.injectWalletProviders(successIframe);
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
       
       // Simulate sign transaction request
       const event = {
-        source: mockIframe.contentWindow,
+        source: successIframe.contentWindow,
         data: {
           type: 'WALLET_REQUEST',
           id: 'sign-test',
@@ -201,19 +259,24 @@ describe('WalletInjectionService Security Tests', () => {
         expect(postMessageSpy).toHaveBeenCalledWith({
           type: 'WALLET_ERROR',
           id: 'sign-test',
-          error: 'Transaction signing disabled in iframe for security. Please use the main SVMSeek interface.'
+          error: 'Please use the main SVMSeek wallet interface for transaction signing. This ensures your security and protects your funds.'
         }, '*');
       });
+      
+      document.body.removeChild(successIframe);
     });
 
     test('should block message signing in iframe context', async () => {
-      await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
       
-      const postMessageSpy = jest.spyOn(mockIframe.contentWindow!, 'postMessage');
+      await service.injectWalletProviders(successIframe);
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
       
       // Simulate sign message request
       const event = {
-        source: mockIframe.contentWindow,
+        source: successIframe.contentWindow,
         data: {
           type: 'WALLET_REQUEST',
           id: 'sign-msg-test',
@@ -228,21 +291,26 @@ describe('WalletInjectionService Security Tests', () => {
         expect(postMessageSpy).toHaveBeenCalledWith({
           type: 'WALLET_ERROR',
           id: 'sign-msg-test',
-          error: 'Message signing disabled in iframe for security. Please use the main SVMSeek interface.'
+          error: 'Please use the main SVMSeek wallet interface for message signing. This ensures your security and protects against phishing.'
         }, '*');
       });
+      
+      document.body.removeChild(successIframe);
     });
   });
 
   describe('Connection Security', () => {
     test('should allow connection requests with valid wallet', async () => {
-      await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
       
-      const postMessageSpy = jest.spyOn(mockIframe.contentWindow!, 'postMessage');
+      await service.injectWalletProviders(successIframe);
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
       
       // Simulate connect request
       const event = {
-        source: mockIframe.contentWindow,
+        source: successIframe.contentWindow,
         data: {
           type: 'WALLET_REQUEST',
           id: 'connect-test',
@@ -262,17 +330,22 @@ describe('WalletInjectionService Security Tests', () => {
           }
         }, '*');
       });
+      
+      document.body.removeChild(successIframe);
     });
 
     test('should reject connection when no wallet available', async () => {
       const serviceWithoutWallet = new WalletInjectionService(null);
-      await serviceWithoutWallet.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
       
-      const postMessageSpy = jest.spyOn(mockIframe.contentWindow!, 'postMessage');
+      await serviceWithoutWallet.injectWalletProviders(successIframe);
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
       
       // Simulate connect request
       const event = {
-        source: mockIframe.contentWindow,
+        source: successIframe.contentWindow,
         data: {
           type: 'WALLET_REQUEST',
           id: 'connect-fail-test',
@@ -290,6 +363,8 @@ describe('WalletInjectionService Security Tests', () => {
           error: 'No wallet connected to SVMSeek'
         }, '*');
       });
+      
+      document.body.removeChild(successIframe);
     });
   });
 
@@ -304,10 +379,15 @@ describe('WalletInjectionService Security Tests', () => {
     test('should track injection state correctly', async () => {
       expect(service.isInjected()).toBe(false);
       
-      await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
+      
+      await service.injectWalletProviders(successIframe);
       
       expect(service.isInjected()).toBe(true);
       expect(service.getInjectedProviders()).toEqual(['solana', 'phantom', 'svmseek']);
+      
+      document.body.removeChild(successIframe);
     });
   });
 
@@ -316,17 +396,24 @@ describe('WalletInjectionService Security Tests', () => {
       const createObjectURLSpy = jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url');
       const revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
       
-      await service.injectWalletProviders(mockIframe);
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
+      
+      await service.injectWalletProviders(successIframe);
       
       expect(createObjectURLSpy).toHaveBeenCalled();
       expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:test-url');
       
       createObjectURLSpy.mockRestore();
       revokeObjectURLSpy.mockRestore();
+      document.body.removeChild(successIframe);
     });
 
     test('should handle script injection failures gracefully', async () => {
-      // Mock script creation failure
+      // Create iframe with failing script creation but allowed origin
+      const failingIframe = document.createElement('iframe');
+      failingIframe.src = 'http://localhost:3000';
+      
       const mockDocument = {
         readyState: 'complete',
         createElement: jest.fn(() => {
@@ -335,15 +422,19 @@ describe('WalletInjectionService Security Tests', () => {
         head: { appendChild: jest.fn() }
       };
       
-      Object.defineProperty(mockIframe, 'contentDocument', {
+      Object.defineProperty(failingIframe, 'contentDocument', {
         value: mockDocument,
         writable: true
       });
       
-      const result = await service.injectWalletProviders(mockIframe);
+      document.body.appendChild(failingIframe);
+      
+      const result = await service.injectWalletProviders(failingIframe);
       
       expect(result.success).toBe(false);
       expect(result.error).toContain('Script creation failed');
+      
+      document.body.removeChild(failingIframe);
     });
   });
 });

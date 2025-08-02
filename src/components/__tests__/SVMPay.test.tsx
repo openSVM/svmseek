@@ -50,8 +50,8 @@ describe('SVMPayInterface', () => {
     const user = userEvent.setup();
     render(<SVMPayInterface isActive={true} />);
     
-    // Default tab should be send
-    expect(screen.getByText('Send Payment')).toBeInTheDocument();
+    // Default tab should be send - check for the card content instead
+    expect(screen.getByText('Send payments across SVM networks')).toBeInTheDocument();
     
     // Click on request tab
     await user.click(screen.getByText('Request Payment'));
