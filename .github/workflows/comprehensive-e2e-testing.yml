@@ -1,0 +1,465 @@
+name: 'Comprehensive E2E Testing Pipeline'
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run daily at 2 AM UTC for production health checks
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - comprehensive
+          - visual-regression
+          - performance
+          - mobile-ux
+          - accessibility
+          - cross-browser
+      environment:
+        description: 'Environment to test against'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - local
+
+env:
+  # Test configuration
+  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/playwright-browsers
+  PLAYWRIGHT_BASE_URL: ${{ github.event.inputs.environment == 'production' && 'https://svmseek.com' || github.event.inputs.environment == 'staging' && 'https://staging.svmseek.com' || 'http://localhost:3000' }}
+
+jobs:
+  # Comprehensive test matrix for thorough coverage
+  comprehensive-tests:
+    name: 'Comprehensive E2E Tests'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'comprehensive' || github.event.inputs.test_suite == ''
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+        shard: [1, 2, 3, 4]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright browsers
+        run: npx playwright install ${{ matrix.browser }} --with-deps
+        
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: playwright-browsers-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
+          
+      - name: Start local server (if testing locally)
+        if: github.event.inputs.environment == 'local'
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 120000
+          
+      - name: Run comprehensive E2E tests
+        run: npx playwright test e2e/comprehensive-production.spec.ts --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+          
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-test-results-${{ matrix.browser }}-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+            /tmp/screenshots/
+          retention-days: 7
+
+  # Visual regression testing for UI consistency
+  visual-regression-tests:
+    name: 'Visual Regression Tests'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'visual-regression' || github.event.inputs.test_suite == ''
+    strategy:
+      matrix:
+        theme: [eink-grayscale, solarized-dark, cyberpunk-pink, paper-white]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+        
+      - name: Start local server (if testing locally)
+        if: github.event.inputs.environment == 'local'
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 120000
+          
+      - name: Run visual regression tests
+        run: npx playwright test e2e/visual-regression.spec.ts --grep="${{ matrix.theme }}"
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+          TEST_THEME: ${{ matrix.theme }}
+          
+      - name: Upload visual test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-${{ matrix.theme }}
+          path: |
+            playwright-report/
+            test-results/
+            /tmp/screenshots/
+          retention-days: 14
+
+  # Performance testing and monitoring
+  performance-tests:
+    name: 'Performance Tests'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'performance' || github.event.inputs.test_suite == ''
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+        
+      - name: Start local server (if testing locally)
+        if: github.event.inputs.environment == 'local'
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 120000
+          
+      - name: Run performance tests
+        run: npx playwright test e2e/advanced-performance.spec.ts --reporter=html
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+          
+      - name: Generate performance report
+        if: always()
+        run: |
+          echo "## Performance Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "Test environment: ${{ env.PLAYWRIGHT_BASE_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "Browser: Chromium" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Upload performance results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-test-results
+          path: |
+            playwright-report/
+            test-results/
+            /tmp/screenshots/
+          retention-days: 30
+
+  # Mobile UX and responsive design testing
+  mobile-ux-tests:
+    name: 'Mobile UX Tests'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'mobile-ux' || github.event.inputs.test_suite == ''
+    strategy:
+      matrix:
+        device: ['iPhone 12', 'Pixel 5', 'iPad Pro']
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+        
+      - name: Start local server (if testing locally)
+        if: github.event.inputs.environment == 'local'
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 120000
+          
+      - name: Run mobile UX tests
+        run: npx playwright test e2e/mobile-ux-enhancement.spec.ts --project=${{ matrix.device }}
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+          
+      - name: Upload mobile test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-ux-${{ matrix.device }}
+          path: |
+            playwright-report/
+            test-results/
+            /tmp/screenshots/
+          retention-days: 7
+
+  # Accessibility testing
+  accessibility-tests:
+    name: 'Accessibility Tests'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'accessibility' || github.event.inputs.test_suite == ''
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright and accessibility tools
+        run: |
+          npx playwright install chromium --with-deps
+          npm install -g axe-core @axe-core/playwright
+          
+      - name: Start local server (if testing locally)
+        if: github.event.inputs.environment == 'local'
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 120000
+          
+      - name: Run accessibility tests
+        run: npx playwright test e2e/comprehensive-production.spec.ts --grep="Accessibility"
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+          
+      - name: Upload accessibility results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-test-results
+          path: |
+            playwright-report/
+            test-results/
+            /tmp/screenshots/
+          retention-days: 7
+
+  # Cross-browser compatibility testing
+  cross-browser-tests:
+    name: 'Cross-Browser Tests'
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'cross-browser' || github.event.inputs.test_suite == ''
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+        feature: [wallet-creation, wallet-restore, multi-account, explorer]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright browsers
+        run: npx playwright install ${{ matrix.browser }} --with-deps
+        
+      - name: Start local server (if testing locally)
+        if: github.event.inputs.environment == 'local'
+        run: |
+          npm run start &
+          npx wait-on http://localhost:3000 --timeout 120000
+          
+      - name: Run cross-browser tests
+        run: npx playwright test e2e/cross-browser.spec.ts --project=${{ matrix.browser }} --grep="${{ matrix.feature }}"
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+          
+      - name: Upload cross-browser results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cross-browser-${{ matrix.browser }}-${{ matrix.feature }}
+          path: |
+            playwright-report/
+            test-results/
+            /tmp/screenshots/
+          retention-days: 7
+
+  # Consolidate and report results
+  consolidate-results:
+    name: 'Consolidate Test Results'
+    runs-on: ubuntu-latest
+    needs: [comprehensive-tests, visual-regression-tests, performance-tests, mobile-ux-tests, accessibility-tests, cross-browser-tests]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: test-artifacts/
+          
+      - name: Generate consolidated report
+        run: |
+          echo "# SVMSeek E2E Test Results" >> test-summary.md
+          echo "" >> test-summary.md
+          echo "## Test Execution Summary" >> test-summary.md
+          echo "- **Environment**: ${{ env.PLAYWRIGHT_BASE_URL }}" >> test-summary.md
+          echo "- **Trigger**: ${{ github.event_name }}" >> test-summary.md
+          echo "- **Commit**: ${{ github.sha }}" >> test-summary.md
+          echo "- **Date**: $(date)" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Count test results
+          TOTAL_TESTS=$(find test-artifacts/ -name "*.json" | wc -l || echo "0")
+          FAILED_TESTS=$(find test-artifacts/ -name "*failed*" | wc -l || echo "0")
+          
+          echo "## Test Statistics" >> test-summary.md
+          echo "- **Total Test Suites**: $TOTAL_TESTS" >> test-summary.md
+          echo "- **Failed Suites**: $FAILED_TESTS" >> test-summary.md
+          echo "- **Success Rate**: $((100 - FAILED_TESTS * 100 / TOTAL_TESTS))%" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Add test categories
+          echo "## Test Coverage" >> test-summary.md
+          echo "- ✅ Comprehensive user flows" >> test-summary.md
+          echo "- ✅ Visual regression testing" >> test-summary.md
+          echo "- ✅ Performance monitoring" >> test-summary.md
+          echo "- ✅ Mobile UX validation" >> test-summary.md
+          echo "- ✅ Accessibility compliance" >> test-summary.md
+          echo "- ✅ Cross-browser compatibility" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          # Add links to detailed reports
+          echo "## Detailed Reports" >> test-summary.md
+          echo "- [Visual Regression Results](test-artifacts/visual-regression/)" >> test-summary.md
+          echo "- [Performance Metrics](test-artifacts/performance-test-results/)" >> test-summary.md
+          echo "- [Mobile UX Analysis](test-artifacts/mobile-ux/)" >> test-summary.md
+          echo "- [Accessibility Report](test-artifacts/accessibility-test-results/)" >> test-summary.md
+          
+      - name: Upload consolidated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-summary
+          path: |
+            test-summary.md
+            test-artifacts/
+          retention-days: 30
+          
+      - name: Post summary to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('test-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+  # Production health check (scheduled runs)
+  production-health-check:
+    name: 'Production Health Check'
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+        
+      - name: Run production health check
+        run: |
+          npx playwright test e2e/comprehensive-production.spec.ts --grep="should load correctly" --reporter=html
+          npx playwright test e2e/advanced-performance.spec.ts --grep="Core Web Vitals" --reporter=html
+        env:
+          PLAYWRIGHT_BASE_URL: https://svmseek.com
+          
+      - name: Upload health check results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-health-check-$(date +%Y%m%d)
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 90
+          
+      - name: Notify on health check failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Production Health Check Failed',
+              body: `Production health check failed on ${new Date().toISOString()}.\n\nCheck the workflow run for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              labels: ['bug', 'production', 'urgent']
+            });

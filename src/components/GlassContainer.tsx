@@ -10,7 +10,9 @@ interface GlassContainerProps extends BoxProps {
   show?: boolean;
 }
 
-const StyledGlassContainer = styled(Box)<GlassContainerProps>(({ 
+const StyledGlassContainer = styled(Box, {
+  shouldForwardProp: (prop) => !['blur', 'opacity', 'borderRadius', 'animationType'].includes(prop as string),
+})<GlassContainerProps>(({ 
   theme, 
   blur = 10, 
   opacity = 0.1, 
