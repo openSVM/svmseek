@@ -3,6 +3,7 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import React from 'react';
 
 // Global test cleanup to prevent memory leaks
 beforeEach(() => {
@@ -350,6 +351,57 @@ jest.mock('qrcode.react', () => ({
     return `<svg data-testid="qr-code" data-value="${value}">Mock QR Code</svg>`;
   }),
 }));
+
+// Fix JSDOM window.close issue for iframe tests
+if (typeof window !== 'undefined') {
+  // Mock window.close to prevent JSDOM errors
+  const originalClose = window.close;
+  window.close = jest.fn();
+  
+  // Mock iframe handling for JSDOM
+  const originalCreateElement = document.createElement;
+  document.createElement = function(tagName) {
+    const element = originalCreateElement.call(this, tagName);
+    
+    if (tagName.toLowerCase() === 'iframe') {
+      // Add proper iframe mocking to prevent JSDOM errors
+      Object.defineProperty(element, 'contentWindow', {
+        value: {
+          postMessage: jest.fn(),
+          location: { href: 'about:blank' },
+          document: {
+            readyState: 'complete',
+            createElement: jest.fn(() => ({
+              src: '',
+              onload: null,
+              onerror: null
+            })),
+            head: { appendChild: jest.fn() }
+          },
+          close: jest.fn() // Add close method to prevent errors
+        },
+        writable: true,
+        configurable: true
+      });
+      
+      Object.defineProperty(element, 'contentDocument', {
+        value: {
+          readyState: 'complete',
+          createElement: jest.fn(() => ({
+            src: '',
+            onload: null,
+            onerror: null
+          })),
+          head: { appendChild: jest.fn() }
+        },
+        writable: true,
+        configurable: true
+      });
+    }
+    
+    return element;
+  };
+}
 
 // Initialize test globals safely
 initializeTestGlobals();
