@@ -1,6 +1,9 @@
 // CRITICAL: Import complete polyfills FIRST before any other modules
 import './polyfills/index.js';
 
+// Import global error handler early to catch initialization errors
+import './utils/globalErrorHandler';
+
 // Import React and other modules AFTER polyfills
 import React from 'react';
 import { createRoot } from 'react-dom/client';

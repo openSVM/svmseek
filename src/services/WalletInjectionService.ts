@@ -134,14 +134,30 @@ export class WalletInjectionService {
    */
   private setupMessageListener(): void {
     window.addEventListener('message', (event) => {
-      if (!this.iframe || event.source !== this.iframe.contentWindow) {
-        return;
-      }
+      try {
+        if (!this.iframe || event.source !== this.iframe.contentWindow) {
+          return;
+        }
 
-      const { type, id, method, params } = event.data;
-      
-      if (type === 'WALLET_REQUEST') {
-        this.handleWalletRequest(id, method, params);
+        // Safely check if event.data exists and has the expected structure
+        if (!event.data || typeof event.data !== 'object') {
+          logWarn('WalletInjectionService: Received invalid message data', event.data);
+          return;
+        }
+
+        const { type, id, method, params } = event.data;
+        
+        // Additional null/undefined checks
+        if (!type || typeof type !== 'string') {
+          logWarn('WalletInjectionService: Received message without valid type', event.data);
+          return;
+        }
+        
+        if (type === 'WALLET_REQUEST') {
+          this.handleWalletRequest(id, method, params);
+        }
+      } catch (error) {
+        logError('WalletInjectionService: Error processing message:', error, event.data);
       }
     });
   }
@@ -274,18 +290,34 @@ export class WalletInjectionService {
         
         // Handle responses from parent window
         window.addEventListener('message', (event) => {
-          if (event.source !== window.parent) return;
-          
-          const { type, id, result, error } = event.data;
-          
-          if (type === 'WALLET_RESPONSE' && pendingRequests.has(id)) {
-            const { resolve } = pendingRequests.get(id);
-            pendingRequests.delete(id);
-            resolve(result);
-          } else if (type === 'WALLET_ERROR' && pendingRequests.has(id)) {
-            const { reject } = pendingRequests.get(id);
-            pendingRequests.delete(id);
-            reject(new Error(error));
+          try {
+            if (event.source !== window.parent) return;
+            
+            // Safely check if event.data exists
+            if (!event.data || typeof event.data !== 'object') {
+              console.warn('SVMSeek: Received invalid message data in iframe', event.data);
+              return;
+            }
+            
+            const { type, id, result, error } = event.data;
+            
+            // Check if type is valid
+            if (!type || typeof type !== 'string') {
+              console.warn('SVMSeek: Received message without valid type in iframe', event.data);
+              return;
+            }
+            
+            if (type === 'WALLET_RESPONSE' && id && pendingRequests.has(id)) {
+              const { resolve } = pendingRequests.get(id);
+              pendingRequests.delete(id);
+              resolve(result);
+            } else if (type === 'WALLET_ERROR' && id && pendingRequests.has(id)) {
+              const { reject } = pendingRequests.get(id);
+              pendingRequests.delete(id);
+              reject(new Error(error || 'Unknown wallet error'));
+            }
+          } catch (err) {
+            console.error('SVMSeek: Error processing message in iframe:', err, event.data);
           }
         });
         
