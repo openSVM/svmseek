@@ -1,208 +1,343 @@
 /*
- * Centralized CSS Variables for SVMSeek
- * Global design tokens for consistent theming across the application
+ * Modern CSS Variables for SVMSeek
+ * Clean, minimal design system inspired by modern DeFi platforms
  */
 
 :root {
-  /* === Animation Variables === */
+  /* === Core Brand Colors === */
+  --brand-primary: #6366f1;
+  --brand-secondary: #8b5cf6;
+  --brand-accent: #06b6d4;
+  
+  /* === Extended Color Palette === */
+  /* Indigo Scale */
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-300: #a5b4fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+  
+  /* Purple Scale */
+  --purple-50: #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-300: #d8b4fe;
+  --purple-400: #c084fc;
+  --purple-500: #a855f7;
+  --purple-600: #9333ea;
+  --purple-700: #7c3aed;
+  --purple-800: #6b21a8;
+  --purple-900: #581c87;
+  
+  /* Cyan Scale */
+  --cyan-50: #ecfeff;
+  --cyan-100: #cffafe;
+  --cyan-200: #a5f3fc;
+  --cyan-300: #67e8f9;
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+  --cyan-600: #0891b2;
+  --cyan-700: #0e7490;
+  --cyan-800: #155e75;
+  --cyan-900: #164e63;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --success-light: #6ee7b7;
+  --success-dark: #047857;
+  
+  --warning: #f59e0b;
+  --warning-light: #fcd34d;
+  --warning-dark: #d97706;
+  
+  --error: #ef4444;
+  --error-light: #fca5a5;
+  --error-dark: #dc2626;
+  
+  --info: #3b82f6;
+  --info-light: #93c5fd;
+  --info-dark: #1d4ed8;
+  
+  /* === Modern Animations === */
   /* Durations */
-  --animation-duration-fast: 0.15s;
-  --animation-duration-standard: 0.3s;
-  --animation-duration-fade-in: 0.8s;
-  --animation-duration-slide-up: 0.6s;
-  --animation-duration-scale-in: 0.5s;
-  --animation-duration-slide-in: 0.6s;
-  --animation-duration-pulse: 2s;
-  --animation-duration-glow: 2s;
-  --animation-duration-shimmer: 2s;
-  --animation-duration-float: 3s;
-  --animation-duration-bounce: 1s;
-  --animation-duration-loading-dots: 1.5s;
-  --animation-duration-skeleton: 1.5s;
-
-  /* Easing */
-  --animation-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
-  --animation-easing-smooth: ease-in-out;
-  --animation-easing-ease-out: ease-out;
-  --animation-easing-ease-in: ease-in;
-  --animation-easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
-  --animation-easing-entrance: cubic-bezier(0, 0, 0.2, 1);
-  --animation-easing-exit: cubic-bezier(0.4, 0, 1, 1);
-
-  /* Delays */
-  --animation-delay-none: 0s;
-  --animation-delay-short: 0.1s;
-  --animation-delay-medium: 0.2s;
-  --animation-delay-long: 0.3s;
-  --animation-delay-extra-long: 0.5s;
-
-  /* === Glass Morphism Variables === */
+  --animate-fast: 150ms;
+  --animate-normal: 250ms;
+  --animate-slow: 400ms;
+  --animate-slower: 600ms;
+  
+  /* Easing Functions */
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-cubic: cubic-bezier(0.32, 0, 0.67, 0);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* === Glass Morphism System === */
   /* Light Glass */
-  --glass-light-bg: rgba(255, 255, 255, 0.1);
-  --glass-light-backdrop: blur(10px);
-  --glass-light-border: 1px solid rgba(255, 255, 255, 0.2);
-
+  --glass-light: rgba(255, 255, 255, 0.1);
+  --glass-light-border: rgba(255, 255, 255, 0.2);
+  --glass-light-strong: rgba(255, 255, 255, 0.15);
+  
   /* Dark Glass */
-  --glass-dark-bg: rgba(0, 0, 0, 0.1);
-  --glass-dark-backdrop: blur(10px);
-  --glass-dark-border: 1px solid rgba(255, 255, 255, 0.1);
-
-  /* Strong Glass */
-  --glass-strong-bg: rgba(255, 255, 255, 0.2);
-  --glass-strong-backdrop: blur(20px);
-  --glass-strong-border: 1px solid rgba(255, 255, 255, 0.3);
-
-  /* Subtle Glass */
-  --glass-subtle-bg: rgba(255, 255, 255, 0.05);
-  --glass-subtle-backdrop: blur(20px);
-  --glass-subtle-border: 1px solid rgba(255, 255, 255, 0.1);
-
-  /* === Theme Colors === */
-  --color-primary: #8B5CF6;
-  --color-primary-alpha: rgba(139, 92, 246, 0.3);
-  --color-primary-light: #A78BFA;
-  --color-secondary: #06B6D4;
-  --color-success: #10B981;
-  --color-error: #EF4444;
-  --color-warning: #F59E0B;
-  --color-info: #3B82F6;
-
-  /* === Typography === */
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  /* === Spacing === */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-
-  /* === Border Radius === */
-  --border-radius-sm: 8px;
-  --border-radius-md: 12px;
-  --border-radius-lg: 16px;
-  --border-radius-xl: 20px;
-  --border-radius-full: 9999px;
-
-  /* === Shadows === */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
-
-  /* === Z-Index === */
-  --z-index-dropdown: 1000;
-  --z-index-sticky: 1020;
-  --z-index-fixed: 1030;
-  --z-index-modal-backdrop: 1040;
-  --z-index-modal: 1050;
-  --z-index-popover: 1060;
-  --z-index-tooltip: 1070;
+  --glass-dark: rgba(0, 0, 0, 0.1);
+  --glass-dark-border: rgba(255, 255, 255, 0.1);
+  --glass-dark-strong: rgba(0, 0, 0, 0.2);
+  
+  /* Glass Effects */
+  --glass-blur: blur(20px);
+  --glass-blur-strong: blur(40px);
+  --glass-blur-subtle: blur(10px);
+  
+  /* === Modern Spacing Scale === */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem;
+  --space-1: 0.25rem;
+  --space-1-5: 0.375rem;
+  --space-2: 0.5rem;
+  --space-2-5: 0.625rem;
+  --space-3: 0.75rem;
+  --space-3-5: 0.875rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.5rem;
+  --space-11: 2.75rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+  --space-32: 8rem;
+  --space-36: 9rem;
+  --space-40: 10rem;
+  --space-44: 11rem;
+  --space-48: 12rem;
+  --space-52: 13rem;
+  --space-56: 14rem;
+  --space-60: 15rem;
+  --space-64: 16rem;
+  --space-72: 18rem;
+  --space-80: 20rem;
+  --space-96: 24rem;
+  
+  /* === Modern Border Radius === */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* === Typography Scale === */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-8xl: 6rem;
+  --text-9xl: 8rem;
+  
+  /* Font Weights */
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+  
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* === Shadow System === */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  --shadow-none: 0 0 #0000;
+  
+  /* Colored Shadows */
+  --shadow-indigo: 0 10px 15px -3px rgba(99, 102, 241, 0.1), 0 4px 6px -4px rgba(99, 102, 241, 0.1);
+  --shadow-purple: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -4px rgba(139, 92, 246, 0.1);
+  --shadow-cyan: 0 10px 15px -3px rgba(6, 182, 212, 0.1), 0 4px 6px -4px rgba(6, 182, 212, 0.1);
+  
+  /* === Z-Index Scale === */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
 }
 
-/* Dark Theme Overrides */
-[data-theme='dark'] {
-  /* Background Colors */
-  --color-bg-primary: #0a0b0d;
-  --color-bg-secondary: #1a1b1e;
-  --color-bg-tertiary: #222429;
+/* === Component-Specific Variables === */
 
-  /* Text Colors */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b3b3b3;
-  --color-text-tertiary: #96999c;
-
-  /* Border Colors */
-  --color-border-primary: #2e2e2e;
-  --color-border-secondary: rgba(255, 255, 255, 0.1);
-
-  /* Glass Morphism Dark Adjustments */
-  --glass-primary-bg: rgba(26, 27, 30, 0.8);
-  --glass-primary-border: 1px solid rgba(255, 255, 255, 0.1);
-
-  /* Shadows for Dark Theme */
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+/* Button System */
+.btn-system {
+  --btn-padding-x: var(--space-4);
+  --btn-padding-y: var(--space-2);
+  --btn-font-size: var(--text-sm);
+  --btn-font-weight: var(--font-medium);
+  --btn-border-radius: var(--radius-lg);
+  --btn-transition: all var(--animate-fast) var(--ease-out-cubic);
 }
 
-/* Light Theme Overrides */
-[data-theme='light'] {
-  /* Background Colors */
-  --color-bg-primary: #f8fafc;
-  --color-bg-secondary: #ffffff;
-  --color-bg-tertiary: #f1f5f9;
-
-  /* Text Colors */
-  --color-text-primary: #1a1b1e;
-  --color-text-secondary: #64748b;
-  --color-text-tertiary: #94a3b8;
-
-  /* Border Colors */
-  --color-border-primary: #e0e5ec;
-  --color-border-secondary: rgba(0, 0, 0, 0.08);
-
-  /* Glass Morphism Light Adjustments */
-  --glass-primary-bg: rgba(255, 255, 255, 0.9);
-  --glass-primary-border: 1px solid rgba(0, 0, 0, 0.08);
-
-  /* Shadows for Light Theme */
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+.btn-sm {
+  --btn-padding-x: var(--space-3);
+  --btn-padding-y: var(--space-1-5);
+  --btn-font-size: var(--text-xs);
 }
 
-/* === Utility Classes using CSS Variables === */
-.glass-morphism {
-  background: var(--glass-light-bg);
-  backdrop-filter: var(--glass-light-backdrop);
-  border: var(--glass-light-border);
-  border-radius: var(--border-radius-lg);
-  transition: all var(--animation-duration-standard) var(--animation-easing-default);
+.btn-lg {
+  --btn-padding-x: var(--space-6);
+  --btn-padding-y: var(--space-3);
+  --btn-font-size: var(--text-base);
 }
 
-.glass-morphism-strong {
-  background: var(--glass-strong-bg);
-  backdrop-filter: var(--glass-strong-backdrop);
-  border: var(--glass-strong-border);
-  border-radius: var(--border-radius-lg);
+/* Card System */
+.card-system {
+  --card-padding: var(--space-6);
+  --card-border-radius: var(--radius-xl);
+  --card-border-width: 1px;
+  --card-shadow: var(--shadow-sm);
+  --card-transition: all var(--animate-normal) var(--ease-out-cubic);
 }
 
-.glass-morphism-subtle {
-  background: var(--glass-subtle-bg);
-  backdrop-filter: var(--glass-subtle-backdrop);
-  border: var(--glass-subtle-border);
-  border-radius: var(--border-radius-lg);
+/* Input System */
+.input-system {
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --input-font-size: var(--text-sm);
+  --input-border-radius: var(--radius-lg);
+  --input-border-width: 1px;
+  --input-transition: all var(--animate-fast) var(--ease-out-cubic);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* === Responsive Breakpoints === */
+@media (max-width: 640px) {
   :root {
     /* Adjust spacing for mobile */
-    --spacing-md: 0.75rem;
-    --spacing-lg: 1rem;
-    --spacing-xl: 1.5rem;
+    --space-4: 0.875rem;
+    --space-6: 1.25rem;
+    --space-8: 1.75rem;
     
-    /* Smaller border radius on mobile */
-    --border-radius-lg: 12px;
-    --border-radius-xl: 16px;
+    /* Smaller text on mobile */
+    --text-lg: 1rem;
+    --text-xl: 1.125rem;
+    --text-2xl: 1.25rem;
+    
+    /* Card adjustments */
+    --card-padding: var(--space-4);
+    --card-border-radius: var(--radius-lg);
   }
+}
+
+@media (max-width: 480px) {
+  :root {
+    /* Extra small devices */
+    --space-4: 0.75rem;
+    --space-6: 1rem;
+    --card-padding: var(--space-3);
+  }
+}
+
+/* === Modern Utility Classes === */
+
+.glass-card {
+  background: var(--glass-light);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-light-border);
+  border-radius: var(--radius-2xl);
+}
+
+[data-theme='dark'] .glass-card {
+  background: var(--glass-dark);
+  border-color: var(--glass-dark-border);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-primary) 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Modern Focus Ring */
+.focus-ring:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: transform var(--animate-fast) var(--ease-out-cubic);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-glow {
+  transition: box-shadow var(--animate-normal) var(--ease-out-cubic);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-indigo);
 }
 
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --animation-duration-fast: 0.01ms;
-    --animation-duration-standard: 0.01ms;
-    --animation-duration-fade-in: 0.01ms;
-    --animation-duration-slide-up: 0.01ms;
-    --animation-duration-scale-in: 0.01ms;
-    --animation-duration-slide-in: 0.01ms;
-    --animation-duration-pulse: 0.01ms;
-    --animation-duration-glow: 0.01ms;
-    --animation-duration-shimmer: 0.01ms;
-    --animation-duration-float: 0.01ms;
-    --animation-duration-bounce: 0.01ms;
+    --animate-fast: 0ms;
+    --animate-normal: 0ms;
+    --animate-slow: 0ms;
+    --animate-slower: 0ms;
+  }
+  
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: none;
   }
 }
