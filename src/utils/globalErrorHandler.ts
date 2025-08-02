@@ -112,9 +112,31 @@ export class GlobalErrorHandler {
 
   /**
    * Add protection for common null access patterns
+   * 
+   * MONKEY-PATCH WARNING: This method modifies the global EventTarget.prototype.addEventListener
+   * to add defensive null-checking around event listeners. This is necessary because third-party
+   * wallet extensions and other libraries often assume event.data is always defined, which
+   * causes runtime crashes when it's null.
+   * 
+   * The original addEventListener is preserved and wrapped with a safe proxy that:
+   * 1. Validates event objects before passing to listeners
+   * 2. Checks if event.data exists for data-dependent events
+   * 3. Catches and logs null property access errors without crashing the app
+   * 
+   * Impact: All new event listeners will be automatically wrapped with this protection.
+   * Existing listeners are not affected. Performance impact is minimal as the wrapper
+   * only adds basic null checks.
+   * 
+   * @onboarding For new developers: This is a defensive programming pattern to handle
+   * the reality of inconsistent third-party wallet extension behavior. While not ideal,
+   * it prevents the entire application from crashing due to external library bugs.
    */
   private addNullAccessProtection(): void {
     // Monkey patch common problematic patterns
+    // TECHNICAL DEBT: This modifies the global EventTarget prototype. While this adds
+    // defensive protection against third-party extension bugs, it affects all event
+    // listeners in the application. Consider refactoring to a more targeted approach
+    // in future versions if performance becomes a concern.
     const originalEventListener = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function(type: string, listener: any, options?: any) {
       const safeListener = (event: any) => {
@@ -143,9 +165,31 @@ export class GlobalErrorHandler {
 
   /**
    * Add wallet extension conflict protection
+   * 
+   * MONKEY-PATCH WARNING: This method modifies the global Object.defineProperty to intercept
+   * attempts to redefine the window.ethereum property, which is a common source of wallet
+   * extension conflicts. Multiple wallet extensions (MetaMask, Phantom, etc.) try to claim
+   * the same property, causing "Cannot redefine property" errors.
+   * 
+   * The original Object.defineProperty is preserved and wrapped with conflict detection that:
+   * 1. Monitors attempts to define window.ethereum
+   * 2. Checks if the property is already non-configurable 
+   * 3. Gracefully handles conflicts by logging and skipping redefinition
+   * 4. Allows the first extension to succeed, preventing subsequent conflicts
+   * 
+   * Impact: This prevents the entire application from crashing when multiple wallet
+   * extensions are installed. The first extension to define window.ethereum wins.
+   * 
+   * @onboarding For new developers: This is a browser extension ecosystem compatibility
+   * layer. Wallet extensions compete for global properties, and without this protection,
+   * the app crashes with "Cannot redefine property" errors when users have multiple
+   * wallet extensions installed (which is common).
    */
   private addWalletConflictProtection(): void {
     // Monitor for ethereum property conflicts
+    // IMPLEMENTATION NOTE: This creates a proxy around Object.defineProperty specifically
+    // to intercept window.ethereum redefinition attempts. The ethereumConflictDetected
+    // flag ensures we only warn once per session to avoid log spam.
     let ethereumConflictDetected = false;
     
     const originalDefineProperty = Object.defineProperty;

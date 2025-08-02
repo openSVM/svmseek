@@ -1,18 +1,25 @@
 import { waitFor } from '@testing-library/react';
 import { WalletInjectionService } from '../WalletInjectionService';
+import { TIMEOUT_CONSTANTS } from '../../utils/constants';
+import { 
+  createMockWallet, 
+  mockURL, 
+  setupCommonMocks,
+  cleanupAllMocks 
+} from '../../__mocks__/testMocks';
 
-// Mock wallet object
-const mockWallet = {
-  publicKey: {
-    toString: () => 'test-public-key-123'
-  }
-};
+// Mock wallet object using centralized mock
+const mockWallet = createMockWallet();
 
 describe('WalletInjectionService Security Tests', () => {
   let service: WalletInjectionService;
   let mockIframe: HTMLIFrameElement;
 
   beforeEach(() => {
+    // Setup common mocks
+    setupCommonMocks();
+    mockURL();
+    
     service = new WalletInjectionService(mockWallet);
     
     // Create mock iframe
@@ -97,6 +104,7 @@ describe('WalletInjectionService Security Tests', () => {
   afterEach(() => {
     service.cleanup();
     document.body.removeChild(mockIframe);
+    cleanupAllMocks();
   });
 
   describe('Injection Security', () => {
@@ -445,6 +453,84 @@ describe('WalletInjectionService Security Tests', () => {
       expect(result.error).toContain('Failed to inject wallet providers');
       
       document.body.removeChild(failingIframe);
+    });
+  });
+
+  describe('Advanced Security Attack Simulations', () => {
+    test('should prevent XSS injection through iframe src manipulation', async () => {
+      // Simulate XSS attempt through iframe src
+      const maliciousIframe = document.createElement('iframe');
+      maliciousIframe.src = 'javascript:alert("XSS")';
+      
+      const result = await service.injectWalletProviders(maliciousIframe);
+      
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Wallet injection blocked for security reasons');
+    });
+
+    test('should prevent code injection through postMessage', async () => {
+      const successIframe = createMockIframeForSuccessfulInjection();
+      document.body.appendChild(successIframe);
+      
+      await service.injectWalletProviders(successIframe);
+      
+      // Simulate malicious postMessage with code injection attempt
+      const maliciousEvent = {
+        source: successIframe.contentWindow,
+        data: {
+          type: 'WALLET_REQUEST',
+          id: 'inject-test',
+          method: 'eval("malicious code")',
+          params: ['<script>alert("XSS")</script>']
+        }
+      };
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
+      
+      window.dispatchEvent(new MessageEvent('message', maliciousEvent));
+      
+      await waitFor(() => {
+        expect(postMessageSpy).toHaveBeenCalledWith({
+          type: 'WALLET_ERROR',
+          id: 'inject-test',
+          error: 'Unsupported method: eval("malicious code")'
+        }, expect.any(String)); // Should use specific origin, not '*'
+      });
+      
+      document.body.removeChild(successIframe);
+    });
+
+    test('should validate postMessage targetOrigin security', async () => {
+      const successIframe = createMockIframeForSuccessfulInjection();
+      successIframe.src = 'https://app.svmseek.com/test';
+      document.body.appendChild(successIframe);
+      
+      await service.injectWalletProviders(successIframe);
+      
+      const postMessageSpy = jest.spyOn(successIframe.contentWindow!, 'postMessage');
+      
+      const event = {
+        source: successIframe.contentWindow,
+        data: {
+          type: 'WALLET_REQUEST',
+          id: 'origin-test',
+          method: 'connect',
+          params: []
+        }
+      };
+      
+      window.dispatchEvent(new MessageEvent('message', event));
+      
+      await waitFor(() => {
+        expect(postMessageSpy).toHaveBeenCalled();
+        const callArgs = postMessageSpy.mock.calls[0];
+        
+        // Should use specific origin, not '*'
+        expect(callArgs[1]).not.toBe('*');
+        expect(callArgs[1]).toMatch(/^https:\/\/app\.svmseek\.com$/);
+      });
+      
+      document.body.removeChild(successIframe);
     });
   });
 });

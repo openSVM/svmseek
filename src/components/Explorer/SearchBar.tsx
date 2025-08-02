@@ -22,6 +22,7 @@ import {
   TrendingUp as SearchResultIcon,
 } from '@mui/icons-material';
 import { GlassContainer } from '../GlassContainer';
+import { TIMEOUT_CONSTANTS } from '../../utils/constants';
 
 const SearchContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -197,7 +198,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+        onBlur={() => setTimeout(() => setIsFocused(false), TIMEOUT_CONSTANTS.FOCUS_BLUR_DELAY)}
         placeholder="Search transactions, accounts, blocks..."
         InputProps={{
           startAdornment: (

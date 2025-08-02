@@ -1,4 +1,9 @@
 import { logWarn, logError } from '../utils/logger';
+import { TIMEOUT_CONSTANTS } from '../utils/constants';
+import { 
+  createInjectionScriptBlobURL, 
+  cleanupInjectionScriptBlobURL 
+} from './WalletInjectionScript';
 /**
  * Dedicated service for secure wallet injection into iframe-based Web3 browser
  * Handles all wallet provider functionality and security concerns
@@ -51,18 +56,14 @@ export class WalletInjectionService {
       // Wait for iframe to load
       await this.waitForIframeLoad(iframe);
 
-      // Create secure injection script
-      const injectionScript = this.createInjectionScript();
+      // Create secure injection script using pre-built module
+      const scriptUrl = createInjectionScriptBlobURL();
       
-      // Inject using blob URL for security
-      const scriptBlob = new Blob([injectionScript], { type: 'application/javascript' });
-      const scriptUrl = URL.createObjectURL(scriptBlob);
-
       // Execute injection
       const success = await this.executeInjection(iframe, scriptUrl);
       
       // Clean up blob URL
-      URL.revokeObjectURL(scriptUrl);
+      cleanupInjectionScriptBlobURL(scriptUrl);
 
       if (success) {
         const providers = ['solana', 'phantom', 'svmseek'];
@@ -203,165 +204,7 @@ export class WalletInjectionService {
     }
   }
 
-  /**
-   * Create the secure injection script
-   */
-  private createInjectionScript(): string {
-    return `
-      (function() {
-        'use strict';
-        
-        // Prevent multiple injections
-        if (window.svmseekWalletInjected) {
-          return;
-        }
-        
-        let requestId = 0;
-        const pendingRequests = new Map();
-        
-        // Create wallet provider interface
-        const createWalletProvider = (providerName) => ({
-          isConnected: false,
-          publicKey: null,
-          
-          async request(method, params = []) {
-            return new Promise((resolve, reject) => {
-              const id = \`\${providerName}_\${++requestId}\`;
-              pendingRequests.set(id, { resolve, reject });
-              
-              window.parent.postMessage({
-                type: 'WALLET_REQUEST',
-                id,
-                method,
-                params
-              }, '*');
-              
-              // Timeout after 30 seconds
-              setTimeout(() => {
-                if (pendingRequests.has(id)) {
-                  pendingRequests.delete(id);
-                  reject(new Error('Request timeout'));
-                }
-              }, 30000);
-            });
-          },
-          
-          async connect() {
-            try {
-              const result = await this.request('connect');
-              this.isConnected = true;
-              this.publicKey = result.publicKey;
-              return result;
-            } catch (error) {
-              this.isConnected = false;
-              this.publicKey = null;
-              throw error;
-            }
-          },
-          
-          async disconnect() {
-            const result = await this.request('disconnect');
-            this.isConnected = false;
-            this.publicKey = null;
-            return result;
-          },
-          
-          async signTransaction(transaction) {
-            if (!this.isConnected) {
-              throw new Error('Wallet not connected');
-            }
-            return this.request('signTransaction', [transaction]);
-          },
-          
-          async signAllTransactions(transactions) {
-            if (!this.isConnected) {
-              throw new Error('Wallet not connected');
-            }
-            return this.request('signAllTransactions', [transactions]);
-          },
-          
-          async signMessage(message) {
-            if (!this.isConnected) {
-              throw new Error('Wallet not connected');
-            }
-            return this.request('signMessage', [message]);
-          }
-        });
-        
-        // Handle responses from parent window
-        window.addEventListener('message', (event) => {
-          try {
-            if (event.source !== window.parent) return;
-            
-            // Safely check if event.data exists
-            if (!event.data || typeof event.data !== 'object') {
-              console.warn('SVMSeek: Received invalid message data in iframe', event.data);
-              return;
-            }
-            
-            const { type, id, result, error } = event.data;
-            
-            // Check if type is valid
-            if (!type || typeof type !== 'string') {
-              console.warn('SVMSeek: Received message without valid type in iframe', event.data);
-              return;
-            }
-            
-            if (type === 'WALLET_RESPONSE' && id && pendingRequests.has(id)) {
-              const { resolve } = pendingRequests.get(id);
-              pendingRequests.delete(id);
-              resolve(result);
-            } else if (type === 'WALLET_ERROR' && id && pendingRequests.has(id)) {
-              const { reject } = pendingRequests.get(id);
-              pendingRequests.delete(id);
-              reject(new Error(error || 'Unknown wallet error'));
-            }
-          } catch (err) {
-            console.error('SVMSeek: Error processing message in iframe:', err, event.data);
-          }
-        });
-        
-        // Inject wallet providers
-        try {
-          const solanaProvider = createWalletProvider('solana');
-          const phantomProvider = createWalletProvider('phantom');
-          const svmseekProvider = createWalletProvider('svmseek');
-          
-          // Inject providers safely
-          Object.defineProperty(window, 'solana', {
-            value: solanaProvider,
-            writable: false,
-            configurable: false
-          });
-          
-          Object.defineProperty(window, 'phantom', {
-            value: { solana: phantomProvider },
-            writable: false,
-            configurable: false
-          });
-          
-          Object.defineProperty(window, 'svmseek', {
-            value: svmseekProvider,
-            writable: false,
-            configurable: false
-          });
-          
-          // Mark as injected using property descriptor
-          Object.defineProperty(window, 'svmseekWalletInjected', {
-            value: true,
-            writable: false,
-            configurable: false
-          });
-          
-          // Dispatch ready event
-          window.dispatchEvent(new CustomEvent('svmseek-wallet-ready'));
-          
-        } catch (error) {
-          logError('Wallet injection failed:', error);
-        }
-      })();
-    `;
-  }
+
 
   /**
    * Execute the injection script in the iframe
@@ -399,22 +242,31 @@ export class WalletInjectionService {
 
       const timeout = setTimeout(() => {
         reject(new Error('Iframe load timeout'));
-      }, 10000);
+      }, TIMEOUT_CONSTANTS.IFRAME_LOAD);
 
       iframe.onload = () => {
         clearTimeout(timeout);
         // Wait a bit more for DOM to be ready
-        setTimeout(resolve, 100);
+        setTimeout(resolve, TIMEOUT_CONSTANTS.ANIMATION_DELAY);
       };
     });
   }
 
   /**
-   * Post message to iframe safely
+   * Post message to iframe safely with specific origin
+   * Security: Uses iframe's origin instead of '*' for enhanced security
    */
   private postMessageToIframe(message: any): void {
     if (this.iframe?.contentWindow) {
-      this.iframe.contentWindow.postMessage(message, '*');
+      try {
+        // Get the iframe's origin for secure messaging
+        const iframeOrigin = this.iframe.src ? new URL(this.iframe.src).origin : window.location.origin;
+        this.iframe.contentWindow.postMessage(message, iframeOrigin);
+      } catch (error) {
+        logError('Failed to get iframe origin for secure messaging:', error);
+        // Fallback to window origin if iframe origin cannot be determined
+        this.iframe.contentWindow.postMessage(message, window.location.origin);
+      }
     }
   }
 

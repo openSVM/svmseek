@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { Send, Settings, SmartToy, Clear } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { TIMEOUT_CONSTANTS } from '../utils/constants';
 
 const ChatContainer = styled(Paper)(({ theme }) => ({
   height: '600px',
@@ -189,7 +190,10 @@ const ChatInterface: React.FC = () => {
 
     // Mock implementation for demo purposes
     // In a real implementation, you would make actual API calls
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+    // Simulate AI thinking time with configurable delay
+    const thinkingTime = TIMEOUT_CONSTANTS.TYPING_DELAY_MIN + 
+      Math.random() * (TIMEOUT_CONSTANTS.TYPING_DELAY_MAX - TIMEOUT_CONSTANTS.TYPING_DELAY_MIN);
+    await new Promise(resolve => setTimeout(resolve, thinkingTime));
     
     const mockResponses = [
       "I'm a mock AI assistant. In a real implementation, I would connect to the selected AI provider.",
