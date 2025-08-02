@@ -62,10 +62,20 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function clearLocalStorage(page: Page) {
-  await page.evaluate(() => {
-    localStorage.clear();
-    sessionStorage.clear();
-  });
+  try {
+    await page.evaluate(() => {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.clear();
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
+    });
+  } catch (error) {
+    // Ignore security errors when accessing localStorage/sessionStorage
+    // This can happen with external domains or in secure contexts
+    console.log('Storage clearing skipped due to security restrictions:', error.message);
+  }
 }
 
 async function selectLanguage(page: Page, languageCode: string) {
@@ -100,7 +110,7 @@ async function selectTheme(page: Page, themeName: string) {
 test.describe('SVMSeek Wallet - Comprehensive Production Tests', () => {
   
   test.beforeEach(async ({ page, context }) => {
-    // Clear storage before each test
+    // Clear storage before each test (ignore failures for external domains)
     await clearLocalStorage(page);
     
     // Set up console logging
