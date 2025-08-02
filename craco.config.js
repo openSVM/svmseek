@@ -76,7 +76,7 @@ module.exports = {
         assert: require.resolve('assert'),
         util: require.resolve('util'),
         url: require.resolve('url'),
-        os: require.resolve('os'),
+        os: require.resolve('./src/polyfills/os-browser.js'),
         path: require.resolve('path-browserify'),
         vm: require.resolve('vm-browserify'),
         fs: false,

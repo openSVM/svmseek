@@ -22,6 +22,7 @@ const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
 const CreateWalletPage = lazy(() => import('./routes/CreateWallet'));
 const HelpPage = lazy(() => import('./routes/Help'));
+const SurpriseVault = lazy(() => import('./pages/SurpriseVault'));
 
 // Lazy load heavy components
 const OnboardingTutorial = lazy(() => import('./components/OnboardingTutorial'));
@@ -251,6 +252,14 @@ const Pages = () => {
           element={
             <ErrorBoundary context="help center">
               <HelpPage />
+            </ErrorBoundary>
+          } 
+        />
+        <Route 
+          path="/vault" 
+          element={
+            <ErrorBoundary context="surprise vault">
+              <SurpriseVault />
             </ErrorBoundary>
           } 
         />

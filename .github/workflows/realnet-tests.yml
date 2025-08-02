@@ -1,7 +1,16 @@
 name: Periodic Realnet Tests
 
 on:
-  # Run every 6 hours to test against live Solana mainnet
+  # Run on main branch with version tags (for releases)
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  
+  # Run on GitHub releases
+  release:
+    types: [published, created]
+  
+  # Run every 6 hours to test against live Solana mainnet (production monitoring)
   schedule:
     - cron: '0 */6 * * *'
   

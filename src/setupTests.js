@@ -4,6 +4,62 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+// Global test cleanup to prevent memory leaks
+beforeEach(() => {
+  // Clear all mocks before each test
+  jest.clearAllMocks();
+  
+  // Reset VaultService singleton if it exists
+  try {
+    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    if (VaultService && VaultService.reset) {
+      VaultService.reset();
+    }
+  } catch (e) {
+    // VaultService might not be available in all tests
+  }
+});
+
+afterEach(() => {
+  // Clear any remaining timers after each test
+  jest.clearAllTimers();
+  
+  // Clear localStorage to prevent test pollution
+  if (typeof window !== 'undefined' && window.localStorage) {
+    window.localStorage.clear();
+  }
+  
+  // Reset VaultService singleton after each test
+  try {
+    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    if (VaultService && VaultService.reset) {
+      VaultService.reset();
+    }
+  } catch (e) {
+    // VaultService might not be available in all tests
+  }
+});
+
+afterAll(() => {
+  // Final cleanup to prevent memory leaks
+  jest.clearAllTimers();
+  
+  // Force garbage collection if available
+  if (global.gc) {
+    global.gc();
+  }
+  
+  // Final VaultService cleanup
+  try {
+    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    if (VaultService && VaultService.reset) {
+      VaultService.reset();
+    }
+  } catch (e) {
+    // VaultService might not be available in all tests
+  }
+});
+
 // Safe test environment initialization
 function initializeTestGlobals() {
   // Polyfill for TextEncoder/TextDecoder in Jest
@@ -47,6 +103,15 @@ function initializeTestGlobals() {
   // Mock ResizeObserver if not present
   if (typeof global !== 'undefined' && !global.ResizeObserver) {
     global.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  }
+  
+  // Also add to window for browser environment
+  if (typeof window !== 'undefined' && !window.ResizeObserver) {
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
       observe: jest.fn(),
       unobserve: jest.fn(),
       disconnect: jest.fn(),
@@ -157,8 +222,9 @@ jest.mock('tweetnacl', () => {
     secretbox: mockSecretbox,
     randomBytes: jest.fn((length) => {
       const array = new Uint8Array(length);
+      // Use deterministic values for consistent testing
       for (let i = 0; i < length; i++) {
-        array[i] = Math.floor(Math.random() * 256);
+        array[i] = i % 256;
       }
       return array;
     }),
@@ -177,6 +243,21 @@ jest.mock('argon2-browser', () => ({
 
 jest.mock('scrypt-js', () => jest.fn((password, salt, N, r, p, keylen, callback) => {
   callback(null, new Uint8Array(keylen));
+}));
+
+// Mock crypto-browserify PBKDF2 for proper async handling
+jest.mock('crypto-browserify', () => ({
+  pbkdf2: jest.fn((password, salt, iterations, keyLength, digest, callback) => {
+    // Simulate async operation and always call callback with valid data
+    setImmediate(() => {
+      const mockKey = Buffer.alloc(keyLength);
+      // Fill with deterministic pattern for testing
+      for (let i = 0; i < keyLength; i++) {
+        mockKey[i] = i % 256;
+      }
+      callback(null, mockKey);
+    });
+  }),
 }));
 jest.mock('@solana/web3.js', () => {
   const { Buffer } = require('buffer'); // Move Buffer import inside mock factory

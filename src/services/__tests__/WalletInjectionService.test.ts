@@ -73,7 +73,7 @@ describe('WalletInjectionService Security Tests', () => {
       
       const result = await service.injectWalletProviders(crossOriginIframe);
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to inject wallet providers');
+      expect(result.error).toContain('Wallet injection blocked for security reasons: untrusted origin');
     });
 
     test('should sanitize injected script content', async () => {
@@ -343,7 +343,7 @@ describe('WalletInjectionService Security Tests', () => {
       const result = await service.injectWalletProviders(mockIframe);
       
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to inject wallet providers');
+      expect(result.error).toContain('Script creation failed');
     });
   });
 });

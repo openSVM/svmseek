@@ -2,18 +2,14 @@ name: Build Linux Native
 
 on:
   push:
-    branches: [ main, develop, 'feature/*', 'fix/*', 'copilot/*' ]
+    branches: [ main ]
+    tags: [ 'v*' ]
     paths-ignore:
       - 'docs/**'
       - '*.md'
-  pull_request:
-    branches: [ main, develop ]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-  workflow_dispatch:
   release:
     types: [ published ]
+  workflow_dispatch:
 
 jobs:
   build-linux-native:

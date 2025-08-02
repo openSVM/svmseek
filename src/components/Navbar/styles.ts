@@ -238,6 +238,34 @@ export const WalletDisconnectButton = styled(Button)`
   text-align: right;
 `;
 
+export const VaultNavLink = styled(RouterNavLink)`
+  text-decoration: none;
+  font-size: 0.7em;
+  padding: 8px 12px;
+  margin: 0px 4px;
+  text-align: center;
+  border-radius: ${BORDER_RADIUS.md};
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  font-weight: bold;
+  transition: all ease-in 0.2s;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #FFA500, #FFD700);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    color: #000;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 export const Body = styled.div`
   font-family: ${FONTS.main};
   color: ${COLORS.white};

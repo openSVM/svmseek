@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+// Import BrowserRouter as Router and use MemoryRouter separately
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { ConnectionProvider } from './utils/connection';
 import { WalletProvider } from './utils/wallet';
@@ -56,7 +57,7 @@ describe('App Integration Tests', () => {
 
   const renderApp = () => {
     return render(
-      <MemoryRouter>
+      <BrowserRouter>
         <ThemeProvider>
           <ConnectionProvider>
             <WalletProvider>
@@ -64,7 +65,7 @@ describe('App Integration Tests', () => {
             </WalletProvider>
           </ConnectionProvider>
         </ThemeProvider>
-      </MemoryRouter>
+      </BrowserRouter>
     );
   };
 
@@ -146,11 +147,11 @@ describe('App Error Boundaries', () => {
     });
     
     const { container } = render(
-      <MemoryRouter>
+      <BrowserRouter>
         <ThemeProvider>
           <App />
         </ThemeProvider>
-      </MemoryRouter>
+      </BrowserRouter>
     );
     
     // Should not crash the entire app
@@ -171,7 +172,7 @@ describe('App Routing', () => {
     
     await waitFor(() => {
       render(
-        <MemoryRouter initialEntries={['/']}>
+        <BrowserRouter>
           <ThemeProvider>
             <ConnectionProvider>
               <WalletProvider>
@@ -179,7 +180,7 @@ describe('App Routing', () => {
               </WalletProvider>
             </ConnectionProvider>
           </ThemeProvider>
-        </MemoryRouter>
+        </BrowserRouter>
       );
     });
     

@@ -1,14 +1,14 @@
 /* 
- * Animation styles using CSS Variables from cssVariables.css
- * These styles work with the centralized design tokens for consistent theming
- * Import cssVariables.css before this file for proper variable resolution
+ * Modern Animation System for SVMSeek
+ * Clean, performant animations using CSS Variables
+ * Designed for modern DeFi aesthetics
  */
 
-/* Animation Keyframes */
+/* === Core Animation Keyframes === */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -18,63 +18,87 @@
 
 @keyframes slideUp {
   from {
-    transform: translateY(30px);
     opacity: 0;
+    transform: translateY(24px);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
 @keyframes scaleIn {
   from {
-    transform: scale(0.95);
     opacity: 0;
+    transform: scale(0.9);
   }
   to {
+    opacity: 1;
     transform: scale(1);
-    opacity: 1;
   }
 }
 
-@keyframes slideInFromLeft {
+@keyframes scaleOut {
   from {
-    transform: translateX(-20px);
-    opacity: 0;
+    opacity: 1;
+    transform: scale(1);
   }
   to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInFromRight {
-  from {
-    transform: translateX(20px);
     opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+    transform: scale(0.9);
   }
 }
 
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
+    opacity: 1;
   }
   50% {
     transform: scale(1.05);
+    opacity: 0.8;
   }
 }
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
   }
   50% {
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.4);
   }
 }
 
@@ -89,10 +113,19 @@
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -101,204 +134,161 @@
     transform: translateY(0);
   }
   40%, 43% {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   70% {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
   90% {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 }
 
-/* Animation Classes using CSS Variables */
-.fade-in {
-  animation: fadeIn var(--animation-duration-fade-in) var(--animation-easing-default) forwards;
+/* === Animation Classes === */
+.animate-fade-in {
+  animation: fadeIn var(--animate-normal) var(--ease-out-cubic) forwards;
 }
 
-.slide-up {
-  animation: slideUp var(--animation-duration-slide-up) var(--animation-easing-default) forwards;
+.animate-slide-up {
+  animation: slideUp var(--animate-normal) var(--ease-out-cubic) forwards;
 }
 
-.scale-in {
-  animation: scaleIn var(--animation-duration-scale-in) var(--animation-easing-default) forwards;
+.animate-slide-down {
+  animation: slideDown var(--animate-normal) var(--ease-out-cubic) forwards;
 }
 
-.slide-in-left {
-  animation: slideInFromLeft var(--animation-duration-slide-in) var(--animation-easing-default) forwards;
+.animate-slide-in-left {
+  animation: slideInLeft var(--animate-normal) var(--ease-out-cubic) forwards;
 }
 
-.slide-in-right {
-  animation: slideInFromRight var(--animation-duration-slide-in) var(--animation-easing-default) forwards;
+.animate-slide-in-right {
+  animation: slideInRight var(--animate-normal) var(--ease-out-cubic) forwards;
 }
 
-.pulse {
-  animation: pulse var(--animation-duration-pulse) var(--animation-easing-smooth) infinite;
+.animate-scale-in {
+  animation: scaleIn var(--animate-fast) var(--ease-out-cubic) forwards;
 }
 
-.glow {
-  animation: glow var(--animation-duration-glow) var(--animation-easing-smooth) infinite alternate;
+.animate-scale-out {
+  animation: scaleOut var(--animate-fast) var(--ease-in-cubic) forwards;
 }
 
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  background-size: 200px 100%;
-  animation: shimmer var(--animation-duration-shimmer) linear infinite;
+.animate-pulse {
+  animation: pulse 2s var(--ease-in-out-cubic) infinite;
 }
 
-.float {
-  animation: float var(--animation-duration-float) var(--animation-easing-smooth) infinite;
+.animate-glow {
+  animation: glow 2s var(--ease-in-out-cubic) infinite alternate;
 }
 
-.bounce {
-  animation: bounce var(--animation-duration-bounce) var(--animation-easing-smooth);
+.animate-float {
+  animation: float 3s var(--ease-in-out-cubic) infinite;
 }
 
-/* Delay Classes using CSS Variables */
-.animation-delay-100 {
-  animation-delay: var(--animation-delay-short);
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
-.animation-delay-200 {
-  animation-delay: var(--animation-delay-medium);
+.animate-bounce {
+  animation: bounce 1s var(--ease-bounce);
 }
 
-.animation-delay-300 {
-  animation-delay: var(--animation-delay-long);
-}
-
-.animation-delay-400 {
-  animation-delay: 0.4s;
-}
-
-.animation-delay-500 {
-  animation-delay: var(--animation-delay-extra-long);
-}
-
-/* Transition Classes using CSS Variables */
+/* === Transition Classes === */
 .transition-all {
-  transition: all var(--animation-duration-standard) var(--animation-easing-default);
+  transition: all var(--animate-normal) var(--ease-out-cubic);
 }
 
 .transition-fast {
-  transition: all var(--animation-duration-fast) var(--animation-easing-default);
+  transition: all var(--animate-fast) var(--ease-out-cubic);
 }
 
 .transition-slow {
-  transition: all var(--animation-duration-fade-in) var(--animation-easing-default);
+  transition: all var(--animate-slow) var(--ease-out-cubic);
 }
 
-/* Hover Effects */
-.hover-scale:hover {
-  transform: scale(1.05);
+.transition-colors {
+  transition: color var(--animate-fast) var(--ease-out-cubic),
+              background-color var(--animate-fast) var(--ease-out-cubic),
+              border-color var(--animate-fast) var(--ease-out-cubic);
+}
+
+.transition-transform {
+  transition: transform var(--animate-normal) var(--ease-out-cubic);
+}
+
+.transition-opacity {
+  transition: opacity var(--animate-fast) var(--ease-out-cubic);
+}
+
+/* === Modern Hover Effects === */
+.hover-lift {
+  transition: transform var(--animate-fast) var(--ease-out-cubic),
+              box-shadow var(--animate-fast) var(--ease-out-cubic);
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hover-scale {
+  transition: transform var(--animate-fast) var(--ease-out-cubic);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-glow {
+  transition: box-shadow var(--animate-normal) var(--ease-out-cubic);
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+  box-shadow: var(--shadow-indigo);
 }
 
-.hover-blur:hover {
-  backdrop-filter: blur(20px);
+.hover-brightness {
+  transition: filter var(--animate-fast) var(--ease-out-cubic);
 }
 
-/* Glass Morphism Effects using CSS Variables */
-.glass-light {
-  background: var(--glass-light-bg);
-  backdrop-filter: var(--glass-light-backdrop);
-  border: var(--glass-light-border);
+.hover-brightness:hover {
+  filter: brightness(1.1);
 }
 
-.glass-dark {
-  background: var(--glass-dark-bg);
-  backdrop-filter: var(--glass-dark-backdrop);
-  border: var(--glass-dark-border);
+/* === Glass Morphism Effects === */
+.glass {
+  background: var(--glass-light);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-light-border);
+  transition: all var(--animate-normal) var(--ease-out-cubic);
+}
+
+[data-theme='dark'] .glass {
+  background: var(--glass-dark);
+  border-color: var(--glass-dark-border);
 }
 
 .glass-strong {
-  background: var(--glass-strong-bg);
-  backdrop-filter: var(--glass-strong-backdrop);
-  border: var(--glass-strong-border);
+  background: var(--glass-light-strong);
+  backdrop-filter: var(--glass-blur-strong);
 }
 
-/* Responsive Animation Controls */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+[data-theme='dark'] .glass-strong {
+  background: var(--glass-dark-strong);
 }
 
-/* Dark/Light Theme Animations */
-@media (prefers-color-scheme: dark) {
-  .glass-auto {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+.glass-subtle {
+  backdrop-filter: var(--glass-blur-subtle);
 }
 
-@media (prefers-color-scheme: light) {
-  .glass-auto {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  }
-}
-
-/* Loading States using CSS Variables */
-.loading-skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0.1)
-  );
-  background-size: 200px 100%;
-  animation: shimmer var(--animation-duration-skeleton) linear infinite;
-}
-
-.loading-dots::after {
-  content: '.';
-  animation: loadingDots var(--animation-duration-loading-dots) steps(5, end) infinite;
-}
-
-@keyframes loadingDots {
-  0%, 20% {
-    color: rgba(0, 0, 0, 0);
-    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
-  }
-  40% {
-    color: currentColor;
-    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
-  }
-  60% {
-    text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 rgba(0, 0, 0, 0);
-  }
-  80%, 100% {
-    text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 currentColor;
-  }
-}
-
-/* Loading indicator using CSS Variables */
-.loading-indicator {
+/* === Loading States === */
+.loading-shimmer {
   position: relative;
   overflow: hidden;
+  background: var(--bg-card);
 }
 
-.loading-indicator::before {
+.loading-shimmer::before {
   content: '';
   position: absolute;
   top: 0;
@@ -308,9 +298,148 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.1),
     transparent
   );
-  animation: shimmer var(--animation-duration-skeleton) ease-in-out infinite;
-  z-index: 1;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+[data-theme='dark'] .loading-shimmer::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+}
+
+.loading-dots::after {
+  content: '...';
+  animation: loadingDots 1.5s steps(4, end) infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% {
+    color: transparent;
+    text-shadow: 0.25em 0 0 transparent, 0.5em 0 0 transparent;
+  }
+  40% {
+    color: currentColor;
+    text-shadow: 0.25em 0 0 transparent, 0.5em 0 0 transparent;
+  }
+  60% {
+    text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 transparent;
+  }
+  80%, 100% {
+    text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 currentColor;
+  }
+}
+
+/* === Skeleton Loading === */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+[data-theme='dark'] .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+}
+
+/* === Animation Delays === */
+.delay-75 { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* === Stagger Effects === */
+.stagger-children > * {
+  animation-delay: calc(var(--stagger-delay, 100ms) * var(--index, 0));
+}
+
+.stagger-children > *:nth-child(1) { --index: 1; }
+.stagger-children > *:nth-child(2) { --index: 2; }
+.stagger-children > *:nth-child(3) { --index: 3; }
+.stagger-children > *:nth-child(4) { --index: 4; }
+.stagger-children > *:nth-child(5) { --index: 5; }
+.stagger-children > *:nth-child(6) { --index: 6; }
+.stagger-children > *:nth-child(7) { --index: 7; }
+.stagger-children > *:nth-child(8) { --index: 8; }
+
+/* === Focus Animations === */
+.focus-ring {
+  outline: none;
+  position: relative;
+  transition: all var(--animate-fast) var(--ease-out-cubic);
+}
+
+.focus-ring:focus::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--brand-primary);
+  border-radius: inherit;
+  animation: scaleIn var(--animate-fast) var(--ease-out-cubic);
+}
+
+/* === Performance Optimizations === */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* === Accessibility === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-pulse,
+  .animate-glow,
+  .animate-float,
+  .animate-spin,
+  .loading-shimmer::before,
+  .skeleton {
+    animation: none !important;
+  }
+}
+
+/* === Print Styles === */
+@media print {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
 }
