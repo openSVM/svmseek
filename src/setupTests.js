@@ -5,6 +5,21 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 
+// CRITICAL: Mock ResizeObserver FIRST, before any imports
+const mockResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
+global.ResizeObserver = mockResizeObserver;
+if (typeof window !== 'undefined') {
+  window.ResizeObserver = mockResizeObserver;
+}
+if (typeof globalThis !== 'undefined') {
+  globalThis.ResizeObserver = mockResizeObserver;
+}
+
 // Global test cleanup to prevent memory leaks
 beforeEach(() => {
   // Clear all mocks before each test
@@ -101,22 +116,24 @@ function initializeTestGlobals() {
     });
   }
 
-  // Mock ResizeObserver if not present
-  if (typeof global !== 'undefined' && !global.ResizeObserver) {
-    global.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    }));
+  // Mock ResizeObserver globally - must be before any component imports
+  const mockResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  }));
+
+  if (typeof global !== 'undefined') {
+    global.ResizeObserver = mockResizeObserver;
   }
   
-  // Also add to window for browser environment
-  if (typeof window !== 'undefined' && !window.ResizeObserver) {
-    window.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    }));
+  if (typeof window !== 'undefined') {
+    window.ResizeObserver = mockResizeObserver;
+  }
+
+  // Additional ResizeObserver polyfill for older environments
+  if (typeof globalThis !== 'undefined' && !globalThis.ResizeObserver) {
+    globalThis.ResizeObserver = mockResizeObserver;
   }
 
   // Mock matchMedia if not present
@@ -338,6 +355,15 @@ jest.mock('@project-serum/serum', () => ({
 // Mock SVM-Pay to avoid network calls in tests
 jest.mock('svm-pay', () => ({
   SVMPay: jest.fn().mockImplementation(() => ({
+    createTransferUrl: jest.fn(() => 'https://svmpay.mock/transfer?recipient=mock&amount=1'),
+    parseUrl: jest.fn((url) => ({
+      recipient: 'MockRecipientPublicKey123456789',
+      amount: '1.0',
+      network: 'solana',
+      memo: 'Test memo',
+      label: 'Test Payment',
+      message: 'Test message'
+    })),
     generatePaymentURL: jest.fn(() => 'mock-payment-url'),
     validatePaymentURL: jest.fn(() => Promise.resolve(true)),
     processPayment: jest.fn(() => Promise.resolve({ signature: 'mock-signature' })),
@@ -414,5 +440,5 @@ global.console = {
   debug: jest.fn(),
 };
 
-// Initialize test globals safely
+// Initialize test globals safely - call this FIRST
 initializeTestGlobals();

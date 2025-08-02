@@ -5,9 +5,81 @@ import '@testing-library/jest-dom';
 import { SVMPayInterface } from '../SVMPay';
 import { useWallet } from '../../utils/wallet';
 
+// Mock ResizeObserver before any imports
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
+// Mock MUI components that use ResizeObserver
+jest.mock('@mui/material/TextareaAutosize', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: React.forwardRef((props, ref) => React.createElement('textarea', { ref, ...props })),
+  };
+});
+
+jest.mock('@mui/material/TextField', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: React.forwardRef(({ multiline, rows, helperText, error, label, placeholder, ...props }, ref) => {
+      const element = multiline 
+        ? React.createElement('textarea', { ref, rows, placeholder, 'aria-label': label, ...props })
+        : React.createElement('input', { ref, placeholder, 'aria-label': label, ...props });
+      
+      // Create a container div that includes helper text for testing
+      return React.createElement('div', { className: 'mocked-text-field' }, [
+        element,
+        helperText && React.createElement('div', { 
+          key: 'helper', 
+          className: error ? 'error-text' : 'helper-text' 
+        }, helperText)
+      ]);
+    }),
+  };
+});
+
+// Mock GlassContainer to prevent ResizeObserver issues
+jest.mock('../GlassContainer', () => ({
+  __esModule: true,
+  default: ({ children, ...props }) => {
+    const React = require('react');
+    return React.createElement('div', { 'data-testid': 'glass-container', ...props }, children);
+  },
+  GlassContainer: ({ children, ...props }) => {
+    const React = require('react');
+    return React.createElement('div', { 'data-testid': 'glass-container', ...props }, children);
+  },
+}));
+
+// Mock ErrorBoundary to prevent it from catching errors during testing
+jest.mock('../ErrorBoundary', () => ({
+  __esModule: true,
+  default: ({ children }) => children,
+}));
+
 // Mock the wallet hook
 jest.mock('../../utils/wallet');
-jest.mock('svm-pay');
+
+// Mock svm-pay with proper methods
+jest.mock('svm-pay', () => ({
+  SVMPay: jest.fn().mockImplementation(() => ({
+    createTransferUrl: jest.fn((recipient, amount, options) => 
+      `https://svmpay.mock/transfer?recipient=${recipient}&amount=${amount}&network=${options.network}`
+    ),
+    parseUrl: jest.fn((url) => ({
+      recipient: 'MockRecipientPublicKey123456789',
+      amount: '1.0',
+      network: 'solana',
+      memo: 'Test memo',
+      label: 'Test Payment',
+      message: 'Test message'
+    })),
+  }))
+}));
 
 const mockUseWallet = useWallet as jest.MockedFunction<typeof useWallet>;
 
@@ -53,15 +125,22 @@ describe('SVMPayInterface', () => {
     // Default tab should be send - check for the card content instead
     expect(screen.getByText('Send payments across SVM networks')).toBeInTheDocument();
     
-    // Click on request tab
+    // Click on request tab - ActionCard contains the text
+    const requestCard = screen.getByText('Request Payment').closest('[role="none"]') || screen.getByText('Request Payment').parentElement;
     await user.click(screen.getByText('Request Payment'));
     
-    // Look for the heading, not the button text
-    expect(screen.getByRole('heading', { name: 'Generate Payment Request' })).toBeInTheDocument();
+    // Look for the heading in the form area, not the button
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Generate Payment Request' })).toBeInTheDocument();
+    });
     
     // Click on process tab
     await user.click(screen.getByText('Process URL'));
-    expect(screen.getByText('Process Payment URL')).toBeInTheDocument();
+    
+    // Look for the heading in the form area
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Process Payment URL' })).toBeInTheDocument();
+    });
   });
 
   describe('Send Payment Form', () => {
@@ -115,7 +194,7 @@ describe('SVMPayInterface', () => {
       
       const recipientInput = screen.getByPlaceholderText('Enter Solana address');
       const amountInput = screen.getByPlaceholderText('0.00');
-      const sendButton = screen.getByText('Send Payment');
+      const sendButton = screen.getByRole('button', { name: /send payment/i });
       
       // Fill form with wallet's own address
       await user.type(recipientInput, 'FakePublicKey123');
@@ -132,7 +211,7 @@ describe('SVMPayInterface', () => {
       const user = userEvent.setup();
       render(<SVMPayInterface isActive={true} />);
       
-      const sendButton = screen.getByText('Send Payment');
+      const sendButton = screen.getByRole('button', { name: /send payment/i });
       
       // Button should be disabled initially
       expect(sendButton).toBeDisabled();
@@ -157,6 +236,10 @@ describe('SVMPayInterface', () => {
       // Switch to request tab
       await user.click(screen.getByText('Request Payment'));
       
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Generate Payment Request' })).toBeInTheDocument();
+      });
+      
       const amountInput = screen.getByPlaceholderText('0.00');
       
       // Test invalid amount
@@ -173,8 +256,12 @@ describe('SVMPayInterface', () => {
       // Switch to request tab
       await user.click(screen.getByText('Request Payment'));
       
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Generate Payment Request' })).toBeInTheDocument();
+      });
+      
       const amountInput = screen.getByPlaceholderText('0.00');
-      const generateButton = screen.getByText('Generate Payment Request');
+      const generateButton = screen.getByRole('button', { name: /generate payment request/i });
       
       await user.type(amountInput, '5.5');
       await user.click(generateButton);
@@ -214,7 +301,7 @@ describe('SVMPayInterface', () => {
       const user = userEvent.setup();
       render(<SVMPayInterface isActive={true} />);
       
-      const sonicChip = screen.getByText('Sonic SVM');
+      const sonicChip = screen.getByRole('button', { name: 'Sonic SVM' });
       await user.click(sonicChip);
       
       await waitFor(() => {
