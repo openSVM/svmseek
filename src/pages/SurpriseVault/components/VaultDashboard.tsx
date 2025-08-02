@@ -82,17 +82,17 @@ const VaultDashboard: React.FC = () => {
 
   // Cleanup VaultService on component unmount to prevent memory leaks
   useEffect(() => {
-    return () => {
+    const cleanup = () => {
       // Only call destroy if we're unmounting and vaultService exists
       if (vaultService && vaultService.destroy) {
-        const timeoutId = setTimeout(() => {
-          vaultService.destroy();
-        }, 100);
-        
-        return () => clearTimeout(timeoutId);
+        vaultService.destroy();
       }
     };
-  }, []); // Empty dependency array ensures this only runs on mount/unmount
+
+    // Return cleanup function
+    return cleanup;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array intentional - we only want this to run on mount/unmount
 
   const handleJoinLottery = async () => {
     if (!vaultStats || !vaultService || !vaultService.joinLottery) return;
