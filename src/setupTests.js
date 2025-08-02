@@ -8,6 +8,16 @@ import '@testing-library/jest-dom';
 beforeEach(() => {
   // Clear all mocks before each test
   jest.clearAllMocks();
+  
+  // Reset VaultService singleton if it exists
+  try {
+    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    if (VaultService && VaultService.reset) {
+      VaultService.reset();
+    }
+  } catch (e) {
+    // VaultService might not be available in all tests
+  }
 });
 
 afterEach(() => {
@@ -18,6 +28,16 @@ afterEach(() => {
   if (typeof window !== 'undefined' && window.localStorage) {
     window.localStorage.clear();
   }
+  
+  // Reset VaultService singleton after each test
+  try {
+    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    if (VaultService && VaultService.reset) {
+      VaultService.reset();
+    }
+  } catch (e) {
+    // VaultService might not be available in all tests
+  }
 });
 
 afterAll(() => {
@@ -27,6 +47,16 @@ afterAll(() => {
   // Force garbage collection if available
   if (global.gc) {
     global.gc();
+  }
+  
+  // Final VaultService cleanup
+  try {
+    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    if (VaultService && VaultService.reset) {
+      VaultService.reset();
+    }
+  } catch (e) {
+    // VaultService might not be available in all tests
   }
 });
 
@@ -73,6 +103,15 @@ function initializeTestGlobals() {
   // Mock ResizeObserver if not present
   if (typeof global !== 'undefined' && !global.ResizeObserver) {
     global.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
+  }
+  
+  // Also add to window for browser environment
+  if (typeof window !== 'undefined' && !window.ResizeObserver) {
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
       observe: jest.fn(),
       unobserve: jest.fn(),
       disconnect: jest.fn(),
