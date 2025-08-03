@@ -72,10 +72,14 @@ jobs:
           path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
           key: playwright-browsers-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
           
+      - name: Build application for local testing
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
+        run: yarn build
+        
       - name: Start local server (if testing locally)
-        if: github.event.inputs.environment == 'local'
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
         run: |
-          npm run start &
+          yarn build && npx serve -s build -l 3000 &
           npx wait-on http://localhost:3000 --timeout 120000
           
       - name: Run comprehensive E2E tests
@@ -119,10 +123,14 @@ jobs:
       - name: Install Playwright
         run: npx playwright install chromium --with-deps
         
+      - name: Build application for local testing
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
+        run: yarn build
+        
       - name: Start local server (if testing locally)
-        if: github.event.inputs.environment == 'local'
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
         run: |
-          npm run start &
+          yarn build && npx serve -s build -l 3000 &
           npx wait-on http://localhost:3000 --timeout 120000
           
       - name: Run visual regression tests
@@ -164,10 +172,14 @@ jobs:
       - name: Install Playwright
         run: npx playwright install chromium --with-deps
         
+      - name: Build application for local testing
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
+        run: yarn build
+        
       - name: Start local server (if testing locally)
-        if: github.event.inputs.environment == 'local'
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
         run: |
-          npm run start &
+          yarn build && npx serve -s build -l 3000 &
           npx wait-on http://localhost:3000 --timeout 120000
           
       - name: Run performance tests
@@ -218,10 +230,14 @@ jobs:
       - name: Install Playwright
         run: npx playwright install chromium --with-deps
         
+      - name: Build application for local testing
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
+        run: yarn build
+        
       - name: Start local server (if testing locally)
-        if: github.event.inputs.environment == 'local'
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
         run: |
-          npm run start &
+          yarn build && npx serve -s build -l 3000 &
           npx wait-on http://localhost:3000 --timeout 120000
           
       - name: Run mobile UX tests
@@ -264,10 +280,14 @@ jobs:
           npx playwright install chromium --with-deps
           npm install -g axe-core @axe-core/playwright
           
+      - name: Build application for local testing
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
+        run: yarn build
+        
       - name: Start local server (if testing locally)
-        if: github.event.inputs.environment == 'local'
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
         run: |
-          npm run start &
+          yarn build && npx serve -s build -l 3000 &
           npx wait-on http://localhost:3000 --timeout 120000
           
       - name: Run accessibility tests
@@ -312,10 +332,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install ${{ matrix.browser }} --with-deps
         
+      - name: Build application for local testing
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
+        run: yarn build
+        
       - name: Start local server (if testing locally)
-        if: github.event.inputs.environment == 'local'
+        if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
         run: |
-          npm run start &
+          yarn build && npx serve -s build -l 3000 &
           npx wait-on http://localhost:3000 --timeout 120000
           
       - name: Run cross-browser tests

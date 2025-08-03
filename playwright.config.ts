@@ -107,8 +107,8 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests - only for local development */
-  webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
-    command: 'serve -s build -l 3000',
+  webServer: (process.env.PLAYWRIGHT_BASE_URL && !process.env.PLAYWRIGHT_BASE_URL.includes('localhost')) ? undefined : {
+    command: 'yarn build && npx serve -s build -l 3000',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: parseInt(process.env.PLAYWRIGHT_SERVER_TIMEOUT || '240') * 1000, // Default 240 seconds, configurable
