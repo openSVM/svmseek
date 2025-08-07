@@ -244,7 +244,7 @@ describe('WalletInjectionService Security Tests', () => {
           type: 'WALLET_ERROR',
           id: 'test-123',
           error: 'Unsupported method: maliciousMethod'
-        }, '*');
+        }, 'http://localhost:3000');
       });
 
       document.body.removeChild(successIframe);
@@ -278,7 +278,7 @@ describe('WalletInjectionService Security Tests', () => {
           type: 'WALLET_ERROR',
           id: 'sign-test',
           error: 'Please use the main SVMSeek wallet interface for transaction signing. This ensures your security and protects your funds.'
-        }, '*');
+        }, 'http://localhost:3000');
       });
 
       document.body.removeChild(successIframe);
@@ -310,7 +310,7 @@ describe('WalletInjectionService Security Tests', () => {
           type: 'WALLET_ERROR',
           id: 'sign-msg-test',
           error: 'Please use the main SVMSeek wallet interface for message signing. This ensures your security and protects against phishing.'
-        }, '*');
+        }, 'http://localhost:3000');
       });
 
       document.body.removeChild(successIframe);
@@ -344,9 +344,9 @@ describe('WalletInjectionService Security Tests', () => {
           type: 'WALLET_RESPONSE',
           id: 'connect-test',
           result: {
-            publicKey: 'test-public-key-123'
+            publicKey: 'mock-public-key-123456789'
           }
-        }, '*');
+        }, 'http://localhost:3000');
       });
 
       document.body.removeChild(successIframe);
@@ -379,7 +379,7 @@ describe('WalletInjectionService Security Tests', () => {
           type: 'WALLET_ERROR',
           id: 'connect-fail-test',
           error: 'No wallet connected to SVMSeek'
-        }, '*');
+        }, 'http://localhost:3000');
       });
 
       document.body.removeChild(successIframe);
