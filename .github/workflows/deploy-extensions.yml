@@ -1,0 +1,447 @@
+name: Deploy Browser Extensions
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      deploy_chrome:
+        description: 'Deploy to Chrome Web Store'
+        type: boolean
+        default: true
+      deploy_firefox:
+        description: 'Deploy to Firefox Add-ons'
+        type: boolean
+        default: true
+      deploy_edge:
+        description: 'Deploy to Microsoft Edge Add-ons'
+        type: boolean
+        default: true
+      deploy_safari:
+        description: 'Deploy to Safari Extensions (requires manual steps)'
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Dry run mode (build only, no deployment)'
+        type: boolean
+        default: false
+
+# Prevent concurrent deployments
+concurrency:
+  group: extension-deployment
+  cancel-in-progress: false
+
+env:
+  NODE_ENV: production
+  GENERATE_SOURCEMAP: false
+
+jobs:
+  build-extensions:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      chrome-ready: ${{ steps.validate.outputs.chrome-ready }}
+      firefox-ready: ${{ steps.validate.outputs.firefox-ready }}
+      edge-ready: ${{ steps.validate.outputs.edge-ready }}
+      safari-ready: ${{ steps.validate.outputs.safari-ready }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          echo "📦 Installing dependencies..."
+          for i in 1 2 3; do
+            if yarn install --frozen-lockfile --network-timeout 300000; then
+              echo "✅ Dependencies installed successfully"
+              break
+            else
+              echo "❌ Installation attempt $i failed, retrying..."
+              sleep 10
+            fi
+          done
+
+      - name: Get version information
+        id: version
+        run: |
+          # Get version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📋 Extension version: $VERSION"
+          
+          # Check if this is a tagged release
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            TAG_VERSION=${GITHUB_REF#refs/tags/v}
+            echo "🏷️ Tagged release: $TAG_VERSION"
+            if [[ "$TAG_VERSION" != "$VERSION" ]]; then
+              echo "⚠️ Warning: Tag version ($TAG_VERSION) doesn't match package.json ($VERSION)"
+            fi
+          fi
+
+      - name: Build web application
+        run: |
+          echo "🚀 Building web application for extensions..."
+          yarn build
+          
+          if [ ! -d "build" ]; then
+            echo "❌ Build directory not found!"
+            exit 1
+          fi
+          
+          echo "✅ Web build completed"
+          ls -la build/
+
+      - name: Build browser extensions
+        run: |
+          echo "🔨 Building browser extensions..."
+          chmod +x scripts/build-extensions.sh
+          ./scripts/build-extensions.sh
+          
+          echo "📊 Extension build summary:"
+          ls -la extension/*.zip 2>/dev/null || echo "No zip files found"
+          
+          if [ -f "extension/extension-build-info.txt" ]; then
+            cat extension/extension-build-info.txt
+          fi
+
+      - name: Validate extension packages
+        id: validate
+        run: |
+          echo "🔍 Validating extension packages..."
+          
+          # Function to validate extension
+          validate_extension() {
+            local browser=$1
+            local zip_file="extension/svmseek-wallet-${browser}.zip"
+            local build_dir="extension/${browser}/build"
+            
+            if [ -f "$zip_file" ] && [ -d "$build_dir" ]; then
+              # Check if manifest.json exists and is valid
+              if [ -f "$build_dir/manifest.json" ]; then
+                if node -e "JSON.parse(require('fs').readFileSync('$build_dir/manifest.json', 'utf8'))" 2>/dev/null; then
+                  echo "✅ $browser extension: Valid"
+                  echo "${browser}-ready=true" >> $GITHUB_OUTPUT
+                  return 0
+                fi
+              fi
+            fi
+            
+            echo "❌ $browser extension: Invalid or missing"
+            echo "${browser}-ready=false" >> $GITHUB_OUTPUT
+            return 1
+          }
+          
+          # Validate each browser extension
+          validate_extension "chrome"
+          validate_extension "firefox" 
+          validate_extension "edge"
+          validate_extension "safari"
+          
+          echo "🎯 Validation completed"
+
+      - name: Upload extension artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-extensions-${{ steps.version.outputs.version }}
+          path: |
+            extension/*.zip
+            extension/extension-build-info.txt
+            extension/*/build/manifest.json
+          retention-days: 90
+
+  deploy-chrome:
+    if: needs.build-extensions.outputs.chrome-ready == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.deploy_chrome))
+    runs-on: ubuntu-latest
+    needs: build-extensions
+    environment: chrome-webstore
+    
+    steps:
+      - name: Download extension artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: browser-extensions-${{ needs.build-extensions.outputs.version }}
+          path: ./extensions
+
+      - name: Setup Chrome Web Store deployment
+        run: |
+          echo "🌐 Preparing Chrome Web Store deployment..."
+          npm install -g chrome-webstore-upload-cli
+          
+          # Verify Chrome extension exists
+          if [ ! -f "extensions/svmseek-wallet-chrome.zip" ]; then
+            echo "❌ Chrome extension package not found"
+            exit 1
+          fi
+          
+          echo "✅ Chrome extension package ready"
+          ls -la extensions/svmseek-wallet-chrome.zip
+
+      - name: Deploy to Chrome Web Store
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          echo "🚀 Deploying to Chrome Web Store..."
+          
+          # Deploy using chrome-webstore-upload-cli
+          webstore upload \
+            --source extensions/svmseek-wallet-chrome.zip \
+            --extension-id ${{ secrets.CHROME_EXTENSION_ID }} \
+            --client-id ${{ secrets.CHROME_CLIENT_ID }} \
+            --client-secret ${{ secrets.CHROME_CLIENT_SECRET }} \
+            --refresh-token ${{ secrets.CHROME_REFRESH_TOKEN }} \
+            --auto-publish
+          
+          echo "✅ Chrome Web Store deployment completed"
+        env:
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+      - name: Dry run Chrome deployment
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          echo "🧪 Chrome Web Store dry run..."
+          echo "Would deploy: extensions/svmseek-wallet-chrome.zip"
+          echo "Extension ID: ${{ secrets.CHROME_EXTENSION_ID && '[CONFIGURED]' || '[NOT CONFIGURED]' }}"
+          echo "✅ Dry run completed"
+
+  deploy-firefox:
+    if: needs.build-extensions.outputs.firefox-ready == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.deploy_firefox))
+    runs-on: ubuntu-latest
+    needs: build-extensions
+    environment: firefox-addons
+    
+    steps:
+      - name: Download extension artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: browser-extensions-${{ needs.build-extensions.outputs.version }}
+          path: ./extensions
+
+      - name: Setup Firefox Add-ons deployment
+        run: |
+          echo "🦊 Preparing Firefox Add-ons deployment..."
+          npm install -g web-ext
+          
+          # Verify Firefox extension exists
+          if [ ! -f "extensions/svmseek-wallet-firefox.zip" ]; then
+            echo "❌ Firefox extension package not found"
+            exit 1
+          fi
+          
+          echo "✅ Firefox extension package ready"
+          ls -la extensions/svmseek-wallet-firefox.zip
+
+      - name: Deploy to Firefox Add-ons
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          echo "🚀 Deploying to Firefox Add-ons..."
+          
+          # Extract Firefox extension for web-ext
+          mkdir -p firefox-extension
+          cd firefox-extension
+          unzip ../extensions/svmseek-wallet-firefox.zip
+          
+          # Submit to AMO using web-ext
+          web-ext sign \
+            --api-key ${{ secrets.FIREFOX_API_KEY }} \
+            --api-secret ${{ secrets.FIREFOX_API_SECRET }} \
+            --channel listed \
+            --upload-source-code ../extensions/svmseek-wallet-firefox.zip
+          
+          echo "✅ Firefox Add-ons deployment completed"
+        env:
+          FIREFOX_API_KEY: ${{ secrets.FIREFOX_API_KEY }}
+          FIREFOX_API_SECRET: ${{ secrets.FIREFOX_API_SECRET }}
+
+      - name: Dry run Firefox deployment
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          echo "🧪 Firefox Add-ons dry run..."
+          echo "Would deploy: extensions/svmseek-wallet-firefox.zip"
+          echo "API Key: ${{ secrets.FIREFOX_API_KEY && '[CONFIGURED]' || '[NOT CONFIGURED]' }}"
+          echo "✅ Dry run completed"
+
+  deploy-edge:
+    if: needs.build-extensions.outputs.edge-ready == 'true' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.deploy_edge))
+    runs-on: ubuntu-latest
+    needs: build-extensions
+    environment: edge-addons
+    
+    steps:
+      - name: Download extension artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: browser-extensions-${{ needs.build-extensions.outputs.version }}
+          path: ./extensions
+
+      - name: Setup Edge Add-ons deployment
+        run: |
+          echo "📦 Preparing Microsoft Edge Add-ons deployment..."
+          npm install -g edge-addons-api
+          
+          # Verify Edge extension exists
+          if [ ! -f "extensions/svmseek-wallet-edge.zip" ]; then
+            echo "❌ Edge extension package not found"
+            exit 1
+          fi
+          
+          echo "✅ Edge extension package ready"
+          ls -la extensions/svmseek-wallet-edge.zip
+
+      - name: Deploy to Microsoft Edge Add-ons
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          echo "🚀 Deploying to Microsoft Edge Add-ons..."
+          
+          # Deploy using Edge Add-ons API
+          npx edge-addons-api upload \
+            --product-id ${{ secrets.EDGE_PRODUCT_ID }} \
+            --client-id ${{ secrets.EDGE_CLIENT_ID }} \
+            --client-secret ${{ secrets.EDGE_CLIENT_SECRET }} \
+            --access-token-url ${{ secrets.EDGE_ACCESS_TOKEN_URL }} \
+            --zip-path extensions/svmseek-wallet-edge.zip \
+            --submit
+          
+          echo "✅ Microsoft Edge Add-ons deployment completed"
+        env:
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_CLIENT_SECRET: ${{ secrets.EDGE_CLIENT_SECRET }}
+          EDGE_ACCESS_TOKEN_URL: ${{ secrets.EDGE_ACCESS_TOKEN_URL }}
+
+      - name: Dry run Edge deployment
+        if: github.event.inputs.dry_run == 'true'
+        run: |
+          echo "🧪 Microsoft Edge Add-ons dry run..."
+          echo "Would deploy: extensions/svmseek-wallet-edge.zip"
+          echo "Product ID: ${{ secrets.EDGE_PRODUCT_ID && '[CONFIGURED]' || '[NOT CONFIGURED]' }}"
+          echo "✅ Dry run completed"
+
+  deploy-safari:
+    if: needs.build-extensions.outputs.safari-ready == 'true' && (github.event_name == 'workflow_dispatch' && inputs.deploy_safari)
+    runs-on: macos-latest
+    needs: build-extensions
+    environment: safari-appstore
+    
+    steps:
+      - name: Download extension artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: browser-extensions-${{ needs.build-extensions.outputs.version }}
+          path: ./extensions
+
+      - name: Setup Safari deployment
+        run: |
+          echo "🧭 Preparing Safari extension deployment..."
+          echo "⚠️ Note: Safari extension deployment requires manual steps"
+          echo "This job provides the built extension for manual submission"
+          
+          # Verify Safari extension exists
+          if [ ! -f "extensions/svmseek-wallet-safari.zip" ]; then
+            echo "❌ Safari extension package not found"
+            exit 1
+          fi
+          
+          echo "✅ Safari extension package ready"
+          ls -la extensions/svmseek-wallet-safari.zip
+
+      - name: Prepare Safari extension for App Store
+        run: |
+          echo "📱 Safari extensions require conversion to App Store format..."
+          echo "Manual steps required:"
+          echo "1. Download the Safari extension package from artifacts"
+          echo "2. Use Xcode to convert the extension"
+          echo "3. Submit through App Store Connect"
+          echo ""
+          echo "Extension location: extensions/svmseek-wallet-safari.zip"
+          echo "Follow Apple's Safari extension documentation for submission"
+          
+          # Create instruction file
+          cat > safari-deployment-instructions.md << EOF
+          # Safari Extension Deployment Instructions
+          
+          ## Automated Build Completed
+          - Extension package: \`svmseek-wallet-safari.zip\`
+          - Version: ${{ needs.build-extensions.outputs.version }}
+          - Build date: $(date)
+          
+          ## Manual Steps Required
+          
+          1. **Download the Extension Package**
+             - Download \`svmseek-wallet-safari.zip\` from GitHub Actions artifacts
+             
+          2. **Convert to App Store Format**
+             - Open Xcode
+             - Create new Safari Extension project
+             - Import the extension files
+             - Configure app bundle and entitlements
+             
+          3. **Submit to App Store**
+             - Archive the project in Xcode
+             - Upload to App Store Connect
+             - Complete metadata and submit for review
+          
+          ## Resources
+          - [Safari Extension Development Guide](https://developer.apple.com/documentation/safariservices/safari_web_extensions)
+          - [App Store Connect Guide](https://developer.apple.com/app-store-connect/)
+          EOF
+          
+          echo "✅ Safari deployment instructions created"
+
+      - name: Upload Safari instructions
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-deployment-instructions
+          path: safari-deployment-instructions.md
+          retention-days: 30
+
+  deployment-summary:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [build-extensions, deploy-chrome, deploy-firefox, deploy-edge, deploy-safari]
+    
+    steps:
+      - name: Generate deployment summary
+        run: |
+          echo "## 🚀 Browser Extension Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.build-extensions.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Build Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Chrome: ${{ needs.build-extensions.outputs.chrome-ready == 'true' && '✅ Ready' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Firefox: ${{ needs.build-extensions.outputs.firefox-ready == 'true' && '✅ Ready' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Edge: ${{ needs.build-extensions.outputs.edge-ready == 'true' && '✅ Ready' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Safari: ${{ needs.build-extensions.outputs.safari-ready == 'true' && '✅ Ready' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Chrome Web Store: ${{ needs.deploy-chrome.result == 'success' && '✅ Deployed' || needs.deploy-chrome.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Firefox Add-ons: ${{ needs.deploy-firefox.result == 'success' && '✅ Deployed' || needs.deploy-firefox.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Microsoft Edge Add-ons: ${{ needs.deploy-edge.result == 'success' && '✅ Deployed' || needs.deploy-edge.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Safari App Store: ${{ needs.deploy-safari.result == 'success' && '📋 Instructions Created' || needs.deploy-safari.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "**🧪 Dry Run Mode:** No actual deployments were performed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "- Monitor store review processes" >> $GITHUB_STEP_SUMMARY
+          echo "- Check extension pages for approval status" >> $GITHUB_STEP_SUMMARY
+          echo "- Update store listings if needed" >> $GITHUB_STEP_SUMMARY
+          
+          echo "✅ Deployment summary generated"
