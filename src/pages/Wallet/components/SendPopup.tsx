@@ -39,7 +39,7 @@ import {
 import { InputWithMax, InputWithPaste } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
 // import { StyledTab, StyledTabs } from '../styles';
-import FakeInputs from '../../../components/FakeInputs';
+
 import ProgressBar from '../../CreateWallet/components/ProgressBar';
 import { StyledTab, StyledTabs } from '../styles';
 import { useSnackbar } from 'notistack';
@@ -131,7 +131,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo, refr
         padding={'2rem 0'}
       >
         <>
-          <FakeInputs />
+          {/* Removed FakeInputs - no password functionality needed */}
           <RowContainer>
             <Title fontSize="1.6rem">
               Send {tokenSymbolForCheck ? ` ${tokenSymbolForCheck} to` : null}

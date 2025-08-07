@@ -18,7 +18,7 @@ import {
 } from '../../utils/wallet-seed';
 import { useCallAsync } from '../../utils/notifications';
 import { DERIVATION_PATH } from '../../utils/walletProvider/localStorage';
-import FakeInputs from '../../components/FakeInputs';
+
 
 const MainRow = styled(RowContainer)`
   @media (max-width: 540px) {
@@ -73,7 +73,7 @@ export const CreateWalletPage = () => {
       <Helmet>
         <title>Create new SVMSeek Wallet</title>
       </Helmet>
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       <RowContainer height={'100%'} direction={'column'}>
         {/* <Logo
           currentStep={

@@ -17,7 +17,7 @@ import { TextareaWithCopy } from '../../../components/Input';
 import BottomLink from '../../../components/BottomLink';
 import AttentionComponent from '../../../components/Attention';
 import clipboardCopy from 'clipboard-copy';
-import FakeInputs from '../../../components/FakeInputs';
+
 
 const SeedPhraseForm = styled(RowContainer)`
   @media (max-width: 540px) {
@@ -64,7 +64,7 @@ const SaveSeedPhrase = ({
 
   return (
     <>
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       <Card minHeight={'50rem'} width="50rem" height="55rem">
         <Row
           width={'90%'}

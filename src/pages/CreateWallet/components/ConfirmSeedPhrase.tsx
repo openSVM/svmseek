@@ -15,7 +15,7 @@ import {
 
 import BottomLink from '../../../components/BottomLink';
 import { sleep } from '../../../utils/utils';
-import FakeInputs from '../../../components/FakeInputs';
+
 import { BtnCustom } from '../../../components/BtnCustom';
 
 const ConfirmAnswer = styled(RowContainer)`
@@ -95,7 +95,7 @@ const ConfirmSeedPhrase = ({
 
   return (
     <>
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       <Card
         minHeight={'50rem'}
         height="55rem"

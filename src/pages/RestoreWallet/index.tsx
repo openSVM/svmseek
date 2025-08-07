@@ -23,7 +23,7 @@ import { InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@mui/material';
 import DerivableAccounts from './DerivableAccounts';
-import FakeInputs from '../../components/FakeInputs';
+
 import Warning from '../CreateWallet/components/Warning';
 import { isExtension, openExtensionInNewTab } from '../../utils/utils';
 
@@ -64,8 +64,7 @@ export const RestorePage = () => {
       <Helmet>
         <title>Restore SVMSeek Wallet by seed phrase</title>
       </Helmet>
-      <FakeInputs />
-      {}
+      {/* Removed FakeInputs - no password functionality needed */}
       {redirectToWallet && <Navigate to="/wallet" replace />}
       {/* <Logo /> */}
       {/* margin={showDerivation ? '0 0 4rem 0' : '0 0 8rem 0'} */}

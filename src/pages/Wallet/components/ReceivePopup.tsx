@@ -39,7 +39,7 @@ import {
 } from '../styles';
 
 import MetamaskIcon from '../../../images/metamask.png';
-import FakeInputs from '../../../components/FakeInputs';
+
 
 export default function DepositDialog({
   open,
@@ -122,7 +122,7 @@ export default function DepositDialog({
         setTab(0);
       }}
     >
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
 
       {/* <RowContainer padding="1.6rem 0 2.4rem 0">
         <StyledTabs

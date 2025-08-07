@@ -14,7 +14,7 @@ import {
 } from '../../commonStyles';
 
 import BottomLink from '../../../components/BottomLink';
-import FakeInputs from '../../../components/FakeInputs';
+
 import AttentionComponent from '../../../components/Attention';
 import { forgetWallet } from '../../../utils/wallet-seed';
 
@@ -57,7 +57,7 @@ const Warning = ({
 
   return (
     <>
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       <Card minHeight={'50rem'} justify={'space-evenly'}>
         <RowContainer direction={'column'}>
           <StyledTitle fontSize={'2.4rem'} >
