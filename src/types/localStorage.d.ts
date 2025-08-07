@@ -6,7 +6,7 @@ declare module '*/localStorage.js' {
     dPath?: string | undefined,
     accountIndex?: number
   ): any;
-  
+
   export const DERIVATION_PATH: {
     deprecated: undefined;
     bip44: string;

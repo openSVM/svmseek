@@ -171,7 +171,7 @@ const handleMangoInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  
+
   return {
     type: 'mango',
   };
@@ -183,7 +183,7 @@ const handleRayStakeInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  
+
   return {
     type: 'raydium',
   };
@@ -195,24 +195,24 @@ const handleRayLpInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-  
+
   return {
     type: 'raydium',
   };
 };
 
 const decodeMangoInstruction = () => {
-  
+
   return undefined;
 };
 
 const decodeStakeInstruction = () => {
-  
+
   return undefined;
 };
 
 const decodeLpInstruction = () => {
-  
+
   return undefined;
 };
 

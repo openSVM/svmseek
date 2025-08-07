@@ -39,13 +39,13 @@ const SearchButton = styled.button<{ theme?: any }>`
   transition: all 0.2s;
   font-size: 14px;
   margin-right: 16px;
-  
+
   &:hover {
     background: ${props => props.theme?.colors?.background?.primary || 'var(--bg-primary)'};
     border-color: ${props => props.theme?.colors?.interactive?.primary || 'var(--interactive-primary)'};
     color: ${props => props.theme?.colors?.text?.primary || 'var(--text-primary)'};
   }
-  
+
   @media (max-width: 768px) {
     padding: 8px;
     span {
@@ -60,7 +60,7 @@ const ShortcutKeys = styled.div`
   gap: 2px;
   font-size: 12px;
   opacity: 0.7;
-  
+
   @media (max-width: 768px) {
     display: none;
   }
@@ -90,12 +90,12 @@ const ExternalLink = styled.a<ExternalLinkProps & { theme?: any }>`
   background: ${props => props.theme?.colors?.background?.primary || 'var(--bg-primary)'};
   transition: all ease-in 0.2s;
   cursor: pointer;
-  
+
   &:hover {
     background: ${props => props.theme?.colors?.background?.secondary || 'var(--bg-secondary)'};
     color: ${props => props.theme?.colors?.text?.primary || 'var(--text-primary)'};
   }
-  
+
   @media (max-width: 768px) {
     display: ${props => props.show === 'md' ? 'none' : 'block'};
   }
@@ -124,7 +124,7 @@ export const Navbar = () => {
 
   const feedbackLinks = (
     <>
-      <button 
+      <button
         style={{
           background: 'none',
           border: 'none',
@@ -221,7 +221,7 @@ export const Navbar = () => {
               Wallet
             </NavLink>
 
-            <VaultNavLink 
+            <VaultNavLink
               to="/vault"
               role="navigation"
               aria-label="Navigate to Surprise Vault lottery section"
@@ -248,12 +248,12 @@ export const Navbar = () => {
 
             <DropDown hide="lg" text="···">
               {feedbackLinks}
-              <ExternalLink 
+              <ExternalLink
                 theme={currentTheme}
                 href="https://svmseek.com/pools"
                 target="_blank"
                 rel="noopener noreferrer"
-                
+
               >
                 Liquidity Pools
               </ExternalLink>
@@ -262,7 +262,7 @@ export const Navbar = () => {
                 href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
                 target="_blank"
                 rel="noopener noreferrer"
-                
+
               >
                 FAQ
               </ExternalLink>
@@ -279,16 +279,16 @@ export const Navbar = () => {
                 <Key theme={currentTheme}>K</Key>
               </ShortcutKeys>
             </SearchButton>
-            
+
             <div>
               <ThemeToggle />
             </div>
           </RowContainer>
         </WalletContainer>
       </HeaderWrap>
-      
+
       <SearchBar open={searchOpen} onClose={() => setSearchOpen(false)} />
-      
+
       <FeedbackPopup
         theme={muiTheme}
         open={feedbackPopupOpen}

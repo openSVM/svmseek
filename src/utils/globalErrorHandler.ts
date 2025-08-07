@@ -4,6 +4,7 @@
  */
 
 import { logError, logWarn } from './logger';
+import { safeEventListenerUtility } from './SafeEventListenerUtility';
 
 export interface ErrorHandlerConfig {
   enableRecovery: boolean;
@@ -15,6 +16,11 @@ export class GlobalErrorHandler {
   private config: ErrorHandlerConfig;
   private errorCounts: Map<string, number> = new Map();
   private maxErrorsPerType = 5;
+
+  // Logging throttling mechanism
+  private logThrottleMap: Map<string, number> = new Map();
+  private readonly LOG_THROTTLE_WINDOW_MS = 60000; // 1 minute
+  private readonly MAX_LOGS_PER_WINDOW = 10;
 
   constructor(config: Partial<ErrorHandlerConfig> = {}) {
     this.config = {
@@ -112,74 +118,62 @@ export class GlobalErrorHandler {
 
   /**
    * Add protection for common null access patterns
-   * 
+   *
    * MONKEY-PATCH WARNING: This method modifies the global EventTarget.prototype.addEventListener
    * to add defensive null-checking around event listeners. This is necessary because third-party
    * wallet extensions and other libraries often assume event.data is always defined, which
    * causes runtime crashes when it's null.
-   * 
+   *
    * The original addEventListener is preserved and wrapped with a safe proxy that:
    * 1. Validates event objects before passing to listeners
    * 2. Checks if event.data exists for data-dependent events
    * 3. Catches and logs null property access errors without crashing the app
-   * 
+   *
    * Impact: All new event listeners will be automatically wrapped with this protection.
    * Existing listeners are not affected. Performance impact is minimal as the wrapper
    * only adds basic null checks.
-   * 
+   *
    * @onboarding For new developers: This is a defensive programming pattern to handle
    * the reality of inconsistent third-party wallet extension behavior. While not ideal,
    * it prevents the entire application from crashing due to external library bugs.
    */
+  /**
+   * Add protection for common null access patterns using SafeEventListenerUtility
+   *
+   * This method enables global safe event listeners as an opt-in compatibility layer
+   * for wallet extension environments. The SafeEventListenerUtility provides better
+   * encapsulation and control compared to direct monkey-patching.
+   *
+   * @onboarding For new developers: This is a defensive programming pattern to handle
+   * third-party wallet extension compatibility issues. The SafeEventListenerUtility
+   * can be disabled if not needed and provides cleaner separation of concerns.
+   */
   private addNullAccessProtection(): void {
-    // Monkey patch common problematic patterns
-    // TECHNICAL DEBT: This modifies the global EventTarget prototype. While this adds
-    // defensive protection against third-party extension bugs, it affects all event
-    // listeners in the application. Consider refactoring to a more targeted approach
-    // in future versions if performance becomes a concern.
-    const originalEventListener = EventTarget.prototype.addEventListener;
-    EventTarget.prototype.addEventListener = function(type: string, listener: any, options?: any) {
-      const safeListener = (event: any) => {
-        try {
-          // Ensure event and event.data exist before calling listener
-          if (event && typeof listener === 'function') {
-            if (event.data !== undefined && event.data !== null) {
-              return listener.call(this, event);
-            } else if (!event.data) {
-              // For events that don't need data, call anyway
-              return listener.call(this, event);
-            }
-          }
-        } catch (error: any) {
-          if (error?.message?.includes("Cannot read properties of null")) {
-            logWarn('Null property access prevented:', error.message);
-            return;
-          }
-          throw error;
-        }
-      };
+    // Use the safer utility instead of direct monkey-patching
+    safeEventListenerUtility.enableSafeListeners();
 
-      return originalEventListener.call(this, type, safeListener, options);
-    };
+    if (this.config.enableLogging) {
+      logWarn('GlobalErrorHandler: Null access protection enabled via SafeEventListenerUtility');
+    }
   }
 
   /**
    * Add wallet extension conflict protection
-   * 
+   *
    * MONKEY-PATCH WARNING: This method modifies the global Object.defineProperty to intercept
    * attempts to redefine the window.ethereum property, which is a common source of wallet
    * extension conflicts. Multiple wallet extensions (MetaMask, Phantom, etc.) try to claim
    * the same property, causing "Cannot redefine property" errors.
-   * 
+   *
    * The original Object.defineProperty is preserved and wrapped with conflict detection that:
    * 1. Monitors attempts to define window.ethereum
-   * 2. Checks if the property is already non-configurable 
+   * 2. Checks if the property is already non-configurable
    * 3. Gracefully handles conflicts by logging and skipping redefinition
    * 4. Allows the first extension to succeed, preventing subsequent conflicts
-   * 
+   *
    * Impact: This prevents the entire application from crashing when multiple wallet
    * extensions are installed. The first extension to define window.ethereum wins.
-   * 
+   *
    * @onboarding For new developers: This is a browser extension ecosystem compatibility
    * layer. Wallet extensions compete for global properties, and without this protection,
    * the app crashes with "Cannot redefine property" errors when users have multiple
@@ -191,7 +185,7 @@ export class GlobalErrorHandler {
     // to intercept window.ethereum redefinition attempts. The ethereumConflictDetected
     // flag ensures we only warn once per session to avoid log spam.
     let ethereumConflictDetected = false;
-    
+
     const originalDefineProperty = Object.defineProperty;
     Object.defineProperty = function(obj: any, prop: string, descriptor: PropertyDescriptor) {
       if (obj === window && prop === 'ethereum' && !ethereumConflictDetected) {
@@ -226,7 +220,7 @@ export class GlobalErrorHandler {
       'Cannot read property \'type\' of undefined'
     ];
 
-    return recoverablePatterns.some(pattern => 
+    return recoverablePatterns.some(pattern =>
       errorMessage.toLowerCase().includes(pattern.toLowerCase())
     );
   }
@@ -244,7 +238,7 @@ export class GlobalErrorHandler {
       'solflare'
     ];
 
-    return walletPatterns.some(pattern => 
+    return walletPatterns.some(pattern =>
       errorMessage.toLowerCase().includes(pattern.toLowerCase())
     );
   }
@@ -254,13 +248,15 @@ export class GlobalErrorHandler {
    */
   private attemptRecovery(errorMessage: string, errorType: string): void {
     const errorCount = this.errorCounts.get(errorType) || 0;
-    
+
     if (errorCount > this.maxErrorsPerType) {
-      logError('Too many errors of type:', errorType, 'stopping recovery attempts');
+      if (this.shouldLog(errorType)) {
+        logError('Too many errors of type:', errorType, 'stopping recovery attempts');
+      }
       return;
     }
 
-    if (this.config.enableLogging) {
+    if (this.config.enableLogging && this.shouldLog(errorType)) {
       logWarn(`Attempting recovery for ${errorType}:`, errorMessage);
     }
 
@@ -289,6 +285,33 @@ export class GlobalErrorHandler {
         suggestion: 'Multiple wallet extensions detected. Consider disabling conflicting extensions for better compatibility.'
       }
     }));
+  }
+
+  /**
+   * Throttled logging to prevent log spam in global error recovery attempts
+   */
+  private shouldLog(errorType: string): boolean {
+    const currentTime = Date.now();
+    const windowStart = Math.floor(currentTime / this.LOG_THROTTLE_WINDOW_MS) * this.LOG_THROTTLE_WINDOW_MS;
+    const throttleKey = `${errorType}_${windowStart}`;
+
+    const currentCount = this.logThrottleMap.get(throttleKey) || 0;
+    if (currentCount >= this.MAX_LOGS_PER_WINDOW) {
+      return false;
+    }
+
+    this.logThrottleMap.set(throttleKey, currentCount + 1);
+
+    // Clean old entries to prevent memory leaks
+    const cutoff = currentTime - this.LOG_THROTTLE_WINDOW_MS;
+    for (const [key] of this.logThrottleMap) {
+      const keyTime = parseInt(key.split('_').pop() || '0');
+      if (keyTime < cutoff) {
+        this.logThrottleMap.delete(key);
+      }
+    }
+
+    return true;
   }
 
   /**

@@ -61,13 +61,13 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     if (!wallet) {
       throw new Error('Wallet not connected');
     }
-    
+
     // In a real implementation, this would:
     // 1. Show a transaction approval dialog
     // 2. Allow user to review and approve
     // 3. Sign the transaction with the wallet
     // 4. Return the signed transaction
-    
+
     throw new Error('Transaction signing requires user approval - not implemented in iframe context');
   }, [wallet]); // Dependency: wallet - callback needs current wallet instance
 
@@ -75,7 +75,7 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     if (!wallet) {
       throw new Error('Wallet not connected');
     }
-    
+
     // Similar to signTransaction but for multiple transactions
     throw new Error('Batch transaction signing requires user approval - not implemented in iframe context');
   }, [wallet]); // Dependency: wallet - callback needs current wallet instance
@@ -84,7 +84,7 @@ export const WalletProviderContext: React.FC<WalletProviderContextProps> = ({ ch
     if (!wallet) {
       throw new Error('Wallet not connected');
     }
-    
+
     // In a real implementation, this would sign arbitrary messages
     throw new Error('Message signing requires user approval - not implemented in iframe context');
   }, [wallet]); // Dependency: wallet - callback needs current wallet instance

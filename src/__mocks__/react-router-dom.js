@@ -1,21 +1,21 @@
 const React = require('react');
 
-const mockBrowserRouter = ({ children }) => 
+const mockBrowserRouter = ({ children }) =>
   React.createElement('div', { 'data-testid': 'browser-router' }, children);
 
-const mockRoutes = ({ children }) => 
+const mockRoutes = ({ children }) =>
   React.createElement('div', { 'data-testid': 'routes' }, children);
 
-const mockRoute = ({ children }) => 
+const mockRoute = ({ children }) =>
   React.createElement('div', { 'data-testid': 'route' }, children);
 
-const mockNavigate = () => 
+const mockNavigate = () =>
   React.createElement('div', { 'data-testid': 'navigate' }, 'Navigate');
 
-const mockLink = ({ children, to, ...props }) => 
+const mockLink = ({ children, to, ...props }) =>
   React.createElement('a', { href: to, ...props }, children);
 
-const mockNavLink = ({ children, to, ...props }) => 
+const mockNavLink = ({ children, to, ...props }) =>
   React.createElement('a', { href: to, ...props }, children);
 
 module.exports = {

@@ -27,7 +27,7 @@ const RawLoading = ({
     style={style}
   >
     <CircularProgress
-      
+
       size={size}
     />
   </SpinnerContainer>

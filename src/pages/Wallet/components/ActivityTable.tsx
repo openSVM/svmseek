@@ -72,7 +72,7 @@ const TransactionRow = styled(TableRow)<{ txType?: string }>`
   &:hover {
     background-color: var(--bg-secondary);
   }
-  
+
   & .type-indicator {
     width: 4px;
     height: 100%;
@@ -104,21 +104,21 @@ interface ActivityTableProps {
   walletId?: string;
 }
 
-const ActivityTable: React.FC<ActivityTableProps> = ({ 
-  isActive = true, 
+const ActivityTable: React.FC<ActivityTableProps> = ({
+  isActive = true,
   multiAccountManager,
-  walletId 
+  walletId
 }) => {
   const muiTheme = useTheme();
   const { t } = useTranslation();
-  
+
   const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<TransactionRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [syncProgress, setSyncProgress] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
-  
+
   const [filters, setFilters] = useState({
     search: '',
     type: '',
@@ -182,7 +182,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
       if (filters.dateRange) {
         const now = new Date();
         let startDate: Date;
-        
+
         switch (filters.dateRange) {
           case '24h':
             startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -196,22 +196,22 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
           default:
             startDate = new Date(0);
         }
-        
+
         filtered = filtered.filter(tx => new Date(tx.blockTime * 1000) >= startDate);
       }
 
       setFilteredTransactions(filtered);
     };
-    
+
     applyFilters();
   }, [transactions, filters]);
 
   const handleSync = async () => {
     if (!multiAccountManager || !walletId) return;
-    
+
     setIsLoading(true);
     setSyncProgress(0);
-    
+
     try {
       const wallet = multiAccountManager.getState().wallets.find(w => w.id === walletId);
       if (wallet) {
@@ -262,7 +262,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
 
   const handleExport = async () => {
     if (!multiAccountManager) return;
-    
+
     try {
       await multiAccountManager.exportSelectedWallets({
         format: 'csv',
@@ -316,7 +316,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
           <Typography variant="body2">
             {t('activity.syncing')} {syncProgress > 0 && `${syncProgress.toFixed(0)}%`}
           </Typography>
-          <LinearProgress 
+          <LinearProgress
             variant={syncProgress > 0 ? "determinate" : "indeterminate"}
             value={syncProgress}
             sx={{ flexGrow: 1 }}
@@ -336,7 +336,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
             }}
             sx={{ minWidth: 200 }}
           />
-          
+
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>{t('activity.type')}</InputLabel>
             <Select
@@ -453,8 +453,8 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography 
-                      variant="body2" 
+                    <Typography
+                      variant="body2"
                       color={tx.type === 'receive' ? 'success.main' : tx.type === 'send' ? 'error.main' : 'text.primary'}
                       fontWeight="medium"
                     >
@@ -484,10 +484,10 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <Tooltip title={tx.signature}>
-                      <Typography 
-                        variant="body2" 
-                        color="primary" 
-                        sx={{ 
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        sx={{
                           cursor: 'pointer',
                           textDecoration: 'underline',
                           fontFamily: 'monospace'

@@ -7,7 +7,7 @@ export interface ThemeColors {
     glass: string;
     overlay: string;
   };
-  
+
   // Text colors
   text: {
     primary: string;
@@ -16,7 +16,7 @@ export interface ThemeColors {
     accent: string;
     inverse: string;
   };
-  
+
   // Interactive elements
   interactive: {
     primary: string;
@@ -25,7 +25,7 @@ export interface ThemeColors {
     active: string;
     disabled: string;
   };
-  
+
   // Status colors
   status: {
     success: string;
@@ -33,7 +33,7 @@ export interface ThemeColors {
     error: string;
     info: string;
   };
-  
+
   // Border and outline colors
   border: {
     primary: string;
@@ -41,7 +41,7 @@ export interface ThemeColors {
     focus: string;
     glass: string;
   };
-  
+
   // Shadow and depth
   shadow: {
     sm: string;
@@ -60,7 +60,7 @@ export interface ThemeEffects {
     shadow: string;
     opacity: number;
   };
-  
+
   // Border radius
   radius: {
     sm: string;
@@ -69,7 +69,7 @@ export interface ThemeEffects {
     xl: string;
     full: string;
   };
-  
+
   // Animations
   animation: {
     duration: {

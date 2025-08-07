@@ -9,9 +9,9 @@ import {
   isExtension,
   openExtensionInNewTab,
 } from '../../utils/utils';
-import { 
-  InteractiveCard, 
-  DisplayTitle, 
+import {
+  InteractiveCard,
+  DisplayTitle,
   SecondaryText,
   FlexContainer
 } from '../../components/GlassComponents';
@@ -26,7 +26,7 @@ const WelcomeContainer = styled(Box)`
   justify-content: center;
   padding: 2rem;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -35,13 +35,13 @@ const WelcomeContainer = styled(Box)`
     right: 0;
     bottom: 0;
     background: radial-gradient(
-      circle at 30% 20%, 
-      var(--interactive-primary)15 0%, 
+      circle at 30% 20%,
+      var(--interactive-primary)15 0%,
       transparent 50%
     ),
     radial-gradient(
-      circle at 70% 80%, 
-      var(--interactive-secondary)15 0%, 
+      circle at 70% 80%,
+      var(--interactive-secondary)15 0%,
       transparent 50%
     );
     pointer-events: none;
@@ -79,16 +79,16 @@ const OptionCard = styled(InteractiveCard)`
   transition: all var(--animation-duration-normal) var(--animation-easing-bounce);
   text-decoration: none;
   color: inherit;
-  
+
   &:hover {
     transform: translateY(-8px) scale(1.02);
-    
+
     .option-icon {
       transform: scale(1.2);
       color: var(--interactive-primary);
     }
   }
-  
+
   @media (max-width: 768px) {
     height: 220px;
     padding: 1.5rem;
@@ -106,17 +106,17 @@ const OptionIcon = styled(Box)`
   margin-bottom: 1.5rem;
   border: 2px solid var(--border-glass);
   transition: all var(--animation-duration-normal) var(--animation-easing-default);
-  
+
   .MuiSvgIcon-root {
     font-size: 2.5rem;
     color: var(--text-accent);
     transition: all var(--animation-duration-normal) var(--animation-easing-default);
   }
-  
+
   @media (max-width: 768px) {
     width: 60px;
     height: 60px;
-    
+
     .MuiSvgIcon-root {
       font-size: 2rem;
     }
@@ -126,7 +126,7 @@ const OptionIcon = styled(Box)`
 const OptionTitle = styled(DisplayTitle)`
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-  
+
   @media (max-width: 768px) {
     font-size: 1.25rem;
   }
@@ -135,7 +135,7 @@ const OptionTitle = styled(DisplayTitle)`
 const OptionDescription = styled(SecondaryText)`
   font-size: 1rem;
   line-height: 1.5;
-  
+
   @media (max-width: 768px) {
     font-size: 0.875rem;
   }
@@ -183,7 +183,7 @@ export const WelcomePage = () => {
           onClick={() => {
             window.close();
           }}
-          
+
         >
           <CreateWalletOption />
         </a>
@@ -208,16 +208,16 @@ export const WelcomePage = () => {
       <Helmet>
         <title>{t('wallet.title')} | {t('common.welcome')}</title>
       </Helmet>
-      
+
       <WelcomeContent>
         {isExtension && (
           <LogoContainer justify="center">
             <Logo />
           </LogoContainer>
         )}
-        
+
         <WelcomeHeader>
-          <DisplayTitle variant="h2" sx={{ 
+          <DisplayTitle variant="h2" sx={{
             fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
             marginBottom: '1rem',
             background: `linear-gradient(135deg, var(--text-primary), var(--text-accent))`,
@@ -227,7 +227,7 @@ export const WelcomePage = () => {
           }}>
             {t('common.welcome')}
           </DisplayTitle>
-          <SecondaryText variant="h6" sx={{ 
+          <SecondaryText variant="h6" sx={{
             fontSize: { xs: '1rem', sm: '1.125rem' },
             maxWidth: '600px',
             margin: '0 auto',
@@ -241,7 +241,7 @@ export const WelcomePage = () => {
           <Grid size={{ xs: 12, sm: 6, md: 5 }}>
             {renderCreateWalletLink()}
           </Grid>
-          
+
           <Grid size={{ xs: 12, sm: 6, md: 5 }}>
             <Link to="/restore_wallet" >
               <RestoreWalletOption />

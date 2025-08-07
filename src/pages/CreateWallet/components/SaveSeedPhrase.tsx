@@ -79,7 +79,7 @@ const CreatePassword = ({
           </RowContainer>
           <RowContainer>
             <ColorText
-              
+
               background={'rgba(164, 231, 151, 0.5)'}
               needBackground={true}
             >
@@ -91,7 +91,7 @@ const CreatePassword = ({
             <TextareaWithCopy
               height={'11.4rem'}
               value={seedPhrase}
-              
+
               onCopy={() => clipboardCopy(seedPhrase)}
             />
           </RowContainer>
@@ -114,7 +114,7 @@ const CreatePassword = ({
               <StyledLabel
                 htmlFor="savedSeedPhrase"
                 fontSize={'1.4rem'}
-                
+
               >
                 I have saved these words in a safe place.
               </StyledLabel>

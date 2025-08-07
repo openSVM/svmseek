@@ -59,7 +59,7 @@ const GroupCard = styled(Card)<{ groupColor?: string }>`
   margin-bottom: 16px;
   border-left: 4px solid ${props => props.groupColor || '#666'};
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -71,7 +71,7 @@ const WalletCard = styled(Card)<{ isSelected?: boolean }>`
   border: 2px solid ${props => props.isSelected ? '#007AFF' : 'transparent'};
   transition: all 0.3s ease;
   cursor: pointer;
-  
+
   &:hover {
     border-color: #007AFF;
   }
@@ -112,7 +112,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
   multiAccountManager,
 }) => {
   const { t } = useTranslation();
-  
+
   const [state, setState] = useState(multiAccountManager.getState());
   const [showCreateGroupDialog, setShowCreateGroupDialog] = useState(false);
   const [showImportWalletDialog, setShowImportWalletDialog] = useState(false);
@@ -153,7 +153,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
     try {
       const { PublicKey } = await import('@solana/web3.js');
       const publicKey = new PublicKey(walletData.publicKey);
-      
+
       await multiAccountManager.importWallet(
         publicKey,
         walletData.name,
@@ -185,7 +185,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
     const selectedWallets = selected
       ? [...state.selectedWallets, walletId]
       : state.selectedWallets.filter(id => id !== walletId);
-    
+
     multiAccountManager.selectWallets(selectedWallets);
   };
 
@@ -193,7 +193,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
     const selectedGroups = selected
       ? [...state.selectedGroups, groupId]
       : state.selectedGroups.filter(id => id !== groupId);
-    
+
     multiAccountManager.selectGroups(selectedGroups);
   };
 
@@ -275,7 +275,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
         >
           {t('multiAccount.wallets')}
         </Button>
-        
+
         {(state.selectedWallets.length > 0 || state.selectedGroups.length > 0) && (
           <>
             <Button
@@ -315,14 +315,14 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
           size="small"
           sx={{ minWidth: 200 }}
         />
-        
+
         <FormControl size="small" sx={{ minWidth: 120 }}>
           <InputLabel>{t('multiAccount.type')}</InputLabel>
           <Select
             multiple
             value={state.activeFilters.type}
-            onChange={(e) => multiAccountManager.setFilters({ 
-              type: e.target.value as string[] 
+            onChange={(e) => multiAccountManager.setFilters({
+              type: e.target.value as string[]
             })}
           >
             <MenuItem value="derived">{t('multiAccount.derived')}</MenuItem>
@@ -336,8 +336,8 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
           <Select
             multiple
             value={state.activeFilters.status}
-            onChange={(e) => multiAccountManager.setFilters({ 
-              status: e.target.value as string[] 
+            onChange={(e) => multiAccountManager.setFilters({
+              status: e.target.value as string[]
             })}
           >
             <MenuItem value="active">{t('multiAccount.active')}</MenuItem>
@@ -401,7 +401,7 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
           {filteredWallets.map((wallet) => {
             const syncStatus = state.syncStatus.find(s => s.walletId === wallet.id);
             const isSelected = state.selectedWallets.includes(wallet.id);
-            
+
             return (
               <WalletCard
                 key={wallet.id}
@@ -430,13 +430,13 @@ const WalletGroupManager: React.FC<WalletGroupManagerProps> = ({
                             key={groupId}
                             label={group.name}
                             size="small"
-                            
+
                           />
                         ) : null;
                       })}
                     </Box>
                   </Box>
-                  
+
                   {syncStatus?.isSyncing && (
                     <Box mt={2}>
                       <Typography variant="caption">

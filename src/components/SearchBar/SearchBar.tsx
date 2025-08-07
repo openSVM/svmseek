@@ -44,7 +44,7 @@ const Input = styled.input`
   font-size: 18px;
   color: var(--text-primary);
   margin-left: 12px;
-  
+
   &::placeholder {
     color: var(--text-secondary);
   }
@@ -62,7 +62,7 @@ const SearchItem = styled.div<{ selected: boolean }>`
   cursor: pointer;
   background: ${props => props.selected ? 'var(--bg-secondary)' : 'transparent'};
   transition: background 0.2s;
-  
+
   &:hover {
     background: var(--bg-secondary);
   }
@@ -280,7 +280,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ open, onClose }) => {
             <ShortcutKey>Esc</ShortcutKey>
           </Shortcut>
         </SearchInput>
-        
+
         <SearchResults>
           {filteredItems.map((item, index) => (
             <SearchItem
@@ -300,7 +300,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ open, onClose }) => {
               )}
             </SearchItem>
           ))}
-          
+
           {filteredItems.length === 0 && (
             <SearchItem selected={false}>
               <ItemIcon>🔍</ItemIcon>

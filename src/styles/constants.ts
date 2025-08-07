@@ -3,20 +3,20 @@ export const ANIMATION_DURATIONS = {
   // Micro interactions
   fast: '0.15s',
   standard: '0.3s',
-  
+
   // UI transitions
   fadeIn: '0.8s',
   slideUp: '0.6s',
   scaleIn: '0.5s',
   slideInFromSide: '0.6s',
-  
+
   // Special effects
   pulse: '2s',
   glow: '2s',
   shimmer: '2s',
   float: '3s',
   bounce: '1s',
-  
+
   // Loading states
   loadingDots: '1.5s',
   skeleton: '1.5s',

@@ -49,7 +49,7 @@ export type BlueButtonProps = {
 
 const BlueButton = styled(
   ({ isUserConfident, showLoader, children, onClick, style, theme, ...props }: BlueButtonProps) => (
-    <BtnCustom 
+    <BtnCustom
       btnWidth="100%"
       height="4.5rem"
       fontSize="1.4rem"
@@ -111,7 +111,7 @@ export const DevUrlPopup = ({
         <BoldHeader>Warning!</BoldHeader>
         <img
           alt="Warning."
-          
+
           src={Warning}
           onClick={close}
         />
@@ -140,7 +140,7 @@ export const DevUrlPopup = ({
       </RowContainer>
       <RowContainer justify="space-between" margin={'3rem 0 2rem 0'}>
         <a
-          
+
           target="_blank"
           rel="noopener noreferrer"
           href={'https://svmseek.com'}

@@ -1,11 +1,11 @@
 import { styled } from '@mui/material/styles';
-import { 
-  Box, 
-  Card, 
-  Button, 
-  TextField, 
+import {
+  Box,
+  Card,
+  Button,
+  TextField,
   Chip,
-  CircularProgress 
+  CircularProgress
 } from '@mui/material';
 
 // Base card with glass effect following MUI theme

@@ -79,7 +79,7 @@ const Wallet = () => {
   const wallet = useWallet();
   const connection = useConnection();
   const [multiAccountManager, setMultiAccountManager] = useState<MultiAccountManager | null>(null);
-  
+
   const [selectedTokenData, selectToken] = useState<{
     publicKey: PublicKey;
     isAssociatedToken: boolean;
@@ -109,7 +109,7 @@ const Wallet = () => {
     if (connection && !multiAccountManager) {
       const manager = new MultiAccountManager(connection);
       setMultiAccountManager(manager);
-      
+
       // Add current wallet to manager if not already there
       manager.importWallet(
         wallet.publicKey,
@@ -247,8 +247,8 @@ const Wallet = () => {
           setCloseTokenAccountDialogOpen={setCloseTokenAccountDialogOpen}
         />
 
-        <ActivityTable 
-          isActive={activeTab === 'activity'} 
+        <ActivityTable
+          isActive={activeTab === 'activity'}
           multiAccountManager={multiAccountManager}
           walletId={`wallet_${wallet.publicKey.toBase58()}`}
         />
@@ -258,31 +258,31 @@ const Wallet = () => {
             <WalletGroupManager multiAccountManager={multiAccountManager} />
           </div>
         )}
-        
+
         {activeTab === 'chat' && (
           <div  className="fade-in">
             <ChatInterface />
           </div>
         )}
-        
+
         {activeTab === 'explorer' && (
           <div  className="fade-in">
             <ExplorerInterface isActive={true} />
           </div>
         )}
-        
+
         {activeTab === 'browser' && (
           <div  className="fade-in">
             <WebBrowser isActive={true} />
           </div>
         )}
-        
+
         {activeTab === 'svmpay' && (
           <div  className="fade-in">
             <SVMPayInterface isActive={true} />
           </div>
         )}
-        
+
         {activeTab === 'aea' && (
           <div  className="fade-in">
             <AEANetworkInterface isActive={true} />

@@ -103,7 +103,7 @@ export const RestorePage = () => {
                 direction={'column'}
                 height={'50%'}
                 justify={'space-evenly'}
-                
+
               >
                 <InputWithPaste
                   type="text"

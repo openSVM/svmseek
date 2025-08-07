@@ -9,12 +9,12 @@ function patchCryptoLibraries() {
     return (ecc) => {
       try {
         const bip32 = originalFactory(ecc);
-        
+
         // Wrap problematic methods with safety checks
         const originalFromSeed = bip32.fromSeed;
         const originalFromPrivateKey = bip32.fromPrivateKey;
         const originalFromPublicKey = bip32.fromPublicKey;
-        
+
         if (originalFromSeed) {
           bip32.fromSeed = function(seed, network) {
             try {
@@ -30,7 +30,7 @@ function patchCryptoLibraries() {
             }
           };
         }
-        
+
         if (originalFromPrivateKey) {
           bip32.fromPrivateKey = function(privateKey, chainCode, network) {
             try {
@@ -49,7 +49,7 @@ function patchCryptoLibraries() {
             }
           };
         }
-        
+
         if (originalFromPublicKey) {
           bip32.fromPublicKey = function(publicKey, chainCode, network) {
             try {
@@ -68,7 +68,7 @@ function patchCryptoLibraries() {
             }
           };
         }
-        
+
         return bip32;
       } catch (error) {
         logError('BIP32Factory error caught:', error);
@@ -76,10 +76,10 @@ function patchCryptoLibraries() {
       }
     };
   };
-  
+
   // Use safer approach that doesn't modify global require
   const originalRequire = require;
-  
+
   // Create safe BIP32 patching function
   const patchBIP32Module = () => {
     try {
@@ -117,7 +117,7 @@ function patchCryptoLibraries() {
   };
 
   safeGlobalPatch();
-  
+
   devLog('BIP32 crypto library patches applied');
 }
 

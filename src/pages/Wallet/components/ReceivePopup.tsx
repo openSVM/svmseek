@@ -307,7 +307,7 @@ function SolletSwapDepositAddress({
           <Title
             fontSize="1.4rem"
             fontFamily="Avenir Next Demi"
-            
+
           >
             To convert, you must already have SOL in your wallet
           </Title>

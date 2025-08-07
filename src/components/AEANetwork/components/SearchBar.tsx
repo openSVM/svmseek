@@ -55,12 +55,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           background: 'rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          
+
           '&:hover': {
             background: 'rgba(255, 255, 255, 0.08)',
             border: '1px solid rgba(255, 255, 255, 0.2)',
           },
-          
+
           '&.Mui-focused': {
             background: 'rgba(255, 255, 255, 0.1)',
             border: '1px solid rgba(139, 92, 246, 0.5)',

@@ -1,6 +1,6 @@
 /**
  * Centralized Test Mocks
- * 
+ *
  * This file consolidates all commonly used test mocks to avoid duplication
  * across test files and ensure consistency in mock implementations.
  */
@@ -18,15 +18,15 @@ const mockCreateTweetNaCl = () => {
   }) as jest.MockedFunction<any> & {
     open: jest.MockedFunction<any>;
     keyLength: number;
-    nonceLength: number; 
+    nonceLength: number;
     overheadLength: number;
   };
-  
+
   mockSecretbox.open = jest.fn((ciphertext: Uint8Array, nonce: Uint8Array, key: Uint8Array) => {
     if (ciphertext.length <= 16) return null;
     return ciphertext.slice(16);
   });
-  
+
   mockSecretbox.keyLength = 32;
   mockSecretbox.nonceLength = 24;
   mockSecretbox.overheadLength = 16;
@@ -58,7 +58,7 @@ const mockCreateCryptoBrowserify = () => ({
     setTimeout(() => {
       // Return stable mock key based on password for deterministic testing
       const passwordBytes = Buffer.from(password, 'utf8');
-      const mockKey = Buffer.from(Array.from({ length: keyLength }, (_, i) => 
+      const mockKey = Buffer.from(Array.from({ length: keyLength }, (_, i) =>
         (passwordBytes[i % passwordBytes.length] + i) % 256
       ));
       callback(null, mockKey);
@@ -83,7 +83,7 @@ const mockCreateArgon2Browser = () => ({
     // Create deterministic hash based on password
     const passwordBytes = Buffer.from(options.pass, 'utf8');
     return {
-      hash: new Uint8Array(Array.from({ length: 32 }, (_, i) => 
+      hash: new Uint8Array(Array.from({ length: 32 }, (_, i) =>
         (passwordBytes[i % passwordBytes.length] + i) % 256
       )),
       hashHex: 'abcdef123456789',
@@ -114,7 +114,7 @@ export const createResizeObserverMock = () => {
     unobserve: jest.fn(),
     disconnect: jest.fn(),
   }));
-  
+
   return mockResizeObserver as unknown as typeof ResizeObserver;
 };
 
@@ -138,7 +138,7 @@ export const createIntersectionObserverMock = () => {
     thresholds: [],
     takeRecords: jest.fn().mockReturnValue([]),
   }));
-  
+
   return mockIntersectionObserver as unknown as typeof IntersectionObserver;
 };
 
@@ -180,7 +180,7 @@ export const mockMatchMedia = () => {
  */
 export const createLocalStorageMock = () => {
   const store: Record<string, string> = {};
-  
+
   return {
     getItem: jest.fn((key: string) => store[key] || null),
     setItem: jest.fn((key: string, value: string) => {
@@ -233,17 +233,17 @@ export const createURLMock = () => ({
 export const mockURL = () => {
   const mockCreateObjectURL = jest.fn((blob) => `blob:mock-url-${Math.random()}`);
   const mockRevokeObjectURL = jest.fn();
-  
+
   // Store original URL constructor
   const OriginalURL = global.URL;
-  
+
   // Only mock the static methods we need, not the constructor
   Object.defineProperty(global.URL, 'createObjectURL', {
     value: mockCreateObjectURL,
     writable: true,
     configurable: true,
   });
-  
+
   Object.defineProperty(global.URL, 'revokeObjectURL', {
     value: mockRevokeObjectURL,
     writable: true,
@@ -273,11 +273,11 @@ export const createConsoleMock = () => ({
 export const mockConsole = () => {
   const originalConsole = console;
   const mockedMethods = createConsoleMock();
-  
+
   Object.keys(mockedMethods).forEach(method => {
     (console as any)[method] = mockedMethods[method as keyof typeof mockedMethods];
   });
-  
+
   return {
     restore: () => {
       Object.keys(mockedMethods).forEach(method => {
@@ -392,7 +392,7 @@ export const setupCommonMocks = () => {
   mockSessionStorage();
   mockURL();
   mockFetch();
-  
+
   return {
     resizeObserver: global.ResizeObserver,
     intersectionObserver: global.IntersectionObserver,
@@ -420,7 +420,7 @@ export const setupAllMocks = () => {
   setupCommonMocks();
   setupCryptoMocks();
   mockMUIComponents();
-  
+
   return {
     common: setupCommonMocks(),
     console: mockConsole(),
@@ -437,7 +437,7 @@ export const cleanupAllMocks = () => {
   jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
-  
+
   // Reset console if it was mocked
   if ((console as any).__mocked) {
     (console as any).__restore?.();

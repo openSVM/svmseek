@@ -16,7 +16,7 @@ const PWAPrompt = styled(GlassContainer)`
   opacity: ${props => props.show ? '1' : '0'};
   transition: all 0.3s ease;
   pointer-events: ${props => props.show ? 'auto' : 'none'};
-  
+
   @media (max-width: 480px) {
     bottom: 1rem;
     right: 1rem;
@@ -62,11 +62,11 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onInstall, o
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      
+
       // Check if user has already dismissed the prompt
       const dismissed = localStorage.getItem('svmseek-pwa-prompt-dismissed');
       const lastDismissed = localStorage.getItem('svmseek-pwa-prompt-last-dismissed');
-      
+
       // Only show if not dismissed or if it's been more than 7 days since last dismissal
       if (!dismissed || (lastDismissed && Date.now() - parseInt(lastDismissed) > 7 * 24 * 60 * 60 * 1000)) {
         setShow(true);
@@ -78,13 +78,13 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onInstall, o
     // Check if app is already installed
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const isInWebAppiOS = (window.navigator as any).standalone === true;
-    
+
     if (!isStandalone && !isInWebAppiOS) {
       // Show prompt after a delay if not already installed
       const timer = setTimeout(() => {
         const dismissed = localStorage.getItem('svmseek-pwa-prompt-dismissed');
         const lastDismissed = localStorage.getItem('svmseek-pwa-prompt-last-dismissed');
-        
+
         if (!dismissed || (lastDismissed && Date.now() - parseInt(lastDismissed) > 7 * 24 * 60 * 60 * 1000)) {
           if (!deferredPrompt) {
             setShow(true);
@@ -105,7 +105,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onInstall, o
       try {
         await deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        
+
         if (outcome === 'accepted') {
           localStorage.setItem('svmseek-pwa-installed', 'true');
           localStorage.removeItem('svmseek-pwa-prompt-dismissed');
@@ -121,7 +121,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onInstall, o
         logWarn('PWA install prompt failed:', error);
         onDismiss();
       }
-      
+
       setDeferredPrompt(null);
       setShow(false);
     } else {
@@ -158,19 +158,19 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ onInstall, o
       <CloseButton onClick={handleDismiss}>
         <Close fontSize="small" />
       </CloseButton>
-      
+
       <InstallIcon>
         <GetApp />
       </InstallIcon>
-      
+
       <Typography variant="h6" align="center" gutterBottom>
         Install SVMSeek Wallet
       </Typography>
-      
+
       <Typography variant="body2" align="center" paragraph>
         Get the full app experience with offline access and faster loading
       </Typography>
-      
+
       <Box display="flex" gap={1} mt={2}>
         <Button
           variant="outlined"

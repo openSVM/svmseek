@@ -8,17 +8,17 @@ import { ANIMATION_DURATIONS, ANIMATION_EASINGS, GLASS_EFFECTS } from './constan
  */
 export const applyAnimationConstants = () => {
   const root = document.documentElement;
-  
+
   // Apply animation durations
   Object.entries(ANIMATION_DURATIONS).forEach(([key, value]) => {
     root.style.setProperty(`--animation-duration-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value);
   });
-  
+
   // Apply easing functions
   Object.entries(ANIMATION_EASINGS).forEach(([key, value]) => {
     root.style.setProperty(`--animation-easing-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`, value);
   });
-  
+
   // Apply glass effects
   Object.entries(GLASS_EFFECTS).forEach(([effectName, effect]) => {
     Object.entries(effect).forEach(([property, value]) => {
@@ -98,17 +98,17 @@ export const LoadingSkeleton = styled.div<{ width?: string; height?: string }>`
 export const AnimatedButton = styled.button<{ variant?: 'primary' | 'secondary' }>`
   ${createTransition()};
   transform: translateY(0);
-  
+
   &:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
   }
-  
+
   &:active:not(:disabled) {
     transform: translateY(0);
     transition: ${createTransition('all', 'fast')};
   }
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -122,7 +122,7 @@ export const AnimatedButton = styled.button<{ variant?: 'primary' | 'secondary' 
 export const GlassCard = styled.div<{ variant?: keyof typeof GLASS_EFFECTS }>`
   ${props => createGlassStyle(props.variant || 'light')};
   ${createTransition()};
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);

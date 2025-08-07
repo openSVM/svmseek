@@ -50,20 +50,20 @@ function initializeApp() {
     if (!container) {
       throw new Error('Root container not found');
     }
-    
+
     const root = createRoot(container);
-    
+
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-    
+
     logInfo('React app initialized successfully');
-    
+
   } catch (error) {
     logError('Failed to initialize React app:', error);
-    
+
     // Show a fallback error message
     const container = document.getElementById('root');
     if (container) {

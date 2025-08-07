@@ -40,7 +40,7 @@ class MultiAccountManager {
     this.connection = connection;
     this.historyService = new TransactionHistoryService(connection);
     this.exportService = new ExportService(this.historyService);
-    
+
     this.state = {
       wallets: [],
       groups: [],
@@ -64,7 +64,7 @@ class MultiAccountManager {
   private async initialize(): Promise<void> {
     try {
       this.setState({ isLoading: true, errors: [] });
-      
+
       // Load existing data
       const wallets = walletGroupService.getAllWallets();
       const groups = walletGroupService.getAllGroups();
@@ -79,7 +79,7 @@ class MultiAccountManager {
 
       // Auto-sync if enabled
       this.scheduleAutoSync();
-      
+
     } catch (error) {
       this.setState({
         isLoading: false,
@@ -154,7 +154,7 @@ class MultiAccountManager {
 
       this.refreshState();
       return wallet.id;
-      
+
     } catch (error) {
       throw new Error(`Failed to import wallet: ${error}`);
     }
@@ -171,7 +171,7 @@ class MultiAccountManager {
   ): Promise<string> {
     try {
       const group = walletGroupService.createGroup(name, options);
-      
+
       // Add wallets to group
       if (options.walletIds) {
         for (const walletId of options.walletIds) {
@@ -181,7 +181,7 @@ class MultiAccountManager {
 
       this.refreshState();
       return group.id;
-      
+
     } catch (error) {
       throw new Error(`Failed to create group: ${error}`);
     }
@@ -199,14 +199,14 @@ class MultiAccountManager {
   selectAll(): void {
     const walletIds = this.state.wallets.map(w => w.id);
     const groupIds = this.state.groups.map(g => g.id);
-    this.setState({ 
+    this.setState({
       selectedWallets: walletIds,
       selectedGroups: groupIds,
     });
   }
 
   clearSelection(): void {
-    this.setState({ 
+    this.setState({
       selectedWallets: [],
       selectedGroups: [],
     });
@@ -214,7 +214,7 @@ class MultiAccountManager {
 
   // Filtering and Search
   setFilters(filters: Partial<MultiAccountState['activeFilters']>): void {
-    this.setState({ 
+    this.setState({
       activeFilters: { ...this.state.activeFilters, ...filters },
     });
   }
@@ -286,7 +286,7 @@ class MultiAccountManager {
       // Update wallet metadata
       const transactions = this.historyService.getTransactionsByWallet(walletId);
       const balance = this.calculateWalletBalance(transactions);
-      
+
       walletGroupService.updateWallet(walletId, {
         metadata: {
           balance,
@@ -298,7 +298,7 @@ class MultiAccountManager {
       });
 
       this.refreshState();
-      
+
     } catch (error) {
       logError(`Failed to sync wallet ${walletId}:`, error);
       this.addError(`Failed to sync wallet: ${error}`);
@@ -330,7 +330,7 @@ class MultiAccountManager {
 
   async syncAllWallets(): Promise<void> {
     const wallets = this.state.wallets.filter(w => !w.metadata.isArchived);
-    
+
     await this.historyService.syncMultipleWallets(
       wallets.map(w => ({ id: w.id, publicKey: w.publicKey })),
       {
@@ -349,11 +349,11 @@ class MultiAccountManager {
   private updateSyncProgress(walletId: string, progress: number): void {
     const syncStatus = [...this.state.syncStatus];
     const index = syncStatus.findIndex(s => s.walletId === walletId);
-    
+
     if (index > -1) {
       syncStatus[index] = { ...syncStatus[index], syncProgress: progress };
     }
-    
+
     this.setState({ syncStatus });
   }
 
@@ -365,7 +365,7 @@ class MultiAccountManager {
   ): Promise<GroupOperationResult[]> {
     const { walletIds = [], groupIds = [] } = options;
     const allWalletIds = [...walletIds];
-    
+
     // Add wallets from selected groups
     for (const groupId of groupIds) {
       const groupWallets = walletGroupService.getWalletsByGroup(groupId);
@@ -393,7 +393,7 @@ class MultiAccountManager {
 
         results.push(result);
         options.onWalletComplete?.(walletId, result.success);
-        
+
       } catch (error) {
         const errorResult: GroupOperationResult = {
           success: false,
@@ -404,7 +404,7 @@ class MultiAccountManager {
           }],
           summary: { successful: 0, failed: 1 },
         };
-        
+
         results.push(errorResult);
         options.onWalletComplete?.(walletId, false, errorResult.results[0].error);
       }
@@ -451,7 +451,7 @@ class MultiAccountManager {
 
     try {
       let content: string;
-      
+
       if (selectedWallets.length === 1) {
         content = await this.exportService.exportWallet(selectedWallets[0], options);
       } else {
@@ -463,9 +463,9 @@ class MultiAccountManager {
 
       const filename = this.exportService.generateFilename('wallets', options.format);
       const mimeType = this.getMimeType(options.format);
-      
+
       this.exportService.downloadAsFile(content, filename, mimeType);
-      
+
     } catch (error) {
       throw new Error(`Export failed: ${error}`);
     }
@@ -479,9 +479,9 @@ class MultiAccountManager {
       const content = await this.exportService.exportMultipleGroups(selectedGroups, options);
       const filename = this.exportService.generateFilename('groups', options.format);
       const mimeType = this.getMimeType(options.format);
-      
+
       this.exportService.downloadAsFile(content, filename, mimeType);
-      
+
     } catch (error) {
       throw new Error(`Export failed: ${error}`);
     }
@@ -492,9 +492,9 @@ class MultiAccountManager {
       const content = await this.exportService.exportAll(options);
       const filename = this.exportService.generateFilename('all', options.format);
       const mimeType = this.getMimeType(options.format);
-      
+
       this.exportService.downloadAsFile(content, filename, mimeType);
-      
+
     } catch (error) {
       throw new Error(`Export failed: ${error}`);
     }
@@ -537,7 +537,7 @@ class MultiAccountManager {
     const totalBalance = wallets.reduce((sum, w) => sum + w.metadata.balance, 0);
     const totalTransactions = wallets.reduce((sum, w) => sum + w.metadata.transactionCount, 0);
     const archivedWallets = wallets.filter(w => w.metadata.isArchived).length;
-    
+
     // Get recent transactions
     const allTransactions = this.historyService.getTransactionsByWallets(wallets.map(w => w.id));
     const recentActivity = allTransactions.slice(0, 10);
@@ -567,7 +567,7 @@ class MultiAccountManager {
     const wallets = walletGroupService.getAllWallets();
     const groups = walletGroupService.getAllGroups();
     const syncStatus = this.historyService.getAllSyncStatuses();
-    
+
     this.setState({ wallets, groups, syncStatus });
   }
 

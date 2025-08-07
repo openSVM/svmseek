@@ -63,7 +63,7 @@ const BrowserFrame = styled.iframe`
   background: white;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &:hover {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
@@ -79,7 +79,7 @@ const DAppCard = styled(Card)`
   border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.2) !important;
     transform: translateY(-2px);
@@ -214,7 +214,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
     if (wallet && !walletInjectionServiceRef.current) {
       walletInjectionServiceRef.current = new WalletInjectionService(wallet);
     }
-    
+
     return () => {
       if (walletInjectionServiceRef.current) {
         walletInjectionServiceRef.current.cleanup();
@@ -234,15 +234,15 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
 
   const navigateToUrl = (url: string) => {
     if (!url) return;
-    
+
     const finalUrl = url.startsWith('http') ? url : `https://${url}`;
-    
+
     if (isValidUrl(finalUrl)) {
       setIsLoading(true);
       setCurrentUrl(finalUrl);
       setInputUrl(finalUrl);
       setShowDApps(false);
-      
+
       // Add to history
       const newHistory = history.slice(0, historyIndex + 1);
       newHistory.push(finalUrl);
@@ -290,12 +290,12 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
   const handleIframeLoad = async () => {
     setIsLoading(false);
     setConnectionError(null);
-    
+
     // Inject wallet provider using the secure service
     if (walletInjectionServiceRef.current && iframeRef.current) {
       try {
         const result = await walletInjectionServiceRef.current.injectWalletProviders(iframeRef.current);
-        
+
         if (result.success) {
           setWalletInjected(true);
           devLog('Wallet providers injected successfully:', result.injectedProviders);
@@ -328,32 +328,32 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
     <ErrorBoundary context="Web3 Browser" showDetails={false}>
       <BrowserContainer className="fade-in">
       <NavigationBar data-testid="browser-navigation">
-        <IconButton 
-          onClick={handleBack} 
+        <IconButton
+          onClick={handleBack}
           disabled={historyIndex <= 0}
           size="small"
           aria-label="back"
         >
           <ArrowBack />
         </IconButton>
-        
-        <IconButton 
-          onClick={handleForward} 
+
+        <IconButton
+          onClick={handleForward}
           disabled={historyIndex >= history.length - 1}
           size="small"
           aria-label="forward"
         >
           <ArrowForward />
         </IconButton>
-        
+
         <IconButton onClick={handleRefresh} size="small" aria-label="refresh">
           <Refresh />
         </IconButton>
-        
+
         <IconButton onClick={handleHome} size="small" aria-label="home">
           <Home />
         </IconButton>
-        
+
         <AddressBar
           placeholder="Enter URL or search Solana dApps..."
           value={inputUrl}
@@ -368,7 +368,7 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
             startAdornment: <Search  />,
           }}
         />
-        
+
         {wallet?.publicKey && (
           <SecurityIndicator>
             <Security fontSize="small" />
@@ -377,9 +377,9 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
             </Typography>
           </SecurityIndicator>
         )}
-        
+
         {currentUrl && (
-          <IconButton 
+          <IconButton
             onClick={() => window.open(currentUrl, '_blank')}
             size="small"
             title="Open in new tab"
@@ -403,11 +403,11 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
               Popular Solana dApps
             </Typography>
           </Box>
-          
+
           <Alert severity="info" sx={{ mb: 2 }}>
             Browse Solana dApps with built-in wallet connectivity. Some features may require external wallet confirmation for security.
           </Alert>
-          
+
           <NetworkErrorBoundary onRetry={() => setShowDApps(true)}>
             <DAppsGrid container spacing={2}>
               {POPULAR_DAPPS.map((dapp) => (
@@ -420,9 +420,9 @@ export const WebBrowser: React.FC<WebBrowserProps> = ({ isActive = true }) => {
                           <Typography variant="subtitle1" fontWeight="bold">
                             {dapp.name}
                           </Typography>
-                          <Chip 
-                            label={dapp.category} 
-                            size="small" 
+                          <Chip
+                            label={dapp.category}
+                            size="small"
                             variant="outlined"
                           />
                         </Box>

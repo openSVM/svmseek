@@ -123,7 +123,7 @@ function setupSecureErrorHandling() {
         message.includes("Cannot read properties of undefined (reading 'buffer')")
       )) {
         logError('OS/Buffer access error intercepted:', message);
-        
+
         // Show user-friendly error instead of crashing
         if (document.body && !document.body.querySelector('.crypto-error-message')) {
           const errorDiv = document.createElement('div');
@@ -143,17 +143,17 @@ function setupSecureErrorHandling() {
           `;
           errorDiv.textContent = 'Compatibility issue detected. Attempting to recover...';
           document.body.appendChild(errorDiv);
-          
+
           setTimeout(() => {
             if (errorDiv.parentNode) {
               errorDiv.parentNode.removeChild(errorDiv);
             }
           }, 3000);
         }
-        
+
         return true; // Prevent default error handling
       }
-      
+
       // Call original handler for other errors
       if (originalOnError) {
         return originalOnError.call(this, message, source, lineno, colno, error);

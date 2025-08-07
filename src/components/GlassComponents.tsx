@@ -9,7 +9,7 @@ export const GlassCard = styled(Card)`
   border-radius: var(--radius-xl) !important;
   box-shadow: var(--shadow-glass) !important;
   transition: all var(--animation-duration-normal) var(--animation-easing-default) !important;
-  
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl) !important;
@@ -29,7 +29,7 @@ export const GlassButton = styled(Button)`
   text-transform: none !important;
   padding: 0.75rem 2rem !important;
   transition: all var(--animation-duration-normal) var(--animation-easing-default) !important;
-  
+
   &:hover {
     background: var(--interactive-hover) !important;
     color: var(--text-inverse) !important;
@@ -47,7 +47,7 @@ export const GlassButton = styled(Button)`
     background: var(--interactive-primary) !important;
     color: var(--text-inverse) !important;
     border-color: var(--interactive-primary) !important;
-    
+
     &:hover {
       background: var(--interactive-hover) !important;
     }
@@ -86,37 +86,37 @@ export const GlassInput = styled(TextField)`
     backdrop-filter: var(--glass-backdrop) !important;
     border-radius: var(--radius-md) !important;
     transition: all var(--animation-duration-normal) var(--animation-easing-default) !important;
-    
+
     & fieldset {
       border-color: var(--border-primary) !important;
       border-width: 1px !important;
     }
-    
+
     &:hover fieldset {
       border-color: var(--border-focus) !important;
     }
-    
+
     &.Mui-focused fieldset {
       border-color: var(--interactive-primary) !important;
       border-width: 2px !important;
       box-shadow: 0 0 0 3px var(--interactive-primary)33 !important;
     }
-    
+
     & input {
       color: var(--text-primary) !important;
       font-family: var(--font-primary) !important;
-      
+
       &::placeholder {
         color: var(--text-tertiary) !important;
         opacity: 1;
       }
     }
   }
-  
+
   & .MuiInputLabel-root {
     color: var(--text-secondary) !important;
     font-family: var(--font-primary) !important;
-    
+
     &.Mui-focused {
       color: var(--interactive-primary) !important;
     }
@@ -183,14 +183,14 @@ export const GridContainer = styled.div<{
   minItemWidth?: string;
 }>`
   display: grid;
-  grid-template-columns: ${props => props.minItemWidth 
-    ? `repeat(auto-fit, minmax(${props.minItemWidth}, 1fr))` 
+  grid-template-columns: ${props => props.minItemWidth
+    ? `repeat(auto-fit, minmax(${props.minItemWidth}, 1fr))`
     : `repeat(${props.columns || 1}, 1fr)`};
   gap: ${props => props.gap || '1rem'};
 `;
 
 // Status Indicators
-export const StatusIndicator = styled.div<{ 
+export const StatusIndicator = styled.div<{
   status: 'success' | 'warning' | 'error' | 'info';
   size?: 'sm' | 'md' | 'lg';
 }>`
@@ -201,7 +201,7 @@ export const StatusIndicator = styled.div<{
   font-weight: 600;
   font-family: var(--font-primary);
   transition: all var(--animation-duration-normal) var(--animation-easing-default);
-  
+
   ${props => {
     const size = props.size || 'md';
     const sizes = {
@@ -209,13 +209,13 @@ export const StatusIndicator = styled.div<{
       md: { padding: '0.5rem 1rem', fontSize: '0.875rem' },
       lg: { padding: '0.75rem 1.5rem', fontSize: '1rem' },
     };
-    
+
     return `
       padding: ${sizes[size].padding};
       font-size: ${sizes[size].fontSize};
     `;
   }}
-  
+
   ${props => {
     const statusColors = {
       success: 'var(--status-success)',
@@ -223,7 +223,7 @@ export const StatusIndicator = styled.div<{
       error: 'var(--status-error)',
       info: 'var(--status-info)',
     };
-    
+
     return `
       background: ${statusColors[props.status]}22;
       color: ${statusColors[props.status]};
@@ -240,7 +240,7 @@ export const LoadingSpinner = styled.div<{ size?: string; color?: string }>`
   border-top: 2px solid ${props => props.color || 'var(--interactive-primary)'};
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  
+
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -250,7 +250,7 @@ export const LoadingSpinner = styled.div<{ size?: string; color?: string }>`
 // Floating Action Elements
 export const FloatingElement = styled.div<{ hover?: boolean }>`
   transition: all var(--animation-duration-normal) var(--animation-easing-default);
-  
+
   ${props => props.hover && `
     &:hover {
       transform: translateY(-4px);
@@ -282,19 +282,19 @@ export const ResponsiveGridItem = styled.div<{
   @media (max-width: 576px) {
     grid-column: span ${props => props.xs || 12};
   }
-  
+
   @media (min-width: 577px) and (max-width: 768px) {
     grid-column: span ${props => props.sm || props.xs || 12};
   }
-  
+
   @media (min-width: 769px) and (max-width: 992px) {
     grid-column: span ${props => props.md || props.sm || props.xs || 12};
   }
-  
+
   @media (min-width: 993px) and (max-width: 1200px) {
     grid-column: span ${props => props.lg || props.md || props.sm || props.xs || 12};
   }
-  
+
   @media (min-width: 1201px) {
     grid-column: span ${props => props.xl || props.lg || props.md || props.sm || props.xs || 12};
   }
@@ -304,12 +304,12 @@ export const ResponsiveGridItem = styled.div<{
 export const InteractiveCard = styled(GlassCard)<{ disabled?: boolean }>`
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   opacity: ${props => props.disabled ? 0.6 : 1};
-  
+
   &:hover {
     transform: ${props => props.disabled ? 'none' : 'translateY(-6px)'};
     box-shadow: ${props => props.disabled ? 'var(--shadow-glass)' : 'var(--shadow-xl)'} !important;
   }
-  
+
   &:active {
     transform: ${props => props.disabled ? 'none' : 'translateY(-2px)'};
   }
@@ -323,7 +323,7 @@ export const ProgressBar = styled.div<{ progress: number; animated?: boolean }>`
   border-radius: var(--radius-full);
   overflow: hidden;
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -334,10 +334,10 @@ export const ProgressBar = styled.div<{ progress: number; animated?: boolean }>`
     background: linear-gradient(90deg, var(--interactive-primary), var(--interactive-secondary));
     border-radius: var(--radius-full);
     transition: width var(--animation-duration-slow) var(--animation-easing-default);
-    
+
     ${props => props.animated && `
       animation: shimmer 2s infinite;
-      
+
       @keyframes shimmer {
         0% { background-position: -200px 0; }
         100% { background-position: calc(200px + 100%) 0; }

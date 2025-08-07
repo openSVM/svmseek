@@ -238,7 +238,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, refreshTokensData }) {
     transferAmountString,
     validAmount,
   } = useForm(balanceInfo, addressHelperText, passValidation, 'spl', false);
-  
+
   const mintString = mint.toString();
 
   const theme = useTheme();
@@ -644,7 +644,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
               : 'Transaction Pending'
           }
           thirdStepText={'Withdraw Funds'}
-          
+
         />
         {!ethTxid && blockchain === 'eth' ? (
           <DialogContentText >
@@ -655,7 +655,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
         <WhiteButton
           theme={theme}
           onClick={onClose}
-          
+
         >
           Close Popup
           <span >
@@ -703,7 +703,7 @@ function useForm(
         <InputWithPaste
           placeholder="Recipient Address"
           type="text"
-          
+
           containerStyle={{ width: '100%' }}
           onChange={(e) => setDestinationAddress(e.target.value)}
           value={destinationAddress}

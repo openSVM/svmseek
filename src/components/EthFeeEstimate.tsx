@@ -11,7 +11,7 @@ function FeeContentText({ ethFee, ethPrice, warning = false, prefix = "", bold =
     <Title
       color={warning ? 'secondary' : 'textPrimary'}
       // @ts-ignore
-      
+
     >
       {prefix}
       {ethFee.toFixed(4)}

@@ -93,24 +93,24 @@ export default function DerivedAccounts({
           <Title fontSize="1.6rem">Derivable Accounts</Title>
           <FormControl variant="outlined" >
             <Select
-              
+
               value={dPathMenuItem}
               onChange={(e: any) => setDPathMenuItem(e.target.value)}
             >
               <MenuItem
-                
+
                 value={DerivationPathMenuItem.Bip44Change}
               >
                 {`m/44'/501'/0'/0'`}
               </MenuItem>
               <MenuItem
-                
+
                 value={DerivationPathMenuItem.Bip44}
               >
                 {`m/44'/501'/0'`}
               </MenuItem>
               <MenuItem
-                
+
                 value={DerivationPathMenuItem.Deprecated}
               >
                 {`m/501'/0'/0/0 (deprecated)`}
@@ -133,7 +133,7 @@ export default function DerivedAccounts({
               <RowContainer
                 justify="flex-start"
                 padding=".5rem 0"
-                
+
               >
                 <Link
                   href={
@@ -142,7 +142,7 @@ export default function DerivedAccounts({
                   }
                   target="_blank"
                   rel="noopener"
-                  
+
                 >
                   <AccountItem
                     theme={theme}

@@ -1,14 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { 
-  TextField, 
-  IconButton, 
-  Dialog, 
+import {
+  TextField,
+  IconButton,
+  Dialog,
   DialogContent,
   Box,
 } from '@mui/material';
-import { 
+import {
   ContentCopy as CopyIcon,
-  QrCode as QrcodeIcon 
+  QrCode as QrcodeIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
@@ -49,14 +49,14 @@ const QRCodeComponent: React.FC<QRCodeComponentProps> = ({ value }) => {
 
   return (
     <>
-      <IconButton 
+      <IconButton
         onClick={() => setShowQrcode(true)}
         title="Show QR Code"
       >
         <QrcodeIcon />
       </IconButton>
-      <Dialog 
-        open={showQrcode} 
+      <Dialog
+        open={showQrcode}
         onClose={() => setShowQrcode(false)}
         PaperProps={{
           sx: {
@@ -120,15 +120,15 @@ const CopyableDisplay: React.FC<CopyableDisplayProps> = ({
         spellCheck={false}
         variant="outlined"
       />
-      <IconButton 
+      <IconButton
         onClick={copyToClipboard}
         title={`Copy ${label}`}
       >
         <CopyIcon />
       </IconButton>
       {qrCode && (
-        <QRCodeComponent 
-          value={typeof qrCode === 'string' ? qrCode : value} 
+        <QRCodeComponent
+          value={typeof qrCode === 'string' ? qrCode : value}
         />
       )}
     </CopyableContainer>

@@ -287,7 +287,7 @@ export default function SignTransactionFormContent({
             <CircularProgress  />
             <Typography
               variant="subtitle1"
-              
+
               gutterBottom
             >
               Parsing transaction{isMultiTx ? 's' : ''}:
@@ -314,7 +314,7 @@ export default function SignTransactionFormContent({
             <>
               <Typography
                 variant="subtitle1"
-                
+
                 gutterBottom
               >
                 Unknown transaction{isMultiTx ? 's' : ''}:

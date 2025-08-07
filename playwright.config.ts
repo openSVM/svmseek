@@ -110,7 +110,7 @@ export default defineConfig({
   webServer: (process.env.PLAYWRIGHT_BASE_URL && !process.env.PLAYWRIGHT_BASE_URL.includes('localhost')) ? undefined : {
     command: 'yarn build && npx serve -s build -l 3000',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Always reuse existing server to avoid port conflicts
     timeout: parseInt(process.env.PLAYWRIGHT_SERVER_TIMEOUT || '240') * 1000, // Default 240 seconds, configurable
     retries: process.env.CI ? 3 : 1, // Add retries for flaky network scenarios
   },

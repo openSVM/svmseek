@@ -113,7 +113,7 @@ const AddTokens = () => {
         <RowForStepComponents height={'100%'}>
           {' '}
           <RowContainer
-            
+
             height={'96%'}
             direction={'column'}
             justify={'space-evenly'}
@@ -168,7 +168,7 @@ const AddTokens = () => {
             </Row>
             <Row width={'85%'} justify={'space-between'}>
               <VioletButton
-                
+
                 theme={theme}
                 btnWidth={'31%'}
                 height={'3.5rem'}
@@ -280,7 +280,7 @@ const AddTokens = () => {
               </Row>
               <VioletButton
                 theme={theme}
-                
+
                 background={'#651CE4'}
                 disabled={isBalanceLowerCost || selectedTokens.length === 0}
                 onClick={() => {

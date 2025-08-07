@@ -75,7 +75,7 @@ const VaultAccessButton: React.FC = () => {
   };
 
   return (
-    <Tooltip 
+    <Tooltip
       title="🎰 Surprise Vault - Lottery rewards for every trade!"
       placement="left"
       arrow

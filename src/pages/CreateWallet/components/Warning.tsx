@@ -84,7 +84,7 @@ const Warning = ({
               'Type CONFIRM to forget your current wallet and create new one'
             }
             onKeyDown={handleKeyDown}
-            
+
           />
         </RowContainer>
         <RowContainer justify="space-between" width="90%">

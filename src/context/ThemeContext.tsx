@@ -37,64 +37,64 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     localStorage.setItem('theme-name', themeName);
     // Set theme attribute for CSS variables
     document.documentElement.setAttribute('data-theme', themeName);
-    
+
     // Set CSS custom properties for the current theme
     const root = document.documentElement;
     const { colors, effects, typography } = currentTheme;
-    
+
     // Background colors
     root.style.setProperty('--bg-primary', colors.background.primary);
     root.style.setProperty('--bg-secondary', colors.background.secondary);
     root.style.setProperty('--bg-tertiary', colors.background.tertiary);
     root.style.setProperty('--bg-glass', colors.background.glass);
     root.style.setProperty('--bg-overlay', colors.background.overlay);
-    
+
     // Text colors
     root.style.setProperty('--text-primary', colors.text.primary);
     root.style.setProperty('--text-secondary', colors.text.secondary);
     root.style.setProperty('--text-tertiary', colors.text.tertiary);
     root.style.setProperty('--text-accent', colors.text.accent);
     root.style.setProperty('--text-inverse', colors.text.inverse);
-    
+
     // Interactive colors
     root.style.setProperty('--interactive-primary', colors.interactive.primary);
     root.style.setProperty('--interactive-secondary', colors.interactive.secondary);
     root.style.setProperty('--interactive-hover', colors.interactive.hover);
     root.style.setProperty('--interactive-active', colors.interactive.active);
     root.style.setProperty('--interactive-disabled', colors.interactive.disabled);
-    
+
     // Status colors
     root.style.setProperty('--status-success', colors.status.success);
     root.style.setProperty('--status-warning', colors.status.warning);
     root.style.setProperty('--status-error', colors.status.error);
     root.style.setProperty('--status-info', colors.status.info);
-    
+
     // Border colors
     root.style.setProperty('--border-primary', colors.border.primary);
     root.style.setProperty('--border-secondary', colors.border.secondary);
     root.style.setProperty('--border-focus', colors.border.focus);
     root.style.setProperty('--border-glass', colors.border.glass);
-    
+
     // Shadow colors
     root.style.setProperty('--shadow-sm', colors.shadow.sm);
     root.style.setProperty('--shadow-md', colors.shadow.md);
     root.style.setProperty('--shadow-lg', colors.shadow.lg);
     root.style.setProperty('--shadow-xl', colors.shadow.xl);
     root.style.setProperty('--shadow-glass', colors.shadow.glass);
-    
+
     // Glass effects
     root.style.setProperty('--glass-backdrop', effects.glass.backdrop);
     root.style.setProperty('--glass-border', effects.glass.border);
     root.style.setProperty('--glass-shadow', effects.glass.shadow);
     root.style.setProperty('--glass-opacity', effects.glass.opacity.toString());
-    
+
     // Border radius
     root.style.setProperty('--radius-sm', effects.radius.sm);
     root.style.setProperty('--radius-md', effects.radius.md);
     root.style.setProperty('--radius-lg', effects.radius.lg);
     root.style.setProperty('--radius-xl', effects.radius.xl);
     root.style.setProperty('--radius-full', effects.radius.full);
-    
+
     // Typography
     root.style.setProperty('--font-primary', typography.fontFamily.primary);
     root.style.setProperty('--font-mono', typography.fontFamily.mono);
@@ -108,7 +108,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Create Material-UI theme based on current theme
   const muiTheme = React.useMemo((): MuiTheme => {
     const { colors, effects, typography } = currentTheme;
-    
+
     return createTheme({
       palette: {
         mode: 'light', // We handle our own theming

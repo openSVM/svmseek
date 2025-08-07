@@ -121,7 +121,7 @@ const WelcomeBack = () => {
             <RowContainer
               direction={'column'}
               height={'5rem'}
-              
+
             >
               <InputWithEye
                 value={password}
@@ -144,7 +144,7 @@ const WelcomeBack = () => {
               />
               <StyledLabel htmlFor={'keepUnlocked'}>
                 Keep wallet unlocked
-              </StyledLabel> 
+              </StyledLabel>
             </RowContainer> */}
               <Row width={'90%'} height={'50%'} align={'flex-start'}>
                 <UnlockButton

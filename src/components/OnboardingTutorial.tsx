@@ -58,24 +58,24 @@ const StepIcon = styled.div`
   margin: 0 auto 1rem;
   color: white;
   font-size: 24px;
-  
+
   /* Improved accessibility for small devices */
   @media (max-width: 480px) {
     width: 48px;
     height: 48px;
     font-size: 20px;
   }
-  
+
   /* Ensure sufficient contrast and touch target size */
   min-height: 44px;
   min-width: 44px;
-  
+
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     background: #000;
     border: 2px solid #fff;
   }
-  
+
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     transition: none;
@@ -96,7 +96,7 @@ const ProgressBar = styled.div<{ progress: number }>`
   border-radius: 2px;
   margin-bottom: 2rem;
   overflow: hidden;
-  
+
   &::after {
     content: '';
     display: block;
@@ -166,27 +166,27 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ isOpen, 
         <CloseButton onClick={onClose}>
           <Close />
         </CloseButton>
-        
+
         <ProgressBar progress={progress} />
-        
+
         <StepIcon>
           {tutorialSteps[currentStep]?.icon}
         </StepIcon>
-        
+
         <Typography variant="h4" align="center" gutterBottom>
           {tutorialSteps[currentStep]?.title}
         </Typography>
-        
+
         <Typography variant="body1" align="center" paragraph>
           {tutorialSteps[currentStep]?.content}
         </Typography>
-        
+
         <Box textAlign="center" mb={2}>
           <Typography variant="body2" color="textSecondary">
             Step {currentStep + 1} of {tutorialSteps.length}
           </Typography>
         </Box>
-        
+
         <NavigationButtons>
           <Button
             onClick={handleBack}
@@ -196,7 +196,7 @@ export const OnboardingTutorial: React.FC<OnboardingTutorialProps> = ({ isOpen, 
           >
             Back
           </Button>
-          
+
           <Button
             onClick={handleNext}
             endIcon={currentStep === tutorialSteps.length - 1 ? null : <ArrowForward />}

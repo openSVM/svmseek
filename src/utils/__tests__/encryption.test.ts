@@ -6,15 +6,15 @@ jest.mock('tweetnacl', () => {
   }) as jest.MockedFunction<any> & {
     open: jest.MockedFunction<any>;
     keyLength: number;
-    nonceLength: number; 
+    nonceLength: number;
     overheadLength: number;
   };
-  
+
   mockSecretbox.open = jest.fn((ciphertext: any, nonce: any, key: any) => {
     if (ciphertext.length <= 16) return null;
     return ciphertext.slice(16);
   });
-  
+
   mockSecretbox.keyLength = 32;
   mockSecretbox.nonceLength = 24;
   mockSecretbox.overheadLength = 16;
@@ -35,7 +35,7 @@ jest.mock('crypto-browserify', () => ({
     setTimeout(() => {
       // Return stable mock key based on password for deterministic testing
       const passwordBytes = Buffer.from(password, 'utf8');
-      const mockKey = Buffer.from(Array.from({ length: keyLength }, (_, i) => 
+      const mockKey = Buffer.from(Array.from({ length: keyLength }, (_, i) =>
         (passwordBytes[i % passwordBytes.length] + i) % 256
       ));
       callback(null, mockKey);
@@ -49,7 +49,7 @@ jest.mock('argon2-browser', () => ({
     // Create deterministic hash based on password
     const passwordBytes = Buffer.from(options.pass, 'utf8');
     return {
-      hash: new Uint8Array(Array.from({ length: 32 }, (_, i) => 
+      hash: new Uint8Array(Array.from({ length: 32 }, (_, i) =>
         (passwordBytes[i % passwordBytes.length] + i) % 256
       )),
       hashHex: 'abcdef123456789',
@@ -83,12 +83,12 @@ describe('PBKDF2Provider', () => {
   test.skip('derives key from password and salt', async () => {
     const config = CRYPTO_CONFIGS[1];
     const provider = new PBKDF2Provider(config);
-    
+
     const password = 'test-password';
     const salt = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-    
+
     const key = await provider.deriveKey(password, salt);
-    
+
     expect(key).toBeInstanceOf(Uint8Array);
     expect(key.length).toBe(32);
   });
@@ -96,59 +96,59 @@ describe('PBKDF2Provider', () => {
   test.skip('derives same key for same input', async () => {
     const config = CRYPTO_CONFIGS[1];
     const provider = new PBKDF2Provider(config);
-    
+
     const password = 'test-password';
     const salt = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-    
+
     const key1 = await provider.deriveKey(password, salt);
     const key2 = await provider.deriveKey(password, salt);
-    
+
     expect(key1).toEqual(key2);
   });
 
   test.skip('derives different keys for different passwords', async () => {
     const config = CRYPTO_CONFIGS[1];
     const provider = new PBKDF2Provider(config);
-    
+
     const salt = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-    
+
     const key1 = await provider.deriveKey('password1', salt);
     const key2 = await provider.deriveKey('password2', salt);
-    
+
     expect(key1).not.toEqual(key2);
   });
 
   test.skip('encrypts and decrypts data', async () => {
     const config = CRYPTO_CONFIGS[1];
     const provider = new PBKDF2Provider(config);
-    
+
     const password = 'test-password';
     const salt = provider.generateSalt();
     const key = await provider.deriveKey(password, salt);
-    
+
     const plaintext = 'Hello, World!';
     const { encrypted, nonce } = provider.encrypt(plaintext, key);
     const decrypted = provider.decrypt(encrypted, nonce, key);
-    
+
     expect(decrypted).toBe(plaintext);
   });
 
   test.skip('returns null for invalid decryption', async () => {
     const config = CRYPTO_CONFIGS[1];
     const provider = new PBKDF2Provider(config);
-    
+
     const password = 'test-password';
     // Use fixed salt instead of generated one to avoid randomBytes issues
     const salt = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
     const key = await provider.deriveKey(password, salt);
-    
+
     const plaintext = 'Hello, World!';
     const { encrypted, nonce } = provider.encrypt(plaintext, key);
-    
+
     // Use wrong key
     const wrongKey = await provider.deriveKey('wrong-password', salt);
     const decrypted = provider.decrypt(encrypted, nonce, wrongKey);
-    
+
     expect(decrypted).toBeNull();
   });
 });
@@ -157,19 +157,19 @@ describe('EncryptionProviderFactory', () => {
   test('creates PBKDF2 provider', () => {
     const config = CRYPTO_CONFIGS[1];
     const provider = EncryptionProviderFactory.create(config);
-    
+
     expect(provider).toBeInstanceOf(PBKDF2Provider);
   });
 
   test('creates provider from version', () => {
     const provider = EncryptionProviderFactory.createFromVersion(1);
-    
+
     expect(provider).toBeInstanceOf(PBKDF2Provider);
   });
 
   test('throws error for unsupported KDF', () => {
     const config = { ...CRYPTO_CONFIGS[1], kdf: 'unsupported' as any };
-    
+
     expect(() => EncryptionProviderFactory.create(config)).toThrow('Unsupported KDF: unsupported');
   });
 
@@ -191,10 +191,10 @@ describe('WalletEncryptionManager', () => {
     const manager = new WalletEncryptionManager(2);
     const password = 'secure-password-123!';
     const plaintext = JSON.stringify({ mnemonic: 'test mnemonic', seed: 'test seed' });
-    
+
     const encryptedData = await manager.encrypt(plaintext, password);
     const decrypted = await manager.decrypt(encryptedData, password);
-    
+
     expect(decrypted).toBe(plaintext);
   });
 
@@ -203,9 +203,9 @@ describe('WalletEncryptionManager', () => {
     const password = 'secure-password-123!';
     const wrongPassword = 'wrong-password';
     const plaintext = JSON.stringify({ mnemonic: 'test mnemonic', seed: 'test seed' });
-    
+
     const encryptedData = await manager.encrypt(plaintext, password);
-    
+
     await expect(manager.decrypt(encryptedData, wrongPassword))
       .rejects.toThrow('Decryption failed - incorrect password');
   });
@@ -214,19 +214,19 @@ describe('WalletEncryptionManager', () => {
     const manager = new WalletEncryptionManager(2);
     const password = 'secure-password-123!';
     const plaintext = JSON.stringify({ mnemonic: 'test mnemonic', seed: 'test seed' });
-    
+
     const encryptedData = await manager.encrypt(plaintext, password);
-    
+
     const validPassword = await manager.verifyPassword(encryptedData, password);
     const invalidPassword = await manager.verifyPassword(encryptedData, 'wrong');
-    
+
     expect(validPassword).toBe(true);
     expect(invalidPassword).toBe(false);
   });
 
   test('detects when migration is needed', async () => {
     const manager = new WalletEncryptionManager(2);
-    
+
     const legacyData = {
       encrypted: 'test',
       nonce: 'test',
@@ -236,7 +236,7 @@ describe('WalletEncryptionManager', () => {
       digest: 'sha256',
       version: 1,
     };
-    
+
     const needsMigration = manager.needsMigration(legacyData);
     expect(needsMigration).toBe(CURRENT_CRYPTO_VERSION > 1);
   });
@@ -244,18 +244,18 @@ describe('WalletEncryptionManager', () => {
   test.skip('migrates data to current version', async () => {
     const oldManager = new WalletEncryptionManager(1);
     const newManager = new WalletEncryptionManager(CURRENT_CRYPTO_VERSION);
-    
+
     const password = 'secure-password-123!';
     const plaintext = JSON.stringify({ mnemonic: 'test mnemonic', seed: 'test seed' });
-    
+
     // Encrypt with old version
     const oldEncryptedData = await oldManager.encrypt(plaintext, password);
-    
+
     // Migrate to new version
     const migratedData = await newManager.migrate(oldEncryptedData, password);
-    
+
     expect(migratedData.version).toBe(CURRENT_CRYPTO_VERSION);
-    
+
     // Should be able to decrypt with new manager
     const decrypted = await newManager.decrypt(migratedData, password);
     expect(decrypted).toBe(plaintext);
@@ -265,23 +265,23 @@ describe('WalletEncryptionManager', () => {
     const manager = new WalletEncryptionManager(2);
     const password = 'secure-password-123!';
     const plaintext = JSON.stringify({ mnemonic: 'test mnemonic', seed: 'test seed' });
-    
+
     const encryptedData = await manager.encrypt(plaintext, password);
     const migratedData = await manager.migrate(encryptedData, password);
-    
+
     expect(migratedData).toEqual(encryptedData);
   });
 
   test('provides security information', () => {
     const manager = new WalletEncryptionManager(2);
     const securityInfo = manager.getSecurityInfo();
-    
+
     expect(securityInfo).toHaveProperty('version');
     expect(securityInfo).toHaveProperty('kdf');
     expect(securityInfo).toHaveProperty('iterations');
     expect(securityInfo).toHaveProperty('digest');
     expect(securityInfo).toHaveProperty('estimatedCrackTime');
-    
+
     expect(typeof securityInfo.version).toBe('number');
     expect(typeof securityInfo.kdf).toBe('string');
     expect(typeof securityInfo.iterations).toBe('number');
@@ -291,15 +291,15 @@ describe('WalletEncryptionManager', () => {
 
   test.skip('handles legacy data without version', async () => {
     const manager = new WalletEncryptionManager(2);
-    
+
     // Create legacy data structure (version 1 without version field)
     const legacyManager = new WalletEncryptionManager(1);
     const password = 'secure-password-123!';
     const plaintext = JSON.stringify({ mnemonic: 'test mnemonic', seed: 'test seed' });
-    
+
     const legacyData = await legacyManager.encrypt(plaintext, password);
     delete (legacyData as any).version; // Remove version field to simulate legacy data
-    
+
     // Should still be able to decrypt
     const decrypted = await manager.decrypt(legacyData, password);
     expect(decrypted).toBe(plaintext);
@@ -326,7 +326,7 @@ describe('Utility Functions', () => {
 
     test.skip('contains expected character types', () => {
       const password = generateSecurePassword(100); // Large password for better chance of all types
-      
+
       expect(password).toMatch(/[a-z]/); // lowercase
       expect(password).toMatch(/[A-Z]/); // uppercase
       expect(password).toMatch(/\d/);    // digits
@@ -348,7 +348,7 @@ describe('Utility Functions', () => {
 
     test('provides helpful feedback', () => {
       const result = estimatePasswordStrength('password');
-      
+
       expect(result.feedback).toContain('Add uppercase letters');
       expect(result.feedback).toContain('Add numbers');
       expect(result.feedback).toContain('Add special characters');
@@ -357,7 +357,7 @@ describe('Utility Functions', () => {
     test('estimates crack time correctly', () => {
       const weak = estimatePasswordStrength('123');
       const strong = estimatePasswordStrength('MyVerySecurePassword123!@#');
-      
+
       expect(strong.estimatedCrackTime).not.toBe(weak.estimatedCrackTime);
     });
   });
@@ -371,10 +371,10 @@ describe('Singleton Instance', () => {
   test.skip('can encrypt and decrypt with singleton', async () => {
     const password = 'test-password-123!';
     const plaintext = 'test data';
-    
+
     const encrypted = await walletEncryption.encrypt(plaintext, password);
     const decrypted = await walletEncryption.decrypt(encrypted, password);
-    
+
     expect(decrypted).toBe(plaintext);
   });
 });
@@ -387,7 +387,7 @@ describe('Configuration Versions', () => {
       expect(config).toHaveProperty('digest');
       expect(config).toHaveProperty('saltLength');
       expect(config).toHaveProperty('keyLength');
-      
+
       expect(config.iterations).toBeGreaterThan(0);
       expect(config.saltLength).toBeGreaterThan(0);
       expect(config.keyLength).toBeGreaterThan(0);
@@ -401,7 +401,7 @@ describe('Configuration Versions', () => {
   test('newer versions have stronger parameters', () => {
     const v1 = CRYPTO_CONFIGS[1];
     const v2 = CRYPTO_CONFIGS[2];
-    
+
     if (v2) {
       expect(v2.iterations).toBeGreaterThanOrEqual(v1.iterations);
       expect(v2.saltLength).toBeGreaterThanOrEqual(v1.saltLength);

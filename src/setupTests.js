@@ -24,7 +24,7 @@ if (typeof globalThis !== 'undefined') {
 beforeEach(() => {
   // Clear all mocks before each test
   jest.clearAllMocks();
-  
+
   // Reset VaultService singleton if it exists
   try {
     const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
@@ -39,12 +39,12 @@ beforeEach(() => {
 afterEach(() => {
   // Clear any remaining timers after each test
   jest.clearAllTimers();
-  
+
   // Clear localStorage to prevent test pollution
   if (typeof window !== 'undefined' && window.localStorage) {
     window.localStorage.clear();
   }
-  
+
   // Reset VaultService singleton after each test
   try {
     const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
@@ -59,12 +59,12 @@ afterEach(() => {
 afterAll(() => {
   // Final cleanup to prevent memory leaks
   jest.clearAllTimers();
-  
+
   // Force garbage collection if available
   if (global.gc) {
     global.gc();
   }
-  
+
   // Final VaultService cleanup
   try {
     const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
@@ -126,7 +126,7 @@ function initializeTestGlobals() {
   if (typeof global !== 'undefined') {
     global.ResizeObserver = mockResizeObserver;
   }
-  
+
   if (typeof window !== 'undefined') {
     window.ResizeObserver = mockResizeObserver;
   }
@@ -220,11 +220,11 @@ function initializeTestGlobals() {
         this.platforms = ['web'];
         this.userChoice = Promise.resolve({ outcome: 'dismissed', platform: 'web' });
       }
-      
+
       prompt() {
         return Promise.resolve();
       }
-      
+
       preventDefault() {}
     };
   }
@@ -235,7 +235,7 @@ jest.mock('tweetnacl', () => {
   const mockSecretbox = jest.fn((plaintext, nonce, key) => new Uint8Array(plaintext.length + 16));
   mockSecretbox.open = jest.fn((ciphertext, nonce, key) => new Uint8Array(ciphertext.length - 16));
   mockSecretbox.nonceLength = 24;
-  
+
   return {
     secretbox: mockSecretbox,
     randomBytes: jest.fn((length) => {
@@ -279,7 +279,7 @@ jest.mock('crypto-browserify', () => ({
 }));
 jest.mock('@solana/web3.js', () => {
   const { Buffer } = require('buffer'); // Move Buffer import inside mock factory
-  
+
   const mockPublicKey = {
     toBase58: jest.fn(() => 'mock-public-key'),
     toString: jest.fn(() => 'mock-public-key'),
@@ -383,12 +383,12 @@ if (typeof window !== 'undefined') {
   // Mock window.close to prevent JSDOM errors
   const originalClose = window.close;
   window.close = jest.fn();
-  
+
   // Mock iframe handling for JSDOM
   const originalCreateElement = document.createElement;
   document.createElement = function(tagName) {
     const element = originalCreateElement.call(this, tagName);
-    
+
     if (tagName.toLowerCase() === 'iframe') {
       // Add proper iframe mocking to prevent JSDOM errors
       Object.defineProperty(element, 'contentWindow', {
@@ -409,7 +409,7 @@ if (typeof window !== 'undefined') {
         writable: true,
         configurable: true
       });
-      
+
       Object.defineProperty(element, 'contentDocument', {
         value: {
           readyState: 'complete',
@@ -424,7 +424,7 @@ if (typeof window !== 'undefined') {
         configurable: true
       });
     }
-    
+
     return element;
   };
 }

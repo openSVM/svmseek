@@ -76,7 +76,7 @@ export default function SignFormContent({
       </Typography>
       <Typography
         variant="subtitle1"
-        
+
         gutterBottom
       >
         {renderAction()}

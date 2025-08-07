@@ -52,10 +52,10 @@ function userInfo() {
 
 function cpus() {
   // Return stub CPU info
-  const numCores = typeof navigator !== 'undefined' && navigator.hardwareConcurrency 
-    ? navigator.hardwareConcurrency 
+  const numCores = typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+    ? navigator.hardwareConcurrency
     : 4;
-  
+
   return Array(numCores).fill({
     model: 'Browser CPU',
     speed: 2400,

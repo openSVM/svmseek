@@ -142,7 +142,7 @@ class TransactionHistoryService {
         try {
           await this.processTransaction(walletId, publicKey, signatureInfo);
           processedSignatures++;
-          
+
           syncStatus.syncProgress = (processedSignatures / totalSignatures) * 100;
           onProgress?.(syncStatus.syncProgress);
 
@@ -181,7 +181,7 @@ class TransactionHistoryService {
       await this.syncWalletHistory(wallet.id, wallet.publicKey, {
         onProgress: (progress) => onWalletProgress?.(wallet.id, progress),
       });
-      
+
       completedWallets++;
       onOverallProgress?.((completedWallets / wallets.length) * 100);
     }
@@ -209,7 +209,7 @@ class TransactionHistoryService {
 
       const record = this.parseTransaction(walletId, publicKey, transaction, signatureInfo);
       this.transactions.set(record.id, record);
-      
+
     } catch (error) {
       logError(`Failed to process transaction ${signatureInfo.signature}:`, error);
     }
@@ -292,7 +292,7 @@ class TransactionHistoryService {
     // Analyze instructions for more specific types
     for (const instr of instructions) {
       programId = transaction.message.accountKeys[instr.programIdIndex].toBase58();
-      
+
       if (programId === SystemProgram.programId.toBase58()) {
         // System program instruction
         if (instr.data && instr.data.length > 0) {
@@ -310,7 +310,7 @@ class TransactionHistoryService {
       } else {
         // Other programs
         tags.push('token', 'custom-program');
-        
+
         // Could be token transfer, swap, stake, etc.
         if (programId && (programId.includes('swap') || programId.includes('dex'))) {
           type = 'swap';
@@ -371,7 +371,7 @@ class TransactionHistoryService {
       if (filters.endDate && new Date(tx.blockTime * 1000) > filters.endDate) return false;
       if (filters.tokens && tx.token && !filters.tokens.includes(tx.token.mint)) return false;
       if (filters.tags && !filters.tags.some(tag => tx.metadata.tags.includes(tag))) return false;
-      
+
       return true;
     });
   }
@@ -398,7 +398,7 @@ class TransactionHistoryService {
     dailyActivity: Array<{ date: string; count: number; volume: number }>;
   } {
     const transactions = this.getTransactionsByWallet(walletId);
-    
+
     const stats = {
       totalTransactions: transactions.length,
       totalSent: 0,

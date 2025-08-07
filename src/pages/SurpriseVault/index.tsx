@@ -50,8 +50,8 @@ const SurpriseVault: React.FC = () => {
               </Typography>
             </Alert>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 size="large"
                 onClick={() => navigate('/wallet')}
                 sx={{
@@ -65,8 +65,8 @@ const SurpriseVault: React.FC = () => {
               >
                 Connect Wallet
               </Button>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 size="large"
                 onClick={() => navigate('/welcome')}
                 sx={{

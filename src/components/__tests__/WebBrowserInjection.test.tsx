@@ -22,7 +22,7 @@ const createMockIframe = () => {
   const iframe = document.createElement('iframe');
   iframe.src = 'about:blank';
   iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
-  
+
   // Mock contentWindow
   Object.defineProperty(iframe, 'contentWindow', {
     writable: true,
@@ -35,7 +35,7 @@ const createMockIframe = () => {
       },
     },
   });
-  
+
   return iframe;
 };
 
@@ -107,7 +107,7 @@ describe('WebBrowser Wallet Injection', () => {
     };
 
     const adapter = createSolanaWalletAdapter(walletProvider);
-    
+
     // Mock transaction object
     const mockTransaction = {} as any;
 
@@ -129,7 +129,7 @@ describe('WebBrowser Wallet Injection', () => {
     };
 
     const adapter = createSolanaWalletAdapter(walletProvider);
-    
+
     // Mock transaction objects
     const mockTransactions = [{}, {}] as any[];
 
@@ -151,7 +151,7 @@ describe('WebBrowser Wallet Injection', () => {
     };
 
     const adapter = createSolanaWalletAdapter(walletProvider);
-    
+
     const mockMessage = new Uint8Array([1, 2, 3, 4]);
 
     await expect(adapter.signMessage(mockMessage)).rejects.toThrow(
@@ -209,12 +209,12 @@ describe('WebBrowser Wallet Injection', () => {
     };
 
     render(<TestComponent />);
-    
+
     const connectButton = screen.getByText('Connect');
-    
+
     // Should not throw unhandled promise rejection
     fireEvent.click(connectButton);
-    
+
     // Wait a bit to ensure no unhandled promise rejection
     await waitFor(() => {
       expect(connectButton).toBeInTheDocument();
@@ -229,14 +229,14 @@ describe('WebBrowser Wallet Injection', () => {
     );
 
     const addressBar = screen.getByLabelText(/address/i);
-    
+
     // Test malicious URL injection - use a safe test value instead
     const maliciousUrl = '[BLOCKED_SCRIPT_URL]';
     fireEvent.change(addressBar, { target: { value: maliciousUrl } });
-    
+
     // Should not allow javascript: URLs
     expect(addressBar).toHaveValue(maliciousUrl);
-    
+
     // Navigate button should be disabled for invalid URLs
     const navigateButton = screen.getByRole('button', { name: /refresh/i });
     expect(navigateButton).toBeInTheDocument();
@@ -288,7 +288,7 @@ describe('WebBrowser Wallet Injection', () => {
     });
 
     const iframe = screen.getByTitle(/solana dapp browser/i);
-    
+
     expect(iframe).toHaveAttribute('sandbox');
     expect(iframe.getAttribute('sandbox')).toContain('allow-scripts');
     expect(iframe.getAttribute('sandbox')).toContain('allow-same-origin');
@@ -332,7 +332,7 @@ describe('WebBrowser Wallet Injection', () => {
     );
 
     const iframe = createMockIframe();
-    
+
     // Verify iframe cannot access parent
     expect(iframe.getAttribute('sandbox')).not.toContain('allow-top-navigation');
     expect(iframe.getAttribute('sandbox')).not.toContain('allow-top-navigation-by-user-activation');
@@ -348,7 +348,7 @@ describe('WebBrowser Wallet Injection', () => {
 
     const TestComponent = () => {
       const [connecting, setConnecting] = React.useState(false);
-      
+
       const handleConnect = async () => {
         setConnecting(true);
         try {
@@ -366,7 +366,7 @@ describe('WebBrowser Wallet Injection', () => {
     };
 
     render(<TestComponent />);
-    
+
     const connectButton = screen.getByText('Connect');
     fireEvent.click(connectButton);
 

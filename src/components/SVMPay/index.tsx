@@ -45,7 +45,7 @@ const NetworkChip = styled(Chip)`
   background: rgba(139, 92, 246, 0.1) !important;
   border: 1px solid rgba(139, 92, 246, 0.3) !important;
   color: var(--interactive-primary) !important;
-  
+
   &.active {
     background: rgba(139, 92, 246, 0.3) !important;
     border: 1px solid rgba(139, 92, 246, 0.6) !important;
@@ -60,7 +60,7 @@ const ActionCard = styled(Paper)`
   background: var(--bg-secondary) !important;
   backdrop-filter: blur(20px);
   border: 1px solid var(--border-main);
-  
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
@@ -93,13 +93,13 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   // Payment form state
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [memo, setMemo] = useState('');
   const [paymentUrl, setPaymentUrl] = useState('');
-  
+
   // Request form state
   const [requestAmount, setRequestAmount] = useState('');
   const [requestMemo, setRequestMemo] = useState('');
@@ -151,13 +151,13 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
     try {
       setLoading(true);
       setError(null);
-      
+
       const network = networks.find(n => n.id === selectedNetwork);
       const svmPayInstance = new SVMPay({
         defaultNetwork: selectedNetwork as any,
         // Additional configuration can be added here
       });
-      
+
       setSvmPay(svmPayInstance);
       setSuccess(`Connected to ${network?.name} network`);
     } catch (err) {
@@ -177,7 +177,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
     if (!address.trim()) {
       return { isValid: false, error: 'Recipient address is required' };
     }
-    
+
     try {
       new PublicKey(address);
       return { isValid: true };
@@ -190,26 +190,26 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
     if (!amount.trim()) {
       return { isValid: false, error: 'Amount is required' };
     }
-    
+
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount)) {
       return { isValid: false, error: 'Amount must be a valid number' };
     }
-    
+
     if (numAmount <= 0) {
       return { isValid: false, error: 'Amount must be greater than 0' };
     }
-    
+
     if (numAmount > 1000000) {
       return { isValid: false, error: 'Amount exceeds maximum limit (1,000,000 SOL)' };
     }
-    
+
     // Check for too many decimal places
     const decimalPlaces = (amount.split('.')[1] || '').length;
     if (decimalPlaces > 9) {
       return { isValid: false, error: 'Amount can have at most 9 decimal places' };
     }
-    
+
     return { isValid: true };
   };
 
@@ -218,57 +218,57 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       setError('Wallet not connected or SVM-Pay not initialized');
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(null);
       setSuccess('🔄 Validating payment details...');
-      
+
       // Validate recipient address with explicit feedback
       const addressValidation = validateRecipientAddress(recipient);
       if (!addressValidation.isValid) {
         setError(addressValidation.error!);
         return;
       }
-      
+
       // Validate amount with explicit feedback
       const amountValidation = validateAmount(amount);
       if (!amountValidation.isValid) {
         setError(amountValidation.error!);
         return;
       }
-      
+
       // Additional validation: Check if sending to self
       if (recipient === wallet.publicKey.toString()) {
         setError('Cannot send payment to yourself');
         return;
       }
-      
+
       setSuccess('🔄 Creating transaction...');
-      
-      // For now, we'll create a payment URL since direct transaction signing 
+
+      // For now, we'll create a payment URL since direct transaction signing
       // requires more complex wallet integration
       setSuccess('🔄 Generating secure payment URL...');
-      
+
       const paymentUrl = svmPay.createTransferUrl(recipient, amount, {
         network: selectedNetwork as any,
         memo: memo || undefined,
         label: 'SVMSeek Payment',
         message: `Payment from ${wallet.publicKey.toString().slice(0, 8)}...`,
       });
-      
+
       setSuccess(`✅ Payment URL generated! You can share this to request payment: ${paymentUrl.slice(0, 50)}...`);
-      
+
       // Optionally open the payment URL in a new tab for immediate processing
       if (window.confirm('Would you like to open the payment URL to complete the transaction?')) {
         window.open(paymentUrl, '_blank');
       }
-      
+
       // Clear form on successful generation
       setRecipient('');
       setAmount('');
       setMemo('');
-      
+
     } catch (err) {
       setError(`❌ Payment failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
@@ -281,25 +281,25 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       setError('Wallet not connected or SVM-Pay not initialized');
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(null);
-      
+
       // Validate amount with explicit feedback
       const amountValidation = validateAmount(requestAmount);
       if (!amountValidation.isValid) {
         setError(amountValidation.error!);
         return;
       }
-      
+
       const paymentUrl = svmPay.createTransferUrl(wallet.publicKey.toString(), requestAmount, {
         network: selectedNetwork as any,
         memo: requestMemo || undefined,
         label: 'SVMSeek Payment Request',
         message: requestMemo || 'Payment request from SVMSeek',
       });
-      
+
       setGeneratedUrl(paymentUrl);
       setQrCodeData(paymentUrl);
       setSuccess('✅ Payment request generated successfully!');
@@ -312,23 +312,23 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
 
   const handleProcessPaymentUrl = async () => {
     if (!svmPay || !paymentUrl) return;
-    
+
     try {
       setLoading(true);
       setError(null);
       setSuccess('🔄 Parsing payment URL...');
-      
+
       // Parse the payment URL to extract payment information
       const paymentInfo = svmPay.parseUrl(paymentUrl);
-      
+
       setSuccess('🔄 Validating payment details...');
-      
+
       // Validate the payment information
       if (!paymentInfo.recipient) {
         setError('❌ Invalid payment URL: Missing recipient address');
         return;
       }
-      
+
       // Check if it's a transfer request with amount
       const isTransferRequest = 'amount' in paymentInfo;
       if (isTransferRequest) {
@@ -338,7 +338,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
           return;
         }
       }
-      
+
       // Display parsed payment information
       const displayInfo = {
         recipient: paymentInfo.recipient,
@@ -348,7 +348,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
         label: paymentInfo.label || 'Payment',
         message: paymentInfo.message || 'No message provided',
       };
-      
+
       setSuccess(`✅ Payment URL processed successfully!
 
 📋 Payment Details:
@@ -358,7 +358,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
 📝 Memo: ${displayInfo.memo}
 🏷️ Label: ${displayInfo.label}
 💬 Message: ${displayInfo.message}`);
-      
+
       // Optionally, auto-fill the send form with parsed data
       if (isTransferRequest && window.confirm('Would you like to auto-fill the send form with this payment data?')) {
         setRecipient(paymentInfo.recipient);
@@ -366,7 +366,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
         setMemo(paymentInfo.memo || '');
         setActiveTab('send');
       }
-      
+
     } catch (err) {
       setError(`❌ Failed to process payment URL: ${err instanceof Error ? err.message : 'Invalid URL format'}`);
     } finally {
@@ -425,7 +425,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
       {/* Action Selection */}
       <Grid container spacing={2} mb={3}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <ActionCard 
+          <ActionCard
             onClick={() => setActiveTab('send')}
             elevation={activeTab === 'send' ? 8 : 2}
           >
@@ -437,7 +437,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
           </ActionCard>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <ActionCard 
+          <ActionCard
             onClick={() => setActiveTab('request')}
             elevation={activeTab === 'request' ? 8 : 2}
           >
@@ -449,7 +449,7 @@ export const SVMPayInterface: React.FC<SVMPayInterfaceProps> = ({ isActive }) =>
           </ActionCard>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <ActionCard 
+          <ActionCard
             onClick={() => setActiveTab('process')}
             elevation={activeTab === 'process' ? 8 : 2}
           >

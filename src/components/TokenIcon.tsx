@@ -22,7 +22,7 @@ export default function TokenIcon({
     tokenLogoUri =
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png';
   }
-  
+
   if (mint === CCAI_MINT.toString()) {
     tokenLogoUri =
     'https://svmseek.com/logo_rounded.png';

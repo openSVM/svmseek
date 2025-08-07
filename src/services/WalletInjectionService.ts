@@ -1,8 +1,8 @@
 import { logWarn, logError } from '../utils/logger';
 import { TIMEOUT_CONSTANTS } from '../utils/constants';
-import { 
-  createInjectionScriptBlobURL, 
-  cleanupInjectionScriptBlobURL 
+import {
+  createInjectionScriptBlobURL,
+  cleanupInjectionScriptBlobURL
 } from './WalletInjectionScript';
 /**
  * Dedicated service for secure wallet injection into iframe-based Web3 browser
@@ -31,9 +31,15 @@ export class WalletInjectionService {
   private injected = new Set<string>();
   private messageHandlers = new Map<string, (data: any) => void>();
 
+  // Rate limiting for request throttling
+  private requestCounts = new Map<string, number>();
+  private readonly MAX_REQUESTS_PER_MINUTE = 60;
+  private readonly REQUEST_WINDOW_MS = 60000; // 1 minute
+
   constructor(wallet: any) {
     this.wallet = wallet;
     this.setupMessageListener();
+    this.setupRateLimitingCleanup();
   }
 
   /**
@@ -42,7 +48,7 @@ export class WalletInjectionService {
   public async injectWalletProviders(iframe: HTMLIFrameElement): Promise<InjectionResult> {
     try {
       this.iframe = iframe;
-      
+
       // Enhanced security: Check iframe source origin
       const iframeSrc = iframe.src;
       if (iframeSrc && !this.isAllowedOrigin(iframeSrc)) {
@@ -52,23 +58,23 @@ export class WalletInjectionService {
           error: 'Wallet injection blocked for security reasons: untrusted origin'
         };
       }
-      
+
       // Wait for iframe to load
       await this.waitForIframeLoad(iframe);
 
       // Create secure injection script using pre-built module
       const scriptUrl = createInjectionScriptBlobURL();
-      
+
       // Execute injection
       const success = await this.executeInjection(iframe, scriptUrl);
-      
+
       // Clean up blob URL
       cleanupInjectionScriptBlobURL(scriptUrl);
 
       if (success) {
         const providers = ['solana', 'phantom', 'svmseek'];
         providers.forEach(provider => this.injected.add(provider));
-        
+
         return {
           success: true,
           injectedProviders: providers
@@ -89,6 +95,32 @@ export class WalletInjectionService {
   }
 
   /**
+   * Setup rate limiting cleanup to prevent memory leaks
+   */
+  private setupRateLimitingCleanup(): void {
+    setInterval(() => {
+      this.requestCounts.clear();
+    }, this.REQUEST_WINDOW_MS);
+  }
+
+  /**
+   * Check and enforce rate limiting for requests
+   */
+  private checkRateLimit(origin: string): boolean {
+    const currentTime = Date.now();
+    const requestKey = `${origin}_${Math.floor(currentTime / this.REQUEST_WINDOW_MS)}`;
+
+    const currentCount = this.requestCounts.get(requestKey) || 0;
+    if (currentCount >= this.MAX_REQUESTS_PER_MINUTE) {
+      logWarn(`Rate limit exceeded for origin: ${origin}`);
+      return false;
+    }
+
+    this.requestCounts.set(requestKey, currentCount + 1);
+    return true;
+  }
+
+  /**
    * Check if the origin is allowed for wallet injection
    * Implements same-origin policy with allowlist for trusted domains
    */
@@ -97,33 +129,30 @@ export class WalletInjectionService {
       const urlObj = new URL(url);
       const origin = urlObj.origin;
       const hostname = urlObj.hostname;
-      
-      // Allow same origin (localhost, 127.0.0.1 for development)
-      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+
+      // Allow same origin (localhost, 127.0.0.1 for development) with regex validation
+      if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(hostname)) {
         return true;
       }
-      
-      // Allow SVMSeek domains
-      const allowedDomains = [
-        'svmseek.com',
-        'www.svmseek.com',
-        'app.svmseek.com',
-        'wallet.svmseek.com'
+
+      // Allow SVMSeek domains with regex validation for enhanced security
+      const allowedDomainPatterns = [
+        /^svmseek\.com$/,
+        /^www\.svmseek\.com$/,
+        /^app\.svmseek\.com$/,
+        /^wallet\.svmseek\.com$/,
+        /^[a-zA-Z0-9-]+\.svmseek\.com$/ // Secure subdomain pattern
       ];
-      
-      // Check exact domain match
-      if (allowedDomains.includes(hostname)) {
-        return true;
+
+      // Check against regex patterns for enhanced security (not just .endsWith())
+      const isAllowed = allowedDomainPatterns.some(pattern => pattern.test(hostname));
+
+      if (!isAllowed) {
+        logWarn('Blocked wallet injection for untrusted origin:', origin);
+        return false;
       }
-      
-      // Check subdomain pattern for svmseek.com
-      if (hostname.endsWith('.svmseek.com')) {
-        return true;
-      }
-      
-      // Block all other origins for security
-      logWarn('Blocked wallet injection for untrusted origin:', origin);
-      return false;
+
+      return true;
     } catch (error) {
       logError('Failed to parse URL for origin check:', url, error);
       return false;
@@ -131,7 +160,7 @@ export class WalletInjectionService {
   }
 
   /**
-   * Handle messages from the iframe
+   * Handle messages from the iframe with rate limiting and enhanced security
    */
   private setupMessageListener(): void {
     window.addEventListener('message', (event) => {
@@ -140,20 +169,21 @@ export class WalletInjectionService {
           return;
         }
 
-        // Safely check if event.data exists and has the expected structure
-        if (!event.data || typeof event.data !== 'object') {
-          logWarn('WalletInjectionService: Received invalid message data', event.data);
+        // Apply rate limiting based on origin
+        const origin = event.origin || 'unknown';
+        if (!this.checkRateLimit(origin)) {
+          logWarn('Rate limited message from origin:', origin);
+          return;
+        }
+
+        // Invariant type guards for enhanced security
+        if (!this.validateIncomingMessage(event.data)) {
+          logWarn('WalletInjectionService: Message failed validation', event.data);
           return;
         }
 
         const { type, id, method, params } = event.data;
-        
-        // Additional null/undefined checks
-        if (!type || typeof type !== 'string') {
-          logWarn('WalletInjectionService: Received message without valid type', event.data);
-          return;
-        }
-        
+
         if (type === 'WALLET_REQUEST') {
           this.handleWalletRequest(id, method, params);
         }
@@ -161,6 +191,55 @@ export class WalletInjectionService {
         logError('WalletInjectionService: Error processing message:', error, event.data);
       }
     });
+  }
+
+  /**
+   * Validate incoming postMessage data with invariant type guards
+   */
+  private validateIncomingMessage(data: any): boolean {
+    // Basic structure validation
+    if (!data || typeof data !== 'object') {
+      return false;
+    }
+
+    // Required field validation with type guards
+    if (!data.type || typeof data.type !== 'string') {
+      return false;
+    }
+
+    // Validate request-specific fields
+    if (data.type === 'WALLET_REQUEST') {
+      if (!data.id || typeof data.id !== 'string') {
+        return false;
+      }
+      if (!data.method || typeof data.method !== 'string') {
+        return false;
+      }
+      if (data.params !== undefined && !Array.isArray(data.params)) {
+        return false;
+      }
+    }
+
+    // Validate against dangerous content patterns
+    const jsonString = JSON.stringify(data);
+    const dangerousPatterns = [
+      /eval\s*\(/,
+      /Function\s*\(/,
+      /setTimeout\s*\(/,
+      /setInterval\s*\(/,
+      /<script/i,
+      /javascript:/i,
+      /data:text\/html/i
+    ];
+
+    for (const pattern of dangerousPatterns) {
+      if (pattern.test(jsonString)) {
+        logWarn('Dangerous content detected in message:', data);
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -221,7 +300,7 @@ export class WalletInjectionService {
         script.src = scriptUrl;
         script.onload = () => resolve(true);
         script.onerror = () => resolve(false);
-        
+
         iframe.contentDocument?.head.appendChild(script);
       } catch (error) {
         logError('Script injection failed:', error);
@@ -302,10 +381,10 @@ export class WalletInjectionService {
       '2. Open SVMSeek wallet in a new tab\n' +
       '3. Learn more about secure transaction signing\n\n' +
       'This security measure protects your funds from malicious dApps.';
-    
+
     // Show a user-friendly notification
     this.showTransactionPrompt('Transaction Signing Required', message);
-    
+
     throw new Error('Please use the main SVMSeek wallet interface for transaction signing. This ensures your security and protects your funds.');
   }
 
@@ -315,9 +394,9 @@ export class WalletInjectionService {
   private async handleSignAllTransactions(transactions: any[]): Promise<any[]> {
     const message = `Multiple transaction signing (${transactions.length} transactions) is available in the main SVMSeek wallet interface for security. ` +
       'Batch transaction signing requires additional security verification that can only be performed in the main application.';
-    
+
     this.showTransactionPrompt('Batch Transaction Signing Required', message);
-    
+
     throw new Error('Please use the main SVMSeek wallet interface for batch transaction signing. This ensures your security and protects your funds.');
   }
 
@@ -327,9 +406,9 @@ export class WalletInjectionService {
   private async handleSignMessage(message: Uint8Array): Promise<{ signature: Uint8Array }> {
     const promptMessage = 'Message signing is available in the main SVMSeek wallet interface for security. ' +
       'This ensures that you can review the exact message content before signing and protects against phishing attempts.';
-    
+
     this.showTransactionPrompt('Message Signing Required', promptMessage);
-    
+
     throw new Error('Please use the main SVMSeek wallet interface for message signing. This ensures your security and protects against phishing.');
   }
 
@@ -360,7 +439,7 @@ export class WalletInjectionService {
         ],
       },
     });
-    
+
     window.dispatchEvent(promptEvent);
   }
 

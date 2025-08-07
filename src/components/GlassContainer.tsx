@@ -12,30 +12,30 @@ interface GlassContainerProps extends BoxProps {
 
 const StyledGlassContainer = styled(Box, {
   shouldForwardProp: (prop) => !['blur', 'opacity', 'borderRadius', 'animationType'].includes(prop as string),
-})<GlassContainerProps>(({ 
-  theme, 
-  blur = 10, 
-  opacity = 0.1, 
+})<GlassContainerProps>(({
+  theme,
+  blur = 10,
+  opacity = 0.1,
   borderRadius = 16,
-  animationType = 'fade-in' 
+  animationType = 'fade-in'
 }) => ({
-  background: theme.palette.mode === 'dark' 
-    ? `rgba(255, 255, 255, ${opacity})` 
+  background: theme.palette.mode === 'dark'
+    ? `rgba(255, 255, 255, ${opacity})`
     : `rgba(255, 255, 255, ${opacity * 2})`,
   backdropFilter: `blur(${blur}px)`,
-  border: `1px solid ${theme.palette.mode === 'dark' 
-    ? 'rgba(255, 255, 255, 0.2)' 
+  border: `1px solid ${theme.palette.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.2)'
     : 'rgba(0, 0, 0, 0.08)'}`,
   borderRadius: `${borderRadius}px`,
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   animation: `${animationType} 0.5s ease-out`,
   '&:hover': {
-    background: theme.palette.mode === 'dark' 
-      ? `rgba(255, 255, 255, ${opacity * 1.5})` 
+    background: theme.palette.mode === 'dark'
+      ? `rgba(255, 255, 255, ${opacity * 1.5})`
       : `rgba(255, 255, 255, ${opacity * 3})`,
     transform: 'translateY(-2px)',
-    boxShadow: theme.palette.mode === 'dark' 
-      ? '0 8px 32px rgba(0, 0, 0, 0.3)' 
+    boxShadow: theme.palette.mode === 'dark'
+      ? '0 8px 32px rgba(0, 0, 0, 0.3)'
       : '0 8px 32px rgba(0, 0, 0, 0.1)',
   },
 }));

@@ -1,6 +1,6 @@
 /**
  * Unified Theme Configuration
- * 
+ *
  * This file harmonizes CSS variables and styled-components theming
  * to provide a consistent design system across the application.
  * It replaces hardcoded CSS variables with theme-aware values.
@@ -29,60 +29,60 @@ export class CSSVariableGenerator {
 
     return `
       /* === Generated Theme Variables: ${this.theme.displayName} === */
-      
+
       /* Background Colors */
       --bg-primary: ${colors.background.primary};
       --bg-secondary: ${colors.background.secondary};
       --bg-tertiary: ${colors.background.tertiary};
       --bg-glass: ${colors.background.glass};
       --bg-overlay: ${colors.background.overlay};
-      
+
       /* Text Colors */
       --text-primary: ${colors.text.primary};
       --text-secondary: ${colors.text.secondary};
       --text-tertiary: ${colors.text.tertiary};
       --text-accent: ${colors.text.accent};
       --text-inverse: ${colors.text.inverse};
-      
+
       /* Interactive Colors */
       --interactive-primary: ${colors.interactive.primary};
       --interactive-secondary: ${colors.interactive.secondary};
       --interactive-hover: ${colors.interactive.hover};
       --interactive-active: ${colors.interactive.active};
       --interactive-disabled: ${colors.interactive.disabled};
-      
+
       /* Status Colors */
       --status-success: ${colors.status.success};
       --status-warning: ${colors.status.warning};
       --status-error: ${colors.status.error};
       --status-info: ${colors.status.info};
-      
+
       /* Border Colors */
       --border-primary: ${colors.border.primary};
       --border-secondary: ${colors.border.secondary};
       --border-focus: ${colors.border.focus};
       --border-glass: ${colors.border.glass};
-      
+
       /* Shadows */
       --shadow-sm: ${colors.shadow.sm};
       --shadow-md: ${colors.shadow.md};
       --shadow-lg: ${colors.shadow.lg};
       --shadow-xl: ${colors.shadow.xl};
       --shadow-glass: ${colors.shadow.glass};
-      
+
       /* Glass Effects */
       --glass-backdrop: ${effects.glass.backdrop};
       --glass-border: ${effects.glass.border};
       --glass-shadow: ${effects.glass.shadow};
       --glass-opacity: ${effects.glass.opacity};
-      
+
       /* Border Radius */
       --radius-sm: ${effects.radius.sm};
       --radius-md: ${effects.radius.md};
       --radius-lg: ${effects.radius.lg};
       --radius-xl: ${effects.radius.xl};
       --radius-full: ${effects.radius.full};
-      
+
       /* Animation */
       --animate-fast: ${effects.animation.duration.fast};
       --animate-normal: ${effects.animation.duration.normal};
@@ -90,7 +90,7 @@ export class CSSVariableGenerator {
       --ease-default: ${effects.animation.easing.default};
       --ease-bounce: ${effects.animation.easing.bounce};
       --ease-smooth: ${effects.animation.easing.smooth};
-      
+
       /* Typography */
       --font-primary: ${typography.fontFamily.primary};
       --font-mono: ${typography.fontFamily.mono};
@@ -125,7 +125,7 @@ export class CSSVariableGenerator {
         ${this.generateCSSVariables()}
       }
     `;
-    
+
     document.head.appendChild(style);
   }
 }
@@ -260,11 +260,11 @@ export class MUIThemeGenerator {
    */
   private detectColorMode(): 'light' | 'dark' {
     const { colors } = this.svmTheme;
-    
+
     // Simple heuristic: check if background is darker than text
     const bgLuminance = this.getLuminance(colors.background.primary);
     const textLuminance = this.getLuminance(colors.text.primary);
-    
+
     return bgLuminance < textLuminance ? 'dark' : 'light';
   }
 
@@ -278,12 +278,12 @@ export class MUIThemeGenerator {
     // In a real implementation, you'd parse the color properly
     const rgb = this.hexToRgb(color);
     if (!rgb) return 0.5; // Default to middle if can't parse
-    
+
     const [r, g, b] = rgb.map(c => {
       c = c / 255;
       return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
     });
-    
+
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
 
@@ -337,7 +337,7 @@ export class UnifiedThemeManager {
    * @param themeNameOrTheme - Theme name or theme object
    */
   switchTheme(themeNameOrTheme: string | SVMTheme): void {
-    const newTheme = typeof themeNameOrTheme === 'string' 
+    const newTheme = typeof themeNameOrTheme === 'string'
       ? themes[themeNameOrTheme] || defaultTheme
       : themeNameOrTheme;
 
@@ -405,7 +405,7 @@ export class UnifiedThemeManager {
    */
   private handleSystemThemeChange = (e: MediaQueryListEvent): void => {
     const savedTheme = localStorage.getItem('svmseek-theme');
-    
+
     // Only auto-switch if no user preference is set
     if (!savedTheme) {
       const autoTheme = e.matches ? 'solarized' : 'eink';

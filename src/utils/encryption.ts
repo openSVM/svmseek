@@ -72,27 +72,27 @@ export const CURRENT_CRYPTO_VERSION = 4;
  */
 export abstract class EncryptionProvider {
   public readonly config: CryptoConfig;
-  
+
   constructor(config: CryptoConfig) {
     this.config = config;
   }
 
   abstract deriveKey(password: string, salt: Uint8Array): Promise<Uint8Array>;
-  
+
   generateSalt(): Uint8Array {
     return randomBytes(this.config.saltLength);
   }
-  
+
   generateNonce(): Uint8Array {
     return randomBytes(secretbox.nonceLength);
   }
-  
+
   encrypt(plaintext: string, key: Uint8Array): { encrypted: Uint8Array; nonce: Uint8Array } {
     const nonce = this.generateNonce();
     const encrypted = secretbox(Buffer.from(plaintext), nonce, key);
     return { encrypted, nonce };
   }
-  
+
   decrypt(encrypted: Uint8Array, nonce: Uint8Array, key: Uint8Array): string | null {
     const decrypted = secretbox.open(encrypted, nonce, key);
     if (!decrypted) return null;
@@ -130,7 +130,7 @@ export class ScryptProvider extends EncryptionProvider {
     const N = this.config.iterations; // Cost parameter
     const r = 8; // Block size parameter
     const p = 1; // Parallelization parameter
-    
+
     return scrypt(passwordBuffer, salt, N, r, p, this.config.keyLength);
   }
 }
@@ -150,12 +150,12 @@ export class Argon2Provider extends EncryptionProvider {
         parallelism: 1,
         type: argon2.ArgonType.Argon2id, // Use Argon2id (most secure variant)
       });
-      
+
       // Validate that result exists and has the expected hash property
       if (!result || !result.hash) {
         throw new Error('Argon2 key derivation failed: result is undefined or missing hash');
       }
-      
+
       return new Uint8Array(result.hash);
     } catch (error) {
       throw new Error(`Argon2 key derivation failed: ${error}`);
@@ -179,7 +179,7 @@ export class EncryptionProviderFactory {
         throw new Error(`Unsupported KDF: ${config.kdf}`);
     }
   }
-  
+
   static createFromVersion(version: number): EncryptionProvider {
     const config = CRYPTO_CONFIGS[version];
     if (!config) {
@@ -195,12 +195,12 @@ export class EncryptionProviderFactory {
 export class WalletEncryptionManager {
   private provider: EncryptionProvider;
   private version: number;
-  
+
   constructor(version: number = CURRENT_CRYPTO_VERSION) {
     this.version = version;
     this.provider = EncryptionProviderFactory.createFromVersion(version);
   }
-  
+
   /**
    * Encrypt wallet data with current encryption settings
    */
@@ -208,7 +208,7 @@ export class WalletEncryptionManager {
     const salt = this.provider.generateSalt();
     const key = await this.provider.deriveKey(password, salt);
     const { encrypted, nonce } = this.provider.encrypt(plaintext, key);
-    
+
     return {
       encrypted: bs58.encode(encrypted),
       nonce: bs58.encode(nonce),
@@ -219,7 +219,7 @@ export class WalletEncryptionManager {
       version: this.version,
     };
   }
-  
+
   /**
    * Decrypt wallet data, automatically handling different versions
    */
@@ -228,21 +228,21 @@ export class WalletEncryptionManager {
     const provider = EncryptionProviderFactory.createFromVersion(
       encryptedData.version || 1 // Default to v1 for legacy data
     );
-    
+
     const encrypted = bs58.decode(encryptedData.encrypted);
     const nonce = bs58.decode(encryptedData.nonce);
     const salt = bs58.decode(encryptedData.salt);
-    
+
     const key = await provider.deriveKey(password, salt);
     const plaintext = provider.decrypt(encrypted, nonce, key);
-    
+
     if (!plaintext) {
       throw new Error('Decryption failed - incorrect password');
     }
-    
+
     return plaintext;
   }
-  
+
   /**
    * Check if encrypted data needs migration to newer version
    */
@@ -250,7 +250,7 @@ export class WalletEncryptionManager {
     const dataVersion = encryptedData.version || 1;
     return dataVersion < CURRENT_CRYPTO_VERSION;
   }
-  
+
   /**
    * Migrate encrypted data to current version
    */
@@ -258,15 +258,15 @@ export class WalletEncryptionManager {
     if (!this.needsMigration(encryptedData)) {
       return encryptedData;
     }
-    
+
     // Decrypt with old version
     const plaintext = await this.decrypt(encryptedData, password);
-    
+
     // Re-encrypt with current version
     const newManager = new WalletEncryptionManager(CURRENT_CRYPTO_VERSION);
     return await newManager.encrypt(plaintext, password);
   }
-  
+
   /**
    * Verify password without full decryption (for quick validation)
    */
@@ -278,7 +278,7 @@ export class WalletEncryptionManager {
       return false;
     }
   }
-  
+
   /**
    * Get security information about the encryption
    */
@@ -290,7 +290,7 @@ export class WalletEncryptionManager {
     estimatedCrackTime: string;
   } {
     const config = CRYPTO_CONFIGS[this.version];
-    
+
     // Rough estimates for educational purposes
     const estimatedCrackTime = (() => {
       switch (config.kdf) {
@@ -299,14 +299,14 @@ export class WalletEncryptionManager {
         case 'scrypt':
           return 'centuries (with current hardware)';
         case 'pbkdf2':
-          return config.iterations >= 200000 
-            ? 'centuries (with current hardware)' 
+          return config.iterations >= 200000
+            ? 'centuries (with current hardware)'
             : 'decades (with current hardware)';
         default:
           return 'unknown';
       }
     })();
-    
+
     return {
       version: this.version,
       kdf: config.kdf,
@@ -326,9 +326,9 @@ export const walletEncryption = new WalletEncryptionManager();
  * Legacy function adapter for backward compatibility
  */
 export async function deriveEncryptionKey(
-  password: string, 
-  salt: Uint8Array, 
-  iterations: number = 100000, 
+  password: string,
+  salt: Uint8Array,
+  iterations: number = 100000,
   digest: string = 'sha256'
 ): Promise<Uint8Array> {
   const config: CryptoConfig = {
@@ -338,7 +338,7 @@ export async function deriveEncryptionKey(
     saltLength: salt.length,
     keyLength: 32,
   };
-  
+
   const provider = new PBKDF2Provider(config);
   return provider.deriveKey(password, salt);
 }
@@ -350,11 +350,11 @@ export function generateSecurePassword(length: number = 32): string {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
   const bytes = randomBytes(length);
   let result = '';
-  
+
   for (let i = 0; i < length; i++) {
     result += charset[bytes[i] % charset.length];
   }
-  
+
   return result;
 }
 
@@ -365,26 +365,26 @@ export function estimatePasswordStrength(password: string): {
 } {
   const feedback: string[] = [];
   let score = 0;
-  
+
   if (password.length >= 12) score += 2;
   else if (password.length >= 8) score += 1;
   else feedback.push('Use at least 8 characters');
-  
+
   if (/[a-z]/.test(password)) score += 1;
   else feedback.push('Add lowercase letters');
-  
+
   if (/[A-Z]/.test(password)) score += 1;
   else feedback.push('Add uppercase letters');
-  
+
   if (/\d/.test(password)) score += 1;
   else feedback.push('Add numbers');
-  
+
   if (/[^a-zA-Z0-9]/.test(password)) score += 2;
   else feedback.push('Add special characters');
-  
-  const estimatedCrackTime = score >= 6 ? 'centuries' : 
-                            score >= 4 ? 'years' : 
+
+  const estimatedCrackTime = score >= 6 ? 'centuries' :
+                            score >= 4 ? 'years' :
                             score >= 2 ? 'days' : 'minutes';
-  
+
   return { score, feedback, estimatedCrackTime };
 }

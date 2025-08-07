@@ -61,7 +61,7 @@ const ActivitiesDropdown = ({
       <RowContainer>
         <RowContainer padding="0 1.6rem" direction="column">
           <StyledTd
-            
+
           >
             <ButtonsContainer>
               <VioletButton
@@ -85,7 +85,7 @@ const ActivitiesDropdown = ({
                 <img
                   src={Receive}
                   alt="receive"
-                  
+
                 />
                 <span>Receive</span>
               </VioletButton>
@@ -136,7 +136,7 @@ const ActivitiesDropdown = ({
                 <img
                   src={BlueExplorer}
                   alt="Explorer Icon"
-                  
+
                 />
                 View Explorer
               </VioletButton>
@@ -166,7 +166,7 @@ const ActivitiesDropdown = ({
                 <img
                   src={TradeIcon}
                   alt="trade"
-                  
+
                 />
                 Trade
               </VioletButton>

@@ -57,10 +57,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     logError('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     // Log to centralized logging service
     loggingService.logComponentError(error, errorInfo, this.props.context || 'UnknownComponent');
-    
+
     this.setState({
       error,
       errorInfo,
@@ -73,7 +73,7 @@ class ErrorBoundary extends Component<Props, State> {
       error: null,
       errorInfo: null,
     });
-    
+
     if (this.props.onRetry) {
       this.props.onRetry();
     }
@@ -94,15 +94,15 @@ class ErrorBoundary extends Component<Props, State> {
             Oops! Something went wrong
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-            We encountered an error while loading this {context}. 
+            We encountered an error while loading this {context}.
             This might be due to network connectivity issues or temporary service disruption.
           </Typography>
-          
+
           <Alert severity="error" sx={{ width: '100%', maxWidth: 600 }}>
             <Typography variant="subtitle2" gutterBottom>
               Error Details:
             </Typography>
-            <Typography variant="body2" component="pre" sx={{ 
+            <Typography variant="body2" component="pre" sx={{
               fontSize: '0.875rem',
               wordBreak: 'break-word',
               whiteSpace: 'pre-wrap',
@@ -117,10 +117,10 @@ class ErrorBoundary extends Component<Props, State> {
                 <Typography variant="subtitle2" gutterBottom>
                   Stack Trace:
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  component="pre" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  component="pre"
+                  sx={{
                     fontSize: '0.75rem',
                     overflow: 'auto',
                     maxHeight: 200,
@@ -166,12 +166,12 @@ class ErrorBoundary extends Component<Props, State> {
 export default ErrorBoundary;
 
 // Convenience wrapper for specific use cases
-export const NetworkErrorBoundary: React.FC<{ children: ReactNode; onRetry?: () => void }> = ({ 
-  children, 
-  onRetry 
+export const NetworkErrorBoundary: React.FC<{ children: ReactNode; onRetry?: () => void }> = ({
+  children,
+  onRetry
 }) => (
-  <ErrorBoundary 
-    context="network operation" 
+  <ErrorBoundary
+    context="network operation"
     onRetry={onRetry}
     fallbackComponent={
       <Alert severity="error" sx={{ m: 2 }}>
@@ -193,12 +193,12 @@ export const NetworkErrorBoundary: React.FC<{ children: ReactNode; onRetry?: () 
   </ErrorBoundary>
 );
 
-export const RPCErrorBoundary: React.FC<{ children: ReactNode; onRetry?: () => void }> = ({ 
-  children, 
-  onRetry 
+export const RPCErrorBoundary: React.FC<{ children: ReactNode; onRetry?: () => void }> = ({
+  children,
+  onRetry
 }) => (
-  <ErrorBoundary 
-    context="RPC service" 
+  <ErrorBoundary
+    context="RPC service"
     onRetry={onRetry}
     fallbackComponent={
       <Alert severity="warning" sx={{ m: 2 }}>

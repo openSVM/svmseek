@@ -104,12 +104,12 @@ const BalanceCard = styled(({ needLeftMargin, ...props }) => (
     props.background || 'linear-gradient(135deg, rgba(19, 49, 173, 0.8) 0%, rgba(59, 141, 23, 0.8) 100%) !important'};
   border-radius: 1.2rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &:hover {
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
   }
-  
+
   @media (max-width: 540px) {
     margin: 0;
     width: 48%;

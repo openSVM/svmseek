@@ -82,7 +82,7 @@ export const useVaultWallet = () => {
 
   const connectWallet = async () => {
     if (isConnecting) return;
-    
+
     setIsConnecting(true);
     try {
       if (window.solana) {
@@ -128,25 +128,25 @@ export const useVaultWallet = () => {
 const generateDevelopmentAddress = (): string => {
   const stored = localStorage.getItem('vault_dev_address');
   if (stored) return stored;
-  
+
   // Create a stable mock address for development
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz123456789';
   let address = '';
   const seed = 'vault_dev_' + (localStorage.getItem('vault_sessionId') || 'default');
-  
+
   // Generate deterministic address from seed
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = ((hash << 5) - hash) + seed.charCodeAt(i);
     hash = hash & hash;
   }
-  
+
   for (let i = 0; i < 44; i++) {
     hash = ((hash << 5) - hash) + seed.charCodeAt(i % seed.length);
     hash = hash & hash;
     address += chars[Math.abs(hash) % chars.length];
   }
-  
+
   localStorage.setItem('vault_dev_address', address);
   return address;
 };

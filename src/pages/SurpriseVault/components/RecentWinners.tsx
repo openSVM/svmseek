@@ -1,10 +1,10 @@
 import React, { useState, useEffect, memo } from 'react';
-import { 
-  Box, 
-  Typography, 
-  List, 
-  ListItem, 
-  ListItemAvatar, 
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemAvatar,
   ListItemText,
   Avatar,
   Chip,
@@ -15,7 +15,7 @@ import {
   Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { 
+import {
   EmojiEvents as TrophyIcon,
   Refresh as RefreshIcon,
   CollectionsBookmark as NFTIcon,
@@ -55,8 +55,8 @@ const WinnerItem = styled(ListItem)(({ theme }) => ({
 }));
 
 const RewardChip = styled(Chip)<{ rewardtype: 'nft' | 'token' }>(({ theme, rewardtype }) => ({
-  background: rewardtype === 'nft' 
-    ? 'linear-gradient(135deg, #FF6B6B, #FF8E8E)' 
+  background: rewardtype === 'nft'
+    ? 'linear-gradient(135deg, #FF6B6B, #FF8E8E)'
     : 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
   color: '#fff',
   fontWeight: 'bold',
@@ -87,7 +87,7 @@ const RecentWinners: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const vaultService = VaultService.getInstance();
 
   useEffect(() => {
@@ -166,8 +166,8 @@ const RecentWinners: React.FC = () => {
             {winners.map((winner) => (
               <WinnerItem key={winner.id}>
                 <ListItemAvatar>
-                  <Avatar 
-                    sx={{ 
+                  <Avatar
+                    sx={{
                       background: 'linear-gradient(135deg, #FFD700, #FFA500)',
                       color: '#000',
                       fontWeight: 'bold'

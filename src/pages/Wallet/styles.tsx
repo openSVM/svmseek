@@ -37,7 +37,7 @@ export const StyledTabs = styled(Tabs)`
   .MuiTabs-flexContainer {
     justify-content: center;
   }
-  
+
   & > div > span {
     background: var(--interactive-primary) !important;
   }

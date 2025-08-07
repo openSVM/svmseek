@@ -10,13 +10,13 @@ import {
   FormHelperText,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { 
-  validateAndSanitizeUrl, 
-  validateRepositoryUrl 
+import {
+  validateAndSanitizeUrl,
+  validateRepositoryUrl
 } from '../../../utils/urlSanitizer';
-import { 
-  createValidatedInputHandler, 
-  ValidationPresets 
+import {
+  createValidatedInputHandler,
+  ValidationPresets
 } from '../../../utils/inputValidation';
 
 interface AgentFormData {
@@ -70,7 +70,7 @@ export const AgentRegistrationForm: React.FC<AgentRegistrationFormProps> = ({
   const handleRepositoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setFormData(prev => ({ ...prev, repository: value }));
-    
+
     if (value.trim()) {
       const validation = validateRepositoryUrl(value);
       setErrors(prev => ({
@@ -85,7 +85,7 @@ export const AgentRegistrationForm: React.FC<AgentRegistrationFormProps> = ({
   const handleDocumentationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setFormData(prev => ({ ...prev, documentation: value }));
-    
+
     if (value.trim()) {
       const validation = validateAndSanitizeUrl(value);
       setErrors(prev => ({
@@ -100,7 +100,7 @@ export const AgentRegistrationForm: React.FC<AgentRegistrationFormProps> = ({
   const handleEndpointChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setFormData(prev => ({ ...prev, endpoint: value }));
-    
+
     if (value.trim()) {
       const validation = validateAndSanitizeUrl(value);
       setErrors(prev => ({
@@ -148,32 +148,32 @@ export const AgentRegistrationForm: React.FC<AgentRegistrationFormProps> = ({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     // Validate required fields
     const requiredErrors: {[key: string]: string} = {};
-    
+
     if (!formData.name.trim()) {
       requiredErrors.name = 'Agent name is required';
     }
-    
+
     if (!formData.description.trim()) {
       requiredErrors.description = 'Description is required';
     }
-    
+
     if (!formData.repository.trim()) {
       requiredErrors.repository = 'Repository URL is required';
     }
-    
+
     if (Object.keys(requiredErrors).length > 0) {
       setErrors(prev => ({ ...prev, ...requiredErrors }));
       return;
     }
-    
+
     // Check for existing validation errors
     if (Object.values(errors).some(error => error)) {
       return;
     }
-    
+
     try {
       await onSubmit(formData);
     } catch (error) {
@@ -185,8 +185,8 @@ export const AgentRegistrationForm: React.FC<AgentRegistrationFormProps> = ({
   };
 
   return (
-    <Box 
-      component="form" 
+    <Box
+      component="form"
       onSubmit={handleSubmit}
       sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
       role="form"
@@ -373,8 +373,8 @@ export const AgentRegistrationForm: React.FC<AgentRegistrationFormProps> = ({
       )}
 
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-        <Button 
-          onClick={onCancel} 
+        <Button
+          onClick={onCancel}
           disabled={isLoading}
           aria-label="Cancel agent registration"
         >

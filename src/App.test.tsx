@@ -78,11 +78,11 @@ describe('App Basic Tests', () => {
   test('renders without crashing', () => {
     // Import App after mocks are set up
     const App = require('./App').default;
-    
+
     localStorageMock.getItem.mockReturnValue('true'); // onboarding-setup-complete
-    
+
     const { container } = render(<App />);
-    
+
     expect(container).toBeInTheDocument();
   });
 
@@ -90,16 +90,16 @@ describe('App Basic Tests', () => {
     // Mock window.self !== window.top (iframe scenario)
     const originalSelf = window.self;
     const originalTop = window.top;
-    
+
     Object.defineProperty(window, 'self', { value: {}, configurable: true });
     Object.defineProperty(window, 'top', { value: {}, configurable: true });
-    
+
     const App = require('./App').default;
     const { container } = render(<App />);
-    
+
     // Should render null when in iframe
     expect(container.firstChild).toBeNull();
-    
+
     // Restore original values
     Object.defineProperty(window, 'self', { value: originalSelf, configurable: true });
     Object.defineProperty(window, 'top', { value: originalTop, configurable: true });

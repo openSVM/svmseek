@@ -1,10 +1,10 @@
 /**
  * SVMSeek Wallet Injection Script
- * 
+ *
  * This script is injected into iframe environments to provide secure wallet
  * provider interfaces. It creates standardized wallet APIs (Solana, Phantom, SVMSeek)
  * while maintaining security through controlled message passing.
- * 
+ *
  * @version 1.0.0
  * @author SVMSeek Team
  * @security This script implements iframe sandboxing and secure postMessage communication
@@ -50,26 +50,26 @@ export function createWalletInjectionScript(): string {
   return `
 (function() {
   'use strict';
-  
+
   /**
    * SVMSeek Wallet Provider Injection Script
    * Version: 1.0.0
-   * 
+   *
    * This script creates secure wallet provider interfaces for iframe-based dApps.
    * It implements the standard Solana wallet adapter interface while maintaining
    * security through message passing to the parent window.
    */
-  
+
   // Prevent multiple injections
   if (window.svmseekWalletInjected) {
     console.warn('SVMSeek: Wallet providers already injected, skipping duplicate injection');
     return;
   }
-  
+
   // Request tracking
   let requestId = 0;
   const pendingRequests = new Map();
-  
+
   /**
    * Create a standardized wallet provider interface
    * @param {string} providerName - Name of the wallet provider
@@ -80,7 +80,7 @@ export function createWalletInjectionScript(): string {
       // Provider identification
       isConnected: false,
       publicKey: null,
-      
+
       /**
        * Send a request to the parent wallet interface
        * @param {string} method - Wallet method to call
@@ -90,10 +90,10 @@ export function createWalletInjectionScript(): string {
       async request(method, params = []) {
         return new Promise((resolve, reject) => {
           const id = \`\${providerName}_\${++requestId}\`;
-          
+
           // Store pending request for response handling
           pendingRequests.set(id, { resolve, reject });
-          
+
           try {
             // Send request to parent window with security validation
             window.parent.postMessage({
@@ -102,7 +102,7 @@ export function createWalletInjectionScript(): string {
               method,
               params
             }, window.location.origin); // Use specific origin instead of '*'
-            
+
             // Timeout handling with configurable timeout
             setTimeout(() => {
               if (pendingRequests.has(id)) {
@@ -110,14 +110,14 @@ export function createWalletInjectionScript(): string {
                 reject(new Error(\`Request timeout: \${method} after ${TIMEOUT_CONSTANTS.MESSAGE_RESPONSE}ms\`));
               }
             }, ${TIMEOUT_CONSTANTS.MESSAGE_RESPONSE});
-            
+
           } catch (error) {
             pendingRequests.delete(id);
             reject(new Error(\`Failed to send request: \${error.message}\`));
           }
         });
       },
-      
+
       /**
        * Connect to the wallet
        * @returns {Promise<{publicKey: string}>} Connection result
@@ -127,26 +127,26 @@ export function createWalletInjectionScript(): string {
           const result = await this.request('connect');
           this.isConnected = true;
           this.publicKey = result.publicKey;
-          
+
           // Dispatch connection event
           window.dispatchEvent(new CustomEvent('wallet-connected', {
             detail: { provider: providerName, publicKey: result.publicKey }
           }));
-          
+
           return result;
         } catch (error) {
           this.isConnected = false;
           this.publicKey = null;
-          
+
           // Dispatch error event
           window.dispatchEvent(new CustomEvent('wallet-error', {
             detail: { provider: providerName, error: error.message }
           }));
-          
+
           throw error;
         }
       },
-      
+
       /**
        * Disconnect from the wallet
        * @returns {Promise<void>} Disconnection result
@@ -156,12 +156,12 @@ export function createWalletInjectionScript(): string {
           const result = await this.request('disconnect');
           this.isConnected = false;
           this.publicKey = null;
-          
+
           // Dispatch disconnection event
           window.dispatchEvent(new CustomEvent('wallet-disconnected', {
             detail: { provider: providerName }
           }));
-          
+
           return result;
         } catch (error) {
           // Even if the request fails, reset local state
@@ -170,7 +170,7 @@ export function createWalletInjectionScript(): string {
           throw error;
         }
       },
-      
+
       /**
        * Sign a transaction (blocked for security)
        * @param {object} transaction - Transaction to sign
@@ -180,11 +180,11 @@ export function createWalletInjectionScript(): string {
         if (!this.isConnected) {
           throw new Error('Wallet not connected');
         }
-        
+
         // Security: Block transaction signing in iframe context
         return this.request('signTransaction', [transaction]);
       },
-      
+
       /**
        * Sign multiple transactions (blocked for security)
        * @param {Array} transactions - Transactions to sign
@@ -194,11 +194,11 @@ export function createWalletInjectionScript(): string {
         if (!this.isConnected) {
           throw new Error('Wallet not connected');
         }
-        
+
         // Security: Block batch transaction signing in iframe context
         return this.request('signAllTransactions', [transactions]);
       },
-      
+
       /**
        * Sign a message (blocked for security)
        * @param {Uint8Array} message - Message to sign
@@ -208,11 +208,11 @@ export function createWalletInjectionScript(): string {
         if (!this.isConnected) {
           throw new Error('Wallet not connected');
         }
-        
+
         // Security: Block message signing in iframe context
         return this.request('signMessage', [message]);
       },
-      
+
       /**
        * Add event listener for wallet events
        * @param {string} event - Event name
@@ -221,20 +221,20 @@ export function createWalletInjectionScript(): string {
       on(event, handler) {
         window.addEventListener(\`wallet-\${event}\`, handler);
       },
-      
+
       /**
        * Remove event listener
        * @param {string} event - Event name
-       * @param {Function} handler - Event handler  
+       * @param {Function} handler - Event handler
        */
       off(event, handler) {
         window.removeEventListener(\`wallet-\${event}\`, handler);
       }
     };
-    
+
     return provider;
   };
-  
+
   /**
    * Handle responses from the parent window
    * Processes wallet responses and errors with proper type checking
@@ -245,21 +245,21 @@ export function createWalletInjectionScript(): string {
       if (event.source !== window.parent) {
         return;
       }
-      
+
       // Validate message data structure
       if (!event.data || typeof event.data !== 'object') {
         console.warn('SVMSeek: Received invalid message data structure:', event.data);
         return;
       }
-      
+
       const { type, id, result, error } = event.data;
-      
+
       // Validate required fields
       if (!type || typeof type !== 'string') {
         console.warn('SVMSeek: Received message without valid type:', event.data);
         return;
       }
-      
+
       // Handle successful responses
       if (type === 'WALLET_RESPONSE' && id && pendingRequests.has(id)) {
         const { resolve } = pendingRequests.get(id);
@@ -267,7 +267,7 @@ export function createWalletInjectionScript(): string {
         resolve(result);
         return;
       }
-      
+
       // Handle error responses
       if (type === 'WALLET_ERROR' && id && pendingRequests.has(id)) {
         const { reject } = pendingRequests.get(id);
@@ -275,7 +275,7 @@ export function createWalletInjectionScript(): string {
         reject(new Error(error || 'Unknown wallet error'));
         return;
       }
-      
+
       // Handle custom SVMSeek events
       if (type === 'SVMSEEK_EVENT') {
         window.dispatchEvent(new CustomEvent('svmseek-event', {
@@ -283,21 +283,21 @@ export function createWalletInjectionScript(): string {
         }));
         return;
       }
-      
+
     } catch (err) {
       console.error('SVMSeek: Error processing parent message:', err, event.data);
     }
   };
-  
+
   // Set up message listener for parent communication
   window.addEventListener('message', handleParentMessage);
-  
+
   try {
     // Create wallet provider instances
     const solanaProvider = createWalletProvider('solana');
     const phantomProvider = createWalletProvider('phantom');
     const svmseekProvider = createWalletProvider('svmseek');
-    
+
     // Inject providers with proper property descriptors for security
     Object.defineProperty(window, 'solana', {
       value: solanaProvider,
@@ -305,24 +305,24 @@ export function createWalletInjectionScript(): string {
       configurable: false,
       enumerable: true
     });
-    
+
     Object.defineProperty(window, 'phantom', {
-      value: { 
+      value: {
         solana: phantomProvider,
-        isPhantom: true 
+        isPhantom: true
       },
       writable: false,
       configurable: false,
       enumerable: true
     });
-    
+
     Object.defineProperty(window, 'svmseek', {
       value: svmseekProvider,
       writable: false,
       configurable: false,
       enumerable: true
     });
-    
+
     // Mark injection as complete
     Object.defineProperty(window, 'svmseekWalletInjected', {
       value: true,
@@ -330,7 +330,7 @@ export function createWalletInjectionScript(): string {
       configurable: false,
       enumerable: false
     });
-    
+
     // Store provider references for external access
     Object.defineProperty(window, 'svmseekProviders', {
       value: {
@@ -342,7 +342,7 @@ export function createWalletInjectionScript(): string {
       configurable: false,
       enumerable: false
     });
-    
+
     // Dispatch ready event
     window.dispatchEvent(new CustomEvent('svmseek-wallet-ready', {
       detail: {
@@ -351,12 +351,12 @@ export function createWalletInjectionScript(): string {
         timestamp: Date.now()
       }
     }));
-    
+
     console.log('SVMSeek: Wallet providers injected successfully');
-    
+
   } catch (error) {
     console.error('SVMSeek: Failed to inject wallet providers:', error);
-    
+
     // Dispatch error event
     window.dispatchEvent(new CustomEvent('svmseek-wallet-error', {
       detail: {
@@ -365,7 +365,7 @@ export function createWalletInjectionScript(): string {
       }
     }));
   }
-  
+
   /**
    * Cleanup function for proper resource management
    */
@@ -374,7 +374,7 @@ export function createWalletInjectionScript(): string {
     pendingRequests.clear();
     console.log('SVMSeek: Wallet injection cleaned up');
   };
-  
+
 })();
 
 //# sourceMappingURL=data:application/json;base64,${btoa(JSON.stringify({
@@ -393,7 +393,7 @@ export function createWalletInjectionScript(): string {
  */
 export function createInjectionScriptBlobURL(): string {
   const script = createWalletInjectionScript();
-  const blob = new Blob([script], { 
+  const blob = new Blob([script], {
     type: 'application/javascript'
   });
   return URL.createObjectURL(blob);

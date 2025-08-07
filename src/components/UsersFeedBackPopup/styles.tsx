@@ -150,7 +150,7 @@ export const BlueButton = styled(
         <Loading
           color={'#fff'}
           size={24}
-          
+
         />
       ) : (
         children
