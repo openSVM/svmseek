@@ -265,17 +265,51 @@ yarn build
 yarn deploy
 ```
 
-### Extension Store Distribution
+### Browser Extension Deployment
+
+#### Automated Store Deployment
+
+The repository includes automated deployment to browser stores via GitHub Actions:
+
+- **Chrome Web Store** - Automatic deployment on main branch push/tags
+- **Firefox Add-ons** - Automatic deployment with review submission
+- **Microsoft Edge Add-ons** - Automatic deployment to Partner Center
+- **Safari App Store** - Automated build with manual submission instructions
+
+```bash
+# Setup deployment configuration
+./scripts/setup-extension-deployment.sh
+
+# Manual deployment trigger (GitHub Actions)
+# Go to Actions → Deploy Browser Extensions → Run workflow
+```
+
+#### Manual Extension Building
+
 ```bash
 # Build all extension packages
 yarn build:extension-all
 
+# Build specific browser extensions
+yarn build:extension-chrome
+yarn build:extension-firefox
+yarn build:extension-safari  
+yarn build:extension-edge
+
 # Package files are created in:
-# - extension/chrome/build/
-# - extension/firefox/build/
-# - extension/safari/build/
-# - extension/edge/build/
+# - extension/chrome/build/ → svmseek-wallet-chrome.zip
+# - extension/firefox/build/ → svmseek-wallet-firefox.zip
+# - extension/safari/build/ → svmseek-wallet-safari.zip
+# - extension/edge/build/ → svmseek-wallet-edge.zip
 ```
+
+#### Store Deployment Configuration
+
+See [Extension Deployment Guide](docs/EXTENSION_DEPLOYMENT.md) for detailed setup instructions:
+
+- Configure store API credentials in GitHub secrets
+- Set up GitHub environments for deployment protection
+- Test with dry-run mode before production deployment
 
 ## 🤝 Contributing
 
