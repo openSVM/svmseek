@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { 
-  Box, 
-  Typography, 
+import {
+  Box,
+  Typography,
   Divider,
   CircularProgress,
   Alert,
   Snackbar,
 } from '@mui/material';
-import { 
+import {
   Casino as CasinoIcon,
 } from '@mui/icons-material';
 import VaultStats from './VaultStats';
@@ -17,12 +17,12 @@ import InviteSection from './InviteSection';
 import GuildSection from './GuildSection';
 import VaultService from '../services/VaultService';
 import { VaultStats as VaultStatsType } from '../types';
-import { 
-  VaultHeader, 
-  VaultButton, 
+import {
+  VaultHeader,
+  VaultButton,
   LoadingContainer,
   ErrorContainer,
-  SecondaryButton 
+  SecondaryButton
 } from './shared/StyledComponents';
 
 
@@ -37,7 +37,7 @@ const VaultDashboard: React.FC = () => {
     message: '',
     severity: 'success'
   });
-  
+
   const vaultService = useMemo(() => VaultService.getInstance(), []);
 
   const loadVaultStats = useCallback(async () => {
@@ -62,7 +62,7 @@ const VaultDashboard: React.FC = () => {
 
   useEffect(() => {
     loadVaultStats();
-    
+
     // Subscribe to real-time updates with proper cleanup
     if (vaultService && vaultService.subscribeToEvents) {
       const unsubscribe = vaultService.subscribeToEvents((event) => {
@@ -96,19 +96,19 @@ const VaultDashboard: React.FC = () => {
 
   const handleJoinLottery = async () => {
     if (!vaultStats || !vaultService || !vaultService.joinLottery) return;
-    
+
     try {
       setJoining(true);
       // Mock trade amount for demo
       const result = await vaultService.joinLottery(100);
-      
+
       if (result.success) {
         // Update local stats
         setVaultStats(prev => prev ? {
           ...prev,
           userTickets: prev.userTickets + result.tickets
         } : null);
-        
+
         // Show success notification
         setNotification({
           open: true,
@@ -174,7 +174,7 @@ const VaultDashboard: React.FC = () => {
 
       {/* Stats Section */}
       <Box mb={3}>
-        <VaultStats 
+        <VaultStats
           jackpot={vaultStats.jackpot}
           tradesToday={vaultStats.tradesToday}
           userTickets={vaultStats.userTickets}
@@ -214,7 +214,7 @@ const VaultDashboard: React.FC = () => {
 
       {/* Guild Section */}
       <GuildSection />
-      
+
       {/* Success/Error Notifications */}
       <Snackbar
         open={notification.open}
@@ -222,11 +222,11 @@ const VaultDashboard: React.FC = () => {
         onClose={() => setNotification(prev => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert 
-          onClose={() => setNotification(prev => ({ ...prev, open: false }))} 
+        <Alert
+          onClose={() => setNotification(prev => ({ ...prev, open: false }))}
           severity={notification.severity}
           variant="filled"
-          sx={{ 
+          sx={{
             width: '100%',
             fontWeight: 'bold',
             fontSize: '1rem',

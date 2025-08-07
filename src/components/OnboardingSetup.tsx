@@ -37,29 +37,29 @@ const ScrollableContent = styled(Box)`
   flex: 1;
   overflow-y: auto;
   padding: 2rem;
-  
+
   /* Enhanced scrollbar styling for better visibility */
   &::-webkit-scrollbar {
     width: 12px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: var(--bg-secondary);
     border-radius: var(--radius-sm);
     margin: 4px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: var(--interactive-primary);
     border-radius: var(--radius-sm);
     border: 2px solid var(--bg-secondary);
     transition: background var(--animation-duration-normal) var(--animation-easing-default);
   }
-  
+
   &::-webkit-scrollbar-thumb:hover {
     background: var(--interactive-hover);
   }
-  
+
   /* Firefox scrollbar styling */
   scrollbar-width: auto;
   scrollbar-color: var(--interactive-primary) var(--bg-secondary);
@@ -91,7 +91,7 @@ const OptionCard = styled(Card)<{ selected?: boolean }>`
   transition: all var(--animation-duration-normal) var(--animation-easing-default);
   border: 2px solid ${props => props.selected ? 'var(--border-focus)' : 'var(--border-primary)'} !important;
   background: var(--bg-secondary) !important;
-  
+
   &:hover {
     transform: translateY(-2px);
     border-color: var(--border-focus) !important;
@@ -136,7 +136,7 @@ const LanguageText = styled(Typography)`
   line-height: 1.2 !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
-  
+
   /* Ensure proper rendering for all Unicode ranges */
   font-feature-settings: "kern" 1, "liga" 1;
   -webkit-font-feature-settings: "kern" 1, "liga" 1;
@@ -149,7 +149,7 @@ const LanguageSubtext = styled(Typography)`
   line-height: 1.2 !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
-  
+
   /* Ensure proper rendering for all Unicode ranges */
   font-feature-settings: "kern" 1, "liga" 1;
   -webkit-font-feature-settings: "kern" 1, "liga" 1;
@@ -164,18 +164,18 @@ const ThemePreview = styled(Box)<{ theme: string }>`
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border-primary);
-  
+
   ${props => {
     const themeData = themes[props.theme as ThemeName];
     if (!themeData) return '';
-    
+
     return `
-      background: linear-gradient(135deg, 
-        ${themeData.colors.background.primary} 0%, 
-        ${themeData.colors.background.secondary} 50%, 
+      background: linear-gradient(135deg,
+        ${themeData.colors.background.primary} 0%,
+        ${themeData.colors.background.secondary} 50%,
         ${themeData.colors.background.tertiary} 100%
       );
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -208,7 +208,7 @@ const ActionButton = styled(Button)`
   font-weight: 600;
   border-radius: var(--radius-md);
   transition: all var(--animation-duration-normal) var(--animation-easing-default);
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
@@ -347,20 +347,20 @@ export const OnboardingSetup: React.FC<OnboardingSetupProps> = ({ onComplete }) 
     <OnboardingContainer>
       <OnboardingCard>
         {step === 'language' ? renderLanguageStep() : renderThemeStep()}
-        
+
         <ActionButtons>
           <ActionButton
             variant="outlined"
             onClick={handleBack}
             disabled={step === 'language'}
-            sx={{ 
+            sx={{
               opacity: step === 'language' ? 0 : 1,
               visibility: step === 'language' ? 'hidden' : 'visible'
             }}
           >
             {t('common.back')}
           </ActionButton>
-          
+
           <ActionButton
             variant="contained"
             onClick={handleNext}

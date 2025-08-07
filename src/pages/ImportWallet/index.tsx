@@ -47,7 +47,7 @@ export const ImportPage = () => {
               direction={'column'}
               height={'50%'}
               justify={'space-evenly'}
-              
+
             >
               <InputWithPaste
                 type="text"

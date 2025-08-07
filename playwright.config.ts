@@ -14,11 +14,16 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['github']
+  ],
+  
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://svmseek.com',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -29,6 +34,20 @@ export default defineConfig({
     /* Extended timeout for production testing */
     actionTimeout: 30000,
     navigationTimeout: 30000,
+    
+    /* Enhanced test configuration */
+    video: process.env.CI ? 'retain-on-failure' : 'off',
+    
+    /* Ignore HTTPS errors for local testing */
+    ignoreHTTPSErrors: true,
+  },
+
+  /* Enhanced test expectations */
+  expect: {
+    /* Visual comparison threshold */
+    threshold: 0.3,
+    /* Screenshot comparison mode */
+    mode: 'rgb',
   },
 
   /* Configure projects for major browsers */
@@ -57,6 +76,10 @@ export default defineConfig({
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
     },
+    {
+      name: 'iPad',
+      use: { ...devices['iPad Pro'] },
+    },
 
     /* Test against branded browsers. */
     {
@@ -67,13 +90,27 @@ export default defineConfig({
       name: 'Google Chrome',
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
+    
+    /* Enhanced mobile testing */
+    {
+      name: 'iPhone SE',
+      use: { ...devices['iPhone SE'] },
+    },
+    {
+      name: 'Samsung Galaxy',
+      use: { ...devices['Galaxy S9+'] },
+    },
+    {
+      name: 'iPad Mini',
+      use: { ...devices['iPad Mini'] },
+    },
   ],
 
   /* Run your local dev server before starting the tests - only for local development */
-  webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
-    command: 'yarn start',
+  webServer: (process.env.PLAYWRIGHT_BASE_URL && !process.env.PLAYWRIGHT_BASE_URL.includes('localhost')) ? undefined : {
+    command: 'yarn build && npx serve -s build -l 3000',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Always reuse existing server to avoid port conflicts
     timeout: parseInt(process.env.PLAYWRIGHT_SERVER_TIMEOUT || '240') * 1000, // Default 240 seconds, configurable
     retries: process.env.CI ? 3 : 1, // Add retries for flaky network scenarios
   },

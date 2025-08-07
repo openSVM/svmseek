@@ -97,20 +97,20 @@ class ExportService {
       groups = options.groupIds
         .map(id => walletGroupService.getGroup(id))
         .filter(Boolean) as WalletGroup[];
-      
+
       // Get wallets from groups
       const walletIds = new Set<string>();
       groups.forEach(group => {
         group.walletIds.forEach(id => walletIds.add(id));
       });
-      
+
       wallets = Array.from(walletIds)
         .map(id => walletGroupService.getWallet(id))
         .filter(Boolean) as EnhancedWallet[];
     } else if (type === 'all') {
       wallets = walletGroupService.getAllWallets();
       groups = walletGroupService.getAllGroups();
-      
+
       // Filter by specified groups if provided
       if (options.groupIds) {
         groups = groups.filter(group => options.groupIds!.includes(group.id));
@@ -136,7 +136,7 @@ class ExportService {
       }
 
       if (options.transactionTypes) {
-        transactions = transactions.filter(tx => 
+        transactions = transactions.filter(tx =>
           options.transactionTypes!.includes(tx.type)
         );
       }
@@ -194,7 +194,7 @@ class ExportService {
       sections.push('=== WALLETS ===');
       const walletHeaders = this.getWalletCSVHeaders(options.columns);
       sections.push(walletHeaders.join(','));
-      
+
       data.wallets.forEach(wallet => {
         const row = this.walletToCSVRow(wallet, walletHeaders);
         sections.push(row.join(','));
@@ -207,7 +207,7 @@ class ExportService {
       sections.push('=== GROUPS ===');
       const groupHeaders = this.getGroupCSVHeaders(options.columns);
       sections.push(groupHeaders.join(','));
-      
+
       data.groups.forEach(group => {
         const row = this.groupToCSVRow(group, groupHeaders);
         sections.push(row.join(','));
@@ -220,7 +220,7 @@ class ExportService {
       sections.push('=== TRANSACTIONS ===');
       const txHeaders = this.getTransactionCSVHeaders(options.columns);
       sections.push(txHeaders.join(','));
-      
+
       data.transactions.forEach(tx => {
         const row = this.transactionToCSVRow(tx, txHeaders);
         sections.push(row.join(','));
@@ -257,8 +257,8 @@ class ExportService {
   // CSV Helper Methods
   private getWalletCSVHeaders(customColumns?: string[]): string[] {
     const defaultHeaders = [
-      'ID', 'Name', 'PublicKey', 'Type', 'Groups', 'Balance', 
-      'TransactionCount', 'LastActivity', 'IsArchived', 'Tags', 
+      'ID', 'Name', 'PublicKey', 'Type', 'Groups', 'Balance',
+      'TransactionCount', 'LastActivity', 'IsArchived', 'Tags',
       'CreatedAt', 'UpdatedAt'
     ];
     return customColumns || defaultHeaders;
@@ -275,7 +275,7 @@ class ExportService {
   private getTransactionCSVHeaders(customColumns?: string[]): string[] {
     const defaultHeaders = [
       'ID', 'Signature', 'WalletID', 'WalletPublicKey', 'Date', 'Type',
-      'Status', 'Amount', 'Fee', 'Token', 'CounterpartyAddress', 
+      'Status', 'Amount', 'Fee', 'Token', 'CounterpartyAddress',
       'CounterpartyName', 'Memo', 'Tags'
     ];
     return customColumns || defaultHeaders;
@@ -302,7 +302,7 @@ class ExportService {
 
   private groupToCSVRow(group: WalletGroup, headers: string[]): string[] {
     const stats = walletGroupService.getGroupStatistics(group.id);
-    
+
     const data: Record<string, string> = {
       'ID': group.id,
       'Name': this.escapeCSV(group.name),
@@ -352,7 +352,7 @@ class ExportService {
   async createWalletSummaryReport(): Promise<string> {
     const wallets = walletGroupService.getAllWallets();
     const groups = walletGroupService.getAllGroups();
-    
+
     const summary = {
       overview: {
         totalWallets: wallets.length,
@@ -432,14 +432,14 @@ class ExportService {
   downloadAsFile(content: string, filename: string, mimeType: string): void {
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     URL.revokeObjectURL(url);
   }
 

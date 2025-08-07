@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { 
+import {
   AccountBalanceWallet as WalletIcon,
   TrendingUp as TrendingIcon,
   ConfirmationNumber as TicketIcon
@@ -54,12 +54,12 @@ interface VaultStatsProps {
   nextDrawTime: Date;
 }
 
-const VaultStats: React.FC<VaultStatsProps> = ({ 
-  jackpot, 
-  tradesToday, 
-  userTickets, 
-  totalParticipants, 
-  nextDrawTime 
+const VaultStats: React.FC<VaultStatsProps> = ({
+  jackpot,
+  tradesToday,
+  userTickets,
+  totalParticipants,
+  nextDrawTime
 }) => {
   const formatCurrency = useCallback((amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -73,12 +73,12 @@ const VaultStats: React.FC<VaultStatsProps> = ({
   const formatTimeUntilDraw = useCallback((drawTime: Date) => {
     const now = new Date();
     const diff = drawTime.getTime() - now.getTime();
-    
+
     if (diff <= 0) return 'Drawing now!';
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }

@@ -11,12 +11,10 @@ import { ConnectionProvider } from './utils/connection';
 import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { useWallet, WalletProvider } from './utils/wallet';
-import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import useOnboarding from './utils/useOnboarding';
 
 // Lazy load all route components and heavy dependencies
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
-const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));  
 const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
@@ -128,7 +126,7 @@ const Pages = () => {
     dismissPWAPrompt,
     handlePWAInstall,
   } = useOnboarding();
-  
+
   // Check if user needs to complete initial setup (language/theme selection)
   const [showOnboardingSetup, setShowOnboardingSetup] = React.useState(() => {
     return !localStorage.getItem('onboarding-setup-complete');
@@ -143,7 +141,6 @@ const Pages = () => {
   //   true,
   // );
 
-  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
     const origin = params.get('origin');
@@ -180,7 +177,7 @@ const Pages = () => {
           onClose={completeOnboarding}
         />
       </Suspense>
-      
+
       {/* PWA Install Prompt */}
       {showPWAPrompt && (
         <Suspense fallback={null}>
@@ -190,7 +187,7 @@ const Pages = () => {
           />
         </Suspense>
       )}
-      
+
       {/* {!MASTER_BUILD && !LOCAL_BUILD && (
         <DevUrlPopup
           open={isDevUrlPopupOpen}
@@ -199,69 +196,61 @@ const Pages = () => {
       )} */}
 
       <Routes>
-        <Route 
-          path="/wallet/*" 
+        <Route
+          path="/wallet/*"
           element={
             <ErrorBoundary context="wallet interface">
               <Wallet />
             </ErrorBoundary>
-          } 
+          }
         />
-        <Route 
-          path="/restore_wallet" 
+        <Route
+          path="/restore_wallet"
           element={
             <ErrorBoundary context="wallet restoration">
               <RestorePage />
             </ErrorBoundary>
-          } 
+          }
         />
-        <Route 
-          path="/welcome" 
+        <Route
+          path="/welcome"
           element={
             <ErrorBoundary context="welcome page">
               <WelcomePage />
             </ErrorBoundary>
-          } 
+          }
         />
-        <Route 
-          path="/create_wallet" 
+        <Route
+          path="/create_wallet"
           element={
             <ErrorBoundary context="wallet creation">
               <CreateWalletPage />
             </ErrorBoundary>
-          } 
+          }
         />
-        <Route 
-          path="/welcome_back" 
-          element={
-            <ErrorBoundary context="welcome back page">
-              <WelcomeBackPage />
-            </ErrorBoundary>
-          } 
-        />
-        <Route 
-          path="/connect_popup" 
+        <Route
+          path="/connect_popup"
           element={
             <ErrorBoundary context="wallet connection">
               <ConnectPopup />
             </ErrorBoundary>
-          } 
+          }
         />
-        <Route 
-          path="/help" 
+        <Route
+          path="/help"
           element={
             <ErrorBoundary context="help center">
               <HelpPage />
             </ErrorBoundary>
-          } 
+          }
         />
-        <Route 
-          path="/vault" 
+        <Route
+          path="/vault"
           element={
             <ErrorBoundary context="surprise vault">
               <SurpriseVault />
             </ErrorBoundary>
-          } 
+          }
         />
 
         {/* popup if connecting from dex UI */}
@@ -270,16 +259,10 @@ const Pages = () => {
         {/* if wallet exists - for case when we'll have unlocked wallet */}
         {!!wallet && <Route path="/" element={<Navigate to="/wallet" replace />} />}
 
-        {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
-        <Route 
-          path="/" 
-          element={
-            hasLockedMnemonicAndSeed ? (
-              <Navigate to="/welcome_back" replace />
-            ) : (
-              <Navigate to="/welcome" replace />
-            )
-          }
+        {/* Always show welcome page for create/restore options */}
+        <Route
+          path="/"
+          element={<Navigate to="/welcome" replace />}
         />
       </Routes>
     </>

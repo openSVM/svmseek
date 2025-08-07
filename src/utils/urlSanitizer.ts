@@ -101,19 +101,19 @@ function isPrivateIP(hostname: string): boolean {
   // IPv4 private ranges
   const ipv4Pattern = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
   const match = hostname.match(ipv4Pattern);
-  
+
   if (match) {
     const [, a, b] = match.map(Number);
-    
+
     // 10.0.0.0/8
     if (a === 10) return true;
-    
+
     // 172.16.0.0/12
     if (a === 172 && b >= 16 && b <= 31) return true;
-    
+
     // 192.168.0.0/16
     if (a === 192 && b === 168) return true;
-    
+
     // 169.254.0.0/16 (link-local)
     if (a === 169 && b === 254) return true;
   }
@@ -148,7 +148,7 @@ function hasSuspiciousPatterns(url: string): boolean {
  */
 export function validateRepositoryUrl(url: string): URLValidationResult {
   const result = validateAndSanitizeUrl(url);
-  
+
   if (!result.isValid) {
     return result;
   }
@@ -156,7 +156,7 @@ export function validateRepositoryUrl(url: string): URLValidationResult {
   try {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
-    
+
     // Allow common code hosting platforms
     const allowedHosts = [
       'github.com',
@@ -188,14 +188,14 @@ export function validateRepositoryUrl(url: string): URLValidationResult {
  */
 export function validateMCPEndpoint(url: string): URLValidationResult {
   const result = validateAndSanitizeUrl(url);
-  
+
   if (!result.isValid) {
     return result;
   }
 
   try {
     const urlObj = new URL(url);
-    
+
     // MCP endpoints should use HTTPS in production
     if (urlObj.protocol !== 'https:' && urlObj.protocol !== 'http:') {
       return {

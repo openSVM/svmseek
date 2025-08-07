@@ -106,12 +106,12 @@ const ListItemImage = styled.img`
 
 function ConnectionsListItem({ origin, connectedWallet }) {
   const [open, setOpen] = useState(false);
-  
+
   const appleIconUrl = origin + '/apple-touch-icon.png';
   const faviconUrl = origin + '/favicon.ico';
   const [iconUrl, setIconUrl] = useState(appleIconUrl);
   const { accounts } = useWalletSelector();
-  
+
   const account = accounts.find(
     (account) => account.address.toBase58() === connectedWallet.publicKey,
   );

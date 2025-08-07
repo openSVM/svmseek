@@ -131,7 +131,7 @@ const AddTokenButton = ({
       <ImgContainer
         src={AddIcon}
         alt="addIcon"
-        
+
       />
       <GreyTitle theme={theme}>Add token</GreyTitle>
     </AddTokenStyledButton>
@@ -356,7 +356,7 @@ const AssetsTable = ({
         <HeadRow
           theme={theme}
           justify="flex-start"
-          
+
         >
           <GreyTitle theme={theme}>Assets</GreyTitle>
         </HeadRow>
@@ -379,14 +379,14 @@ const AssetsTable = ({
             <img
               src={RefreshIcon}
               alt="refreshIcon"
-              
+
             />
             <GreyTitle theme={theme}>Refresh</GreyTitle>
           </RefreshButton>
         </HeadRow>
       </MainHeaderRow>
       <RowContainer
-        
+
         height="calc(100% - 5rem)"
       >
         <StyledTable theme={theme}>
@@ -407,7 +407,7 @@ const AssetsTable = ({
             {sortedPublicKeys.length === 0 && (
               <Loading
                 color={'#651CE4'}
-                
+
               />
             )}
             <StyledTr disableHover theme={theme} >
@@ -671,7 +671,7 @@ const AssetItem = ({
             <img
               src={ReceiveIcon}
               alt="receive"
-              
+
             />
             <span>Receive</span>
           </VioletButton>
@@ -734,7 +734,7 @@ const AssetItem = ({
             <img
               src={ExplorerIcon}
               alt="Explorer Icon"
-              
+
             />
             View Explorer
           </VioletButton>

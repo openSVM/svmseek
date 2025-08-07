@@ -22,9 +22,9 @@ import {
 import { PublicKey } from '@solana/web3.js';
 import { useConnection } from '../../utils/connection';
 import { GlassContainer } from '../GlassContainer';
-import { 
-  SolanaAIRegistriesClient, 
-  Agent, 
+import {
+  SolanaAIRegistriesClient,
+  Agent,
   MCPServer,
 } from '../../integration/aeamcp-simple';
 
@@ -51,7 +51,7 @@ const AddButton = styled(Button)`
   background: rgba(139, 92, 246, 0.1) !important;
   border: 1px solid rgba(139, 92, 246, 0.3) !important;
   color: #A78BFA !important;
-  
+
   &:hover {
     background: rgba(139, 92, 246, 0.2) !important;
     border-color: rgba(139, 92, 246, 0.5) !important;
@@ -225,7 +225,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
     try {
       // Simulate registration
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const newAgent: Agent = {
         id: Date.now().toString(),
         ...formData,
@@ -401,15 +401,15 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
           }}
           aria-label="Registry tabs"
         >
-          <Tab 
-            label="Agents" 
+          <Tab
+            label="Agents"
             id="agents-tab"
             aria-controls="agents-tabpanel"
             icon={<AgentIcon />}
             iconPosition="start"
           />
-          <Tab 
-            label="MCP Servers" 
+          <Tab
+            label="MCP Servers"
             id="mcp-tab"
             aria-controls="mcp-tabpanel"
             icon={<MCPIcon />}
@@ -435,7 +435,7 @@ export const AEANetworkInterface: React.FC<AEANetworkInterfaceProps> = ({ isActi
           }}
         >
           <DialogTitle sx={{ color: 'white' }}>
-            {selectedItem ? 
+            {selectedItem ?
               `${dialogType === 'agent' ? 'Agent' : 'MCP Server'} Details` :
               `Register New ${dialogType === 'agent' ? 'Agent' : 'MCP Server'}`
             }

@@ -22,6 +22,7 @@ import {
   TrendingUp as SearchResultIcon,
 } from '@mui/icons-material';
 import { GlassContainer } from '../GlassContainer';
+import { TIMEOUT_CONSTANTS } from '../../utils/constants';
 
 const SearchContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -36,13 +37,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     border: '1px solid rgba(255, 255, 255, 0.1)',
     borderRadius: 16,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    
+
     '&:hover': {
       background: 'rgba(255, 255, 255, 0.12)',
       border: '1px solid rgba(255, 255, 255, 0.2)',
       transform: 'translateY(-1px)',
     },
-    
+
     '&.Mui-focused': {
       background: 'rgba(255, 255, 255, 0.15)',
       border: '1px solid rgba(103, 126, 234, 0.5)',
@@ -50,13 +51,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
       transform: 'translateY(-2px)',
     },
   },
-  
+
   '& .MuiInputBase-input': {
     padding: theme.spacing(2),
     fontSize: '1.1rem',
     fontFamily: 'monospace',
     color: theme.palette.text.primary,
-    
+
     '&::placeholder': {
       color: theme.palette.text.secondary,
       opacity: 0.7,
@@ -74,7 +75,7 @@ const ResultsContainer = styled(GlassContainer)(({ theme }) => ({
   maxHeight: 400,
   overflow: 'auto',
   animation: 'slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  
+
   '@keyframes slideUp': {
     from: {
       opacity: 0,
@@ -92,7 +93,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
   borderRadius: 8,
   margin: theme.spacing(0.5),
   transition: 'all 0.2s ease',
-  
+
   '&:hover': {
     background: 'rgba(255, 255, 255, 0.1)',
     transform: 'translateX(4px)',
@@ -164,7 +165,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
     setQuery(newQuery);
-    
+
     // Debounced search
     clearTimeout((handleInputChange as any).timeout);
     (handleInputChange as any).timeout = setTimeout(() => {
@@ -197,7 +198,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+        onBlur={() => setTimeout(() => setIsFocused(false), TIMEOUT_CONSTANTS.FOCUS_BLUR_DELAY)}
         placeholder="Search transactions, accounts, blocks..."
         InputProps={{
           startAdornment: (
@@ -218,11 +219,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
           ),
         }}
       />
-      
+
       <SearchHint>
         Try searching for a transaction signature, account address, or block number
       </SearchHint>
-      
+
       {showResults && (
         <ResultsContainer>
           <List>

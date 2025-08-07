@@ -46,7 +46,7 @@ export function initializeCryptoSafely(): boolean {
     // Test basic crypto operations to ensure they work
     safeBufferFrom('test');
     safeBufferAccess(new Uint8Array(4));
-    
+
     devLog('Crypto workaround initialized successfully');
     return true;
   } catch (error) {
@@ -61,10 +61,10 @@ export function initializeCryptoSafely(): boolean {
 export function applyBufferSafetyPatches(): void {
   // Patch Uint8Array prototype to prevent undefined buffer access
   const originalUint8Array = globalThis.Uint8Array;
-  
+
   if (originalUint8Array && originalUint8Array.prototype) {
     const originalBufferGetter = Object.getOwnPropertyDescriptor(originalUint8Array.prototype, 'buffer');
-    
+
     if (originalBufferGetter) {
       Object.defineProperty(originalUint8Array.prototype, 'buffer', {
         get: function() {
@@ -80,6 +80,6 @@ export function applyBufferSafetyPatches(): void {
       });
     }
   }
-  
+
   devLog('Buffer safety patches applied');
 }

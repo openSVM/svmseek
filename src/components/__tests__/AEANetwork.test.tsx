@@ -51,7 +51,7 @@ describe('AEANetworkInterface', () => {
 
   test('renders AEA Network interface when active - handles both success and error states', async () => {
     renderWithConnection(<AEANetworkInterface isActive={true} />);
-    
+
     // Just check that something renders - either normal content or error boundary
     await waitFor(() => {
       const buttons = screen.queryAllByRole('button');
@@ -63,7 +63,7 @@ describe('AEANetworkInterface', () => {
     // Note: The component currently shows error boundary even when isActive=false
     // due to ErrorBoundary wrapping and ResizeObserver error
     const { container } = renderWithConnection(<AEANetworkInterface isActive={false} />);
-    
+
     // Component currently renders error boundary due to ResizeObserver issue
     // This is the actual behavior, not the intended behavior
     expect(container.firstChild).not.toBeNull();
@@ -71,7 +71,7 @@ describe('AEANetworkInterface', () => {
 
   test('displays interactive elements (content or error recovery)', async () => {
     renderWithConnection(<AEANetworkInterface isActive={true} />);
-    
+
     await waitFor(() => {
       // Should have some interactive elements (either normal UI or error boundary buttons)
       const buttons = screen.queryAllByRole('button');
@@ -85,9 +85,9 @@ describe('AEANetworkInterface', () => {
       (fetch as jest.MockedFunction<typeof fetch>).mockRejectedValue(
         new Error('Network error')
       );
-      
+
       renderWithConnection(<AEANetworkInterface isActive={true} />);
-      
+
       // Should render something and provide interactive elements for recovery
       await waitFor(() => {
         const buttons = screen.queryAllByRole('button');
@@ -97,13 +97,13 @@ describe('AEANetworkInterface', () => {
 
     test('provides accessibility features through interactive elements', async () => {
       renderWithConnection(<AEANetworkInterface isActive={true} />);
-      
+
       await waitFor(() => {
         // Should have accessible interactive elements (buttons, tabs, or inputs)
         const buttons = screen.queryAllByRole('button');
         const tabs = screen.queryAllByRole('tab');
         const inputs = screen.queryAllByRole('textbox');
-        
+
         // Should have some accessible interactive elements
         expect(buttons.length + tabs.length + inputs.length).toBeGreaterThan(0);
       });
@@ -113,13 +113,13 @@ describe('AEANetworkInterface', () => {
   describe('Real-time Updates', () => {
     test('handles timer operations without hanging', async () => {
       jest.useFakeTimers();
-      
+
       try {
         renderWithConnection(<AEANetworkInterface isActive={true} />);
-        
+
         // Fast-forward time to test timer handling
         jest.advanceTimersByTime(5000);
-        
+
         // Should complete without hanging
         expect(true).toBe(true);
       } finally {

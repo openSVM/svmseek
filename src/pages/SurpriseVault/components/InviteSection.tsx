@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
+import {
+  Box,
+  Typography,
   CardContent,
   IconButton,
   Snackbar,
   Alert
 } from '@mui/material';
-import { 
+import {
   PersonAdd as PersonAddIcon,
   ContentCopy as CopyIcon,
   Share as ShareIcon,
@@ -17,12 +17,12 @@ import {
 import VaultService from '../services/VaultService';
 import { useVaultWallet } from '../hooks/useVaultWallet';
 import { useTruncateAddress } from '../utils';
-import { 
-  GlassCard, 
-  VaultTextField, 
+import {
+  GlassCard,
+  VaultTextField,
   SecondaryButton,
   SectionHeader,
-  StatusChip 
+  StatusChip
 } from './shared/StyledComponents';
 
 
@@ -30,7 +30,7 @@ import {
 const InviteSection: React.FC = () => {
   const [inviteLink, setInviteLink] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
-  
+
   const { walletAddress, isConnected, connectWallet, isConnecting } = useVaultWallet();
   const truncateAddress = useTruncateAddress();
   const vaultService = VaultService.getInstance();
@@ -104,13 +104,13 @@ const InviteSection: React.FC = () => {
             <Typography variant="subtitle2">
               Wallet Status:
             </Typography>
-            <StatusChip 
+            <StatusChip
               status={isConnected ? 'success' : 'warning'}
               label={isConnected ? 'Connected' : 'Mock Address'}
               size="small"
             />
           </Box>
-          
+
           {walletAddress && (
             <Box mb={2}>
               <Typography variant="caption" color="text.secondary">
@@ -118,7 +118,7 @@ const InviteSection: React.FC = () => {
               </Typography>
             </Box>
           )}
-          
+
           {!isConnected && (
             <SecondaryButton
               size="small"
@@ -178,8 +178,8 @@ const InviteSection: React.FC = () => {
                 Copy Link
               </SecondaryButton>
               <SecondaryButton
-                sx={{ 
-                  flex: 1, 
+                sx={{
+                  flex: 1,
                   minWidth: 120,
                   background: 'linear-gradient(135deg, #1DA1F2, #0D8BD9)',
                   '&:hover': {
@@ -192,8 +192,8 @@ const InviteSection: React.FC = () => {
                 Share on X
               </SecondaryButton>
               <SecondaryButton
-                sx={{ 
-                  flex: 1, 
+                sx={{
+                  flex: 1,
                   minWidth: 120,
                   background: 'linear-gradient(135deg, #9B59B6, #8E44AD)',
                   '&:hover': {

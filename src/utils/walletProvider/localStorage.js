@@ -21,11 +21,11 @@ export function getAccountFromSeed(
 ) {
   try {
     const accountData = createAccountFromSeed(seed, walletIndex, dPath);
-    
+
     if (!accountData || !accountData.secretKey) {
       throw new Error('Failed to create account data');
     }
-    
+
     return new Account(accountData.secretKey);
   } catch (error) {
     logError('getAccountFromSeed failed:', error);
@@ -49,7 +49,7 @@ export class LocalStorageWalletProvider {
   init = async () => {
     try {
       const { seed } = await getUnlockedMnemonicAndSeed();
-      
+
       // Validate that we have a valid seed
       if (!seed) {
         logWarn('LocalStorageWalletProvider: No seed available, using fallback');
@@ -65,7 +65,7 @@ export class LocalStorageWalletProvider {
             seedBuffer = Buffer.alloc(32);
             logWarn('Using fallback seed for address listing');
           }
-          
+
           return [...Array(walletCount).keys()].map((walletIndex) => {
             try {
               let address = getAccountFromSeed(seedBuffer, walletIndex).publicKey;
@@ -74,10 +74,10 @@ export class LocalStorageWalletProvider {
             } catch (error) {
               logError(`Failed to generate address for wallet ${walletIndex}:`, error);
               // Return a fallback address structure
-              return { 
-                index: walletIndex, 
-                address: null, 
-                name: `Wallet ${walletIndex} (Error)` 
+              return {
+                index: walletIndex,
+                address: null,
+                name: `Wallet ${walletIndex} (Error)`
               };
             }
           });
@@ -90,7 +90,7 @@ export class LocalStorageWalletProvider {
       return this;
     } catch (error) {
       logError('LocalStorageWalletProvider initialization failed:', error);
-      
+
       // Provide fallback implementation
       this.listAddresses = async (walletCount) => {
         logWarn('Using fallback listAddresses implementation');
@@ -100,7 +100,7 @@ export class LocalStorageWalletProvider {
           name: `Wallet ${walletIndex} (Initialization Error)`
         }));
       };
-      
+
       return this;
     }
   };

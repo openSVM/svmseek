@@ -23,7 +23,7 @@ const StyledCard = styled(Card)`
   height: 100%;
   display: flex;
   flex-direction: column;
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.08) !important;
     border-color: rgba(59, 130, 246, 0.3);
@@ -57,7 +57,7 @@ const ActionButton = styled(Button)`
   background: rgba(59, 130, 246, 0.1) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
   color: #60A5FA !important;
-  
+
   &:hover {
     background: rgba(59, 130, 246, 0.2) !important;
     border-color: rgba(59, 130, 246, 0.5) !important;
@@ -65,11 +65,11 @@ const ActionButton = styled(Button)`
 `;
 
 const StatusChip = styled(Chip)<{ active: boolean }>`
-  background: ${props => props.active 
-    ? 'rgba(34, 197, 94, 0.1)' 
+  background: ${props => props.active
+    ? 'rgba(34, 197, 94, 0.1)'
     : 'rgba(239, 68, 68, 0.1)'} !important;
-  border: 1px solid ${props => props.active 
-    ? 'rgba(34, 197, 94, 0.3)' 
+  border: 1px solid ${props => props.active
+    ? 'rgba(34, 197, 94, 0.3)'
     : 'rgba(239, 68, 68, 0.3)'} !important;
   color: ${props => props.active ? '#4ADE80' : '#F87171'} !important;
   font-size: 0.75rem;
@@ -109,7 +109,7 @@ export const MCPServerCard: React.FC<MCPServerCardProps> = ({
   };
 
   return (
-    <StyledCard 
+    <StyledCard
       role="article"
       aria-labelledby={`mcp-name-${server.id}`}
       aria-describedby={`mcp-description-${server.id}`}
@@ -118,10 +118,10 @@ export const MCPServerCard: React.FC<MCPServerCardProps> = ({
         <MCPHeader>
           <MCPIconStyled aria-hidden="true" />
           <Box sx={{ flexGrow: 1 }}>
-            <Typography 
-              variant="h6" 
+            <Typography
+              variant="h6"
               id={`mcp-name-${server.id}`}
-              sx={{ 
+              sx={{
                 color: 'white',
                 fontWeight: 600,
                 fontSize: '1.1rem'
@@ -138,10 +138,10 @@ export const MCPServerCard: React.FC<MCPServerCardProps> = ({
           </Box>
         </MCPHeader>
 
-        <Typography 
-          variant="body2" 
+        <Typography
+          variant="body2"
           id={`mcp-description-${server.id}`}
-          sx={{ 
+          sx={{
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: 2,
             flexGrow: 1,
@@ -155,7 +155,7 @@ export const MCPServerCard: React.FC<MCPServerCardProps> = ({
         </Typography>
 
         {server.supportedProtocols && server.supportedProtocols.length > 0 && (
-          <Box 
+          <Box
             sx={{ marginBottom: 2 }}
             role="list"
             aria-label="Supported protocols"
@@ -181,7 +181,7 @@ export const MCPServerCard: React.FC<MCPServerCardProps> = ({
         )}
 
         {server.tags && server.tags.length > 0 && (
-          <Box 
+          <Box
             sx={{ marginBottom: 2 }}
             role="list"
             aria-label="Server tags"
@@ -205,10 +205,10 @@ export const MCPServerCard: React.FC<MCPServerCardProps> = ({
         )}
 
         {showActions && (
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              gap: 1, 
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
               flexWrap: 'wrap',
               marginTop: 'auto'
             }}

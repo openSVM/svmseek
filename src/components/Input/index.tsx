@@ -136,7 +136,7 @@ const InputWithPaste = ({
           onClick={() => {
             onPasteClick()
           }}
-          
+
         >
           Paste
         </TextButton>
@@ -172,7 +172,7 @@ const InputWithMax = ({
           onClick={() => {
             onMaxClick()
           }}
-          
+
         >
           {maxText}
         </TextButton>
@@ -232,7 +232,7 @@ const InputWithSearch = ({
     <SearchInputWithLoupe
       ComponentToShow={
         <img
-          
+
           onClick={onSearchClick}
           src={Loupe}
           alt="search icon"

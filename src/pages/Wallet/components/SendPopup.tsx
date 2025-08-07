@@ -39,7 +39,7 @@ import {
 import { InputWithMax, InputWithPaste } from '../../../components/Input';
 import AttentionComponent from '../../../components/Attention';
 // import { StyledTab, StyledTabs } from '../styles';
-import FakeInputs from '../../../components/FakeInputs';
+
 import ProgressBar from '../../CreateWallet/components/ProgressBar';
 import { StyledTab, StyledTabs } from '../styles';
 import { useSnackbar } from 'notistack';
@@ -131,7 +131,7 @@ export default function SendDialog({ open, onClose, publicKey, balanceInfo, refr
         padding={'2rem 0'}
       >
         <>
-          <FakeInputs />
+          {/* Removed FakeInputs - no password functionality needed */}
           <RowContainer>
             <Title fontSize="1.6rem">
               Send {tokenSymbolForCheck ? ` ${tokenSymbolForCheck} to` : null}
@@ -238,7 +238,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, refreshTokensData }) {
     transferAmountString,
     validAmount,
   } = useForm(balanceInfo, addressHelperText, passValidation, 'spl', false);
-  
+
   const mintString = mint.toString();
 
   const theme = useTheme();
@@ -643,8 +643,6 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
               ? `Wait for Confirmations (${confirms}/35)`
               : 'Transaction Pending'
           }
-          thirdStepText={'Withdraw Funds'}
-          
         />
         {!ethTxid && blockchain === 'eth' ? (
           <DialogContentText >
@@ -655,7 +653,7 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
         <WhiteButton
           theme={theme}
           onClick={onClose}
-          
+
         >
           Close Popup
           <span >
@@ -703,7 +701,7 @@ function useForm(
         <InputWithPaste
           placeholder="Recipient Address"
           type="text"
-          
+
           containerStyle={{ width: '100%' }}
           onChange={(e) => setDestinationAddress(e.target.value)}
           value={destinationAddress}

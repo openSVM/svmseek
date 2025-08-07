@@ -30,7 +30,7 @@ import {
   WhiteButton,
 } from '../../commonStyles';
 import { StyledTab, StyledTabs } from '../styles';
-import FakeInputs from '../../../components/FakeInputs';
+
 
 const WhiteText = styled(Title)`
   font-size: 1.4rem;
@@ -185,7 +185,7 @@ export default function AddTokenDialog({
         setTab(!!popularTokens ? 'popular' : 'manual');
       }}
     >
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       {!!popularTokens && (
         <RowContainer margin="0 0 2rem 0">
           <StyledTabs

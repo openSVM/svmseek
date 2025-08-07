@@ -31,7 +31,7 @@ jest.mock('../services/VaultService', () => {
     getInstance: jest.fn(() => mockVaultServiceInstance),
     reset: jest.fn(),
   };
-  
+
   return {
     __esModule: true,
     default: MockVaultService,
@@ -75,17 +75,17 @@ describe('SurpriseVault', () => {
     await act(async () => {
       renderWithProviders(<VaultDashboard />);
     });
-    
+
     // Wait for the component to load successfully - check for various possible outcomes
     await waitFor(() => {
       const dashboardTitle = screen.queryByText(/Surprise Vault Dashboard/i);
       const errorMessage = screen.queryByText(/Failed to load vault statistics/i);
       const noDataMessage = screen.queryByText(/No vault data available/i);
-      
+
       // Accept any of these as valid test outcomes and investigate
       expect(dashboardTitle || errorMessage || noDataMessage).toBeInTheDocument();
     });
-    
+
     // Debug: log what's actually rendered
     const bodyContent = document.body.textContent;
     console.log('Rendered content:', bodyContent);
@@ -95,13 +95,13 @@ describe('SurpriseVault', () => {
     await act(async () => {
       renderWithProviders(<VaultDashboard />);
     });
-    
+
     // Wait for component to be stable
     await waitFor(() => {
       const anyContent = document.body.textContent;
       expect(anyContent).toBeDefined();
     });
-    
+
     // Test passed if component renders without crashing
     expect(true).toBe(true);
   });
@@ -113,7 +113,7 @@ describe('SurpriseVault', () => {
     await act(async () => {
       renderWithProviders(<VaultDashboard />);
     });
-    
+
     // Wait for component to be in a stable state
     await waitFor(() => {
       const anyElement = document.body.firstChild;
@@ -125,7 +125,7 @@ describe('SurpriseVault', () => {
     await act(async () => {
       renderWithProviders(<VaultDashboard />);
     });
-    
+
     // Wait for loading to complete with proper async handling
     await waitFor(() => {
       const bodyText = document.body.textContent || '';

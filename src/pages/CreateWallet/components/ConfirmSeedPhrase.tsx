@@ -15,7 +15,7 @@ import {
 
 import BottomLink from '../../../components/BottomLink';
 import { sleep } from '../../../utils/utils';
-import FakeInputs from '../../../components/FakeInputs';
+
 import { BtnCustom } from '../../../components/BtnCustom';
 
 const ConfirmAnswer = styled(RowContainer)`
@@ -60,15 +60,13 @@ function shuffleArray(array): any[] {
 }
 
 const ConfirmSeedPhrase = ({
-  password,
   seedPhrase,
   createWallet,
   setCurrentStep,
   setIsConfirmSeedPhrase,
 }: {
-  password: string;
   seedPhrase: string;
-  createWallet: (password: string, onSuccess: () => void) => void;
+  createWallet: (onSuccess: () => void) => void;
   setCurrentStep: (currentStep: number) => void;
   setIsConfirmSeedPhrase: (isConfirmed: boolean) => void;
 }) => {
@@ -87,9 +85,9 @@ const ConfirmSeedPhrase = ({
   }, [seedPhrase]);
 
   const submit = async () => {
-    await createWallet(password, async () => {
+    await createWallet(async () => {
       await sleep(1000);
-      await setCurrentStep(3);
+      await setCurrentStep(2); // Step 2 is now AddTokens since we removed CreatePassword
     });
   };
 
@@ -97,7 +95,7 @@ const ConfirmSeedPhrase = ({
 
   return (
     <>
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       <Card
         minHeight={'50rem'}
         height="55rem"
@@ -112,7 +110,7 @@ const ConfirmSeedPhrase = ({
             background={'rgba(164, 231, 151, 0.5)'}
             height={'6rem'}
             needBackground={true}
-            
+
           >
             <Title width={'100%'} fontFamily={'Avenir Next Demi'}>
               Place first 12 words from your Seed Phrase in the correct order by

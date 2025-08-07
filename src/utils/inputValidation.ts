@@ -170,7 +170,7 @@ function validateDecimal(value: string): ValidationResult {
       error: 'Please enter a valid decimal number'
     };
   }
-  
+
   // Check for too many decimal places
   const decimalPlaces = (value.split('.')[1] || '').length;
   if (decimalPlaces > 9) {
@@ -179,7 +179,7 @@ function validateDecimal(value: string): ValidationResult {
       error: 'Too many decimal places (max 9)'
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -229,14 +229,14 @@ export function createValidatedInputHandler(
 ) {
   return (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    
+
     // Prevent overflow by limiting input length
     if (options.preventOverflow && options.maxLength && value.length > options.maxLength) {
       return; // Don't update if exceeding max length
     }
-    
+
     const validation = validateInput(value, options);
-    
+
     setValue(validation.sanitizedValue || value);
     setError(validation.isValid ? null : validation.error || 'Invalid input');
   };
@@ -295,40 +295,40 @@ export const ValidationPresets = {
     required: true,
     preventOverflow: true,
   },
-  
+
   amount: {
     type: 'decimal' as const,
     maxLength: 20,
     required: true,
     preventOverflow: true,
   },
-  
+
   url: {
     type: 'url' as const,
     maxLength: 2048,
     required: true,
     preventOverflow: true,
   },
-  
+
   email: {
     type: 'email' as const,
     maxLength: 255,
     required: true,
     preventOverflow: true,
   },
-  
+
   shortText: {
     type: 'text' as const,
     maxLength: 100,
     preventOverflow: true,
   },
-  
+
   longText: {
     type: 'text' as const,
     maxLength: 1000,
     preventOverflow: true,
   },
-  
+
   description: {
     type: 'text' as const,
     maxLength: 500,

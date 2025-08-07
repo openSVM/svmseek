@@ -99,17 +99,23 @@ jobs:
           name: web-build-${{ github.sha }}
           path: deploy_latest
 
+      - name: Setup build directory for E2E tests
+        run: |
+          # Copy build artifacts to build directory for serve command
+          if [ -d "deploy_latest" ]; then
+            cp -r deploy_latest/* ./build/ 2>/dev/null || cp -r deploy_latest/build/* ./build/ 2>/dev/null || yarn build
+          else
+            yarn build
+          fi
+
       - name: Run tests
         run: yarn test --watchAll=false --coverage
 
-      - name: Install Playwright
-        run: yarn playwright:install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
 
       - name: Run E2E tests
         run: yarn test:e2e
-        env:
-          # Use local build for E2E tests if needed
-          PLAYWRIGHT_BASE_URL: http://localhost:3000
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

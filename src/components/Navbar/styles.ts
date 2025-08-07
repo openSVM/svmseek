@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Link, NavLink as RouterNavLink } from 'react-router-dom';
 
-import { COLORS, SIZE, BORDER_RADIUS, BREAKPOINTS, FONTS } from '../variables';
+import { SIZE, BORDER_RADIUS, BREAKPOINTS, FONTS } from '../variables';
 import { Button } from '../Button';
 import { Text } from '../Typography';
 
@@ -11,8 +11,8 @@ export const HeaderWrap = styled.header`
   display: none;
   flex-direction: row;
   height: 48px;
-  background: ${COLORS.bodyBackground};
-  border-bottom: 1px solid ${COLORS.border};
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-primary);
   padding: 0 ${SIZE.defaultPadding};
 
   @media (min-width: ${maxMobileScreenResolution}px) {
@@ -24,7 +24,7 @@ export const LogoBlock = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-right: 1px solid ${COLORS.border};
+  border-right: 1px solid var(--border-primary);
   padding-right: ${SIZE.defaultPadding};
   margin: 8px 0;
 `;
@@ -45,8 +45,8 @@ export const NavLink = styled(RouterNavLink)<LinkProps>`
   margin: 0px 4px;
   text-align: center;
   border-radius: ${BORDER_RADIUS.md};
-  color: ${COLORS.hint};
-  background: ${COLORS.bodyBackground};
+  color: var(--text-secondary);
+  background: var(--bg-primary);
   transition: all ease-in 0.2s;
   border: 0;
   cursor: pointer;
@@ -54,8 +54,8 @@ export const NavLink = styled(RouterNavLink)<LinkProps>`
 
   &:hover,
   &.selected {
-    color: ${COLORS.navLinkActive};
-    background: ${COLORS.navLinkActiveBg};
+    color: var(--interactive-primary);
+    background: var(--bg-secondary);
   }
 
   ${(props: LinkProps) =>
@@ -83,7 +83,7 @@ export const NavLink = styled(RouterNavLink)<LinkProps>`
       ? `
     &:after {
       content: "NEW";
-      color: ${COLORS.success};
+      color: var(--status-success);
       position: relative;
       top: -5px;
       font-weight: 600;
@@ -99,7 +99,7 @@ export const LinksBlock = styled.div`
   flex-direction: row;
   align-items: center;
   padding: 0 5px;
-  border-right: 1px solid ${COLORS.border};
+  border-right: 1px solid var(--border-primary);
   margin: 5px 0;
 
   @media (min-width: ${BREAKPOINTS.lg}) {
@@ -128,7 +128,7 @@ export const WalletContainer = styled.div`
   width: 32rem;
   margin: 5px 0 5px auto;
   padding: 0 0 0 20px;
-  border-left: 1px solid ${COLORS.border};
+  border-left: 1px solid var(--border-primary);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -189,8 +189,8 @@ export const DropdownWrap = styled.div<ShowHideProps>`
 
 export const DropdownInner = styled.div`
   min-width: 6em;
-  background: ${COLORS.bodyBackground};
-  border: 1px solid ${COLORS.border};
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   display: flex;
   flex-direction: column;
   margin-top: 5px;
@@ -216,7 +216,7 @@ export const WalletName = styled(Text)`
   font-size: 0.6em;
   line-height: 1.3;
   margin: 0;
-  color: ${COLORS.primaryWhite};
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -231,7 +231,7 @@ export const WalletAddress = styled(WalletName)`
 export const WalletDisconnectButton = styled(Button)`
   font-size: 0.6em;
   padding: 0;
-  color: ${COLORS.error};
+  color: var(--status-error);
   background: none;
   border: 0;
   margin-left: auto;
@@ -268,6 +268,6 @@ export const VaultNavLink = styled(RouterNavLink)`
 
 export const Body = styled.div`
   font-family: ${FONTS.main};
-  color: ${COLORS.white};
+  color: var(--text-primary);
   font-size: ${SIZE.fontSize};
 `;

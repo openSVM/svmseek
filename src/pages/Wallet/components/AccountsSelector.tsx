@@ -101,14 +101,14 @@ export const WalletActionButton = ({ theme, openPopup, icon, buttonText }) => {
       borderWidth="0"
       height={'100%'}
       padding={'1.2rem 0 1.2rem 1rem'}
-      
+
       btnWidth="100%"
       onClick={openPopup}
     >
       <img
         src={icon}
         alt={buttonText}
-        
+
       />
       <GreyTitle theme={theme}>{buttonText}</GreyTitle>
     </BtnCustom>

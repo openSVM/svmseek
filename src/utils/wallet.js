@@ -350,7 +350,7 @@ export function WalletProvider({ children }) {
             ledger: false,
           },
           address: new PublicKey(bs58.decode(pubkey)),
-          name: `${name} (imported)`, 
+          name: `${name} (imported)`,
           isSelected: walletSelector.importedPubkey === pubkey,
         };
       });

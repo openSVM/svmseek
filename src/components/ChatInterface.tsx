@@ -16,14 +16,15 @@ import {
 } from '@mui/material';
 import { Send, Settings, SmartToy, Clear } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { TIMEOUT_CONSTANTS } from '../utils/constants';
 
 const ChatContainer = styled(Paper)(({ theme }) => ({
   height: '600px',
   display: 'flex',
   flexDirection: 'column',
   borderRadius: 16,
-  background: theme.palette.mode === 'dark' 
-    ? 'rgba(26, 27, 30, 0.8)' 
+  background: theme.palette.mode === 'dark'
+    ? 'rgba(26, 27, 30, 0.8)'
     : 'rgba(255, 255, 255, 0.9)',
   backdropFilter: 'blur(10px)',
   border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'}`,
@@ -52,7 +53,7 @@ const MessageBubble = styled(Card)<{ isUser: boolean }>(({ theme, isUser }) => (
   maxWidth: '70%',
   alignSelf: isUser ? 'flex-end' : 'flex-start',
   borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-  background: isUser 
+  background: isUser
     ? 'linear-gradient(135deg, #651CE4 0%, #8B4CF7 100%)'
     : theme.palette.mode === 'dark'
       ? 'rgba(255, 255, 255, 0.05)'
@@ -189,15 +190,18 @@ const ChatInterface: React.FC = () => {
 
     // Mock implementation for demo purposes
     // In a real implementation, you would make actual API calls
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-    
+    // Simulate AI thinking time with configurable delay
+    const thinkingTime = TIMEOUT_CONSTANTS.TYPING_DELAY_MIN +
+      Math.random() * (TIMEOUT_CONSTANTS.TYPING_DELAY_MAX - TIMEOUT_CONSTANTS.TYPING_DELAY_MIN);
+    await new Promise(resolve => setTimeout(resolve, thinkingTime));
+
     const mockResponses = [
       "I'm a mock AI assistant. In a real implementation, I would connect to the selected AI provider.",
       "This is a demonstration of the chat interface. The actual AI integration would handle your request.",
       "SVMSeek Chat UI is working! This would be replaced with real AI responses.",
       "Your message has been received. In production, this would query the selected AI model.",
     ];
-    
+
     return mockResponses[Math.floor(Math.random() * mockResponses.length)];
   };
 

@@ -188,7 +188,7 @@ class WalletGroupService {
   addWalletToGroup(walletId: string, groupId: string): boolean {
     const wallet = this.wallets.get(walletId);
     const group = this.groups.get(groupId);
-    
+
     if (!wallet || !group) return false;
 
     if (!wallet.groupIds.includes(groupId)) {
@@ -201,7 +201,7 @@ class WalletGroupService {
 
     group.updatedAt = new Date();
     wallet.updatedAt = new Date();
-    
+
     this.saveToStorage();
     return true;
   }
@@ -209,7 +209,7 @@ class WalletGroupService {
   removeWalletFromGroup(walletId: string, groupId: string): boolean {
     const wallet = this.wallets.get(walletId);
     const group = this.groups.get(groupId);
-    
+
     if (!wallet || !group) return false;
 
     wallet.groupIds = wallet.groupIds.filter(id => id !== groupId);
@@ -217,7 +217,7 @@ class WalletGroupService {
 
     group.updatedAt = new Date();
     wallet.updatedAt = new Date();
-    
+
     this.saveToStorage();
     return true;
   }
@@ -239,7 +239,7 @@ class WalletGroupService {
     for (const wallet of wallets) {
       try {
         let transactionId: string | undefined;
-        
+
         switch (operation) {
           case 'send':
             transactionId = await this.executeSendOperation(wallet, params);
@@ -285,7 +285,7 @@ class WalletGroupService {
   // Utility Methods
   private generateRandomColor(): string {
     const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
       '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
       '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
     ];
@@ -313,7 +313,7 @@ class WalletGroupService {
     try {
       const groupsData = JSON.stringify(Array.from(this.groups.entries()));
       const walletsData = JSON.stringify(Array.from(this.wallets.entries()));
-      
+
       localStorage.setItem(this.storageKey, groupsData);
       localStorage.setItem(this.walletsStorageKey, walletsData);
     } catch (error) {
@@ -325,7 +325,7 @@ class WalletGroupService {
     try {
       const groupsData = localStorage.getItem(this.storageKey);
       const walletsData = localStorage.getItem(this.walletsStorageKey);
-      
+
       if (groupsData) {
         const entries = JSON.parse(groupsData);
         this.groups = new Map(entries.map(([key, value]: [string, any]) => [

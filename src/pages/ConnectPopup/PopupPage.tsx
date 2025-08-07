@@ -198,7 +198,7 @@ export default function PopupPage() {
       setConnectedAccount(wallet.publicKey);
       if (isExtension) {
         chrome.storage.local.get('connectedWallets', (result) => {
-          
+
           const account = accounts.find((account) =>
             account.address.equals(wallet.publicKey),
           );
@@ -401,7 +401,7 @@ function ApproveConnectionForm({
 }) {
   const wallet = useWallet();
   const { accounts, hardwareWalletAccount } = useWalletSelector();
-  
+
   const allAccounts = hardwareWalletAccount
     ? [hardwareWalletAccount, ...accounts]
     : accounts;
@@ -440,7 +440,7 @@ function ApproveConnectionForm({
             </RowContainer>
             <img
               alt={'import export icon'}
-              
+
               src={ImportExportIcon}
             />
             <Title fontSize="1.6rem">{account?.name}</Title>
@@ -459,7 +459,7 @@ function ApproveConnectionForm({
             <StyledLabel
               theme={theme}
               htmlFor="autoApprove"
-              
+
             >
               Automatically approve transactions from{' '}
               <span >{origin}</span>.<br />

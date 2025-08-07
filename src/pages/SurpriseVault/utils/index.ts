@@ -43,13 +43,13 @@ export const useFormatTimeRemaining = () => {
   return useMemo(() => (targetTime: Date): string => {
     const now = new Date();
     const diff = targetTime.getTime() - now.getTime();
-    
+
     if (diff <= 0) return 'Finished';
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -70,7 +70,7 @@ export const VaultStorage = {
       return defaultValue;
     }
   },
-  
+
   set: <T>(key: string, value: T): void => {
     try {
       localStorage.setItem(`vault_${key}`, JSON.stringify(value));
@@ -78,7 +78,7 @@ export const VaultStorage = {
       console.warn('Failed to save to localStorage:', error);
     }
   },
-  
+
   remove: (key: string): void => {
     try {
       localStorage.removeItem(`vault_${key}`);
@@ -95,7 +95,7 @@ export const createRetryableAction = <T>(
   delay = 1000
 ) => {
   let retryCount = 0;
-  
+
   const execute = async (): Promise<T> => {
     try {
       return await action();
@@ -108,7 +108,7 @@ export const createRetryableAction = <T>(
       throw error;
     }
   };
-  
+
   return execute;
 };
 

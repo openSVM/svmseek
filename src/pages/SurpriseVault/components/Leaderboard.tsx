@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  List, 
-  ListItem, 
-  ListItemAvatar, 
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemAvatar,
   ListItemText,
   Avatar,
   Chip,
@@ -15,7 +15,7 @@ import {
   Alert
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { 
+import {
   Leaderboard as LeaderboardIcon,
   EmojiEvents as TrophyIcon,
   LocalOffer as BadgeIcon,
@@ -44,16 +44,16 @@ const SectionHeader = styled(Box)(({ theme }) => ({
 }));
 
 const LeaderItem = styled(ListItem)<{ rank: number }>(({ theme, rank }) => ({
-  background: rank <= 3 
-    ? `linear-gradient(135deg, rgba(255, 215, 0, ${0.15 - rank * 0.03}), rgba(255, 165, 0, ${0.1 - rank * 0.02}))` 
+  background: rank <= 3
+    ? `linear-gradient(135deg, rgba(255, 215, 0, ${0.15 - rank * 0.03}), rgba(255, 165, 0, ${0.1 - rank * 0.02}))`
     : 'rgba(255, 255, 255, 0.04)',
   borderRadius: 12,
   marginBottom: theme.spacing(1),
   border: rank <= 3 ? '1px solid rgba(255, 215, 0, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
-    background: rank <= 3 
-      ? `linear-gradient(135deg, rgba(255, 215, 0, ${0.2 - rank * 0.03}), rgba(255, 165, 0, ${0.15 - rank * 0.02}))` 
+    background: rank <= 3
+      ? `linear-gradient(135deg, rgba(255, 215, 0, ${0.2 - rank * 0.03}), rgba(255, 165, 0, ${0.15 - rank * 0.02}))`
       : 'rgba(255, 255, 255, 0.08)',
     transform: 'translateX(4px)',
   },
@@ -120,7 +120,7 @@ const Leaderboard: React.FC = () => {
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const vaultService = VaultService.getInstance();
 
   useEffect(() => {

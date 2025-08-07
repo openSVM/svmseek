@@ -45,13 +45,13 @@ const BlockItem = styled(ListItem)(({ theme }) => ({
   marginBottom: theme.spacing(1),
   cursor: 'pointer',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  
+
   '&:hover': {
     background: 'rgba(255, 255, 255, 0.1)',
     transform: 'translateX(4px)',
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
   },
-  
+
   '&:last-child': {
     marginBottom: 0,
   },
@@ -95,7 +95,7 @@ const RecentBlocks: React.FC = () => {
     } else {
       setIsLoading(true);
     }
-    
+
     try {
       const blockData = await solanaRPCService.getRecentBlocks(10);
       const blocksWithSize = blockData.map(block => ({
@@ -115,12 +115,12 @@ const RecentBlocks: React.FC = () => {
 
   useEffect(() => {
     fetchBlocks();
-    
+
     // Auto-refresh every 30 seconds
     const interval = setInterval(() => {
       fetchBlocks(true);
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, [fetchBlocks]);
 
@@ -130,12 +130,12 @@ const RecentBlocks: React.FC = () => {
 
   const handleBlockClick = (block: Block) => {
     devLog('Navigate to block:', block.blockHeight);
-    
+
   };
 
   const formatTimeAgo = (timestamp: Date): string => {
     const seconds = Math.floor((new Date().getTime() - timestamp.getTime()) / 1000);
-    
+
     if (seconds < 60) return `${seconds}s ago`;
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
@@ -194,7 +194,7 @@ const RecentBlocks: React.FC = () => {
           <RefreshIcon />
         </IconButton>
       </HeaderBox>
-      
+
       <StyledList>
         {blocks.map((block) => (
           <BlockItem key={block.slot} onClick={() => handleBlockClick(block)}>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { 
-  ExpandLess, 
-  ExpandMore, 
-  Search, 
+import {
+  ExpandLess,
+  ExpandMore,
+  Search,
   AccountBalanceWallet,
   Send,
   Settings,
@@ -54,11 +54,11 @@ const SearchInput = styled.input`
   font-size: 16px;
   outline: none;
   transition: border-color 0.2s;
-  
+
   &:focus {
     border-color: var(--interactive-primary);
   }
-  
+
   &::placeholder {
     color: var(--text-secondary);
   }
@@ -76,7 +76,7 @@ const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 40px;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -113,11 +113,11 @@ const CategoryItem = styled.div<{ active: boolean }>`
   background: ${props => props.active ? 'var(--interactive-primary)' : 'transparent'};
   color: ${props => props.active ? 'white' : 'var(--text-primary)'};
   margin-bottom: 8px;
-  
+
   &:hover {
     background: ${props => props.active ? 'var(--interactive-primary)' : 'var(--bg-primary)'};
   }
-  
+
   svg {
     margin-right: 12px;
     font-size: 20px;
@@ -137,7 +137,7 @@ const SectionTitle = styled.h2`
   margin-bottom: 24px;
   display: flex;
   align-items: center;
-  
+
   svg {
     margin-right: 12px;
     color: var(--interactive-primary);
@@ -161,7 +161,7 @@ const FAQQuestion = styled.div`
   font-weight: 600;
   color: var(--text-primary);
   transition: background 0.2s;
-  
+
   &:hover {
     background: var(--bg-primary);
   }
@@ -190,7 +190,7 @@ const CodeBlock = styled.pre`
 
 const StepList = styled.ol`
   padding-left: 20px;
-  
+
   li {
     margin-bottom: 12px;
     line-height: 1.6;
@@ -204,7 +204,7 @@ const WarningBox = styled.div`
   border-radius: 8px;
   padding: 16px;
   margin: 16px 0;
-  
+
   &::before {
     content: '⚠️ ';
     font-weight: bold;
@@ -253,7 +253,7 @@ export const HelpCenter: React.FC = () => {
         <Help />
         {t('help.gettingStarted.title')}
       </SectionTitle>
-      
+
       <FAQItemComponent
         question={t('help.gettingStarted.whatIsThis')}
         answer={
@@ -270,7 +270,7 @@ export const HelpCenter: React.FC = () => {
         }
         defaultExpanded
       />
-      
+
       <FAQItemComponent
         question={t('help.gettingStarted.howToStart')}
         answer={
@@ -285,7 +285,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.gettingStarted.systemRequirements')}
         answer={
@@ -308,7 +308,7 @@ export const HelpCenter: React.FC = () => {
         <AccountBalanceWallet />
         {t('help.wallet.title')}
       </SectionTitle>
-      
+
       <FAQItemComponent
         question={t('help.wallet.createWallet')}
         answer={
@@ -326,7 +326,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.wallet.restoreWallet')}
         answer={
@@ -340,7 +340,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.wallet.multipleAccounts')}
         answer={
@@ -350,7 +350,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.wallet.hardwareWallet')}
         answer={
@@ -373,7 +373,7 @@ export const HelpCenter: React.FC = () => {
         <Send />
         {t('help.transactions.title')}
       </SectionTitle>
-      
+
       <FAQItemComponent
         question={t('help.transactions.sendTokens')}
         answer={
@@ -389,7 +389,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.transactions.receiveTokens')}
         answer={
@@ -399,7 +399,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.transactions.transactionFees')}
         answer={
@@ -409,7 +409,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.transactions.transactionHistory')}
         answer={
@@ -428,7 +428,7 @@ export const HelpCenter: React.FC = () => {
         <Security />
         {t('help.security.title')}
       </SectionTitle>
-      
+
       <FAQItemComponent
         question={t('help.security.seedPhraseSecurity')}
         answer={
@@ -441,7 +441,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.security.passwordSecurity')}
         answer={
@@ -451,7 +451,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.security.phishingProtection')}
         answer={
@@ -471,7 +471,7 @@ export const HelpCenter: React.FC = () => {
         <TrendingUp />
         {t('help.trading.title')}
       </SectionTitle>
-      
+
       <FAQItemComponent
         question={t('help.trading.howToTrade')}
         answer={
@@ -481,7 +481,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.trading.swapTokens')}
         answer={
@@ -491,7 +491,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.trading.liquidityPools')}
         answer={
@@ -510,7 +510,7 @@ export const HelpCenter: React.FC = () => {
         <Settings />
         {t('help.troubleshooting.title')}
       </SectionTitle>
-      
+
       <FAQItemComponent
         question={t('help.troubleshooting.connectionIssues')}
         answer={
@@ -525,7 +525,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.troubleshooting.transactionFailed')}
         answer={
@@ -535,7 +535,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.troubleshooting.balanceNotShowing')}
         answer={
@@ -545,7 +545,7 @@ export const HelpCenter: React.FC = () => {
           </div>
         }
       />
-      
+
       <FAQItemComponent
         question={t('help.troubleshooting.resetWallet')}
         answer={
@@ -584,7 +584,7 @@ export const HelpCenter: React.FC = () => {
       <Header>
         <Title>{t('help.title')}</Title>
         <Subtitle>{t('help.subtitle')}</Subtitle>
-        
+
         <SearchBox>
           <SearchIcon />
           <SearchInput
@@ -595,7 +595,7 @@ export const HelpCenter: React.FC = () => {
           />
         </SearchBox>
       </Header>
-      
+
       <ContentGrid>
         <Sidebar>
           <CategoryList>
@@ -612,7 +612,7 @@ export const HelpCenter: React.FC = () => {
             ))}
           </CategoryList>
         </Sidebar>
-        
+
         <MainContent>
           {renderActiveSection()}
         </MainContent>

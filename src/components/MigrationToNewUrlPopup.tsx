@@ -47,7 +47,7 @@ type BlueButtonProps = {
 
 const BlueButton = styled(
   ({ isUserConfident, showLoader, children, onClick, ...props }: BlueButtonProps) => (
-    <BtnCustom 
+    <BtnCustom
       btnWidth="100%"
       height="4.5rem"
       fontSize="1.4rem"
@@ -102,7 +102,7 @@ export const MigrationToNewUrlPopup = ({
         <BoldHeader>CCAI Wallet is SunWallet now!</BoldHeader>
         <img
           alt="Warning."
-          
+
           src={SunLogo}
         />
       </Row>

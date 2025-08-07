@@ -17,7 +17,7 @@ describe('ErrorBoundary', () => {
   beforeAll(() => {
     console.error = jest.fn();
   });
-  
+
   afterAll(() => {
     console.error = originalError;
   });
@@ -28,7 +28,7 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={false} />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText('No error occurred')).toBeInTheDocument();
   });
 
@@ -38,7 +38,7 @@ describe('ErrorBoundary', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
     expect(screen.getByText('Test error message')).toBeInTheDocument();
   });
@@ -49,35 +49,35 @@ describe('ErrorBoundary', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText(/We encountered an error while loading this payment form/)).toBeInTheDocument();
   });
 
   test('shows custom fallback component when provided', () => {
     const CustomFallback = <div>Custom error fallback</div>;
-    
+
     render(
       <ErrorBoundary fallbackComponent={CustomFallback}>
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText('Custom error fallback')).toBeInTheDocument();
     expect(screen.queryByText('Oops! Something went wrong')).not.toBeInTheDocument();
   });
 
   test('calls onRetry when retry button is clicked', () => {
     const mockRetry = jest.fn();
-    
+
     render(
       <ErrorBoundary onRetry={mockRetry}>
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     const retryButton = screen.getByText('Try Again');
     fireEvent.click(retryButton);
-    
+
     expect(mockRetry).toHaveBeenCalledTimes(1);
   });
 
@@ -87,7 +87,7 @@ describe('ErrorBoundary', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText('Stack Trace:')).toBeInTheDocument();
   });
 
@@ -97,7 +97,7 @@ describe('ErrorBoundary', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.queryByText('Stack Trace:')).not.toBeInTheDocument();
   });
 
@@ -108,39 +108,39 @@ describe('ErrorBoundary', () => {
       value: { reload: mockReload },
       writable: true,
     });
-    
+
     render(
       <ErrorBoundary>
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     const reloadButton = screen.getByText('Reload Page');
     fireEvent.click(reloadButton);
-    
+
     expect(mockReload).toHaveBeenCalledTimes(1);
   });
 
   test('resets error state when retry is clicked', () => {
     const ErrorToggle: React.FC = () => {
       const [shouldThrow, setShouldThrow] = React.useState(true);
-      
+
       return (
         <ErrorBoundary onRetry={() => setShouldThrow(false)}>
           <ThrowError shouldThrow={shouldThrow} />
         </ErrorBoundary>
       );
     };
-    
+
     render(<ErrorToggle />);
-    
+
     // Should show error initially
     expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
-    
+
     // Click retry
     const retryButton = screen.getByText('Try Again');
     fireEvent.click(retryButton);
-    
+
     // Should show success state
     expect(screen.getByText('No error occurred')).toBeInTheDocument();
   });
@@ -151,7 +151,7 @@ describe('NetworkErrorBoundary', () => {
   beforeAll(() => {
     console.error = jest.fn();
   });
-  
+
   afterAll(() => {
     console.error = originalError;
   });
@@ -162,23 +162,23 @@ describe('NetworkErrorBoundary', () => {
         <ThrowError />
       </NetworkErrorBoundary>
     );
-    
+
     expect(screen.getByText('Network Connection Error')).toBeInTheDocument();
     expect(screen.getByText(/check your internet connection/)).toBeInTheDocument();
   });
 
   test('shows retry button when onRetry provided', () => {
     const mockRetry = jest.fn();
-    
+
     render(
       <NetworkErrorBoundary onRetry={mockRetry}>
         <ThrowError />
       </NetworkErrorBoundary>
     );
-    
+
     const retryButton = screen.getByText('Retry');
     expect(retryButton).toBeInTheDocument();
-    
+
     fireEvent.click(retryButton);
     expect(mockRetry).toHaveBeenCalledTimes(1);
   });
@@ -189,7 +189,7 @@ describe('RPCErrorBoundary', () => {
   beforeAll(() => {
     console.error = jest.fn();
   });
-  
+
   afterAll(() => {
     console.error = originalError;
   });
@@ -200,7 +200,7 @@ describe('RPCErrorBoundary', () => {
         <ThrowError />
       </RPCErrorBoundary>
     );
-    
+
     expect(screen.getByText('RPC Service Unavailable')).toBeInTheDocument();
     expect(screen.getByText(/blockchain RPC service is temporarily unavailable/)).toBeInTheDocument();
   });
@@ -211,7 +211,7 @@ describe('RPCErrorBoundary', () => {
         <ThrowError />
       </RPCErrorBoundary>
     );
-    
+
     // Check for warning alert (MUI Alert with warning severity)
     const alert = screen.getByRole('alert');
     expect(alert).toHaveClass('MuiAlert-standardWarning');
@@ -219,16 +219,16 @@ describe('RPCErrorBoundary', () => {
 
   test('includes retry connection button', () => {
     const mockRetry = jest.fn();
-    
+
     render(
       <RPCErrorBoundary onRetry={mockRetry}>
         <ThrowError />
       </RPCErrorBoundary>
     );
-    
+
     const retryButton = screen.getByText('Retry Connection');
     expect(retryButton).toBeInTheDocument();
-    
+
     fireEvent.click(retryButton);
     expect(mockRetry).toHaveBeenCalledTimes(1);
   });
@@ -239,7 +239,7 @@ describe('ErrorBoundary Integration', () => {
   beforeAll(() => {
     console.error = jest.fn();
   });
-  
+
   afterAll(() => {
     console.error = originalError;
   });
@@ -248,11 +248,11 @@ describe('ErrorBoundary Integration', () => {
     const OuterError: React.FC = () => {
       throw new Error('Outer error');
     };
-    
+
     const InnerError: React.FC = () => {
       throw new Error('Inner error');
     };
-    
+
     render(
       <ErrorBoundary context="outer component">
         <OuterError />
@@ -261,7 +261,7 @@ describe('ErrorBoundary Integration', () => {
         </ErrorBoundary>
       </ErrorBoundary>
     );
-    
+
     // Outer boundary should catch the error
     expect(screen.getByText(/error while loading this outer component/)).toBeInTheDocument();
     expect(screen.getByText('Outer error')).toBeInTheDocument();
@@ -273,7 +273,7 @@ describe('ErrorBoundary Integration', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(console.error).toHaveBeenCalledWith(
       'ErrorBoundary caught an error:',
       expect.any(Error),
@@ -287,7 +287,7 @@ describe('ErrorBoundary Integration', () => {
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText(/If this problem persists/)).toBeInTheDocument();
     expect(screen.getByText(/check your network connection/)).toBeInTheDocument();
   });

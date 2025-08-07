@@ -94,7 +94,7 @@ export default function ExportAccountDialog({ open, onClose }) {
           value={keyOutput}
           height={'17.2rem'}
           placeholder={'***'}
-          
+
         />
       </RowContainer>
     </DialogForm>
@@ -186,7 +186,7 @@ export function ExportMnemonicDialog({ open, onClose }) {
           value={mnemonic}
           height={'11.4rem'}
           placeholder={'***'}
-          
+
         />
       </RowContainer>
     </DialogForm>

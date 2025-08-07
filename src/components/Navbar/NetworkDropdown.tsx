@@ -118,7 +118,7 @@ const WalletStatusButton = ({
     height={'3.5rem'}
     padding={'1.25rem 0'}
     fontSize={'1.2rem'}
-    
+
   >
     {connection}
     <ExpandMoreIcon fontSize="small"  />

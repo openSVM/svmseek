@@ -18,7 +18,7 @@ const ExplorerContainer = styled(GlassContainer)(({ theme }) => ({
   padding: theme.spacing(3),
   overflow: 'auto',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  
+
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)',
@@ -38,7 +38,7 @@ const ContentGrid = styled(Box)(({ theme }) => ({
   gap: theme.spacing(3),
   flex: 1,
   minHeight: 0,
-  
+
   [theme.breakpoints.down('md')]: {
     gridTemplateColumns: '1fr',
   },
@@ -115,7 +115,7 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
     }
 
     setIsLoading(true);
-    
+
     try {
       const result = await solanaRPCService.search(query);
       const searchResult: SearchResult[] = [];
@@ -174,7 +174,7 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
 
   const handleSearchResultClick = useCallback((result: SearchResult) => {
     devLog('Navigate to:', result);
-    
+
   }, []);
 
   if (!isActive) {
@@ -225,7 +225,7 @@ const ExplorerInterface: React.FC<ExplorerInterfaceProps> = ({ isActive = true }
               <RecentBlocks />
             </RPCErrorBoundary>
           </Section>
-          
+
           <Section>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
               Recent Transactions

@@ -183,6 +183,80 @@
       var global = window;
     }
     
+    // Add defensive handling for wallet extension conflicts
+    (function() {
+      try {
+        // Store reference to any existing ethereum provider
+        const existingEthereum = window.ethereum;
+        
+        // Add safe ethereum property handling to prevent conflicts
+        if (!window.ethereumHandlersInitialized) {
+          window.ethereumHandlersInitialized = true;
+          
+          // Create a non-conflicting ethereum property wrapper
+          Object.defineProperty(window, '_svmseekEthereumSafe', {
+            value: existingEthereum,
+            writable: false,
+            configurable: false
+          });
+          
+          // Override Object.defineProperty to handle ethereum property conflicts
+          const originalDefineProperty = Object.defineProperty;
+          Object.defineProperty = function(obj, prop, descriptor) {
+            if (obj === window && prop === 'ethereum') {
+              try {
+                // If ethereum already exists and is non-configurable, skip redefinition
+                const existingDescriptor = Object.getOwnPropertyDescriptor(window, 'ethereum');
+                if (existingDescriptor && !existingDescriptor.configurable) {
+                  console.warn('SVMSeek: Skipping ethereum property redefinition to prevent conflicts');
+                  return obj;
+                }
+                
+                // Allow the definition but catch any errors
+                return originalDefineProperty.call(this, obj, prop, descriptor);
+              } catch (error) {
+                console.warn('SVMSeek: Prevented ethereum property conflict:', error.message);
+                return obj;
+              }
+            }
+            return originalDefineProperty.call(this, obj, prop, descriptor);
+          };
+          
+          console.log('SVMSeek: Ethereum property conflict protection enabled');
+        }
+      } catch (error) {
+        console.warn('SVMSeek: Failed to setup ethereum conflict protection:', error);
+      }
+    })();
+    
+    // Add protection against custom element conflicts
+    (function() {
+      try {
+        if (!window.customElementConflictProtection) {
+          window.customElementConflictProtection = true;
+          
+          // Override customElements.define to prevent conflicts
+          const originalDefine = window.customElements.define;
+          window.customElements.define = function(name, constructor, options) {
+            try {
+              // Check if element is already defined
+              if (window.customElements.get(name)) {
+                console.warn('SVMSeek: Custom element already defined, skipping:', name);
+                return;
+              }
+              return originalDefine.call(this, name, constructor, options);
+            } catch (error) {
+              console.warn('SVMSeek: Custom element definition conflict prevented for:', name, error.message);
+            }
+          };
+          
+          console.log('SVMSeek: Custom element conflict protection enabled');
+        }
+      } catch (error) {
+        console.warn('SVMSeek: Failed to setup custom element protection:', error);
+      }
+    })();
+    
     // Add additional crypto polyfills that might be needed
     if (!window.crypto && !window.msCrypto) {
       console.warn('WebCrypto API not available');

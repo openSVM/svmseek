@@ -281,7 +281,7 @@ class LoggingService {
       const stored = localStorage.getItem('svmseek_logs');
       if (stored) {
         const logs = JSON.parse(stored) as ErrorLog[];
-        this.logs = logs.filter(log => 
+        this.logs = logs.filter(log =>
           log.timestamp > Date.now() - 7 * 24 * 60 * 60 * 1000 // Keep logs for 7 days
         );
       }
@@ -325,11 +325,11 @@ class LoggingService {
       // This would require installing @sentry/react
       // For now, we'll just log that Sentry would be initialized
       logInfo('Sentry would be initialized here with DSN:', this.config.sentryDsn);
-      
+
       /*
       // Example Sentry initialization:
       const Sentry = await import('@sentry/react');
-      
+
       Sentry.init({
         dsn: this.config.sentryDsn,
         environment: process.env.NODE_ENV,

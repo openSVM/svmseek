@@ -18,12 +18,12 @@ describe('VaultService Memory Leak Fix', () => {
     if (vaultService && vaultService.destroy) {
       vaultService.destroy();
     }
-    
+
     // Reset the singleton
     if ((VaultService as any).reset) {
       (VaultService as any).reset();
     }
-    
+
     jest.clearAllTimers();
   });
 
@@ -37,29 +37,29 @@ describe('VaultService Memory Leak Fix', () => {
 
   test('VaultService can be created and destroyed without memory leaks', () => {
     vaultService = VaultService.getInstance();
-    
+
     expect(vaultService).toBeDefined();
     expect(typeof vaultService.destroy).toBe('function');
-    
+
     // Destroy should clear timers
     vaultService.destroy();
-    
+
     // No assertions needed - test passes if no timers are left hanging
   });
 
   test('VaultService singleton can be reset', () => {
     const instance1 = VaultService.getInstance();
-    
+
     // Reset the singleton
     if ((VaultService as any).reset) {
       (VaultService as any).reset();
     }
-    
+
     const instance2 = VaultService.getInstance();
-    
+
     // Should be different instances after reset
     expect(instance1).not.toBe(instance2);
-    
+
     // Clean up
     instance1.destroy();
     instance2.destroy();

@@ -31,7 +31,7 @@ const StatCard = styled(GlassContainer)(({ theme }) => ({
   gap: theme.spacing(1),
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   cursor: 'pointer',
-  
+
   '&:hover': {
     transform: 'translateY(-4px) scale(1.02)',
     boxShadow: '0 16px 48px rgba(0, 0, 0, 0.2)',
@@ -81,7 +81,7 @@ const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 6,
   borderRadius: 3,
   backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  
+
   '& .MuiLinearProgress-bar': {
     borderRadius: 3,
     background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
@@ -169,7 +169,7 @@ const NetworkStats: React.FC<NetworkStatsProps> = ({ stats, isLoading = false })
           </Typography>
           <Skeleton variant="rounded" width={100} height={24} />
         </Box>
-        
+
         <StatsGrid>
           {Array.from({ length: 6 }).map((_, index) => (
             <StatCard key={index}>
@@ -181,7 +181,7 @@ const NetworkStats: React.FC<NetworkStatsProps> = ({ stats, isLoading = false })
             </StatCard>
           ))}
         </StatsGrid>
-        
+
         <ProgressContainer>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
             <Skeleton variant="text" width={100} />
@@ -206,7 +206,7 @@ const NetworkStats: React.FC<NetworkStatsProps> = ({ stats, isLoading = false })
           size="small"
         />
       </Box>
-      
+
       <StatsGrid>
         {statItems.map((item, index) => (
           <StatCard key={index}>
@@ -242,7 +242,7 @@ const NetworkStats: React.FC<NetworkStatsProps> = ({ stats, isLoading = false })
           </StatCard>
         ))}
       </StatsGrid>
-      
+
       <ProgressContainer>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="body2" color="text.secondary">

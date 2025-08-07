@@ -62,7 +62,7 @@ const ThemeToggle: React.FC = () => {
           <Palette />
         </AnimatedIconButton>
       </Tooltip>
-      
+
       <Menu
         anchorEl={anchorEl}
         open={open}

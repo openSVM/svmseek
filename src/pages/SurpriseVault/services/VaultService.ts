@@ -1,10 +1,10 @@
-import { 
-  VaultStats, 
-  Winner, 
-  LeaderboardEntry, 
-  Guild, 
+import {
+  VaultStats,
+  Winner,
+  LeaderboardEntry,
+  Guild,
   GuildMember,
-  UserVaultData, 
+  UserVaultData,
   VaultConfig
 } from '../types';
 import { VaultStorage, generateStableRandom, generateStableAddress } from '../utils';
@@ -45,10 +45,10 @@ class VaultService {
     // Create or retrieve session ID for stable mock data
     this.sessionId = VaultStorage.get('sessionId', `session_${Date.now()}`);
     VaultStorage.set('sessionId', this.sessionId);
-    
+
     // Initialize persistent state
     this.initializePersistentState();
-    
+
     // Start periodic updates
     this.startPeriodicUpdates();
   }
@@ -62,14 +62,14 @@ class VaultService {
       nextDrawTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
       lastUpdate: Date.now(),
     };
-    
+
     const savedStats = VaultStorage.get('vaultStats', defaultStats);
-    
+
     // Update next draw time if expired
     if (new Date(savedStats.nextDrawTime) <= new Date()) {
       savedStats.nextDrawTime = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
     }
-    
+
     VaultStorage.set('vaultStats', savedStats);
   }
 
@@ -85,22 +85,22 @@ class VaultService {
     if (this.updateInterval) {
       clearInterval(this.updateInterval);
     }
-    
+
     this.updateInterval = setInterval(() => {
       // Gradually update jackpot and other stats with deterministic randomness
       const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
       const updateSeed = `update_${this.sessionId}_${Math.floor(Date.now() / 60000)}`;
       const incrementChance = 0.3; // 30% chance to increment each period
-      
+
       // Use deterministic randomness instead of Math.random() for testability
       if (generateStableRandom(updateSeed + '_chance') < incrementChance) {
         const increment = this.getStableValue('increment' + Math.floor(Date.now() / 60000), 10, 100);
         savedStats.jackpot = (savedStats.jackpot || 0) + increment;
         savedStats.tradesToday = (savedStats.tradesToday || 0) + Math.floor(generateStableRandom(updateSeed + '_trades') * 3);
         savedStats.lastUpdate = Date.now();
-        
+
         VaultStorage.set('vaultStats', savedStats);
-        
+
         // Notify subscribers of the update
         this.notifySubscribers({
           type: 'jackpot_update',
@@ -109,7 +109,7 @@ class VaultService {
         });
       }
     }, 10000) as NodeJS.Timeout; // Every 10 seconds
-    
+
     // Prevent timer from keeping process alive in tests
     if (this.updateInterval && typeof this.updateInterval.unref === 'function') {
       this.updateInterval.unref();
@@ -133,12 +133,12 @@ class VaultService {
   async getVaultStats(): Promise<VaultStats> {
     // Simulate API delay but reduce flicker
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
     const userStats = VaultStorage.get('userStats', {
       userTickets: this.getStableValue('userTickets', 1, 20),
     });
-    
+
     return {
       jackpot: savedStats.jackpot || this.getStableValue('jackpot', 50000, 200000),
       tradesToday: savedStats.tradesToday || this.getStableValue('tradesToday', 500, 2000),
@@ -151,15 +151,15 @@ class VaultService {
   // Get recent winners
   async getRecentWinners(limit: number = 10): Promise<Winner[]> {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     // Use cached winners if available and recent
     const cacheKey = `recentWinners_${limit}`;
     const cached = VaultStorage.get(cacheKey, null) as { winners: Winner[]; timestamp: number } | null;
-    
+
     if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 300000) { // 5 minutes cache
       return cached.winners;
     }
-    
+
     const winners: Winner[] = [];
     for (let i = 0; i < limit; i++) {
       const seed = `winner_${i}_${this.sessionId}`;
@@ -169,10 +169,10 @@ class VaultService {
         address: this.generateStableAddress(seed),
         reward: {
           type: isNFT ? 'nft' : 'token',
-          name: isNFT 
+          name: isNFT
             ? nftNames[Math.floor(generateStableRandom(seed + '_nft') * nftNames.length)]
             : `${tokenAmounts[Math.floor(generateStableRandom(seed + '_token') * tokenAmounts.length)]} $SVM`,
-          value: isNFT 
+          value: isNFT
             ? Math.floor(generateStableRandom(seed + '_value_nft', 100, 1000))
             : tokenAmounts[Math.floor(generateStableRandom(seed + '_value_token') * tokenAmounts.length)],
         },
@@ -180,30 +180,30 @@ class VaultService {
         transactionSignature: `tx_${seed.slice(-7)}`,
       });
     }
-    
+
     const sorted = winners.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    
+
     // Cache the results
     VaultStorage.set(cacheKey, {
       winners: sorted,
       timestamp: Date.now(),
     });
-    
+
     return sorted;
   }
 
   // Get leaderboard data
   async getLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]> {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     // Use cached leaderboard if available and recent
     const cacheKey = `leaderboard_${limit}`;
     const cached = VaultStorage.get(cacheKey, null) as { leaders: LeaderboardEntry[]; timestamp: number } | null;
-    
+
     if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 600000) { // 10 minutes cache
       return cached.leaders;
     }
-    
+
     const rewardTypes: Array<'nft' | 'rebate' | 'odds'> = ['nft', 'rebate', 'odds'];
     const rewardDescriptions = {
       nft: 'NFT Badge',
@@ -229,30 +229,30 @@ class VaultService {
         lastActivity: new Date(Date.now() - generateStableRandom(seed + '_activity', 0, 24 * 60 * 60 * 1000)),
       });
     }
-    
+
     const sorted = leaders.sort((a, b) => b.invites - a.invites);
-    
+
     // Cache the results
     VaultStorage.set(cacheKey, {
       leaders: sorted,
       timestamp: Date.now(),
     });
-    
+
     return sorted;
   }
 
   // Get available guilds
   async getGuilds(): Promise<Guild[]> {
     await new Promise(resolve => setTimeout(resolve, 200));
-    
+
     // Use cached guilds if available and recent
     const cacheKey = 'guilds';
     const cached = VaultStorage.get(cacheKey, null) as { guilds: Guild[]; timestamp: number } | null;
-    
+
     if (cached && cached.timestamp && (Date.now() - cached.timestamp) < 300000) { // 5 minutes cache
       return cached.guilds;
     }
-    
+
     const guildNames = [
       'Diamond Traders', 'DeFi Warriors', 'Solana Seekers', 'Crypto Legends',
       'Vault Masters', 'Trading Titans', 'Block Builders', 'Chain Champions'
@@ -269,7 +269,7 @@ class VaultService {
       const memberCount = Math.floor(generateStableRandom(seed + '_members', 10, 40));
       const maxMembers = Math.floor(memberCount * 1.5) + 10;
       const totalReferrals = Math.floor(generateStableRandom(seed + '_referrals', 50, 300));
-      
+
       // Generate realistic member data for demo
       const members: GuildMember[] = [];
       for (let j = 0; j < memberCount; j++) {
@@ -282,7 +282,7 @@ class VaultService {
           role: j === 0 ? 'owner' : (j === 1 && generateStableRandom(`${seed}_member_${j}_admin`) > 0.7 ? 'admin' : 'member'),
         });
       }
-      
+
       guilds.push({
         id: `guild_${i}`,
         name: guildNames[i % guildNames.length],
@@ -302,45 +302,45 @@ class VaultService {
         isActive: true,
       });
     }
-    
+
     // Cache the results
     VaultStorage.set(cacheKey, {
       guilds,
       timestamp: Date.now(),
     });
-    
+
     return guilds;
   }
 
   // Join lottery (mock trade)
   async joinLottery(tradeAmount: number): Promise<{ success: boolean; tickets: number; transactionSignature: string }> {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     if (tradeAmount < this.mockConfig.minTradeSize) {
       throw new Error(`Minimum trade size is $${this.mockConfig.minTradeSize}`);
     }
 
     const entryFee = tradeAmount * this.mockConfig.entryFeePercentage;
     const tickets = Math.floor(entryFee / 10) + 1; // Simplified ticket calculation
-    
+
     // Update persistent data
     const savedStats = VaultStorage.get('vaultStats', {}) as Partial<VaultStats & { lastUpdate?: number }>;
     const userStats = VaultStorage.get('userStats', { userTickets: 0 });
-    
+
     savedStats.jackpot = (savedStats.jackpot || 0) + entryFee;
     savedStats.tradesToday = (savedStats.tradesToday || 0) + 1;
     userStats.userTickets = (userStats.userTickets || 0) + tickets;
-    
+
     VaultStorage.set('vaultStats', savedStats);
     VaultStorage.set('userStats', userStats);
-    
+
     // Notify subscribers of the update
     this.notifySubscribers({
       type: 'new_entry',
       data: { entryFee, tickets, newJackpot: savedStats.jackpot },
       timestamp: new Date(),
     });
-    
+
     return {
       success: true,
       tickets,
@@ -357,7 +357,7 @@ class VaultService {
   // Get user vault data
   async getUserData(address: string): Promise<UserVaultData> {
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     const userSeed = `user_${address}`;
     return {
       address,
@@ -376,11 +376,11 @@ class VaultService {
   // Simulate random draw
   async simulateDraw(): Promise<Winner[]> {
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     const drawSeed = `draw_${this.sessionId}_${Date.now()}`;
     const winnerCount = Math.floor(generateStableRandom(drawSeed + '_count') * 5) + 1;
     const winners: Winner[] = [];
-    
+
     for (let i = 0; i < winnerCount; i++) {
       const seed = `${drawSeed}_${i}`;
       const isNFT = generateStableRandom(seed + '_type') > 0.6;
@@ -389,10 +389,10 @@ class VaultService {
         address: this.generateStableAddress(seed + '_winner'),
         reward: {
           type: isNFT ? 'nft' : 'token',
-          name: isNFT 
+          name: isNFT
             ? nftNames[Math.floor(generateStableRandom(seed + '_nft') * nftNames.length)]
             : `${tokenAmounts[Math.floor(generateStableRandom(seed + '_token') * tokenAmounts.length)]} $SVM`,
-          value: isNFT 
+          value: isNFT
             ? Math.floor(generateStableRandom(seed + '_value') * 1000) + 100
             : tokenAmounts[Math.floor(generateStableRandom(seed + '_amount') * tokenAmounts.length)],
         },
@@ -400,7 +400,7 @@ class VaultService {
         transactionSignature: `tx_${generateStableRandom(seed + '_tx').toString().substring(2, 9)}`,
       });
     }
-    
+
     return winners;
   }
 
@@ -411,9 +411,9 @@ class VaultService {
       console.warn('VaultService: Maximum subscribers reached, removing oldest subscriber');
       this.eventSubscribers.shift(); // Remove oldest subscriber
     }
-    
+
     this.eventSubscribers.push(callback);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.eventSubscribers.indexOf(callback);
@@ -426,12 +426,12 @@ class VaultService {
   // Guild management methods with proper API integration points
   async createGuild(name: string, description: string, userAddress: string): Promise<{ success: boolean; guildId: string; message: string }> {
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     try {
       // TODO: Replace with actual on-chain guild creation
       const guildId = `guild_${Date.now()}_${userAddress.slice(-4)}`;
       const guilds = VaultStorage.get('userGuilds', []) as any[];
-      
+
       guilds.push({
         id: guildId,
         name,
@@ -441,9 +441,9 @@ class VaultService {
         members: [userAddress],
         isCreator: true,
       });
-      
+
       VaultStorage.set('userGuilds', guilds);
-      
+
       return {
         success: true,
         guildId,
@@ -460,19 +460,19 @@ class VaultService {
 
   async joinGuild(guildId: string, userAddress: string): Promise<{ success: boolean; message: string }> {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     try {
       // TODO: Replace with actual on-chain guild joining
       const userGuilds = VaultStorage.get('userGuilds', []) as any[];
       const existingUserGuild = userGuilds.find(g => g.id === guildId && g.members && g.members.includes(userAddress));
-      
+
       if (existingUserGuild) {
         return {
           success: false,
           message: 'You are already a member of this guild.',
         };
       }
-      
+
       // Get current guild data to check capacity
       const guildData = await this.getGuildById(guildId);
       if (guildData && guildData.members.length >= guildData.maxMembers) {
@@ -481,7 +481,7 @@ class VaultService {
           message: 'Guild is at maximum capacity.',
         };
       }
-      
+
       // Update user's guild list
       userGuilds.push({
         id: guildId,
@@ -492,9 +492,9 @@ class VaultService {
         members: [userAddress],
         isCreator: false,
       });
-      
+
       VaultStorage.set('userGuilds', userGuilds);
-      
+
       // Update the guild's member list in cache (sync the two data stores)
       const cacheKey = 'guilds';
       const cached = VaultStorage.get(cacheKey, null) as { guilds: Guild[]; timestamp: number } | null;
@@ -515,7 +515,7 @@ class VaultService {
           }
         }
       }
-      
+
       return {
         success: true,
         message: 'Successfully joined the guild!',
@@ -552,10 +552,10 @@ class VaultService {
       clearInterval(this.updateInterval);
       this.updateInterval = null;
     }
-    
+
     // Clear all event subscribers to prevent memory leaks
     this.eventSubscribers = [];
-    
+
     // Additional cleanup for production
     if (process.env.NODE_ENV !== 'development') {
       // Clear any cached data if needed for memory optimization

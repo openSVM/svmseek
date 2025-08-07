@@ -7,13 +7,13 @@ export const useOnboarding = () => {
   useEffect(() => {
     // Check if user has completed onboarding
     const hasCompletedOnboarding = localStorage.getItem('svmseek-onboarding-completed');
-    
+
     if (!hasCompletedOnboarding) {
       // Show onboarding after a short delay
       const timer = setTimeout(() => {
         setShowOnboarding(true);
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     } else {
       // Check for PWA install prompt
@@ -27,7 +27,7 @@ export const useOnboarding = () => {
   const completeOnboarding = () => {
     setShowOnboarding(false);
     localStorage.setItem('svmseek-onboarding-completed', 'true');
-    
+
     // Show PWA prompt after onboarding
     setTimeout(() => {
       const hasSeenPWAPrompt = localStorage.getItem('svmseek-pwa-prompt-seen');

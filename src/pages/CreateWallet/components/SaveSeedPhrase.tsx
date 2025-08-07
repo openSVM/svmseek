@@ -17,7 +17,7 @@ import { TextareaWithCopy } from '../../../components/Input';
 import BottomLink from '../../../components/BottomLink';
 import AttentionComponent from '../../../components/Attention';
 import clipboardCopy from 'clipboard-copy';
-import FakeInputs from '../../../components/FakeInputs';
+
 
 const SeedPhraseForm = styled(RowContainer)`
   @media (max-width: 540px) {
@@ -40,7 +40,7 @@ const StyledButton = styled(VioletButton)`
   }
 `;
 
-const CreatePassword = ({
+const SaveSeedPhrase = ({
   seedPhrase,
   setIsConfirmSeedPhrase,
 }: {
@@ -64,7 +64,7 @@ const CreatePassword = ({
 
   return (
     <>
-      <FakeInputs />
+      {/* Removed FakeInputs - no password functionality needed */}
       <Card minHeight={'50rem'} width="50rem" height="55rem">
         <Row
           width={'90%'}
@@ -79,7 +79,7 @@ const CreatePassword = ({
           </RowContainer>
           <RowContainer>
             <ColorText
-              
+
               background={'rgba(164, 231, 151, 0.5)'}
               needBackground={true}
             >
@@ -91,7 +91,7 @@ const CreatePassword = ({
             <TextareaWithCopy
               height={'11.4rem'}
               value={seedPhrase}
-              
+
               onCopy={() => clipboardCopy(seedPhrase)}
             />
           </RowContainer>
@@ -114,7 +114,7 @@ const CreatePassword = ({
               <StyledLabel
                 htmlFor="savedSeedPhrase"
                 fontSize={'1.4rem'}
-                
+
               >
                 I have saved these words in a safe place.
               </StyledLabel>
@@ -134,4 +134,4 @@ const CreatePassword = ({
   );
 };
 
-export default CreatePassword;
+export default SaveSeedPhrase;

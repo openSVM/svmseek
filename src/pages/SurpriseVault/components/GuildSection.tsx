@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-  Box, 
-  Typography, 
+import {
+  Box,
+  Typography,
   CardContent,
   Dialog,
   DialogTitle,
@@ -11,7 +11,7 @@ import {
   CircularProgress,
   Alert
 } from '@mui/material';
-import { 
+import {
   Groups as GroupsIcon,
   Add as AddIcon,
   People as PeopleIcon,
@@ -21,16 +21,16 @@ import {
 import VaultService from '../services/VaultService';
 import { useVaultWallet } from '../hooks/useVaultWallet';
 import { useTruncateAddress } from '../utils';
-import { 
-  GlassCard, 
-  VaultTextField, 
-  SecondaryButton, 
+import {
+  GlassCard,
+  VaultTextField,
+  SecondaryButton,
   VaultButton,
   SectionHeader,
   StatusChip,
   LoadingContainer,
   ErrorContainer,
-  ProgressContainer 
+  ProgressContainer
 } from './shared/StyledComponents';
 
 
@@ -61,7 +61,7 @@ const GuildSection: React.FC = () => {
   const [creating, setCreating] = useState(false);
   const [joiningGuildId, setJoiningGuildId] = useState<string | null>(null);
   const [actionFeedback, setActionFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  
+
   const { walletAddress } = useVaultWallet();
   const truncateAddress = useTruncateAddress();
   const vaultService = useMemo(() => VaultService.getInstance(), []);
@@ -101,16 +101,16 @@ const GuildSection: React.FC = () => {
       setActionFeedback({ type: 'error', message: 'Please connect your wallet first' });
       return;
     }
-    
+
     if (!newGuildName.trim()) {
       setActionFeedback({ type: 'error', message: 'Guild name is required' });
       return;
     }
-    
+
     setCreating(true);
     try {
       const result = await vaultService.createGuild(newGuildName.trim(), newGuildDescription.trim(), walletAddress);
-      
+
       if (result.success) {
         setActionFeedback({ type: 'success', message: result.message });
         setCreateDialogOpen(false);
@@ -133,11 +133,11 @@ const GuildSection: React.FC = () => {
       setActionFeedback({ type: 'error', message: 'Please connect your wallet first' });
       return;
     }
-    
+
     setJoiningGuildId(guildId);
     try {
       const result = await vaultService.joinGuild(guildId, walletAddress);
-      
+
       if (result.success) {
         setActionFeedback({ type: 'success', message: result.message });
         // Refresh guilds list to update join status
@@ -184,8 +184,8 @@ const GuildSection: React.FC = () => {
 
         {/* Action Feedback */}
         {actionFeedback && (
-          <Alert 
-            severity={actionFeedback.type} 
+          <Alert
+            severity={actionFeedback.type}
             sx={{ mb: 2 }}
             onClose={handleDismissFeedback}
           >
@@ -230,11 +230,11 @@ const GuildSection: React.FC = () => {
                         <Typography variant="h6" gutterBottom>
                           {guild.name}
                           {guild.isJoined && (
-                            <StatusChip 
+                            <StatusChip
                               status="success"
-                              size="small" 
-                              label="JOINED" 
-                              sx={{ ml: 1 }} 
+                              size="small"
+                              label="JOINED"
+                              sx={{ ml: 1 }}
                             />
                           )}
                         </Typography>
@@ -276,16 +276,16 @@ const GuildSection: React.FC = () => {
                         <Typography variant="caption" color="text.secondary">
                           Milestone Progress
                         </Typography>
-                        <StatusChip 
+                        <StatusChip
                           status="warning"
-                          size="small" 
+                          size="small"
                           icon={<TrophyIcon />}
                           label={guild.milestone.reward}
                         />
                       </Box>
                       <ProgressContainer>
-                        <LinearProgress 
-                          variant="determinate" 
+                        <LinearProgress
+                          variant="determinate"
                           value={(guild.milestone.current / guild.milestone.target) * 100}
                         />
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
@@ -300,8 +300,8 @@ const GuildSection: React.FC = () => {
         )}
 
         {/* Create Guild Dialog */}
-        <Dialog 
-          open={createDialogOpen} 
+        <Dialog
+          open={createDialogOpen}
           onClose={() => setCreateDialogOpen(false)}
           maxWidth="sm"
           fullWidth
@@ -352,7 +352,7 @@ const GuildSection: React.FC = () => {
             <SecondaryButton onClick={() => setCreateDialogOpen(false)}>
               Cancel
             </SecondaryButton>
-            <VaultButton 
+            <VaultButton
               onClick={handleCreateGuild}
               disabled={creating || !walletAddress || !newGuildName.trim()}
             >

@@ -239,7 +239,7 @@ export class SolanaRPCService {
       try {
         const pubkey = new PublicKey(trimmedQuery);
         const accountInfo = await this.connection.getAccountInfo(pubkey);
-        
+
         if (accountInfo) {
           return {
             type: 'account',
@@ -262,7 +262,7 @@ export class SolanaRPCService {
         const transaction = await this.connection.getTransaction(trimmedQuery, {
           maxSupportedTransactionVersion: 0,
         });
-        
+
         if (transaction) {
           return {
             type: 'transaction',
@@ -285,7 +285,7 @@ export class SolanaRPCService {
       try {
         const slot = parseInt(trimmedQuery);
         const block = await this.connection.getBlock(slot);
-        
+
         if (block) {
           return {
             type: 'block',

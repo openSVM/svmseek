@@ -23,7 +23,7 @@ const StyledCard = styled(Card)`
   height: 100%;
   display: flex;
   flex-direction: column;
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.08) !important;
     border-color: rgba(139, 92, 246, 0.3);
@@ -57,7 +57,7 @@ const ActionButton = styled(Button)`
   background: rgba(139, 92, 246, 0.1) !important;
   border: 1px solid rgba(139, 92, 246, 0.3) !important;
   color: #A78BFA !important;
-  
+
   &:hover {
     background: rgba(139, 92, 246, 0.2) !important;
     border-color: rgba(139, 92, 246, 0.5) !important;
@@ -92,7 +92,7 @@ export const AgentCard: React.FC<AgentCardProps> = ({
   };
 
   return (
-    <StyledCard 
+    <StyledCard
       role="article"
       aria-labelledby={`agent-name-${agent.id}`}
       aria-describedby={`agent-description-${agent.id}`}
@@ -100,10 +100,10 @@ export const AgentCard: React.FC<AgentCardProps> = ({
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AgentHeader>
           <AgentIconStyled aria-hidden="true" />
-          <Typography 
-            variant="h6" 
+          <Typography
+            variant="h6"
             id={`agent-name-${agent.id}`}
-            sx={{ 
+            sx={{
               color: 'white',
               fontWeight: 600,
               fontSize: '1.1rem'
@@ -113,10 +113,10 @@ export const AgentCard: React.FC<AgentCardProps> = ({
           </Typography>
         </AgentHeader>
 
-        <Typography 
-          variant="body2" 
+        <Typography
+          variant="body2"
           id={`agent-description-${agent.id}`}
-          sx={{ 
+          sx={{
             color: 'rgba(255, 255, 255, 0.7)',
             marginBottom: 2,
             flexGrow: 1,
@@ -130,7 +130,7 @@ export const AgentCard: React.FC<AgentCardProps> = ({
         </Typography>
 
         {agent.capabilities && agent.capabilities.length > 0 && (
-          <Box 
+          <Box
             sx={{ marginBottom: 2 }}
             role="list"
             aria-label="Agent capabilities"
@@ -156,7 +156,7 @@ export const AgentCard: React.FC<AgentCardProps> = ({
         )}
 
         {agent.tags && agent.tags.length > 0 && (
-          <Box 
+          <Box
             sx={{ marginBottom: 2 }}
             role="list"
             aria-label="Agent tags"
@@ -180,10 +180,10 @@ export const AgentCard: React.FC<AgentCardProps> = ({
         )}
 
         {showActions && (
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              gap: 1, 
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
               flexWrap: 'wrap',
               marginTop: 'auto'
             }}

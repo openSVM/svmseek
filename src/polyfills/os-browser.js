@@ -52,10 +52,10 @@ function userInfo() {
 
 function cpus() {
   // Return stub CPU info
-  const numCores = typeof navigator !== 'undefined' && navigator.hardwareConcurrency 
-    ? navigator.hardwareConcurrency 
+  const numCores = typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+    ? navigator.hardwareConcurrency
     : 4;
-  
+
   return Array(numCores).fill({
     model: 'Browser CPU',
     speed: 2400,
@@ -95,8 +95,8 @@ function type() {
   return platform();
 }
 
-// Export all the functions
-module.exports = {
+// Create the module object
+const osModule = {
   EOL,
   arch,
   platform,
@@ -114,5 +114,29 @@ module.exports = {
   type
 };
 
-// Also provide default export for ES6 imports
-module.exports.default = module.exports;
+// Export for CommonJS
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = osModule;
+  // Also provide default export for ES6 imports
+  module.exports.default = osModule;
+}
+
+// Export for ES6 modules
+export default osModule;
+export {
+  EOL,
+  arch,
+  platform,
+  release,
+  hostname,
+  homedir,
+  tmpdir,
+  userInfo,
+  cpus,
+  freemem,
+  totalmem,
+  loadavg,
+  uptime,
+  networkInterfaces,
+  type
+};

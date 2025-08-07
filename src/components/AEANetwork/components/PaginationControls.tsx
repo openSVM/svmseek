@@ -54,7 +54,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   const handleItemsPerPageChange = (event: any) => {
     const newItemsPerPage = event.target.value as number;
     onItemsPerPageChange(newItemsPerPage);
-    
+
     // Reset to first page when changing items per page
     onPageChange(1);
   };
@@ -64,11 +64,11 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   }
 
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      sx={{
+        display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
-        alignItems: 'center', 
+        alignItems: 'center',
         justifyContent: 'space-between',
         gap: 2,
         padding: 2,
@@ -81,9 +81,9 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
       aria-label="Pagination controls"
     >
       {/* Items info */}
-      <Typography 
-        variant="body2" 
-        sx={{ 
+      <Typography
+        variant="body2"
+        sx={{
           color: 'rgba(255, 255, 255, 0.7)',
           minWidth: 'fit-content'
         }}
@@ -170,12 +170,12 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
 
       {/* Items per page selector */}
       {showItemsPerPage && (
-        <FormControl 
-          size="small" 
+        <FormControl
+          size="small"
           sx={{ minWidth: 120 }}
           disabled={disabled}
         >
-          <InputLabel 
+          <InputLabel
             sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
             id="items-per-page-label"
           >
@@ -210,10 +210,10 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             aria-label="Select number of items per page"
           >
             {pageSizeOptions.map((option) => (
-              <MenuItem 
-                key={option} 
+              <MenuItem
+                key={option}
                 value={option}
-                sx={{ 
+                sx={{
                   color: 'white',
                   '&:hover': {
                     background: 'rgba(255, 255, 255, 0.1)',

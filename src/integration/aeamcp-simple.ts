@@ -54,12 +54,12 @@ export interface SolanaAIRegistriesConfig {
 export class SolanaAIRegistriesClient {
   private connection: Connection;
   private wallet: any;
-  
+
   constructor(connection: Connection, wallet?: any) {
     this.connection = connection;
     this.wallet = wallet;
   }
-  
+
   async getAllAgents(): Promise<Agent[]> {
     // Mock data for demonstration
     return [
@@ -109,7 +109,7 @@ export class SolanaAIRegistriesClient {
       }
     ];
   }
-  
+
   async getAllMCPServers(): Promise<MCPServer[]> {
     // Mock data for demonstration
     return [
@@ -151,13 +151,13 @@ export class SolanaAIRegistriesClient {
       }
     ];
   }
-  
+
   async registerAgent(agent: Partial<Agent>): Promise<{ signature: string }> {
     // Mock registration
     devLog('Registering agent:', agent);
     return { signature: 'mock-signature-' + Date.now() };
   }
-  
+
   async registerMCPServer(server: Partial<MCPServer>): Promise<{ signature: string }> {
     // Mock registration
     devLog('Registering MCP server:', server);
@@ -168,7 +168,7 @@ export class SolanaAIRegistriesClient {
 // Builder classes for construction
 export class AgentBuilder {
   private agent: Partial<Agent> = {};
-  
+
   setName(name: string) { this.agent.name = name; return this; }
   setDescription(description: string) { this.agent.description = description; return this; }
   setVersion(version: string) { this.agent.version = version; return this; }
@@ -186,7 +186,7 @@ export class AgentBuilder {
   setRuntimeVersion(runtimeVersion: string) { this.agent.runtimeVersion = runtimeVersion; return this; }
   setDependencies(dependencies: string[]) { this.agent.dependencies = dependencies; return this; }
   setCapabilities(capabilities: string[]) { this.agent.capabilities = capabilities; return this; }
-  
+
   build(): Partial<Agent> {
     return { ...this.agent };
   }
@@ -194,7 +194,7 @@ export class AgentBuilder {
 
 export class MCPServerBuilder {
   private server: Partial<MCPServer> = {};
-  
+
   setName(name: string) { this.server.name = name; return this; }
   setDescription(description: string) { this.server.description = description; return this; }
   setVersion(version: string) { this.server.version = version; return this; }
@@ -208,7 +208,7 @@ export class MCPServerBuilder {
   setCapabilities(capabilities: string[]) { this.server.capabilities = capabilities; return this; }
   setRequirements(requirements: string[]) { this.server.requirements = requirements; return this; }
   setConfiguration(configuration: string) { this.server.configuration = configuration; return this; }
-  
+
   build(): Partial<MCPServer> {
     return { ...this.server };
   }

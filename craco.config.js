@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
   webpack: {
@@ -76,7 +77,7 @@ module.exports = {
         assert: require.resolve('assert'),
         util: require.resolve('util'),
         url: require.resolve('url'),
-        os: require.resolve('./src/polyfills/os-browser.js'),
+        os: path.resolve(__dirname, 'src/polyfills/os-browser.js'),
         path: require.resolve('path-browserify'),
         vm: require.resolve('vm-browserify'),
         fs: false,

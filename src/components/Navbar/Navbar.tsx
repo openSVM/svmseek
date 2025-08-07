@@ -1,15 +1,15 @@
-import { useTheme } from '@mui/material';
 import React, { useState, useEffect } from 'react';
+import { useTheme as useMuiTheme } from '@mui/material/styles';
 import styled from 'styled-components';
 import { Search } from '@mui/icons-material';
 import SVMSeekLogo from '../../images/SVMSeek.svg';
 import StakeBtn from '../../images/stakeBtn.png';
-import { Row, RowContainer } from '../../pages/commonStyles';
+import { RowContainer } from '../../pages/commonStyles';
 import { Button } from '../Button';
 import { FeedbackPopup } from '../UsersFeedBackPopup/UsersFeedbackPopup';
 import { SearchBar } from '../SearchBar';
-import DiscordIcon from './DiscordIcon';
 import ThemeToggle from '../ThemeToggle';
+import { useTheme } from '../../context/ThemeContext';
 
 import { DropDown } from './Dropdown';
 import {
@@ -25,45 +25,27 @@ import {
   VaultNavLink,
   WalletContainer,
 } from './styles';
-import TelegramIcon from './TelegramIcon';
-import TwitterIcon from './TwitterIcon';
 
-const Socials = styled(Row)`
-  & a:hover {
-    svg {
-      g {
-        path {
-          fill: var(--interactive-primary);
-        }
-      }
-    }
-  }
-`;
-
-const StyledLink = styled.a`
-  height: 100%;
-`;
-
-const SearchButton = styled.button`
+const SearchButton = styled.button<{ theme?: any }>`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-main);
-  border-radius: 8px;
-  color: var(--text-secondary);
+  background: ${props => props.theme?.colors?.background?.secondary || 'var(--bg-secondary)'};
+  border: 1px solid ${props => props.theme?.colors?.border?.primary || 'var(--border-primary)'};
+  border-radius: ${props => props.theme?.effects?.radius?.md || '8px'};
+  color: ${props => props.theme?.colors?.text?.secondary || 'var(--text-secondary)'};
   cursor: pointer;
   transition: all 0.2s;
   font-size: 14px;
   margin-right: 16px;
-  
+
   &:hover {
-    background: var(--bg-primary);
-    border-color: var(--interactive-primary);
-    color: var(--text-primary);
+    background: ${props => props.theme?.colors?.background?.primary || 'var(--bg-primary)'};
+    border-color: ${props => props.theme?.colors?.interactive?.primary || 'var(--interactive-primary)'};
+    color: ${props => props.theme?.colors?.text?.primary || 'var(--text-primary)'};
   }
-  
+
   @media (max-width: 768px) {
     padding: 8px;
     span {
@@ -78,15 +60,15 @@ const ShortcutKeys = styled.div`
   gap: 2px;
   font-size: 12px;
   opacity: 0.7;
-  
+
   @media (max-width: 768px) {
     display: none;
   }
 `;
 
-const Key = styled.span`
-  background: var(--bg-primary);
-  border: 1px solid var(--border-main);
+const Key = styled.span<{ theme?: any }>`
+  background: ${props => props.theme?.colors?.background?.primary || 'var(--bg-primary)'};
+  border: 1px solid ${props => props.theme?.colors?.border?.primary || 'var(--border-primary)'};
   border-radius: 4px;
   padding: 2px 4px;
   font-family: monospace;
@@ -97,23 +79,23 @@ interface ExternalLinkProps {
   show?: string;
 }
 
-const ExternalLink = styled.a<ExternalLinkProps>`
+const ExternalLink = styled.a<ExternalLinkProps & { theme?: any }>`
   text-decoration: none;
   font-size: 0.7em;
   padding: 8px 12px;
   margin: 0px 4px;
   text-align: center;
-  border-radius: 8px;
-  color: var(--text-secondary);
-  background: var(--bg-primary);
+  border-radius: ${props => props.theme?.effects?.radius?.md || '8px'};
+  color: ${props => props.theme?.colors?.text?.secondary || 'var(--text-secondary)'};
+  background: ${props => props.theme?.colors?.background?.primary || 'var(--bg-primary)'};
   transition: all ease-in 0.2s;
   cursor: pointer;
-  
+
   &:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: ${props => props.theme?.colors?.background?.secondary || 'var(--bg-secondary)'};
+    color: ${props => props.theme?.colors?.text?.primary || 'var(--text-primary)'};
   }
-  
+
   @media (max-width: 768px) {
     display: ${props => props.show === 'md' ? 'none' : 'block'};
   }
@@ -122,7 +104,8 @@ const ExternalLink = styled.a<ExternalLinkProps>`
 export const Navbar = () => {
   const [feedbackPopupOpen, setFeedbackPopupOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const theme = useTheme();
+  const { currentTheme } = useTheme();
+  const muiTheme = useMuiTheme();
 
   // Global keyboard shortcut for search
   useEffect(() => {
@@ -141,7 +124,7 @@ export const Navbar = () => {
 
   const feedbackLinks = (
     <>
-      <button 
+      <button
         style={{
           background: 'none',
           border: 'none',
@@ -188,6 +171,7 @@ export const Navbar = () => {
         <MainLinksWrap>
           <MainLinksBlock>
             <ExternalLink
+              theme={currentTheme}
               href="https://svmseek.com/chart/spot/SVMAI_USDC"
               target="_blank"
               rel="noopener noreferrer"
@@ -195,6 +179,7 @@ export const Navbar = () => {
               Trade
             </ExternalLink>
             <ExternalLink
+              theme={currentTheme}
               href="https://svmseek.com/swap"
               target="_blank"
               rel="noopener noreferrer"
@@ -202,6 +187,7 @@ export const Navbar = () => {
               Swap
             </ExternalLink>
             <ExternalLink
+              theme={currentTheme}
               href="https://svmseek.com/pools"
               target="_blank"
               rel="noopener noreferrer"
@@ -210,6 +196,7 @@ export const Navbar = () => {
               Pools
             </ExternalLink>
             <ExternalLink
+              theme={currentTheme}
               href="https://svmseek.com/rebalance"
               target="_blank"
               rel="noopener noreferrer"
@@ -217,6 +204,7 @@ export const Navbar = () => {
               Rebalance
             </ExternalLink>
             <ExternalLink
+              theme={currentTheme}
               href="https://svmseek.com/dashboard"
               target="_blank"
               rel="noopener noreferrer"
@@ -233,7 +221,7 @@ export const Navbar = () => {
               Wallet
             </NavLink>
 
-            <VaultNavLink 
+            <VaultNavLink
               to="/vault"
               role="navigation"
               aria-label="Navigate to Surprise Vault lottery section"
@@ -249,6 +237,7 @@ export const Navbar = () => {
             </NavLink>
 
             <ExternalLink
+              theme={currentTheme}
               href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
               target="_blank"
               rel="noopener noreferrer"
@@ -259,19 +248,21 @@ export const Navbar = () => {
 
             <DropDown hide="lg" text="···">
               {feedbackLinks}
-              <ExternalLink 
+              <ExternalLink
+                theme={currentTheme}
                 href="https://svmseek.com/pools"
                 target="_blank"
                 rel="noopener noreferrer"
-                
+
               >
                 Liquidity Pools
               </ExternalLink>
               <ExternalLink
+                theme={currentTheme}
                 href="https://docs.svmseek.com/dex/how-to-get-started-on-aldrin-dex"
                 target="_blank"
                 rel="noopener noreferrer"
-                
+
               >
                 FAQ
               </ExternalLink>
@@ -280,52 +271,26 @@ export const Navbar = () => {
         </MainLinksWrap>
         <WalletContainer>
           <RowContainer padding="0">
-            <SearchButton onClick={() => setSearchOpen(true)}>
+            <SearchButton theme={currentTheme} onClick={() => setSearchOpen(true)}>
               <Search fontSize="small" />
               <span>Search</span>
               <ShortcutKeys>
-                <Key>⌘</Key>
-                <Key>K</Key>
+                <Key theme={currentTheme}>⌘</Key>
+                <Key theme={currentTheme}>K</Key>
               </ShortcutKeys>
             </SearchButton>
-            
-            <div >
+
+            <div>
               <ThemeToggle />
             </div>
-            <Socials justify={'space-around'} height="100%" width={'auto'}>
-              <StyledLink
-                
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://twitter.com/svmseek"
-              >
-                <TwitterIcon />
-              </StyledLink>
-              <StyledLink
-                
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://t.me/svmseek"
-              >
-                <TelegramIcon />
-              </StyledLink>
-              <StyledLink
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://discord.gg/4VZyNxT2WU"
-                
-              >
-                <DiscordIcon />
-              </StyledLink>
-            </Socials>
           </RowContainer>
         </WalletContainer>
       </HeaderWrap>
-      
+
       <SearchBar open={searchOpen} onClose={() => setSearchOpen(false)} />
-      
+
       <FeedbackPopup
-        theme={theme}
+        theme={muiTheme}
         open={feedbackPopupOpen}
         onClose={() => {
           setFeedbackPopupOpen(false);

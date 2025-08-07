@@ -47,13 +47,13 @@ const TransactionItem = styled(ListItem)(({ theme }) => ({
   marginBottom: theme.spacing(1),
   cursor: 'pointer',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  
+
   '&:hover': {
     background: 'rgba(255, 255, 255, 0.1)',
     transform: 'translateX(4px)',
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
   },
-  
+
   '&:last-child': {
     marginBottom: 0,
   },
@@ -104,7 +104,7 @@ const TransactionList: React.FC = () => {
     } else {
       setIsLoading(true);
     }
-    
+
     try {
       const transactionData = await solanaRPCService.getRecentTransactions(15);
       const enhancedTransactions = transactionData.map(tx => ({
@@ -124,12 +124,12 @@ const TransactionList: React.FC = () => {
 
   useEffect(() => {
     fetchTransactions();
-    
+
     // Auto-refresh every 45 seconds
     const interval = setInterval(() => {
       fetchTransactions(true);
     }, 45000);
-    
+
     return () => clearInterval(interval);
   }, [fetchTransactions]);
 
@@ -139,12 +139,12 @@ const TransactionList: React.FC = () => {
 
   const handleTransactionClick = (transaction: Transaction) => {
     devLog('Navigate to transaction:', transaction.signature);
-    
+
   };
 
   const formatTimeAgo = (timestamp: Date): string => {
     const seconds = Math.floor((new Date().getTime() - timestamp.getTime()) / 1000);
-    
+
     if (seconds < 60) return `${seconds}s ago`;
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
@@ -207,7 +207,7 @@ const TransactionList: React.FC = () => {
           <RefreshIcon />
         </IconButton>
       </HeaderBox>
-      
+
       <StyledList>
         {transactions.map((transaction) => (
           <TransactionItem
