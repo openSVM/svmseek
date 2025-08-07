@@ -32,6 +32,11 @@ function initializeGlobalPatches() {
   if (isFeatureEnabled('enableSafeEventListeners')) {
     safeEventListenerUtility.enableSafeListeners();
     devLog('🛡️ Safe event listeners enabled via feature flag');
+    
+    // Expose to window for debugging/testing purposes
+    if (typeof window !== 'undefined') {
+      (window as any).safeEventListenerUtility = safeEventListenerUtility;
+    }
   } else {
     devLog('🎛️ Safe event listeners disabled via feature flag');
   }

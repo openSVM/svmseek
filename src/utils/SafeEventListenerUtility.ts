@@ -57,10 +57,19 @@ export class SafeEventListenerUtility {
 
     this.originalAddEventListener = EventTarget.prototype.addEventListener;
 
-    EventTarget.prototype.addEventListener = (type: string, listener: any, options?: any) => {
-      const safeListener = this.createSafeListener(listener);
-      return this.originalAddEventListener!.call(this, type, safeListener, options);
+    const utility = this;
+    EventTarget.prototype.addEventListener = function(type: string, listener: any, options?: any) {
+      // Validate that 'this' is an EventTarget instance
+      if (!(this instanceof EventTarget)) {
+        throw new TypeError('Can only call EventTarget.addEventListener on instances of EventTarget');
+      }
+      
+      const safeListener = utility.createSafeListener(listener);
+      return utility.originalAddEventListener!.call(this, type, safeListener, options);
     };
+
+    // Store reference to utility for error handling
+    (EventTarget.prototype.addEventListener as any).__safeEventUtility = this;
 
     this.isGloballyEnabled = true;
 
@@ -78,6 +87,7 @@ export class SafeEventListenerUtility {
     }
 
     EventTarget.prototype.addEventListener = this.originalAddEventListener;
+    delete (EventTarget.prototype.addEventListener as any).__safeEventUtility;
     this.isGloballyEnabled = false;
 
     if (this.config.enableLogging) {
