@@ -4,6 +4,10 @@ import './polyfills/index.js';
 // Import global error handler early to catch initialization errors
 import './utils/globalErrorHandler';
 
+// Import feature flags and safe event listeners
+import { isFeatureEnabled, logFeatureFlags } from './utils/featureFlags';
+import { safeEventListenerUtility } from './utils/SafeEventListenerUtility';
+
 // Import React and other modules AFTER polyfills
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -18,6 +22,20 @@ import { devLog, logInfo, logError } from './utils/logger';
 
 // Secure Buffer initialization without global modification
 import { Buffer } from 'buffer';
+
+// Initialize feature-flag controlled global patches
+function initializeGlobalPatches() {
+  // Log current feature flag status in development
+  logFeatureFlags();
+  
+  // Enable safe event listeners if feature flag is set
+  if (isFeatureEnabled('enableSafeEventListeners')) {
+    safeEventListenerUtility.enableSafeListeners();
+    devLog('🛡️ Safe event listeners enabled via feature flag');
+  } else {
+    devLog('🎛️ Safe event listeners disabled via feature flag');
+  }
+}
 
 // Safe initialization function to avoid direct global modification
 function initializeRequiredPolyfills() {
@@ -40,6 +58,9 @@ function initializeRequiredPolyfills() {
 
 // Initialize polyfills safely
 initializeRequiredPolyfills();
+
+// Initialize feature-flag controlled global patches
+initializeGlobalPatches();
 
 devLog('Buffer polyfills and React initialized successfully');
 

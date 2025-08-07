@@ -6,6 +6,33 @@ This document provides comprehensive documentation about global modifications, m
 
 SVMSeek operates in a complex browser extension ecosystem where multiple wallet extensions compete for global properties and APIs. To ensure compatibility and prevent crashes, several global modifications have been implemented as defensive programming measures.
 
+**⚠️ IMPORTANT:** All global patches can now be controlled via feature flags in `src/utils/featureFlags.ts`. This allows fine-grained control over which modifications are enabled in different environments.
+
+## 🎛️ Feature Flag Control
+
+Global patches are now controlled by environment variables and feature flags:
+
+```bash
+# Global patch control
+REACT_APP_ENABLE_OS_POLYFILL=true
+REACT_APP_ENABLE_BUFFER_POLYFILL=true
+REACT_APP_ENABLE_SAFE_EVENT_LISTENERS=true
+REACT_APP_ENABLE_CRYPTO_POLYFILL=true
+
+# Security features (enabled by default)
+REACT_APP_DISABLE_RATE_LIMITING=false
+REACT_APP_DISABLE_ORIGIN_VALIDATION=false
+REACT_APP_DISABLE_MESSAGE_SECURITY=false
+
+# Extension compatibility (enabled by default)
+REACT_APP_ENABLE_EXTENSION_COMPATIBILITY=true
+```
+
+**Default Behavior:**
+- Development: All patches enabled for maximum compatibility
+- Staging: Essential patches enabled
+- Production: Only explicitly enabled patches (safer defaults)
+
 ## 🚨 Critical Global Modifications
 
 ### 1. EventTarget.prototype.addEventListener (SafeEventListenerUtility)

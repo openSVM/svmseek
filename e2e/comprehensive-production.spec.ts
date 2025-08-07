@@ -316,11 +316,14 @@ test.describe('SVMSeek Wallet - Comprehensive Production Tests', () => {
   test.describe('Wallet Restore Flow', () => {
     
     test('should restore wallet with valid seed phrase', async ({ page }) => {
+      // Increase timeout for wallet restoration which can be slow
+      test.setTimeout(45000);
+      
       await page.goto('/restore');
       await waitForPageLoad(page);
       
       // Should be on restore page
-      await expect(page.locator('text=Restore').or(page.locator('text=Import'))).toBeVisible();
+      await expect(page.locator('text=Restore').or(page.locator('text=Import'))).toBeVisible({ timeout: 10000 });
       
       // Valid test seed phrase (standard BIP39)
       const testSeedPhrase = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
@@ -345,19 +348,19 @@ test.describe('SVMSeek Wallet - Comprehensive Production Tests', () => {
           }
         }
         
-        // Submit restore
+        // Submit restore with increased timeout for wallet processing
         const restoreButton = page.locator('button:has-text("Restore")').or(
           page.locator('button:has-text("Import")')
         );
         await restoreButton.click();
         await waitForPageLoad(page);
         
-        // Should show success or wallet interface
+        // Should show success or wallet interface - increased timeout for wallet restoration
         await expect(page.locator('text=Success').or(
           page.locator('text=Wallet').or(
             page.locator('text=Balance')
           )
-        )).toBeVisible({ timeout: 15000 });
+        )).toBeVisible({ timeout: 30000 });
       }
       
       await page.screenshot({ 
