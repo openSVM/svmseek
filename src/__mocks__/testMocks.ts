@@ -11,7 +11,7 @@
  * TweetNaCl Mock - Centralized cryptographic function mocking
  * Provides consistent, deterministic mock implementations for encryption testing
  */
-export const createTweetNaClMock = () => {
+const mockCreateTweetNaCl = () => {
   const mockSecretbox = jest.fn((message: Uint8Array, nonce: Uint8Array, key: Uint8Array) => {
     // Return deterministic mock encrypted result
     return new Uint8Array(message.length + 16); // Add overhead for box
@@ -40,17 +40,19 @@ export const createTweetNaClMock = () => {
   };
 };
 
+export const createTweetNaClMock = mockCreateTweetNaCl;
+
 /**
  * Apply TweetNaCl mock to jest
  */
 export const mockTweetNaCl = () => {
-  jest.mock('tweetnacl', () => createTweetNaClMock());
+  jest.mock('tweetnacl', () => mockCreateTweetNaCl());
 };
 
 /**
  * Crypto-browserify Mock - For PBKDF2 and other crypto operations
  */
-export const createCryptoBrowserifyMock = () => ({
+const mockCreateCryptoBrowserify = () => ({
   pbkdf2: jest.fn((password, salt, iterations, keyLength, digest, callback) => {
     // Simulate async operation
     setTimeout(() => {
@@ -64,17 +66,19 @@ export const createCryptoBrowserifyMock = () => ({
   }),
 });
 
+export const createCryptoBrowserifyMock = mockCreateCryptoBrowserify;
+
 /**
  * Apply crypto-browserify mock to jest
  */
 export const mockCryptoBrowserify = () => {
-  jest.mock('crypto-browserify', () => createCryptoBrowserifyMock());
+  jest.mock('crypto-browserify', () => mockCreateCryptoBrowserify());
 };
 
 /**
  * Argon2-browser Mock - For password hashing
  */
-export const createArgon2BrowserMock = () => ({
+const mockCreateArgon2Browser = () => ({
   hash: jest.fn(async (options) => {
     // Create deterministic hash based on password
     const passwordBytes = Buffer.from(options.pass, 'utf8');
@@ -90,11 +94,13 @@ export const createArgon2BrowserMock = () => ({
   }
 });
 
+export const createArgon2BrowserMock = mockCreateArgon2Browser;
+
 /**
  * Apply argon2-browser mock to jest
  */
 export const mockArgon2Browser = () => {
-  jest.mock('argon2-browser', () => createArgon2BrowserMock());
+  jest.mock('argon2-browser', () => mockCreateArgon2Browser());
 };
 
 // ===== DOM MOCKS =====
@@ -332,7 +338,7 @@ export const createMockWallet = () => ({
 /**
  * Create mock for MUI components with forwardRef
  */
-export const createMUIComponentMock = (componentName: string) => {
+const mockCreateMUIComponent = (componentName: string) => {
   const React = require('react');
   return React.forwardRef((props: any, ref: any) => {
     return React.createElement('div', {
@@ -343,17 +349,19 @@ export const createMUIComponentMock = (componentName: string) => {
   });
 };
 
+export const createMUIComponentMock = mockCreateMUIComponent;
+
 /**
  * Common MUI component mocks
  */
 export const mockMUIComponents = () => {
-  jest.mock('@mui/material/Grid', () => createMUIComponentMock('Grid'));
-  jest.mock('@mui/material/Box', () => createMUIComponentMock('Box'));
-  jest.mock('@mui/material/Typography', () => createMUIComponentMock('Typography'));
-  jest.mock('@mui/material/Button', () => createMUIComponentMock('Button'));
-  jest.mock('@mui/material/TextField', () => createMUIComponentMock('TextField'));
-  jest.mock('@mui/material/Card', () => createMUIComponentMock('Card'));
-  jest.mock('@mui/material/CardContent', () => createMUIComponentMock('CardContent'));
+  jest.mock('@mui/material/Grid', () => mockCreateMUIComponent('Grid'));
+  jest.mock('@mui/material/Box', () => mockCreateMUIComponent('Box'));
+  jest.mock('@mui/material/Typography', () => mockCreateMUIComponent('Typography'));
+  jest.mock('@mui/material/Button', () => mockCreateMUIComponent('Button'));
+  jest.mock('@mui/material/TextField', () => mockCreateMUIComponent('TextField'));
+  jest.mock('@mui/material/Card', () => mockCreateMUIComponent('Card'));
+  jest.mock('@mui/material/CardContent', () => mockCreateMUIComponent('CardContent'));
 };
 
 // ===== TIMER MOCKS =====

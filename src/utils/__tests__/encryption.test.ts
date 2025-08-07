@@ -1,18 +1,64 @@
-// Use centralized mocks to avoid duplication
-import {
-  createTweetNaClMock,
-  createCryptoBrowserifyMock,
-  createArgon2BrowserMock,
-} from '../../__mocks__/testMocks';
-
 // Mock crypto functions to avoid browser-specific issues in tests
-jest.mock('tweetnacl', () => createTweetNaClMock());
+jest.mock('tweetnacl', () => {
+  const mockSecretbox = jest.fn((message: any, nonce: any, key: any) => {
+    // Return deterministic mock encrypted result
+    return new Uint8Array(message.length + 16); // Add overhead for box
+  }) as jest.MockedFunction<any> & {
+    open: jest.MockedFunction<any>;
+    keyLength: number;
+    nonceLength: number; 
+    overheadLength: number;
+  };
+  
+  mockSecretbox.open = jest.fn((ciphertext: any, nonce: any, key: any) => {
+    if (ciphertext.length <= 16) return null;
+    return ciphertext.slice(16);
+  });
+  
+  mockSecretbox.keyLength = 32;
+  mockSecretbox.nonceLength = 24;
+  mockSecretbox.overheadLength = 16;
+
+  return {
+    randomBytes: jest.fn((length: number) => {
+      // Return stable mock array for testing
+      return new Uint8Array(Array.from({ length }, (_, i) => i % 256));
+    }),
+    secretbox: mockSecretbox
+  };
+});
 
 // Mock crypto-browserify pbkdf2
-jest.mock('crypto-browserify', () => createCryptoBrowserifyMock());
+jest.mock('crypto-browserify', () => ({
+  pbkdf2: jest.fn((password: any, salt: any, iterations: any, keyLength: any, digest: any, callback: any) => {
+    // Simulate async operation
+    setTimeout(() => {
+      // Return stable mock key based on password for deterministic testing
+      const passwordBytes = Buffer.from(password, 'utf8');
+      const mockKey = Buffer.from(Array.from({ length: keyLength }, (_, i) => 
+        (passwordBytes[i % passwordBytes.length] + i) % 256
+      ));
+      callback(null, mockKey);
+    }, 0);
+  }),
+}));
 
 // Mock argon2-browser
-jest.mock('argon2-browser', () => createArgon2BrowserMock());
+jest.mock('argon2-browser', () => ({
+  hash: jest.fn(async (options: any) => {
+    // Create deterministic hash based on password
+    const passwordBytes = Buffer.from(options.pass, 'utf8');
+    return {
+      hash: new Uint8Array(Array.from({ length: 32 }, (_, i) => 
+        (passwordBytes[i % passwordBytes.length] + i) % 256
+      )),
+      hashHex: 'abcdef123456789',
+    };
+  }),
+  ArgonType: {
+    Argon2id: 2
+  }
+}));
 
 import {
   WalletEncryptionManager,
