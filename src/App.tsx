@@ -11,12 +11,10 @@ import { ConnectionProvider } from './utils/connection';
 import { TokenRegistryProvider } from './utils/tokens/names';
 import { isExtension } from './utils/utils';
 import { useWallet, WalletProvider } from './utils/wallet';
-import { useHasLockedMnemonicAndSeed } from './utils/wallet-seed';
 import useOnboarding from './utils/useOnboarding';
 
 // Lazy load all route components and heavy dependencies
 const ConnectPopup = lazy(() => import('./routes/ConnectPopup'));
-const WelcomeBackPage = lazy(() => import('./routes/WelcomeBack'));
 const Wallet = lazy(() => import('./routes/WalletRouter'));
 const RestorePage = lazy(() => import('./routes/RestoreWallet'));
 const WelcomePage = lazy(() => import('./routes/Welcome'));
@@ -143,7 +141,6 @@ const Pages = () => {
   //   true,
   // );
 
-  const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
   useMemo(() => {
     let params = new URLSearchParams(window.location.hash.slice(1));
     const origin = params.get('origin');
@@ -232,14 +229,6 @@ const Pages = () => {
           }
         />
         <Route
-          path="/welcome_back"
-          element={
-            <ErrorBoundary context="welcome back page">
-              <WelcomeBackPage />
-            </ErrorBoundary>
-          }
-        />
-        <Route
           path="/connect_popup"
           element={
             <ErrorBoundary context="wallet connection">
@@ -270,16 +259,10 @@ const Pages = () => {
         {/* if wallet exists - for case when we'll have unlocked wallet */}
         {!!wallet && <Route path="/" element={<Navigate to="/wallet" replace />} />}
 
-        {/* if have mnemonic in localstorage - login, otherwise - restore/import/create */}
+        {/* Always show welcome page for create/restore options */}
         <Route
           path="/"
-          element={
-            hasLockedMnemonicAndSeed ? (
-              <Navigate to="/welcome_back" replace />
-            ) : (
-              <Navigate to="/welcome" replace />
-            )
-          }
+          element={<Navigate to="/welcome" replace />}
         />
       </Routes>
     </>

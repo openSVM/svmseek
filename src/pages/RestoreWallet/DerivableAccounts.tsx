@@ -48,7 +48,6 @@ export default function DerivedAccounts({
   goBack,
   mnemonic,
   seed,
-  password,
   setRedirectToWallet,
 }) {
   const theme = useTheme();
@@ -72,7 +71,7 @@ export default function DerivedAccounts({
       storeMnemonicAndSeed(
         mnemonic,
         seed,
-        password,
+        null, // No password required
         toDerivationPath(dPathMenuItem) as any,
       ),
     );

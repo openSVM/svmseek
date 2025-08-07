@@ -643,8 +643,6 @@ function SendSwapProgress({ publicKey, signature, onClose, blockchain, refreshTo
               ? `Wait for Confirmations (${confirms}/35)`
               : 'Transaction Pending'
           }
-          thirdStepText={'Withdraw Funds'}
-
         />
         {!ethTxid && blockchain === 'eth' ? (
           <DialogContentText >

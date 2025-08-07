@@ -179,11 +179,10 @@ export const WelcomePage = () => {
         <a
           target="_blank"
           rel="noopener noreferrer"
-          href={'http://svmseek.com/create_wallet'}
+          href={'https://svmseek.com/create_wallet'}
           onClick={() => {
             window.close();
           }}
-
         >
           <CreateWalletOption />
         </a>

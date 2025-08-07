@@ -60,15 +60,13 @@ function shuffleArray(array): any[] {
 }
 
 const ConfirmSeedPhrase = ({
-  password,
   seedPhrase,
   createWallet,
   setCurrentStep,
   setIsConfirmSeedPhrase,
 }: {
-  password: string;
   seedPhrase: string;
-  createWallet: (password: string, onSuccess: () => void) => void;
+  createWallet: (onSuccess: () => void) => void;
   setCurrentStep: (currentStep: number) => void;
   setIsConfirmSeedPhrase: (isConfirmed: boolean) => void;
 }) => {
@@ -87,9 +85,9 @@ const ConfirmSeedPhrase = ({
   }, [seedPhrase]);
 
   const submit = async () => {
-    await createWallet(password, async () => {
+    await createWallet(async () => {
       await sleep(1000);
-      await setCurrentStep(3);
+      await setCurrentStep(2); // Step 2 is now AddTokens since we removed CreatePassword
     });
   };
 

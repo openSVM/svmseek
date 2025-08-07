@@ -19,7 +19,7 @@ import {
   RowContainer,
 } from '../commonStyles';
 
-import { InputWithEye, InputWithPaste } from '../../components/Input';
+import { InputWithPaste } from '../../components/Input';
 import BottomLink from '../../components/BottomLink';
 import { useTheme } from '@mui/material';
 import DerivableAccounts from './DerivableAccounts';
@@ -36,15 +36,13 @@ const StyledTitle = styled(Title)`
 export const RestorePage = () => {
   const [redirectToWallet, setRedirectToWallet] = useState(false);
   const [showDerivation, setShowDerivation] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState('');
   const [mnemonic, setMnemonic] = useState('');
   const [seed, setSeed] = useState('');
   const hash = sessionStorage.getItem('hash');
 
   const theme = useTheme();
   const isMnemonicCorrect = validateMnemonic(mnemonic);
-  const isDisabled = !isMnemonicCorrect || password === '';
+  const isDisabled = !isMnemonicCorrect; // No password required
 
   const [hasLockedMnemonicAndSeed] = useHasLockedMnemonicAndSeed();
 
@@ -78,7 +76,6 @@ export const RestorePage = () => {
           <DerivableAccounts
             goBack={() => setShowDerivation(false)}
             mnemonic={mnemonic}
-            password={password}
             seed={seed}
             setRedirectToWallet={setRedirectToWallet}
           />
@@ -102,8 +99,7 @@ export const RestorePage = () => {
               <RowContainer
                 direction={'column'}
                 height={'50%'}
-                justify={'space-evenly'}
-
+                justify={'center'}
               >
                 <InputWithPaste
                   type="text"
@@ -116,15 +112,6 @@ export const RestorePage = () => {
                       .readText()
                       .then((clipText) => setMnemonic(clipText))
                   }
-                />
-                <InputWithEye
-                  value={password}
-                  onKeyDown={handleKeyDown}
-                  onChange={(e) => setPassword(e.target.value)}
-                  showPassword={showPassword}
-                  onEyeClick={() => setShowPassword(!showPassword)}
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Create Password"
                 />
               </RowContainer>
               <Row width={'90%'} height={'20%'} justify={'space-between'}>

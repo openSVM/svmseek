@@ -38,10 +38,8 @@ const ProgressBar = styled.div<ProgressBarProps>`
   border-bottom: 0.1rem solid transparent;
   border-image: ${(props) =>
     props.currentStep === 1
-      ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 36%,rgb(147, 160, 178))'
-      : props.currentStep === 2
-      ? 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 51%, rgb(147, 160, 178) 90%)'
-      : 'linear-gradient(90deg, #651CE4, #651CE4 51%, #651CE4 90%)'};
+      ? 'linear-gradient(90deg,rgb(115, 128, 235),rgb(147, 160, 178) 50%,rgb(147, 160, 178))'
+      : 'linear-gradient(90deg, rgb(64, 110, 220), rgb(115, 128, 235) 100%)'};
   border-image-slice: 1;
   z-index: -1;
 `;
@@ -110,15 +108,13 @@ const ProgressBarRow = styled(RowContainer)<ProgressBarRowProps>`
 
 const ProgressBarComponent = ({
   currentStep,
-  firstStepText = 'Create Password',
-  secondStepText = 'Confirm Seed Phrase',
-  thirdStepText = 'Add Tokens',
+  firstStepText = 'Confirm Seed Phrase',
+  secondStepText = 'Add Tokens',
   style = {},
 }: {
   currentStep: number;
   firstStepText?: string;
   secondStepText?: string;
-  thirdStepText?: string;
   style?: React.CSSProperties;
 }) => {
   return (
@@ -128,7 +124,7 @@ const ProgressBarComponent = ({
           <Percent />
         </ProgressBar>
 
-        <Steps isCompleted={currentStep === 3}>
+        <Steps isCompleted={currentStep === 2}>
           <StepContainer>
             {' '}
             <Step
@@ -149,16 +145,6 @@ const ProgressBarComponent = ({
               2
             </Step>
             <AlignedTitle>{secondStepText}</AlignedTitle>
-          </StepContainer>
-          <StepContainer>
-            <Step
-              isCompleted={currentStep > 3}
-              isSelected={currentStep === 3}
-              id="3"
-            >
-              3
-            </Step>
-            <AlignedTitle>{thirdStepText}</AlignedTitle>
           </StepContainer>
         </Steps>
       </ProgressBarContainer>

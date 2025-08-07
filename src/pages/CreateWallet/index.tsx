@@ -6,7 +6,6 @@ import Helmet from 'react-helmet';
 // import Logo from '../../components/Logo';
 
 import ProgressBar from './components/ProgressBar';
-import CreatePassword from './components/CreatePassword';
 import SaveSeedPhrase from './components/SaveSeedPhrase';
 import ConfirmSeedPhrase from './components/ConfirmSeedPhrase';
 import AddTokens from './components/AddTokens';
@@ -29,8 +28,7 @@ const MainRow = styled(RowContainer)`
 `;
 
 export const CreateWalletPage = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [password, setPassword] = useState('');
+  const [currentStep, setCurrentStep] = useState(1); // Start at step 1 (SaveSeedPhrase)
   const [isConfirmSeedPhrase, setIsConfirmSeedPhrase] = useState(false);
 
   const [mnemonicAndSeed, setMnemonicAndSeed] = useState<{
@@ -52,13 +50,13 @@ export const CreateWalletPage = () => {
 
   const callAsync = useCallAsync();
 
-  const submit = async (password, onSuccess) => {
+  const submit = async (onSuccess) => {
     const { mnemonic, seed } = mnemonicAndSeed;
     await callAsync(
       storeMnemonicAndSeed(
         mnemonic,
         seed,
-        password,
+        null, // No password required
         DERIVATION_PATH.bip44Change,
       ),
       {
@@ -88,20 +86,13 @@ export const CreateWalletPage = () => {
 
           {currentStep === 0 ? (
             <Warning onSubmit={() => setCurrentStep(1)} />
-          ) : currentStep === 1 ? (
-            <CreatePassword
-              password={password}
-              setPassword={setPassword}
-              setCurrentStep={setCurrentStep}
-            />
-          ) : currentStep === 2 && !isConfirmSeedPhrase ? (
+          ) : currentStep === 1 && !isConfirmSeedPhrase ? (
             <SaveSeedPhrase
               seedPhrase={mnemonicAndSeed.mnemonic}
               setIsConfirmSeedPhrase={setIsConfirmSeedPhrase}
             />
-          ) : currentStep === 2 && isConfirmSeedPhrase ? (
+          ) : currentStep === 1 && isConfirmSeedPhrase ? (
             <ConfirmSeedPhrase
-              password={password}
               seedPhrase={mnemonicAndSeed.mnemonic
                 .split(' ')
                 .slice(0, 12)
