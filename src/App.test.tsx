@@ -43,7 +43,6 @@ jest.mock('./utils/utils', () => ({
 
 // Mock all lazy-loaded components
 jest.mock('./routes/ConnectPopup', () => () => <div data-testid="connect-popup">ConnectPopup</div>);
-jest.mock('./routes/WelcomeBack', () => () => <div data-testid="welcome-back">WelcomeBack</div>);
 jest.mock('./routes/WalletRouter', () => () => <div data-testid="wallet-router">WalletRouter</div>);
 jest.mock('./routes/RestoreWallet', () => () => <div data-testid="restore-wallet">RestoreWallet</div>);
 jest.mock('./routes/Welcome', () => () => <div data-testid="welcome">Welcome</div>);

@@ -84,6 +84,14 @@ export class CSSVariableGenerator {
       --radius-full: ${effects.radius.full};
 
       /* Animation */
+      --animation-duration-fast: ${effects.animation.duration.fast};
+      --animation-duration-normal: ${effects.animation.duration.normal};
+      --animation-duration-slow: ${effects.animation.duration.slow};
+      --animation-easing-default: ${effects.animation.easing.default};
+      --animation-easing-bounce: ${effects.animation.easing.bounce};
+      --animation-easing-smooth: ${effects.animation.easing.smooth};
+
+      /* Legacy animation support */
       --animate-fast: ${effects.animation.duration.fast};
       --animate-normal: ${effects.animation.duration.normal};
       --animate-slow: ${effects.animation.duration.slow};

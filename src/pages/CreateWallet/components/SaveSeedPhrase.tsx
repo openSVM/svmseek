@@ -40,7 +40,7 @@ const StyledButton = styled(VioletButton)`
   }
 `;
 
-const CreatePassword = ({
+const SaveSeedPhrase = ({
   seedPhrase,
   setIsConfirmSeedPhrase,
 }: {
@@ -134,4 +134,4 @@ const CreatePassword = ({
   );
 };
 
-export default CreatePassword;
+export default SaveSeedPhrase;
