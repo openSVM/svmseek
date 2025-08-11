@@ -4,7 +4,7 @@ import LabelValue from './LabelValue';
 
 export default function UnknownInstruction({ instruction, onOpenAddress }) {
   return (
-    <>
+    <React.Fragment>
       <Title variant="subtitle1" style={{ fontWeight: 'bold' }} gutterBottom>
         Unknown instruction:
       </Title>
@@ -19,7 +19,7 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
       {instruction.accountMetas &&
         instruction.accountMetas.map((accountMeta, index) => {
           return (
-            <>
+            <React.Fragment key={index}>
               <LabelValue
                 key={index + ''}
                 label={'Account #' + (index + 1)}
@@ -30,12 +30,12 @@ export default function UnknownInstruction({ instruction, onOpenAddress }) {
               <Title gutterBottom>
                 Writable: {accountMeta.isWritable.toString()}
               </Title>
-            </>
+            </React.Fragment>
           );
         })}
       <Title style={{ wordBreak: 'break-all' }}>
         Data: {instruction.rawData}
       </Title>
-    </>
+    </React.Fragment>
   );
 }

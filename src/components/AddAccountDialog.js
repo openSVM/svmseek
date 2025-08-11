@@ -9,6 +9,7 @@ import FormGroup from '@mui/material/FormGroup';
 import Switch from '@mui/material/Switch';
 import { Account } from '@solana/web3.js';
 import DialogForm from '../pages/Wallet/components/DialogForm';
+import { devLog } from '../utils/logger';
 
 export default function AddAccountDialog({ open, onAdd, onClose }) {
   const [name, setName] = useState('');
@@ -91,7 +92,8 @@ function decodeAccount(privateKey) {
   try {
     const a = new Account(JSON.parse(privateKey));
     return a;
-  } catch (_) {
+  } catch (error) {
+    devLog('Failed to decode private key:', error.message);
     return undefined;
   }
 }

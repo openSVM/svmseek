@@ -41,7 +41,7 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
   };
 
   return (
-    <>
+    <React.Fragment>
       <Title
         variant="subtitle1"
         style={{ fontWeight: 'bold', fontSize: '1.6rem' }}
@@ -66,6 +66,6 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
             />
           );
         })}
-    </>
+    </React.Fragment>
   );
 }

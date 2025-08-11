@@ -6,6 +6,7 @@ import { useCallAsync } from '../notifications';
 import { VioletButton } from '../../pages/commonStyles';
 import { useTheme } from '@mui/material';
 import { isExtension } from '../utils';
+import { devLog } from '../logger';
 
 const web3 = new Web3(window.ethereum);
 // Change to use estimated gas limit
@@ -198,6 +199,7 @@ export async function withdrawEth(from, withdrawal, callAsync) {
   try {
     await method.estimateGas();
   } catch (e) {
+    devLog('Gas estimation failed for withdrawal:', e.message);
     return;
   }
   pendingNonces.add(nonce);

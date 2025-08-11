@@ -30,6 +30,8 @@ import {
 import { sleep } from '../utils/utils';
 import { useTokenInfosMap, getTokenInfo } from '../utils/tokens/names';
 
+const MERGE_CONFIRMATION_TEXT = 'merge';
+
 export default function MergeAccountsDialog({ open, onClose }) {
   const theme = useTheme();
   const [publicKeys] = useWalletPublicKeys();
@@ -154,7 +156,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
     setMergeCheck('');
     onClose();
   };
-  const disabled = mergeCheck.toLowerCase() !== 'merge';
+  const disabled = mergeCheck.toLowerCase() !== MERGE_CONFIRMATION_TEXT;
 
   return (
     <DialogForm
@@ -239,7 +241,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
               margin="normal"
               value={mergeCheck}
               onChange={(e) => setMergeCheck(e.target.value.trim())}
-              placeholder={'Type "merge" to confirm'}
+              placeholder={`Type "${MERGE_CONFIRMATION_TEXT}" to confirm`}
             />
           </RowContainer>
           <RowContainer padding={'1rem 0'} justify={'space-between'}>
