@@ -24,7 +24,7 @@ export function useEthAccount() {
     window.ethereum.request({ method: 'eth_accounts' }).then(onChange);
     window.ethereum.on('accountsChanged', onChange);
     return () => {
-      if (!window.ethereum) {
+      if (window.ethereum) {
         window.ethereum.removeListener('accountsChanged', onChange);
       }
     };

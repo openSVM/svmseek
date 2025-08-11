@@ -93,7 +93,7 @@ function decodeAccount(privateKey) {
     const a = new Account(JSON.parse(privateKey));
     return a;
   } catch (error) {
-    devLog('Failed to decode private key:', error.message);
+    devLog('Failed to decode private key:', error?.message || error);
     return undefined;
   }
 }

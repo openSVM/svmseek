@@ -350,7 +350,9 @@ async function mergeMint(
 
 async function refresh(wallet, publicKeys) {
   await refreshWalletPublicKeys(wallet);
-  publicKeys.map((publicKey) =>
-    refreshAccountInfo(wallet.connection, publicKey, true),
+  await Promise.all(
+    publicKeys.map((publicKey) =>
+      refreshAccountInfo(wallet.connection, publicKey, true),
+    ),
   );
 }

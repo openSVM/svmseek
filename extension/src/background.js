@@ -68,7 +68,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.channel === 'ccai_extension_background_channel') {
     const responseHandler = responseHandlers.get(message.data.id);
     responseHandlers.delete(message.data.id);
-    responseHandler(message.data);
+    if (responseHandler) {
+      responseHandler(message.data);
+    }
   } else if (message.channel === 'ccai_extension_mnemonic_channel') {
     if (message.method === 'set') {
       unlockedMnemonic = message.data;

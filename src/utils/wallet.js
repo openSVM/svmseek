@@ -224,11 +224,8 @@ export function WalletProvider({ children }) {
                   );
                 } catch (error) {
                   logError('Failed to create account from seed:', error);
-                  // Return a fallback account
-                  const fallbackSeed = new Uint8Array(32);
-                  fallbackSeed[0] = (walletSelector.walletIndex || 0) % 256;
-                  return new Account(
-                    nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey,
+                  throw new Error(
+                    'Unable to create wallet account: seed generation failed. Please ensure your wallet is properly configured.',
                   );
                 }
               })()
@@ -250,10 +247,8 @@ export function WalletProvider({ children }) {
                     'Failed to create account from imported key:',
                     error,
                   );
-                  // Return a fallback account
-                  const fallbackSeed = new Uint8Array(32);
-                  return new Account(
-                    nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey,
+                  throw new Error(
+                    'Unable to create wallet account: private key decryption failed. Please check your imported key configuration.',
                   );
                 }
               })();

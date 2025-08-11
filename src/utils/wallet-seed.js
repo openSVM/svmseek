@@ -253,10 +253,9 @@ function deriveImportsEncryptionKey(seed) {
     return safeCreateImportsEncryptionKey(seed);
   } catch (error) {
     logError('deriveImportsEncryptionKey failed:', error);
-    // Return a deterministic fallback key
-    const fallbackKey = Buffer.alloc(32);
-    fallbackKey.write('fallback_encryption_key_12345678');
-    return fallbackKey;
+    throw new Error(
+      'Unable to create encryption key: import key derivation failed. Please check your wallet configuration.',
+    );
   }
 }
 
