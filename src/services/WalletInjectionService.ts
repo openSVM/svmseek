@@ -35,6 +35,7 @@ export class WalletInjectionService {
   private requestCounts = new Map<string, number>();
   private readonly MAX_REQUESTS_PER_MINUTE = 60;
   private readonly REQUEST_WINDOW_MS = 60000; // 1 minute
+  private rateLimitCleanupInterval: NodeJS.Timeout | null = null;
 
   constructor(wallet: any) {
     this.wallet = wallet;
@@ -98,7 +99,11 @@ export class WalletInjectionService {
    * Setup rate limiting cleanup to prevent memory leaks
    */
   private setupRateLimitingCleanup(): void {
-    setInterval(() => {
+    if (this.rateLimitCleanupInterval) {
+      clearInterval(this.rateLimitCleanupInterval);
+    }
+    
+    this.rateLimitCleanupInterval = setInterval(() => {
       this.requestCounts.clear();
     }, this.REQUEST_WINDOW_MS);
   }
@@ -447,9 +452,14 @@ export class WalletInjectionService {
    * Clean up resources
    */
   public cleanup(): void {
+    if (this.rateLimitCleanupInterval) {
+      clearInterval(this.rateLimitCleanupInterval);
+      this.rateLimitCleanupInterval = null;
+    }
     this.iframe = null;
     this.injected.clear();
     this.messageHandlers.clear();
+    this.requestCounts.clear();
   }
 
   /**

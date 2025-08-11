@@ -35,6 +35,7 @@ class MultiAccountManager {
   private exportService: ExportService;
   private state: MultiAccountState;
   private listeners: Array<(state: MultiAccountState) => void> = [];
+  private autoSyncInterval: NodeJS.Timeout | null = null;
 
   constructor(connection: Connection) {
     this.connection = connection;
@@ -577,8 +578,13 @@ class MultiAccountManager {
   }
 
   private scheduleAutoSync(): void {
+    // Clear existing interval if any
+    if (this.autoSyncInterval) {
+      clearInterval(this.autoSyncInterval);
+    }
+
     // Schedule periodic sync every 5 minutes for wallets with autoSync enabled
-    setInterval(() => {
+    this.autoSyncInterval = setInterval(() => {
       const walletsToSync = this.state.wallets.filter(
         w => w.settings.autoSync && !w.metadata.isArchived
       );
@@ -592,6 +598,13 @@ class MultiAccountManager {
   }
 
   // Cleanup
+  destroy(): void {
+    if (this.autoSyncInterval) {
+      clearInterval(this.autoSyncInterval);
+      this.autoSyncInterval = null;
+    }
+    this.listeners = [];
+  }
   dispose(): void {
     this.listeners.length = 0;
   }

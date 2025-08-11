@@ -319,6 +319,7 @@ export class UnifiedThemeManager {
   private cssGenerator: CSSVariableGenerator;
   private muiGenerator: MUIThemeGenerator;
   private changeListeners: Array<(theme: SVMTheme, muiTheme: MUITheme) => void> = [];
+  private mediaQuery: MediaQueryList | null = null;
 
   constructor(initialTheme: SVMTheme = defaultTheme) {
     this.currentTheme = initialTheme;
@@ -403,9 +404,21 @@ export class UnifiedThemeManager {
 
     // Listen for system theme changes
     if (window.matchMedia) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      mediaQuery.addEventListener('change', this.handleSystemThemeChange);
+      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.mediaQuery.addEventListener('change', this.handleSystemThemeChange);
     }
+  }
+
+  /**
+   * Cleanup theme manager
+   * Removes event listeners to prevent memory leaks
+   */
+  cleanup(): void {
+    if (this.mediaQuery) {
+      this.mediaQuery.removeEventListener('change', this.handleSystemThemeChange);
+      this.mediaQuery = null;
+    }
+    this.changeListeners = [];
   }
 
   /**
