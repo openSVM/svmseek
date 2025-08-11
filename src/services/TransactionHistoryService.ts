@@ -423,7 +423,7 @@ class TransactionHistoryService {
       }
 
       // Daily activity
-      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0];
+      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0] || 'unknown-date';
       const daily = dailyMap.get(date) || { count: 0, volume: 0 };
       daily.count++;
       daily.volume += tx.amount;

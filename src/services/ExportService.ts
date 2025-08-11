@@ -415,7 +415,7 @@ class ExportService {
     const dailyMap = new Map<string, { count: number; volume: number; fees: number }>();
 
     transactions.forEach(tx => {
-      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0];
+      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0] || 'unknown-date';
       const daily = dailyMap.get(date) || { count: 0, volume: 0, fees: 0 };
       daily.count++;
       daily.volume += tx.amount;
@@ -444,7 +444,7 @@ class ExportService {
   }
 
   generateFilename(type: string, format: string): string {
-    const timestamp = new Date().toISOString().split('T')[0];
+    const timestamp = new Date().toISOString().split('T')[0] || 'unknown-date';
     return `svmseek_${type}_${timestamp}.${format}`;
   }
 }

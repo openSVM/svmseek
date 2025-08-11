@@ -376,8 +376,9 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
     await callAsync(
       (async () => {
         let parsedAmount = parseFloat(amount);
-
+        
         if (
+          isNaN(parsedAmount) ||
           !parsedAmount ||
           parsedAmount > Number(maxAmount) ||
           parsedAmount <= 0
