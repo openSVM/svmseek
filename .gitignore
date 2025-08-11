@@ -9,6 +9,10 @@ package-lock.json
 # testing
 /coverage
 
+# playwright test artifacts  
+/playwright-report/
+/test-results/
+
 # production
 /build
 
