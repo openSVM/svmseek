@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
   schedule:
     # Run daily at 2 AM UTC for production health checks
-    - cron: '0 2 * * *'
+    - cron: '0 9 1 * *'
   workflow_dispatch:
     inputs:
       test_suite:
