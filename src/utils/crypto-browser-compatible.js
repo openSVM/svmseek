@@ -55,29 +55,15 @@ export const createBrowserCompatibleBip32 = () => {
               };
             } catch (error) {
               logError('Path derivation failed:', error);
-              // Return a fallback key
-              const fallbackKey = Buffer.alloc(32);
-              fallbackKey.writeUInt32BE(parseInt(path.split('/')[1]) || 0, 0);
-              return {
-                privateKey: fallbackKey,
-                publicKey: fallbackKey.slice(0, 32),
-              };
+              // SECURITY: Fail securely instead of using weak fallback keys
+              throw new Error('Key derivation failed - unable to generate secure keys. Please try again.');
             }
           },
         };
       } catch (error) {
         logError('Seed processing failed:', error);
-        // Return a fallback implementation
-        return {
-          derivePath: (path) => {
-            const fallbackKey = Buffer.alloc(32);
-            fallbackKey.writeUInt32BE(parseInt(path.split('/')[1]) || 0, 0);
-            return {
-              privateKey: fallbackKey,
-              publicKey: fallbackKey.slice(0, 32),
-            };
-          },
-        };
+        // SECURITY: Fail securely instead of using weak fallback keys
+        throw new Error('Seed processing failed - unable to generate secure keys. Please unlock wallet again.');
       }
     },
   };
@@ -99,19 +85,8 @@ export function safeDeriveKey(seed, path) {
     return derivedKey.key;
   } catch (error) {
     logError('Safe key derivation failed:', error);
-    // Return a deterministic fallback
-    const fallbackSeed = Buffer.alloc(32);
-    const pathSegments = path
-      .split('/')
-      .filter((segment) => segment && segment !== 'm');
-
-    // Create a deterministic seed based on path
-    for (let i = 0; i < pathSegments.length && i < 8; i++) {
-      const value = parseInt(pathSegments[i].replace("'", '')) || 0;
-      fallbackSeed.writeUInt32BE(value, i * 4);
-    }
-
-    return fallbackSeed;
+    // SECURITY: Fail securely instead of using predictable fallback
+    throw new Error('Secure key derivation failed. Please unlock wallet again.');
   }
 }
 
@@ -162,16 +137,8 @@ export function createAccountFromSeed(
     };
   } catch (error) {
     logError('Create account from seed failed:', error);
-
-    // Return a fallback account based on wallet index
-    const fallbackSeed = new Uint8Array(32);
-    fallbackSeed[0] = (walletIndex || 0) % 256;
-    const fallbackKeyPair = nacl.sign.keyPair.fromSeed(fallbackSeed);
-
-    return {
-      secretKey: fallbackKeyPair.secretKey,
-      publicKey: fallbackKeyPair.publicKey,
-    };
+    // SECURITY: Fail securely instead of using weak fallback accounts
+    throw new Error('Account creation failed - unable to generate secure keys. Please unlock wallet again.');
   }
 }
 
@@ -201,11 +168,8 @@ export function safeCreateImportsEncryptionKey(seed) {
     return key;
   } catch (error) {
     logError('Safe imports encryption key creation failed:', error);
-
-    // Return a deterministic fallback
-    const fallbackKey = Buffer.alloc(32);
-    fallbackKey.write('svmseek_fallback_imports_key_12');
-    return fallbackKey;
+    // SECURITY: Fail securely instead of using static fallback
+    throw new Error('Encryption key generation failed - unable to create secure key. Please unlock wallet again.');
   }
 }
 

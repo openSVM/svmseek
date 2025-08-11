@@ -10,5 +10,8 @@ export class WalletProviderFactory {
     if (type === 'ledger') {
       return new LedgerWalletProvider(args);
     }
+    
+    // SECURITY: Fail explicitly for unknown wallet types
+    throw new Error(`Unsupported wallet provider type: ${type}. Supported types: 'local', 'ledger'`);
   }
 }
