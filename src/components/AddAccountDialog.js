@@ -93,7 +93,8 @@ function decodeAccount(privateKey) {
     const a = new Account(JSON.parse(privateKey));
     return a;
   } catch (error) {
-    devLog('Failed to decode private key:', error?.message || error);
+    const errorMessage = error?.message || 'Invalid private key format';
+    devLog('Failed to decode private key:', errorMessage);
     return undefined;
   }
 }

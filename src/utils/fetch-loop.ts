@@ -76,9 +76,11 @@ class FetchLoopInternal<T = any> {
   }
 
   get refreshInterval(): number {
-    return Math.min(
-      ...[...this.listeners].map((listener) => listener.refreshInterval),
-    );
+    const intervals = [...this.listeners].map((listener) => listener.refreshInterval);
+    if (intervals.length === 0) {
+      return 60000; // Default fallback interval if no listeners
+    }
+    return Math.min(...intervals);
   }
 
   get stopped(): boolean {
@@ -134,13 +136,15 @@ class FetchLoopInternal<T = any> {
 
         // Back off on errors.
         if (this.errors > 0) {
-          waitTime = Math.min(1000 * 2 ** (this.errors - 1), 60000);
+          const backoffFactor = Math.min(2 ** (this.errors - 1), 30); // Cap backoff
+          waitTime = Math.min(1000 * backoffFactor, 60000);
         }
 
         // Don't do any refreshing for the first five seconds, to make way for other things to load.
         const timeSincePageLoad = +new Date() - +pageLoadTime;
-        if (timeSincePageLoad < 5000) {
-          waitTime += 5000 - timeSincePageLoad / 2;
+        if (timeSincePageLoad < 5000 && timeSincePageLoad > 0) {
+          const remainingDelay = 5000 - timeSincePageLoad;
+          waitTime += Math.max(0, remainingDelay / 2);
         }
 
         // Refresh background pages slowly.
@@ -151,7 +155,8 @@ class FetchLoopInternal<T = any> {
         }
 
         // Add jitter so we don't send all requests at the same time.
-        waitTime *= 0.8 + 0.4 * Math.random();
+        const jitterFactor = 0.8 + 0.4 * Math.random();
+        waitTime = Math.max(100, waitTime * jitterFactor); // Ensure minimum 100ms wait
 
         this.timeoutId = setTimeout(this.refresh, waitTime);
       }

@@ -225,7 +225,7 @@ export class MUIThemeGenerator {
         },
       },
       shape: {
-        borderRadius: parseInt(effects.radius.md),
+        borderRadius: this.parseNumericValue(effects.radius.md, 8),
       },
       components: {
         MuiButton: {
@@ -282,17 +282,19 @@ export class MUIThemeGenerator {
    * @returns Luminance value 0-1
    */
   private getLuminance(color: string): number {
-    // Simplified luminance calculation
-    // In a real implementation, you'd parse the color properly
+    // Simplified luminance calculation with safety checks
     const rgb = this.hexToRgb(color);
     if (!rgb) return 0.5; // Default to middle if can't parse
 
     const [r, g, b] = rgb.map(c => {
+      if (c < 0 || c > 255) return 0; // Safety check for valid RGB values
       c = c / 255;
       return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
     });
 
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    // Ensure finite result
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return isFinite(luminance) ? Math.max(0, Math.min(1, luminance)) : 0.5;
   }
 
   /**
@@ -307,6 +309,17 @@ export class MUIThemeGenerator {
       parseInt(result[2], 16),
       parseInt(result[3], 16)
     ] : null;
+  }
+
+  /**
+   * Parse numeric value safely with fallback
+   * @param value - String value to parse
+   * @param fallback - Fallback number if parsing fails
+   * @returns Parsed number or fallback
+   */
+  private parseNumericValue(value: string, fallback: number): number {
+    const parsed = parseInt(value);
+    return isNaN(parsed) || !isFinite(parsed) ? fallback : parsed;
   }
 }
 

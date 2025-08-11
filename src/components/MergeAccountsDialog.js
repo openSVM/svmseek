@@ -267,8 +267,10 @@ export default function MergeAccountsDialog({ open, onClose }) {
                     setIsMerging(false);
                   })
                   .catch((err) => {
+                    logError('Account merge failed:', err);
+                    const errorMessage = err?.message || err?.toString() || 'Unknown error occurred';
                     enqueueSnackbar(
-                      `There was a problem merging your accounts: ${err.toString()}`,
+                      `There was a problem merging your accounts: ${errorMessage}`,
                       { variant: 'error' },
                     );
                     setIsMerging(false);

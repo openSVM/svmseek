@@ -292,7 +292,7 @@ class MultiAccountManager {
         metadata: {
           balance,
           transactionCount: transactions.length,
-          lastActivity: transactions[0]?.blockTime ? new Date(transactions[0].blockTime * 1000) : undefined,
+          lastActivity: this.safeCreateDate(transactions[0]?.blockTime),
           isArchived: false,
           tags: [],
         },
@@ -562,6 +562,32 @@ class MultiAccountManager {
       if (tx.type === 'send') return balance - tx.amount - tx.fee;
       return balance;
     }, 0);
+  }
+
+  private safeCreateDate(blockTime?: number): Date | undefined {
+    if (!blockTime || !isFinite(blockTime) || blockTime <= 0) {
+      return undefined;
+    }
+    
+    try {
+      const timestamp = blockTime * 1000;
+      const date = new Date(timestamp);
+      
+      // Validate the date is reasonable (not in far future or past)
+      const now = Date.now();
+      const oneYearMs = 365 * 24 * 60 * 60 * 1000;
+      
+      if (isNaN(date.getTime()) || 
+          date.getTime() > now + oneYearMs || 
+          date.getTime() < now - (10 * oneYearMs)) {
+        return undefined;
+      }
+      
+      return date;
+    } catch (error) {
+      logError('Failed to create date from blockTime:', error);
+      return undefined;
+    }
   }
 
   private refreshState(): void {

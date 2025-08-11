@@ -68,8 +68,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.channel === 'ccai_extension_background_channel') {
     const responseHandler = responseHandlers.get(message.data.id);
     responseHandlers.delete(message.data.id);
-    if (responseHandler) {
-      responseHandler(message.data);
+    if (responseHandler && typeof responseHandler === 'function') {
+      try {
+        responseHandler(message.data);
+      } catch (error) {
+        console.error('Error in response handler:', error);
+      }
     }
   } else if (message.channel === 'ccai_extension_mnemonic_channel') {
     if (message.method === 'set') {

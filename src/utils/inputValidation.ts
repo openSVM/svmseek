@@ -156,6 +156,15 @@ function validateNumber(value: string): ValidationResult {
       error: 'Please enter a valid number'
     };
   }
+  
+  // Additional safety checks for numeric values
+  if (!isFinite(num)) {
+    return {
+      isValid: false,
+      error: 'Number must be finite'
+    };
+  }
+  
   return { isValid: true };
 }
 
@@ -171,12 +180,28 @@ function validateDecimal(value: string): ValidationResult {
     };
   }
 
+  // Additional safety checks for decimal values
+  if (!isFinite(num)) {
+    return {
+      isValid: false,
+      error: 'Number must be finite'
+    };
+  }
+
   // Check for too many decimal places
   const decimalPlaces = (value.split('.')[1] || '').length;
   if (decimalPlaces > 9) {
     return {
       isValid: false,
       error: 'Too many decimal places (max 9)'
+    };
+  }
+
+  // Prevent extremely large or small numbers that could cause issues
+  if (Math.abs(num) > Number.MAX_SAFE_INTEGER) {
+    return {
+      isValid: false,
+      error: 'Number too large for safe calculation'
     };
   }
 
