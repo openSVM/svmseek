@@ -115,8 +115,10 @@ export function createAccountFromSeed(
       const indexBuffer = Buffer.allocUnsafe(4);
       indexBuffer.writeUInt32BE(walletIndex, 0);
 
-      // Create a deterministic seed by combining original seed with index
-      derivedSeed = Buffer.concat([seedBuffer.slice(0, 28), indexBuffer]);
+      // SECURITY: Use cryptographically secure derivation instead of simple concatenation
+      const crypto = require('crypto-browserify');
+      const combinedInput = Buffer.concat([seedBuffer, indexBuffer]);
+      derivedSeed = crypto.createHash('sha256').update(combinedInput).digest();
     }
 
     // Ensure derivedSeed is exactly 32 bytes

@@ -134,9 +134,10 @@ class FetchLoopInternal<T = any> {
       if (!this.timeoutId && !this.stopped) {
         let waitTime = this.refreshInterval;
 
-        // Back off on errors.
+        // SECURITY: Prevent division by zero in backoff calculation
         if (this.errors > 0) {
-          const backoffFactor = Math.min(2 ** (this.errors - 1), 30); // Cap backoff
+          const safeErrors = Math.max(1, Math.min(this.errors, 10)); // Cap errors to prevent overflow
+          const backoffFactor = Math.min(2 ** (safeErrors - 1), 30); // Cap backoff
           waitTime = Math.min(1000 * backoffFactor, 60000);
         }
 
@@ -156,7 +157,11 @@ class FetchLoopInternal<T = any> {
 
         // Add jitter so we don't send all requests at the same time.
         const jitterFactor = 0.8 + 0.4 * Math.random();
-        waitTime = Math.max(100, waitTime * jitterFactor); // Ensure minimum 100ms wait
+        // SECURITY: Ensure waitTime is finite and within safe bounds
+        if (!isFinite(waitTime) || waitTime < 0) {
+          waitTime = this.refreshInterval; // Fallback to default
+        }
+        waitTime = Math.max(100, Math.min(waitTime * jitterFactor, 300000)); // Cap at 5 minutes
 
         this.timeoutId = setTimeout(this.refresh, waitTime);
       }

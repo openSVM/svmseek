@@ -68,12 +68,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.channel === 'ccai_extension_background_channel') {
     const responseHandler = responseHandlers.get(message.data.id);
     responseHandlers.delete(message.data.id);
+    // SECURITY: Enhanced null check and error handling for response handlers
     if (responseHandler && typeof responseHandler === 'function') {
       try {
         responseHandler(message.data);
       } catch (error) {
         console.error('Error in response handler:', error);
+        // Ensure we don't leak sensitive information in error messages
+        if (typeof sendResponse === 'function') {
+          sendResponse({ error: 'Handler execution failed' });
+        }
       }
+    } else if (message.data.id) {
+      // Log orphaned responses for debugging but don't expose sensitive data
+      console.warn('No handler found for response ID:', message.data.id);
     }
   } else if (message.channel === 'ccai_extension_mnemonic_channel') {
     if (message.method === 'set') {

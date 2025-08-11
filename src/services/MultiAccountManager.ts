@@ -623,16 +623,37 @@ class MultiAccountManager {
     }, 5 * 60 * 1000); // 5 minutes
   }
 
-  // Cleanup
+  // Cleanup - SECURITY: Proper resource management
   destroy(): void {
+    // Clear auto-sync interval
     if (this.autoSyncInterval) {
       clearInterval(this.autoSyncInterval);
       this.autoSyncInterval = null;
     }
+    
+    // Clear all listeners
     this.listeners = [];
+    
+    // Clear state to prevent memory leaks
+    this.state = {
+      wallets: [],
+      groups: [],
+      selectedWallets: [],
+      selectedGroups: [],
+      activeFilters: {
+        search: '',
+        type: [],
+        status: [],
+        groups: [],
+      },
+      syncStatus: [],
+      isLoading: false,
+      errors: [],
+    };
   }
+
   dispose(): void {
-    this.listeners.length = 0;
+    this.destroy(); // Ensure consistent cleanup
   }
 }
 
