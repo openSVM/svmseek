@@ -212,7 +212,20 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
   }, [setOverrideDestinationCheck]);
 
   async function makeTransaction() {
-    let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
+    const parsedAmount = parseFloat(transferAmountString);
+    
+    // SECURITY: Validate parsed amount is safe and finite
+    if (isNaN(parsedAmount) || !isFinite(parsedAmount) || parsedAmount <= 0) {
+      throw new Error('Invalid amount: Please enter a valid positive number');
+    }
+    
+    // SECURITY: Check for overflow in multiplication
+    const scaledAmount = parsedAmount * (10 ** decimals);
+    if (!isFinite(scaledAmount) || scaledAmount > Number.MAX_SAFE_INTEGER) {
+      throw new Error('Amount too large: Please enter a smaller amount');
+    }
+    
+    let amount = Math.round(scaledAmount);
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
     }
@@ -326,7 +339,20 @@ function SendSwapDialog({
   }, [setDestinationAddress, wusdcToSplUsdc, splUsdcWalletAddress]);
 
   async function makeTransaction() {
-    let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
+    const parsedAmount = parseFloat(transferAmountString);
+    
+    // SECURITY: Validate parsed amount is safe and finite
+    if (isNaN(parsedAmount) || !isFinite(parsedAmount) || parsedAmount <= 0) {
+      throw new Error('Invalid amount: Please enter a valid positive number');
+    }
+    
+    // SECURITY: Check for overflow in multiplication
+    const scaledAmount = parsedAmount * (10 ** decimals);
+    if (!isFinite(scaledAmount) || scaledAmount > Number.MAX_SAFE_INTEGER) {
+      throw new Error('Amount too large: Please enter a smaller amount');
+    }
+    
+    let amount = Math.round(scaledAmount);
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
     }
@@ -527,8 +553,14 @@ function useForm(
   const [transferAmountString, setTransferAmountString] = useState('');
   const { amount: balanceAmount, decimals, tokenSymbol } = balanceInfo;
 
-  const parsedAmount = parseFloat(transferAmountString) * 10 ** decimals;
-  const validAmount = parsedAmount > 0 && parsedAmount <= balanceAmount;
+  const parsedAmount = parseFloat(transferAmountString);
+  
+  // SECURITY: Safely handle amount parsing with validation
+  const isValidNumber = !isNaN(parsedAmount) && isFinite(parsedAmount) && parsedAmount > 0;
+  const scaledAmount = isValidNumber ? parsedAmount * (10 ** decimals) : 0;
+  const isSafeAmount = isValidNumber && isFinite(scaledAmount) && scaledAmount <= Number.MAX_SAFE_INTEGER;
+  
+  const validAmount = isSafeAmount && scaledAmount <= balanceAmount;
 
   const fields = (
     <>

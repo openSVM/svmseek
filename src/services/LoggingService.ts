@@ -34,6 +34,10 @@ class LoggingService {
   private sessionId: string;
   private logs: ErrorLog[] = [];
   private isInitialized = false;
+  
+  // Track event listeners for cleanup
+  private errorHandler: ((event: ErrorEvent) => void) | null = null;
+  private rejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null;
 
   constructor() {
     this.sessionId = this.generateSessionId();
@@ -352,18 +356,22 @@ class LoggingService {
    * Set up global error handlers
    */
   private setupGlobalErrorHandlers(): void {
+    // Clean up existing handlers first
+    this.cleanupEventHandlers();
+    
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    this.rejectionHandler = (event) => {
       this.error(
         'Unhandled promise rejection',
         new Error(event.reason),
         { reason: event.reason },
         'GlobalHandler'
       );
-    });
+    };
+    window.addEventListener('unhandledrejection', this.rejectionHandler);
 
     // Handle global errors
-    window.addEventListener('error', (event) => {
+    this.errorHandler = (event) => {
       this.error(
         'Global JavaScript error',
         event.error || new Error(event.message),
@@ -374,7 +382,8 @@ class LoggingService {
         },
         'GlobalHandler'
       );
-    });
+    };
+    window.addEventListener('error', this.errorHandler);
   }
 
   /**
@@ -389,6 +398,30 @@ class LoggingService {
    */
   private generateLogId(): string {
     return `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Clean up event handlers to prevent memory leaks
+   */
+  private cleanupEventHandlers(): void {
+    if (this.errorHandler) {
+      window.removeEventListener('error', this.errorHandler);
+      this.errorHandler = null;
+    }
+    
+    if (this.rejectionHandler) {
+      window.removeEventListener('unhandledrejection', this.rejectionHandler);
+      this.rejectionHandler = null;
+    }
+  }
+
+  /**
+   * Public cleanup method for service shutdown
+   */
+  public cleanup(): void {
+    this.cleanupEventHandlers();
+    this.logs = [];
+    this.isInitialized = false;
   }
 }
 
