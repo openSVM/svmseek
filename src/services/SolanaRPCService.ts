@@ -95,12 +95,14 @@ export class SolanaRPCService {
       ]);
 
       // Calculate TPS from recent performance samples
-      const tps = recentPerformanceSamples.length > 0
+      const tps = recentPerformanceSamples.length > 0 && recentPerformanceSamples[0].samplePeriodSecs > 0
         ? Math.round(recentPerformanceSamples[0].numTransactions / recentPerformanceSamples[0].samplePeriodSecs)
         : 0;
 
       // Calculate average block time
-      const avgBlockTime = recentPerformanceSamples.length > 0
+      const avgBlockTime = recentPerformanceSamples.length > 0 && 
+        recentPerformanceSamples[0].numSlots > 0 && 
+        recentPerformanceSamples[0].samplePeriodSecs > 0
         ? recentPerformanceSamples[0].samplePeriodSecs / recentPerformanceSamples[0].numSlots
         : 0.4;
 
