@@ -36,8 +36,8 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
     return tokenMint
       ? tokenMint.name
       : isOwner
-      ? 'This wallet'
-      : (isOwned ? '(Owned) ' : '') + address?.toBase58();
+        ? 'This wallet'
+        : (isOwned ? '(Owned) ' : '') + address?.toBase58();
   };
 
   return (

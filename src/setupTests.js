@@ -27,7 +27,8 @@ beforeEach(() => {
 
   // Reset VaultService singleton if it exists
   try {
-    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    const VaultService =
+      require('./pages/SurpriseVault/services/VaultService').default;
     if (VaultService && VaultService.reset) {
       VaultService.reset();
     }
@@ -47,7 +48,8 @@ afterEach(() => {
 
   // Reset VaultService singleton after each test
   try {
-    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    const VaultService =
+      require('./pages/SurpriseVault/services/VaultService').default;
     if (VaultService && VaultService.reset) {
       VaultService.reset();
     }
@@ -67,7 +69,8 @@ afterAll(() => {
 
   // Final VaultService cleanup
   try {
-    const VaultService = require('./pages/SurpriseVault/services/VaultService').default;
+    const VaultService =
+      require('./pages/SurpriseVault/services/VaultService').default;
     if (VaultService && VaultService.reset) {
       VaultService.reset();
     }
@@ -140,7 +143,7 @@ function initializeTestGlobals() {
   if (typeof window !== 'undefined' && !window.matchMedia) {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: jest.fn().mockImplementation(query => ({
+      value: jest.fn().mockImplementation((query) => ({
         matches: false,
         media: query,
         onchange: null,
@@ -200,7 +203,7 @@ function initializeTestGlobals() {
         status: 200,
         json: () => Promise.resolve({}),
         text: () => Promise.resolve(''),
-      })
+      }),
     );
   }
 
@@ -218,7 +221,10 @@ function initializeTestGlobals() {
     global.BeforeInstallPromptEvent = class {
       constructor() {
         this.platforms = ['web'];
-        this.userChoice = Promise.resolve({ outcome: 'dismissed', platform: 'web' });
+        this.userChoice = Promise.resolve({
+          outcome: 'dismissed',
+          platform: 'web',
+        });
       }
 
       prompt() {
@@ -232,8 +238,12 @@ function initializeTestGlobals() {
 
 // Mock crypto libraries to avoid flakiness
 jest.mock('tweetnacl', () => {
-  const mockSecretbox = jest.fn((plaintext, nonce, key) => new Uint8Array(plaintext.length + 16));
-  mockSecretbox.open = jest.fn((ciphertext, nonce, key) => new Uint8Array(ciphertext.length - 16));
+  const mockSecretbox = jest.fn(
+    (plaintext, nonce, key) => new Uint8Array(plaintext.length + 16),
+  );
+  mockSecretbox.open = jest.fn(
+    (ciphertext, nonce, key) => new Uint8Array(ciphertext.length - 16),
+  );
   mockSecretbox.nonceLength = 24;
 
   return {
@@ -250,18 +260,22 @@ jest.mock('tweetnacl', () => {
 });
 
 jest.mock('argon2-browser', () => ({
-  hash: jest.fn(() => Promise.resolve({
-    hash: new Uint8Array(32),
-    encoded: 'mock-encoded-hash'
-  })),
+  hash: jest.fn(() =>
+    Promise.resolve({
+      hash: new Uint8Array(32),
+      encoded: 'mock-encoded-hash',
+    }),
+  ),
   ArgonType: {
     Argon2id: 2,
   },
 }));
 
-jest.mock('scrypt-js', () => jest.fn((password, salt, N, r, p, keylen, callback) => {
-  callback(null, new Uint8Array(keylen));
-}));
+jest.mock('scrypt-js', () =>
+  jest.fn((password, salt, N, r, p, keylen, callback) => {
+    callback(null, new Uint8Array(keylen));
+  }),
+);
 
 // Mock crypto-browserify PBKDF2 for proper async handling
 jest.mock('crypto-browserify', () => ({
@@ -297,11 +311,13 @@ jest.mock('@solana/web3.js', () => {
       getBalance: jest.fn(() => Promise.resolve(0)),
       getBlockHeight: jest.fn(() => Promise.resolve(100000)),
       getSlot: jest.fn(() => Promise.resolve(100000)),
-      getEpochInfo: jest.fn(() => Promise.resolve({
-        epoch: 500,
-        slotIndex: 1000,
-        slotsInEpoch: 432000,
-      })),
+      getEpochInfo: jest.fn(() =>
+        Promise.resolve({
+          epoch: 500,
+          slotIndex: 1000,
+          slotsInEpoch: 432000,
+        }),
+      ),
       getRecentPerformanceSamples: jest.fn(() => Promise.resolve([])),
     })),
     Transaction: jest.fn().mockImplementation(() => ({
@@ -344,29 +360,35 @@ jest.mock('@project-serum/serum', () => ({
     transfer: jest.fn(),
   },
   Market: {
-    load: jest.fn(() => Promise.resolve({
-      address: 'mock-market-address',
-      baseMintAddress: 'mock-base-mint',
-      quoteMintAddress: 'mock-quote-mint',
-    })),
+    load: jest.fn(() =>
+      Promise.resolve({
+        address: 'mock-market-address',
+        baseMintAddress: 'mock-base-mint',
+        quoteMintAddress: 'mock-quote-mint',
+      }),
+    ),
   },
 }));
 
 // Mock SVM-Pay to avoid network calls in tests
 jest.mock('svm-pay', () => ({
   SVMPay: jest.fn().mockImplementation(() => ({
-    createTransferUrl: jest.fn(() => 'https://svmpay.mock/transfer?recipient=mock&amount=1'),
+    createTransferUrl: jest.fn(
+      () => 'https://svmpay.mock/transfer?recipient=mock&amount=1',
+    ),
     parseUrl: jest.fn((url) => ({
       recipient: 'MockRecipientPublicKey123456789',
       amount: '1.0',
       network: 'solana',
       memo: 'Test memo',
       label: 'Test Payment',
-      message: 'Test message'
+      message: 'Test message',
     })),
     generatePaymentURL: jest.fn(() => 'mock-payment-url'),
     validatePaymentURL: jest.fn(() => Promise.resolve(true)),
-    processPayment: jest.fn(() => Promise.resolve({ signature: 'mock-signature' })),
+    processPayment: jest.fn(() =>
+      Promise.resolve({ signature: 'mock-signature' }),
+    ),
     getSupportedNetworks: jest.fn(() => ['solana', 'sonic', 'eclipse']),
   })),
 }));
@@ -386,7 +408,7 @@ if (typeof window !== 'undefined') {
 
   // Mock iframe handling for JSDOM
   const originalCreateElement = document.createElement;
-  document.createElement = function(tagName) {
+  document.createElement = function (tagName) {
     const element = originalCreateElement.call(this, tagName);
 
     if (tagName.toLowerCase() === 'iframe') {
@@ -400,14 +422,14 @@ if (typeof window !== 'undefined') {
             createElement: jest.fn(() => ({
               src: '',
               onload: null,
-              onerror: null
+              onerror: null,
             })),
-            head: { appendChild: jest.fn() }
+            head: { appendChild: jest.fn() },
           },
-          close: jest.fn() // Add close method to prevent errors
+          close: jest.fn(), // Add close method to prevent errors
         },
         writable: true,
-        configurable: true
+        configurable: true,
       });
 
       Object.defineProperty(element, 'contentDocument', {
@@ -416,12 +438,12 @@ if (typeof window !== 'undefined') {
           createElement: jest.fn(() => ({
             src: '',
             onload: null,
-            onerror: null
+            onerror: null,
           })),
-          head: { appendChild: jest.fn() }
+          head: { appendChild: jest.fn() },
         },
         writable: true,
-        configurable: true
+        configurable: true,
       });
     }
 

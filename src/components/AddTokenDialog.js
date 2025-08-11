@@ -11,7 +11,7 @@ import {
   useWalletTokenAccounts,
 } from '../utils/wallet';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { TOKENS } from '../utils/tokens/tokens'
+import { TOKENS } from '../utils/tokens/tokens';
 import { useUpdateTokenName } from '../utils/tokens/names';
 import { useAsyncData } from '../utils/fetch-loop';
 import LoadingIndicator from './LoadingIndicator';
@@ -125,7 +125,8 @@ export default function AddTokenDialog({ open, onClose }) {
             indicatorColor="primary"
             sx={{
               marginBottom: 1,
-              borderBottom: (theme) => `1px solid ${theme.palette.background.paper}`,
+              borderBottom: (theme) =>
+                `1px solid ${theme.palette.background.paper}`,
             }}
             onChange={(e, value) => setTab(value)}
           >

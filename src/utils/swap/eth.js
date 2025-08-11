@@ -26,7 +26,7 @@ export function useEthAccount() {
       if (!window.ethereum) {
         window.ethereum.removeListener('accountsChanged', onChange);
       }
-    }
+    };
   }, []);
 
   return account;
@@ -233,7 +233,7 @@ function waitForConfirms(tx, onStatusChange) {
 
 export function ConnectToMetamaskButton() {
   const callAsync = useCallAsync();
-  const theme = useTheme()
+  const theme = useTheme();
 
   if (!window.ethereum) {
     return (

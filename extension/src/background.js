@@ -54,7 +54,7 @@ function handleDisconnect(message, sender, sendResponse) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('extensionChanel');
-  console.log('message.data', message.data)
+  console.log('message.data', message.data);
   if (message.channel === 'ccai_contentscript_background_channel') {
     if (message.data.method === 'connect') {
       handleConnect(message, sender, sendResponse);

@@ -11,7 +11,7 @@ import { devLog, logWarn, logError } from './logger';
 
 // Safe Buffer initialization
 function initializeBufferGlobally() {
-  const globalScope = (function() {
+  const globalScope = (function () {
     if (typeof globalThis !== 'undefined') return globalThis;
     if (typeof window !== 'undefined') return window;
     return {};
@@ -49,7 +49,9 @@ export const createBrowserCompatibleBip32 = () => {
 
               return {
                 privateKey: Buffer.from(derivedKey.key),
-                publicKey: Buffer.from(derivedKey.publicKey || derivedKey.key.slice(32)),
+                publicKey: Buffer.from(
+                  derivedKey.publicKey || derivedKey.key.slice(32),
+                ),
               };
             } catch (error) {
               logError('Path derivation failed:', error);
@@ -99,11 +101,13 @@ export function safeDeriveKey(seed, path) {
     logError('Safe key derivation failed:', error);
     // Return a deterministic fallback
     const fallbackSeed = Buffer.alloc(32);
-    const pathSegments = path.split('/').filter(segment => segment && segment !== 'm');
+    const pathSegments = path
+      .split('/')
+      .filter((segment) => segment && segment !== 'm');
 
     // Create a deterministic seed based on path
     for (let i = 0; i < pathSegments.length && i < 8; i++) {
-      const value = parseInt(pathSegments[i].replace("'", "")) || 0;
+      const value = parseInt(pathSegments[i].replace("'", '')) || 0;
       fallbackSeed.writeUInt32BE(value, i * 4);
     }
 
@@ -114,7 +118,11 @@ export function safeDeriveKey(seed, path) {
 /**
  * Create account from seed without using problematic BIP32
  */
-export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = undefined) {
+export function createAccountFromSeed(
+  seed,
+  walletIndex = 0,
+  derivationPath = undefined,
+) {
   try {
     let derivedSeed;
 
@@ -126,7 +134,9 @@ export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = un
       derivedSeed = safeDeriveKey(seed, path);
     } else {
       // Use a simpler derivation that doesn't require BIP32
-      const seedBuffer = Buffer.isBuffer(seed) ? seed : Buffer.from(seed, 'hex');
+      const seedBuffer = Buffer.isBuffer(seed)
+        ? seed
+        : Buffer.from(seed, 'hex');
       const indexBuffer = Buffer.allocUnsafe(4);
       indexBuffer.writeUInt32BE(walletIndex, 0);
 
@@ -180,7 +190,13 @@ export function safeCreateImportsEncryptionKey(seed) {
 
     // Create a deterministic 32-byte key from seed
     const crypto = require('crypto-browserify');
-    const key = crypto.pbkdf2Sync(seedBuffer, 'svmseek-imports', 10000, 32, 'sha256');
+    const key = crypto.pbkdf2Sync(
+      seedBuffer,
+      'svmseek-imports',
+      10000,
+      32,
+      'sha256',
+    );
 
     return key;
   } catch (error) {

@@ -1,4 +1,3 @@
-
 import bs58 from 'bs58';
 import { Message, SystemInstruction, SystemProgram } from '@solana/web3.js';
 import { devLog } from './logger';
@@ -138,7 +137,10 @@ const toInstruction = async (
         accountKeys,
         decodedInstruction,
       );
-    } else if (programId.equals(MANGO_PROGRAM_ID) || programId.equals(MANGO_PROGRAM_ID_V2)) {
+    } else if (
+      programId.equals(MANGO_PROGRAM_ID) ||
+      programId.equals(MANGO_PROGRAM_ID_V2)
+    ) {
       devLog('[' + index + '] Handled as mango markets instruction');
       let decodedInstruction = decodeMangoInstruction(decoded);
       return await handleMangoInstruction(
@@ -171,7 +173,6 @@ const handleMangoInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-
   return {
     type: 'mango',
   };
@@ -183,7 +184,6 @@ const handleRayStakeInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-
   return {
     type: 'raydium',
   };
@@ -195,24 +195,20 @@ const handleRayLpInstruction = async (
   accountKeys,
   decodedInstruction,
 ) => {
-
   return {
     type: 'raydium',
   };
 };
 
 const decodeMangoInstruction = () => {
-
   return undefined;
 };
 
 const decodeStakeInstruction = () => {
-
   return undefined;
 };
 
 const decodeLpInstruction = () => {
-
   return undefined;
 };
 

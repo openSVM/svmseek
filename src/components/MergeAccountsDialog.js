@@ -184,7 +184,11 @@ export default function MergeAccountsDialog({ open, onClose }) {
           </div>
         </Card>
       ) : (
-        <RowContainer justify={'space-between'} height={'100%'} direction={'column'}>
+        <RowContainer
+          justify={'space-between'}
+          height={'100%'}
+          direction={'column'}
+        >
           <Title
             maxFont={'2.1rem'}
             fontSize="2.4rem"

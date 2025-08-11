@@ -24,7 +24,7 @@ async function loadPolyfills() {
     if (typeof window !== 'undefined') {
       // Make os module available through require function if it exists
       if (typeof window.require === 'undefined') {
-        window.require = function(moduleName) {
+        window.require = function (moduleName) {
           if (moduleName === 'os') {
             return osPolyfill;
           }
@@ -32,7 +32,7 @@ async function loadPolyfills() {
         };
       } else {
         const originalRequire = window.require;
-        window.require = function(moduleName) {
+        window.require = function (moduleName) {
           if (moduleName === 'os') {
             return osPolyfill;
           }
@@ -41,7 +41,9 @@ async function loadPolyfills() {
       }
     }
 
-    devLog('Buffer polyfills loaded with browser-compatible crypto, os polyfill, and ultimate protection');
+    devLog(
+      'Buffer polyfills loaded with browser-compatible crypto, os polyfill, and ultimate protection',
+    );
   } else {
     // Log that polyfills are disabled
     if (process.env.NODE_ENV === 'development') {

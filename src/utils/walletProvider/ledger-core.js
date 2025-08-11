@@ -28,12 +28,7 @@ async function solana_send(transport, instruction, p1, payload) {
     while (payload.length - payload_offset > MAX_PAYLOAD) {
       const buf = payload.slice(payload_offset, payload_offset + MAX_PAYLOAD);
       payload_offset += MAX_PAYLOAD;
-      devLog(
-        'send',
-        (p2 | P2_MORE).toString(16),
-        buf.length.toString(16),
-        buf,
-      );
+      devLog('send', (p2 | P2_MORE).toString(16), buf.length.toString(16), buf);
       const reply = await transport.send(
         LEDGER_CLA,
         instruction,

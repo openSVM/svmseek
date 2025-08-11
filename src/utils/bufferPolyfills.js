@@ -6,7 +6,7 @@ import { devLog, logDebug, logInfo, logWarn, logError } from './logger';
 export function initializeCryptoLibraryPatches() {
   try {
     // Get the global scope safely
-    const globalScope = (function() {
+    const globalScope = (function () {
       if (typeof window !== 'undefined') return window;
       if (typeof global !== 'undefined') return global;
       return {};
@@ -14,7 +14,7 @@ export function initializeCryptoLibraryPatches() {
 
     // Patch the global Buffer constructor to be safer
     const originalBufferFrom = Buffer.from;
-    Buffer.from = function(data, encoding) {
+    Buffer.from = function (data, encoding) {
       try {
         if (data === undefined || data === null) {
           logWarn('Buffer.from called with undefined/null, using empty buffer');
@@ -30,21 +30,27 @@ export function initializeCryptoLibraryPatches() {
     // Patch Uint8Array to handle buffer access safely
     const originalUint8Array = globalScope.Uint8Array;
     if (originalUint8Array && originalUint8Array.prototype) {
-      const descriptor = Object.getOwnPropertyDescriptor(originalUint8Array.prototype, 'buffer');
+      const descriptor = Object.getOwnPropertyDescriptor(
+        originalUint8Array.prototype,
+        'buffer',
+      );
       if (descriptor && descriptor.get) {
         const originalBufferGetter = descriptor.get;
         Object.defineProperty(originalUint8Array.prototype, 'buffer', {
-          get: function() {
+          get: function () {
             try {
               const result = originalBufferGetter.call(this);
               return result || new ArrayBuffer(0);
             } catch (error) {
-              logWarn('Uint8Array.buffer access failed, using empty buffer:', error);
+              logWarn(
+                'Uint8Array.buffer access failed, using empty buffer:',
+                error,
+              );
               return new ArrayBuffer(0);
             }
           },
           configurable: true,
-          enumerable: false
+          enumerable: false,
         });
       }
     }

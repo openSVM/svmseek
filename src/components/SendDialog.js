@@ -158,16 +158,11 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
     defaultAddressHelperText,
   );
   const [passValidation, setPassValidation] = useState();
-  const [overrideDestinationCheck, setOverrideDestinationCheck] = useState(
-    false,
-  );
+  const [overrideDestinationCheck, setOverrideDestinationCheck] =
+    useState(false);
   const [shouldShowOverride, setShouldShowOverride] = useState();
-  const {
-    fields,
-    destinationAddress,
-    transferAmountString,
-    validAmount,
-  } = useForm(balanceInfo, addressHelperText, passValidation);
+  const { fields, destinationAddress, transferAmountString, validAmount } =
+    useForm(balanceInfo, addressHelperText, passValidation);
   const { decimals, mint } = balanceInfo;
   const mintString = mint && mint.toBase58();
 
@@ -292,8 +287,8 @@ function SendSwapDialog({
   const blockchain = wusdcToSplUsdc
     ? 'sol'
     : swapCoinInfo.blockchain === 'sol'
-    ? 'eth'
-    : swapCoinInfo.blockchain;
+      ? 'eth'
+      : swapCoinInfo.blockchain;
   const needMetamask = blockchain === 'eth';
 
   const [ethBalance] = useAsyncData(
@@ -412,8 +407,8 @@ function SendSwapDialog({
           {blockchain === 'eth' && swapCoinInfo.erc20Contract
             ? 'ERC20'
             : blockchain === 'sol' && swapCoinInfo.splMint
-            ? 'SPL'
-            : 'native'}{' '}
+              ? 'SPL'
+              : 'native'}{' '}
           {swapCoinInfo.ticker}
           {needMetamask ? ' via MetaMask' : null}.
         </DialogContentText>

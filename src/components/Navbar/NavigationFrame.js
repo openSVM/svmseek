@@ -72,10 +72,8 @@ export function WalletSelector() {
   const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const [
-    addHardwareWalletDialogOpen,
-    setAddHardwareWalletDialogOpen,
-  ] = useState(false);
+  const [addHardwareWalletDialogOpen, setAddHardwareWalletDialogOpen] =
+    useState(false);
   const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
 
@@ -245,7 +243,7 @@ function Footer() {
   const location = useLocation();
   devLog('location', location);
 
-  if (isConnectPopup) return null
+  if (isConnectPopup) return null;
 
   return (
     <>
@@ -261,8 +259,8 @@ function Footer() {
           {location.pathname.includes('restore')
             ? 'Restore your wallet using seed phrase to get access for SPL assets management and interaction with dApps on the Solana blockchain.'
             : location.pathname.includes('create')
-            ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
-            : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
+              ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
+              : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
         </span>{' '}
         <Button
           variant="outlined"

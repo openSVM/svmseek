@@ -5,11 +5,7 @@ import LabelValue from './LabelValue';
 export default function UnknownInstruction({ instruction, onOpenAddress }) {
   return (
     <>
-      <Title
-        variant="subtitle1"
-        style={{ fontWeight: 'bold' }}
-        gutterBottom
-      >
+      <Title variant="subtitle1" style={{ fontWeight: 'bold' }} gutterBottom>
         Unknown instruction:
       </Title>
       <LabelValue

@@ -37,8 +37,6 @@ export function getAccountFromSeed(
   }
 }
 
-
-
 export class LocalStorageWalletProvider {
   constructor(args) {
     // const { seed } = getUnlockedMnemonicAndSeed();
@@ -52,7 +50,9 @@ export class LocalStorageWalletProvider {
 
       // Validate that we have a valid seed
       if (!seed) {
-        logWarn('LocalStorageWalletProvider: No seed available, using fallback');
+        logWarn(
+          'LocalStorageWalletProvider: No seed available, using fallback',
+        );
       }
 
       this.listAddresses = async (walletCount) => {
@@ -68,16 +68,22 @@ export class LocalStorageWalletProvider {
 
           return [...Array(walletCount).keys()].map((walletIndex) => {
             try {
-              let address = getAccountFromSeed(seedBuffer, walletIndex).publicKey;
+              let address = getAccountFromSeed(
+                seedBuffer,
+                walletIndex,
+              ).publicKey;
               let name = localStorage.getItem(`name${walletIndex}`);
               return { index: walletIndex, address, name };
             } catch (error) {
-              logError(`Failed to generate address for wallet ${walletIndex}:`, error);
+              logError(
+                `Failed to generate address for wallet ${walletIndex}:`,
+                error,
+              );
               // Return a fallback address structure
               return {
                 index: walletIndex,
                 address: null,
-                name: `Wallet ${walletIndex} (Error)`
+                name: `Wallet ${walletIndex} (Error)`,
               };
             }
           });
@@ -97,7 +103,7 @@ export class LocalStorageWalletProvider {
         return [...Array(walletCount).keys()].map((walletIndex) => ({
           index: walletIndex,
           address: null,
-          name: `Wallet ${walletIndex} (Initialization Error)`
+          name: `Wallet ${walletIndex} (Initialization Error)`,
         }));
       };
 
