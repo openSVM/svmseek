@@ -90,7 +90,37 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
  */
 function decodeAccount(privateKey) {
   try {
-    const a = new Account(JSON.parse(privateKey));
+    // SECURITY: Comprehensive private key validation before parsing
+    if (!privateKey || typeof privateKey !== 'string' || privateKey.trim().length === 0) {
+      devLog('Invalid private key: empty or non-string input');
+      return undefined;
+    }
+    
+    const trimmedKey = privateKey.trim();
+    let parsedKey;
+    
+    try {
+      parsedKey = JSON.parse(trimmedKey);
+    } catch (parseError) {
+      devLog('Failed to parse private key JSON:', parseError.message);
+      return undefined;
+    }
+    
+    // Validate that parsed key is a valid array of numbers for Solana Account
+    if (!Array.isArray(parsedKey) || parsedKey.length !== 64) {
+      devLog('Invalid private key: must be array of 64 numbers');
+      return undefined;
+    }
+    
+    // Validate all elements are valid numbers in the expected range for private key bytes
+    for (const byte of parsedKey) {
+      if (!Number.isInteger(byte) || byte < 0 || byte > 255) {
+        devLog('Invalid private key: contains invalid byte values');
+        return undefined;
+      }
+    }
+    
+    const a = new Account(parsedKey);
     return a;
   } catch (error) {
     const errorMessage = error?.message || 'Invalid private key format';

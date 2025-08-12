@@ -50,6 +50,7 @@ export class SolanaRPCService {
   private connection: Connection;
   private cache = new Map<string, { data: any; timestamp: number }>();
   private readonly CACHE_TTL = 30000; // 30 seconds
+  private readonly MAX_CACHE_SIZE = 100; // Maximum cache entries
 
   constructor(rpcUrl: string = 'https://api.mainnet-beta.solana.com') {
     this.connection = new Connection(rpcUrl, 'confirmed');
@@ -68,6 +69,16 @@ export class SolanaRPCService {
   }
 
   private setCache(key: string, data: any): void {
+    // PERFORMANCE: Prevent memory leaks with cache size management
+    if (this.cache.size >= this.MAX_CACHE_SIZE) {
+      // Remove oldest entries (first 20% of cache)
+      const entriesToRemove = Math.floor(this.MAX_CACHE_SIZE * 0.2);
+      const keys = Array.from(this.cache.keys());
+      for (let i = 0; i < entriesToRemove; i++) {
+        this.cache.delete(keys[i]);
+      }
+    }
+    
     this.cache.set(key, { data, timestamp: Date.now() });
   }
 

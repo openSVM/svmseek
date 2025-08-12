@@ -52,15 +52,34 @@ let unlockedMnemonicAndSeed = (async () => {
 
   let stored = null;
 
+  // SECURITY: Safe JSON parsing with comprehensive validation for mnemonic storage data
   try {
-    stored = await JSON.parse(
-      mnemonic ||
-        sessionStorage.getItem('unlocked') ||
-        localStorage.getItem('unlocked') ||
-        'null',
-    );
+    const rawData = mnemonic ||
+      sessionStorage.getItem('unlocked') ||
+      localStorage.getItem('unlocked') ||
+      'null';
+    
+    if (!rawData || typeof rawData !== 'string') {
+      return EMPTY_MNEMONIC;
+    }
+    
+    stored = JSON.parse(rawData);
+    
+    // Validate stored data structure for security
+    if (stored && typeof stored === 'object' && stored !== null) {
+      // Validate required fields if not null/empty
+      if (stored.seed !== undefined && (typeof stored.seed !== 'string' || stored.seed.length === 0)) {
+        logError('Invalid stored seed format detected');
+        return EMPTY_MNEMONIC;
+      }
+      if (stored.mnemonic !== undefined && (typeof stored.mnemonic !== 'string' || stored.mnemonic.length === 0)) {
+        logError('Invalid stored mnemonic format detected');
+        return EMPTY_MNEMONIC;
+      }
+    }
   } catch (e) {
-    logError('unlockedMnemonicAndSeed error', e);
+    logError('Failed to parse stored mnemonic data - corrupted storage:', e);
+    return EMPTY_MNEMONIC;
   }
 
   if (stored === null) {

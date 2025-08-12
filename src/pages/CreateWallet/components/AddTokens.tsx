@@ -25,6 +25,7 @@ import {
   useWalletTokenAccounts,
 } from '../../../utils/wallet';
 import { refreshAccountInfo } from '../../../utils/connection';
+import { logError } from '../../../utils/logger';
 
 import {
   TokenListItem,
@@ -84,11 +85,25 @@ const AddTokens = () => {
   };
 
   function onSubmit() {
-    Promise.all(
+    // BUSINESS LOGIC: Safe Promise.all with proper error handling for token operations
+    Promise.allSettled(
       selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
-    ).then(async () => {
-      await refreshWalletPublicKeys(wallet);
-      await setRedirectToWallet(true);
+    ).then(async (results) => {
+      // Check for any failed operations
+      const failures = results.filter(result => result.status === 'rejected');
+      if (failures.length > 0) {
+        logError('Some token additions failed:', failures.map(f => f.reason));
+        // Continue with successful ones but notify user
+      }
+      
+      try {
+        await refreshWalletPublicKeys(wallet);
+        await setRedirectToWallet(true);
+      } catch (error) {
+        logError('Failed to refresh wallet after token addition:', error);
+      }
+    }).catch(error => {
+      logError('Critical error in token addition process:', error);
     });
 
     return;

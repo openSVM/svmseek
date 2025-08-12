@@ -170,12 +170,18 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
         filtered = filtered.filter(tx => tx.status === filters.status);
       }
 
-      // Amount filters
+      // Amount filters with safe parsing
       if (filters.minAmount) {
-        filtered = filtered.filter(tx => tx.amount >= parseFloat(filters.minAmount));
+        const minAmount = parseFloat(filters.minAmount);
+        if (isFinite(minAmount) && !isNaN(minAmount)) {
+          filtered = filtered.filter(tx => tx.amount >= minAmount);
+        }
       }
       if (filters.maxAmount) {
-        filtered = filtered.filter(tx => tx.amount <= parseFloat(filters.maxAmount));
+        const maxAmount = parseFloat(filters.maxAmount);
+        if (isFinite(maxAmount) && !isNaN(maxAmount)) {
+          filtered = filtered.filter(tx => tx.amount <= maxAmount);
+        }
       }
 
       // Date range filter
