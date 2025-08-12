@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { DERIVATION_PATH } from './localStorage';
 import { Buffer } from 'buffer';
 import { devLog } from '../logger';
-const bs58 = require('bs58');
+import bs58 from 'bs58';
 
 const INS_GET_PUBKEY = 0x05;
 const INS_SIGN_MESSAGE = 0x06;

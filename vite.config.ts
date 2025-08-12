@@ -59,7 +59,8 @@ export default defineConfig({
             '@coral-xyz/anchor',
             '@project-serum/anchor',
             '@project-serum/serum',
-            '@solana/spl-token-registry'
+            '@solana/spl-token-registry',
+            'bs58'
           ],
           // Material-UI chunk
           mui: [
@@ -115,6 +116,7 @@ export default defineConfig({
       'url',
       'path-browserify',
       'vm-browserify',
+      'bs58',
     ],
     esbuildOptions: {
       // Node.js global to browser globalThis
