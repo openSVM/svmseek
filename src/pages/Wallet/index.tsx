@@ -18,6 +18,7 @@ import VaultAccessButton from '../../components/VaultAccessButton';
 
 import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
+import { logError } from '../../utils/logger';
 import { useWallet } from '../../utils/wallet';
 import { getAllTokensData, TokenInfo, useInterval } from '../../utils/utils';
 import { TokensDataSingleton } from '../../components/TokensDataSingleton';
@@ -116,7 +117,10 @@ const Wallet = () => {
         'Main Wallet',
         'derived',
         []
-      ).catch(console.error);
+      ).catch((error) => {
+        logError('Failed to import wallet to MultiAccountManager:', error);
+        // Continue operation even if import fails to avoid blocking UI
+      });
     }
   }, [connection, wallet.publicKey, multiAccountManager]);
 

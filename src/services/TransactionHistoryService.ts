@@ -64,8 +64,21 @@ class TransactionHistoryService {
     };
 
     this.transactions.set(record.id, record);
+    // PERFORMANCE: Invalidate cache when data changes
+    this.invalidateCache();
     this.saveToStorage();
     return record;
+  }
+
+  // PERFORMANCE: Add caching for expensive queries
+  private walletTransactionCache: Map<string, TransactionRecord[]> = new Map();
+  private lastCacheUpdate: number = 0;
+  private readonly CACHE_TTL = 60000; // 1 minute cache TTL
+
+  // PERFORMANCE: Cache invalidation helper
+  private invalidateCache(): void {
+    this.walletTransactionCache.clear();
+    this.lastCacheUpdate = 0;
   }
 
   getTransaction(id: string): TransactionRecord | undefined {
@@ -73,18 +86,32 @@ class TransactionHistoryService {
   }
 
   getTransactionsByWallet(walletId: string): TransactionRecord[] {
-    return Array.from(this.transactions.values())
+    // PERFORMANCE: Use cached results if available and fresh
+    const now = Date.now();
+    if (now - this.lastCacheUpdate < this.CACHE_TTL && this.walletTransactionCache.has(walletId)) {
+      return this.walletTransactionCache.get(walletId)!;
+    }
+
+    // Rebuild cache if stale
+    const transactions = Array.from(this.transactions.values())
       .filter(tx => tx.walletId === walletId)
       .sort((a, b) => b.blockTime - a.blockTime);
+    
+    this.walletTransactionCache.set(walletId, transactions);
+    this.lastCacheUpdate = now;
+    return transactions;
   }
 
   getTransactionsByWallets(walletIds: string[]): TransactionRecord[] {
+    // PERFORMANCE: For multiple wallets, use Set for O(1) lookups instead of includes
+    const walletIdSet = new Set(walletIds);
     return Array.from(this.transactions.values())
-      .filter(tx => walletIds.includes(tx.walletId))
+      .filter(tx => walletIdSet.has(tx.walletId))
       .sort((a, b) => b.blockTime - a.blockTime);
   }
 
   getTransactionsBySignature(signature: string): TransactionRecord | undefined {
+    // PERFORMANCE: Early return optimization - signature should be unique
     return Array.from(this.transactions.values())
       .find(tx => tx.signature === signature);
   }
@@ -138,13 +165,21 @@ class TransactionHistoryService {
       const totalSignatures = signatures.length;
       let processedSignatures = 0;
 
+      // SECURITY: Handle case when no signatures are found to prevent division by zero
+      if (totalSignatures === 0) {
+        syncStatus.syncProgress = 100;
+        onProgress?.(100);
+      }
+
       for (const signatureInfo of signatures) {
         try {
           await this.processTransaction(walletId, publicKey, signatureInfo);
           processedSignatures++;
 
-          syncStatus.syncProgress = (processedSignatures / totalSignatures) * 100;
-          onProgress?.(syncStatus.syncProgress);
+          // SECURITY: Safe division with proper validation
+          const progress = totalSignatures > 0 ? (processedSignatures / totalSignatures) * 100 : 100;
+          syncStatus.syncProgress = progress;
+          onProgress?.(progress);
 
           // Add small delay to prevent rate limiting
           await new Promise(resolve => setTimeout(resolve, 100));
@@ -177,13 +212,21 @@ class TransactionHistoryService {
     const { onWalletProgress, onOverallProgress } = options;
     let completedWallets = 0;
 
+    // SECURITY: Handle empty wallets array to prevent division by zero
+    if (wallets.length === 0) {
+      onOverallProgress?.(100);
+      return;
+    }
+
     for (const wallet of wallets) {
       await this.syncWalletHistory(wallet.id, wallet.publicKey, {
         onProgress: (progress) => onWalletProgress?.(wallet.id, progress),
       });
 
       completedWallets++;
-      onOverallProgress?.((completedWallets / wallets.length) * 100);
+      // SECURITY: Safe division with validation
+      const progress = wallets.length > 0 ? (completedWallets / wallets.length) * 100 : 100;
+      onOverallProgress?.(progress);
     }
   }
 
@@ -209,6 +252,8 @@ class TransactionHistoryService {
 
       const record = this.parseTransaction(walletId, publicKey, transaction, signatureInfo);
       this.transactions.set(record.id, record);
+      // PERFORMANCE: Invalidate cache when data changes
+      this.invalidateCache();
 
     } catch (error) {
       logError(`Failed to process transaction ${signatureInfo.signature}:`, error);
@@ -367,8 +412,32 @@ class TransactionHistoryService {
       if (filters.status && !filters.status.includes(tx.status)) return false;
       if (filters.minAmount && tx.amount < filters.minAmount) return false;
       if (filters.maxAmount && tx.amount > filters.maxAmount) return false;
-      if (filters.startDate && new Date(tx.blockTime * 1000) < filters.startDate) return false;
-      if (filters.endDate && new Date(tx.blockTime * 1000) > filters.endDate) return false;
+      
+      // SECURITY: Safe date handling with validation for null/undefined blockTime
+      if (filters.startDate) {
+        try {
+          if (!tx.blockTime || typeof tx.blockTime !== 'number' || !isFinite(tx.blockTime)) {
+            return false; // Skip transactions with invalid blockTime
+          }
+          const txDate = new Date(tx.blockTime * 1000);
+          if (isNaN(txDate.getTime()) || txDate < filters.startDate) return false;
+        } catch (error) {
+          return false; // Skip on date parsing error
+        }
+      }
+      
+      if (filters.endDate) {
+        try {
+          if (!tx.blockTime || typeof tx.blockTime !== 'number' || !isFinite(tx.blockTime)) {
+            return false; // Skip transactions with invalid blockTime
+          }
+          const txDate = new Date(tx.blockTime * 1000);
+          if (isNaN(txDate.getTime()) || txDate > filters.endDate) return false;
+        } catch (error) {
+          return false; // Skip on date parsing error
+        }
+      }
+      
       if (filters.tokens && tx.token && !filters.tokens.includes(tx.token.mint)) return false;
       if (filters.tags && !filters.tags.some(tag => tx.metadata.tags.includes(tag))) return false;
 
@@ -502,6 +571,8 @@ class TransactionHistoryService {
     const transactions = this.getTransactionsByWallet(walletId);
     transactions.forEach(tx => this.transactions.delete(tx.id));
     this.syncStatuses.delete(walletId);
+    // PERFORMANCE: Invalidate cache when data changes
+    this.invalidateCache();
     this.saveToStorage();
     this.saveSyncStatus();
   }

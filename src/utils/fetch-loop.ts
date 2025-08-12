@@ -164,6 +164,11 @@ class FetchLoopInternal<T = any> {
         waitTime = Math.max(100, Math.min(waitTime * jitterFactor, 300000)); // Cap at 5 minutes
 
         this.timeoutId = setTimeout(this.refresh, waitTime);
+        
+        // PERFORMANCE: Prevent timeout from keeping Node.js process alive in tests
+        if (this.timeoutId && typeof this.timeoutId.unref === 'function') {
+          this.timeoutId.unref();
+        }
       }
     }
   };

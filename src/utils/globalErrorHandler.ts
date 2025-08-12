@@ -347,6 +347,11 @@ export class GlobalErrorHandler {
     this.cleanupInterval = setInterval(() => {
       this.cleanupThrottleMaps();
     }, this.LOG_THROTTLE_WINDOW_MS);
+    
+    // PERFORMANCE: Prevent interval from keeping Node.js process alive in tests
+    if (this.cleanupInterval && typeof this.cleanupInterval.unref === 'function') {
+      this.cleanupInterval.unref();
+    }
   }
 
   /**

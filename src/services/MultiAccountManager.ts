@@ -621,6 +621,11 @@ class MultiAccountManager {
         );
       }
     }, 5 * 60 * 1000); // 5 minutes
+    
+    // PERFORMANCE: Prevent interval from keeping Node.js process alive in tests
+    if (this.autoSyncInterval && typeof this.autoSyncInterval.unref === 'function') {
+      this.autoSyncInterval.unref();
+    }
   }
 
   // Cleanup - SECURITY: Proper resource management

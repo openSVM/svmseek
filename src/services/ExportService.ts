@@ -252,7 +252,15 @@ class ExportService {
     // For now, return CSV format with XLSX headers
     // In a real implementation, you would use a library like xlsx-js-style
     const csvData = this.formatAsCSV(data, options);
-    return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${btoa(csvData)}`;
+    
+    // SECURITY: Safe base64 encoding with error handling
+    try {
+      // Encode Unicode characters safely before btoa
+      const encodedData = btoa(unescape(encodeURIComponent(csvData)));
+      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${encodedData}`;
+    } catch (error) {
+      throw new Error('Failed to encode data for XLSX export: Invalid characters detected');
+    }
   }
 
   // CSV Helper Methods

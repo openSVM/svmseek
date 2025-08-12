@@ -106,6 +106,11 @@ export class WalletInjectionService {
     this.rateLimitCleanupInterval = setInterval(() => {
       this.requestCounts.clear();
     }, this.REQUEST_WINDOW_MS);
+    
+    // PERFORMANCE: Prevent interval from keeping Node.js process alive in tests
+    if (this.rateLimitCleanupInterval && typeof this.rateLimitCleanupInterval.unref === 'function') {
+      this.rateLimitCleanupInterval.unref();
+    }
   }
 
   /**
