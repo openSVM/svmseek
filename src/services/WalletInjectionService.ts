@@ -30,6 +30,7 @@ export class WalletInjectionService {
   private wallet: any = null;
   private injected = new Set<string>();
   private messageHandlers = new Map<string, (data: any) => void>();
+  private messageListener: ((event: MessageEvent) => void) | null = null;
 
   // Rate limiting for request throttling
   private requestCounts = new Map<string, number>();
@@ -173,7 +174,7 @@ export class WalletInjectionService {
    * Handle messages from the iframe with rate limiting and enhanced security
    */
   private setupMessageListener(): void {
-    window.addEventListener('message', (event) => {
+    this.messageListener = (event) => {
       try {
         if (!this.iframe || event.source !== this.iframe.contentWindow) {
           return;
@@ -200,7 +201,9 @@ export class WalletInjectionService {
       } catch (error) {
         logError('WalletInjectionService: Error processing message:', error, event.data);
       }
-    });
+    };
+
+    window.addEventListener('message', this.messageListener);
   }
 
   /**
@@ -461,6 +464,29 @@ export class WalletInjectionService {
       clearInterval(this.rateLimitCleanupInterval);
       this.rateLimitCleanupInterval = null;
     }
+    this.iframe = null;
+    this.injected.clear();
+    this.messageHandlers.clear();
+    this.requestCounts.clear();
+  }
+
+  /**
+   * Clean up event listeners and resources to prevent memory leaks
+   */
+  public destroy(): void {
+    // Clean up message listener
+    if (this.messageListener) {
+      window.removeEventListener('message', this.messageListener);
+      this.messageListener = null;
+    }
+
+    // Clean up rate limiting interval
+    if (this.rateLimitCleanupInterval) {
+      clearInterval(this.rateLimitCleanupInterval);
+      this.rateLimitCleanupInterval = null;
+    }
+
+    // Clean up other resources
     this.iframe = null;
     this.injected.clear();
     this.messageHandlers.clear();

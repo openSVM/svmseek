@@ -110,6 +110,18 @@ function initializeOsPolyfill() {
         configurable: false,
       });
     }
+
+    // Patch any existing require cache to return our polyfill
+    if (globalScope.require && globalScope.require.cache) {
+      globalScope.require.cache.os = { exports: osPolyfill };
+    }
+
+    // Additional safety: intercept any direct os.homedir calls
+    if (typeof globalScope.c !== 'undefined' && globalScope.c && typeof globalScope.c === 'object') {
+      if (!globalScope.c.homedir || typeof globalScope.c.homedir !== 'function') {
+        globalScope.c.homedir = osPolyfill.homedir;
+      }
+    }
   }
 }
 
@@ -135,9 +147,29 @@ function setupSecureErrorHandling() {
           ) ||
           message.includes(
             "Cannot read properties of undefined (reading 'buffer')",
-          ))
+          ) ||
+          message.includes('resolve is not a function') ||
+          message.includes('os.homedir is not a function'))
       ) {
         logError('OS/Buffer access error intercepted:', message);
+
+        // Emergency polyfill injection
+        try {
+          if (typeof window !== 'undefined') {
+            // Ensure os polyfill is available
+            if (!window.os || !window.os.homedir) {
+              window.os = osPolyfill;
+            }
+            // Fix any undefined 'c' object that might be causing issues
+            if (typeof window.c === 'undefined') {
+              window.c = { homedir: osPolyfill.homedir };
+            } else if (window.c && !window.c.homedir) {
+              window.c.homedir = osPolyfill.homedir;
+            }
+          }
+        } catch (recoveryError) {
+          logError('Emergency polyfill injection failed:', recoveryError);
+        }
 
         // Show user-friendly error instead of crashing
         if (
@@ -160,14 +192,16 @@ function setupSecureErrorHandling() {
             max-width: 300px;
           `;
           errorDiv.textContent =
-            'Compatibility issue detected. Attempting to recover...';
+            'System compatibility issue detected. Recovering automatically...';
           document.body.appendChild(errorDiv);
 
           setTimeout(() => {
             if (errorDiv.parentNode) {
               errorDiv.parentNode.removeChild(errorDiv);
             }
-          }, 3000);
+            // Attempt to reload the problematic component
+            window.location.reload();
+          }, 2000);
         }
 
         return true; // Prevent default error handling
