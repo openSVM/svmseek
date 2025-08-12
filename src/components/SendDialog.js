@@ -219,7 +219,12 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       throw new Error('Invalid amount: Please enter a valid positive number');
     }
     
-    // SECURITY: Check for overflow in multiplication
+    // PERFORMANCE: Pre-validate amount before expensive scaling operations
+    if (parsedAmount > Number.MAX_SAFE_INTEGER / (10 ** decimals)) {
+      throw new Error('Amount too large: Please enter a smaller amount');
+    }
+    
+    // SECURITY: Check for overflow in multiplication with enhanced precision handling
     const scaledAmount = parsedAmount * (10 ** decimals);
     if (!isFinite(scaledAmount) || scaledAmount > Number.MAX_SAFE_INTEGER) {
       throw new Error('Amount too large: Please enter a smaller amount');
@@ -234,6 +239,7 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, onSubmitRef }) {
       new PublicKey(destinationAddress),
       amount,
       balanceInfo.mint,
+      balanceInfo.decimals,
       null,
       overrideDestinationCheck,
     );

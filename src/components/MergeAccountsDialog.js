@@ -351,10 +351,23 @@ async function mergeMint(
 }
 
 async function refresh(wallet, publicKeys) {
-  await refreshWalletPublicKeys(wallet);
-  await Promise.all(
-    publicKeys.map((publicKey) =>
-      refreshAccountInfo(wallet.connection, publicKey, true),
-    ),
-  );
+  try {
+    // BUSINESS LOGIC: Add proper error handling for wallet refresh operations
+    await refreshWalletPublicKeys(wallet);
+    
+    // Handle refresh operations with error recovery
+    const refreshPromises = publicKeys.map(async (publicKey) => {
+      try {
+        await refreshAccountInfo(wallet.connection, publicKey, true);
+      } catch (error) {
+        logError(`Failed to refresh account ${publicKey.toString()}:`, error);
+        // Continue with other accounts even if one fails
+      }
+    });
+    
+    await Promise.allSettled(refreshPromises);
+  } catch (error) {
+    logError('Failed to refresh wallet data:', error);
+    throw new Error('Unable to refresh wallet data. Please try again.');
+  }
 }

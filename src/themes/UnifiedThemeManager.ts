@@ -427,11 +427,20 @@ export class UnifiedThemeManager {
    * Removes event listeners to prevent memory leaks
    */
   cleanup(): void {
+    // PERFORMANCE: Clean up media query listener to prevent memory leaks
     if (this.mediaQuery) {
       this.mediaQuery.removeEventListener('change', this.handleSystemThemeChange);
       this.mediaQuery = null;
     }
+    
+    // Clear all change listeners
     this.changeListeners = [];
+    
+    // Remove injected CSS to clean DOM
+    const existingStyle = document.getElementById('svmseek-theme-variables');
+    if (existingStyle) {
+      existingStyle.remove();
+    }
   }
 
   /**

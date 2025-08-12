@@ -218,6 +218,46 @@ export function refreshCache(cacheKey, clearCache = false) {
   }
 }
 
+// PERFORMANCE: Add cache size management to prevent memory leaks
+const MAX_CACHE_SIZE = 1000;
+const MAX_ERROR_CACHE_SIZE = 100;
+
+// PERFORMANCE: Periodically clean cache to prevent memory accumulation
+function cleanupCaches() {
+  // Clean global cache if it gets too large
+  if (globalCache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(globalCache.entries());
+    // Keep the most recently accessed items (simple LRU approximation)
+    const keepEntries = entries.slice(-Math.floor(MAX_CACHE_SIZE * 0.8));
+    globalCache.clear();
+    keepEntries.forEach(([key, value]) => globalCache.set(key, value));
+  }
+  
+  // Clean error cache
+  if (errorCache.size > MAX_ERROR_CACHE_SIZE) {
+    const entries = Array.from(errorCache.entries());
+    const keepEntries = entries.slice(-Math.floor(MAX_ERROR_CACHE_SIZE * 0.8));
+    errorCache.clear();
+    keepEntries.forEach(([key, value]) => errorCache.set(key, value));
+  }
+}
+
+// PERFORMANCE: Clean caches every 5 minutes
+const cacheCleanupInterval = setInterval(cleanupCaches, 5 * 60 * 1000);
+
+// PERFORMANCE: Cleanup function to clear all resources  
+export function cleanupFetchLoop() {
+  clearInterval(cacheCleanupInterval);
+  globalCache.clear();
+  errorCache.clear();
+  globalLoops.loops.clear();
+}
+
+// Auto-cleanup on page unload to prevent memory leaks
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', cleanupFetchLoop);
+}
+
 export function setCache(cacheKey, value, { initializeOnly = false } = {}) {
   cacheKey = formatCacheKey(cacheKey);
   if (initializeOnly && globalCache.has(cacheKey)) {
