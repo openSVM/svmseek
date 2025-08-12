@@ -1,15 +1,16 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
+// vitest-dom adds custom vitest matchers for asserting on DOM nodes.
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 import React from 'react';
+import { vi } from 'vitest';
 
 // CRITICAL: Mock ResizeObserver FIRST, before any imports
-const mockResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
+const mockResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
 }));
 
 global.ResizeObserver = mockResizeObserver;
@@ -23,7 +24,7 @@ if (typeof globalThis !== 'undefined') {
 // Global test cleanup to prevent memory leaks
 beforeEach(() => {
   // Clear all mocks before each test
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 
   // Reset VaultService singleton if it exists
   try {
@@ -39,7 +40,7 @@ beforeEach(() => {
 
 afterEach(() => {
   // Clear any remaining timers after each test
-  jest.clearAllTimers();
+  vi.clearAllTimers();
 
   // Clear localStorage to prevent test pollution
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -60,7 +61,7 @@ afterEach(() => {
 
 afterAll(() => {
   // Final cleanup to prevent memory leaks
-  jest.clearAllTimers();
+  vi.clearAllTimers();
 
   // Force garbage collection if available
   if (global.gc) {
@@ -93,16 +94,16 @@ function initializeTestGlobals() {
   if (typeof global !== 'undefined' && !global.crypto) {
     Object.defineProperty(global, 'crypto', {
       value: {
-        getRandomValues: jest.fn((arr) => {
+        getRandomValues: vi.fn((arr) => {
           for (let i = 0; i < arr.length; i++) {
             arr[i] = Math.floor(Math.random() * 256);
           }
           return arr;
         }),
         subtle: {
-          digest: jest.fn(),
-          encrypt: jest.fn(),
-          decrypt: jest.fn(),
+          digest: vi.fn(),
+          encrypt: vi.fn(),
+          decrypt: vi.fn(),
         },
       },
     });
@@ -112,18 +113,18 @@ function initializeTestGlobals() {
   if (typeof navigator !== 'undefined' && !navigator.clipboard) {
     Object.defineProperty(navigator, 'clipboard', {
       value: {
-        writeText: jest.fn(() => Promise.resolve()),
-        readText: jest.fn(() => Promise.resolve('')),
+        writeText: vi.fn(() => Promise.resolve()),
+        readText: vi.fn(() => Promise.resolve('')),
       },
       configurable: true, // Allow reconfiguration for tests
     });
   }
 
   // Mock ResizeObserver globally - must be before any component imports
-  const mockResizeObserver = jest.fn().mockImplementation(() => ({
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
+  const mockResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
   }));
 
   if (typeof global !== 'undefined') {
@@ -143,15 +144,15 @@ function initializeTestGlobals() {
   if (typeof window !== 'undefined' && !window.matchMedia) {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: jest.fn().mockImplementation((query) => ({
+      value: vi.fn().mockImplementation((query) => ({
         matches: false,
         media: query,
         onchange: null,
-        addListener: jest.fn(), // deprecated
-        removeListener: jest.fn(), // deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(), // deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
       })),
     });
   }
@@ -159,21 +160,21 @@ function initializeTestGlobals() {
   // Mock URL methods if not present
   if (typeof global !== 'undefined' && global.URL) {
     if (!global.URL.createObjectURL) {
-      global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
+      global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
     }
     if (!global.URL.revokeObjectURL) {
-      global.URL.revokeObjectURL = jest.fn();
+      global.URL.revokeObjectURL = vi.fn();
     }
   }
 
   // Mock browser storage APIs if not present
   const mockStorage = {
-    getItem: jest.fn((key) => null),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
+    getItem: vi.fn((key) => null),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
     length: 0,
-    key: jest.fn(),
+    key: vi.fn(),
   };
 
   if (typeof window !== 'undefined') {
@@ -197,7 +198,7 @@ function initializeTestGlobals() {
 
   // Mock fetch for network requests if not present
   if (typeof global !== 'undefined' && !global.fetch) {
-    global.fetch = jest.fn(() =>
+    global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
         status: 200,
@@ -209,10 +210,10 @@ function initializeTestGlobals() {
 
   // Mock Intersection Observer if not present
   if (typeof global !== 'undefined' && !global.IntersectionObserver) {
-    global.IntersectionObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
+    global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
     }));
   }
 
@@ -237,18 +238,18 @@ function initializeTestGlobals() {
 }
 
 // Mock crypto libraries to avoid flakiness
-jest.mock('tweetnacl', () => {
-  const mockSecretbox = jest.fn(
+vi.mock('tweetnacl', () => {
+  const mockSecretbox = vi.fn(
     (plaintext, nonce, key) => new Uint8Array(plaintext.length + 16),
   );
-  mockSecretbox.open = jest.fn(
+  mockSecretbox.open = vi.fn(
     (ciphertext, nonce, key) => new Uint8Array(ciphertext.length - 16),
   );
   mockSecretbox.nonceLength = 24;
 
   return {
     secretbox: mockSecretbox,
-    randomBytes: jest.fn((length) => {
+    randomBytes: vi.fn((length) => {
       const array = new Uint8Array(length);
       // Use deterministic values for consistent testing
       for (let i = 0; i < length; i++) {
@@ -259,8 +260,8 @@ jest.mock('tweetnacl', () => {
   };
 });
 
-jest.mock('argon2-browser', () => ({
-  hash: jest.fn(() =>
+vi.mock('argon2-browser', () => ({
+  hash: vi.fn(() =>
     Promise.resolve({
       hash: new Uint8Array(32),
       encoded: 'mock-encoded-hash',
@@ -271,15 +272,15 @@ jest.mock('argon2-browser', () => ({
   },
 }));
 
-jest.mock('scrypt-js', () =>
-  jest.fn((password, salt, N, r, p, keylen, callback) => {
+vi.mock('scrypt-js', () =>
+  vi.fn((password, salt, N, r, p, keylen, callback) => {
     callback(null, new Uint8Array(keylen));
   }),
 );
 
 // Mock crypto-browserify PBKDF2 for proper async handling
-jest.mock('crypto-browserify', () => ({
-  pbkdf2: jest.fn((password, salt, iterations, keyLength, digest, callback) => {
+vi.mock('crypto-browserify', () => ({
+  pbkdf2: vi.fn((password, salt, iterations, keyLength, digest, callback) => {
     // Simulate async operation and always call callback with valid data
     setImmediate(() => {
       const mockKey = Buffer.alloc(keyLength);
@@ -291,76 +292,76 @@ jest.mock('crypto-browserify', () => ({
     });
   }),
 }));
-jest.mock('@solana/web3.js', () => {
+vi.mock('@solana/web3.js', () => {
   const { Buffer } = require('buffer'); // Move Buffer import inside mock factory
 
   const mockPublicKey = {
-    toBase58: jest.fn(() => 'mock-public-key'),
-    toString: jest.fn(() => 'mock-public-key'),
-    equals: jest.fn(() => false),
-    toJSON: jest.fn(() => 'mock-public-key'),
-    toBytes: jest.fn(() => new Uint8Array(32)),
-    toBuffer: jest.fn(() => Buffer.alloc(32)),
-    isOnCurve: jest.fn(() => true),
+    toBase58: vi.fn(() => 'mock-public-key'),
+    toString: vi.fn(() => 'mock-public-key'),
+    equals: vi.fn(() => false),
+    toJSON: vi.fn(() => 'mock-public-key'),
+    toBytes: vi.fn(() => new Uint8Array(32)),
+    toBuffer: vi.fn(() => Buffer.alloc(32)),
+    isOnCurve: vi.fn(() => true),
   };
 
   return {
-    PublicKey: jest.fn().mockImplementation(() => mockPublicKey),
-    Connection: jest.fn().mockImplementation(() => ({
-      getAccountInfo: jest.fn(() => Promise.resolve(null)),
-      getBalance: jest.fn(() => Promise.resolve(0)),
-      getBlockHeight: jest.fn(() => Promise.resolve(100000)),
-      getSlot: jest.fn(() => Promise.resolve(100000)),
-      getEpochInfo: jest.fn(() =>
+    PublicKey: vi.fn().mockImplementation(() => mockPublicKey),
+    Connection: vi.fn().mockImplementation(() => ({
+      getAccountInfo: vi.fn(() => Promise.resolve(null)),
+      getBalance: vi.fn(() => Promise.resolve(0)),
+      getBlockHeight: vi.fn(() => Promise.resolve(100000)),
+      getSlot: vi.fn(() => Promise.resolve(100000)),
+      getEpochInfo: vi.fn(() =>
         Promise.resolve({
           epoch: 500,
           slotIndex: 1000,
           slotsInEpoch: 432000,
         }),
       ),
-      getRecentPerformanceSamples: jest.fn(() => Promise.resolve([])),
+      getRecentPerformanceSamples: vi.fn(() => Promise.resolve([])),
     })),
-    Transaction: jest.fn().mockImplementation(() => ({
-      add: jest.fn(),
-      sign: jest.fn(),
-      serialize: jest.fn(() => Buffer.alloc(10)),
+    Transaction: vi.fn().mockImplementation(() => ({
+      add: vi.fn(),
+      sign: vi.fn(),
+      serialize: vi.fn(() => Buffer.alloc(10)),
     })),
     SystemProgram: {
-      transfer: jest.fn(() => ({})),
+      transfer: vi.fn(() => ({})),
     },
-    clusterApiUrl: jest.fn((cluster) => `https://api.${cluster}.solana.com`),
+    clusterApiUrl: vi.fn((cluster) => `https://api.${cluster}.solana.com`),
     LAMPORTS_PER_SOL: 1000000000,
   };
 });
 
 // Mock Ledger hardware wallet libraries to avoid hardware-specific dependencies
-jest.mock('@ledgerhq/hw-transport-webhid', () => ({
+vi.mock('@ledgerhq/hw-transport-webhid', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    getPublicKey: jest.fn(() => Promise.resolve('mock-ledger-public-key')),
-    signTransaction: jest.fn(() => Promise.resolve('mock-signature')),
-    close: jest.fn(() => Promise.resolve()),
+  default: vi.fn().mockImplementation(() => ({
+    getPublicKey: vi.fn(() => Promise.resolve('mock-ledger-public-key')),
+    signTransaction: vi.fn(() => Promise.resolve('mock-signature')),
+    close: vi.fn(() => Promise.resolve()),
   })),
 }));
 
-jest.mock('@ledgerhq/hw-transport-webusb', () => ({
+vi.mock('@ledgerhq/hw-transport-webusb', () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    getPublicKey: jest.fn(() => Promise.resolve('mock-ledger-public-key')),
-    signTransaction: jest.fn(() => Promise.resolve('mock-signature')),
-    close: jest.fn(() => Promise.resolve()),
+  default: vi.fn().mockImplementation(() => ({
+    getPublicKey: vi.fn(() => Promise.resolve('mock-ledger-public-key')),
+    signTransaction: vi.fn(() => Promise.resolve('mock-signature')),
+    close: vi.fn(() => Promise.resolve()),
   })),
 }));
 
 // Mock @project-serum/serum to avoid initialization issues
-jest.mock('@project-serum/serum', () => ({
+vi.mock('@project-serum/serum', () => ({
   TokenInstructions: {
-    initializeMint: jest.fn(),
-    initializeAccount: jest.fn(),
-    transfer: jest.fn(),
+    initializeMint: vi.fn(),
+    initializeAccount: vi.fn(),
+    transfer: vi.fn(),
   },
   Market: {
-    load: jest.fn(() =>
+    load: vi.fn(() =>
       Promise.resolve({
         address: 'mock-market-address',
         baseMintAddress: 'mock-base-mint',
@@ -371,12 +372,12 @@ jest.mock('@project-serum/serum', () => ({
 }));
 
 // Mock SVM-Pay to avoid network calls in tests
-jest.mock('svm-pay', () => ({
-  SVMPay: jest.fn().mockImplementation(() => ({
-    createTransferUrl: jest.fn(
+vi.mock('svm-pay', () => ({
+  SVMPay: vi.fn().mockImplementation(() => ({
+    createTransferUrl: vi.fn(
       () => 'https://svmpay.mock/transfer?recipient=mock&amount=1',
     ),
-    parseUrl: jest.fn((url) => ({
+    parseUrl: vi.fn((url) => ({
       recipient: 'MockRecipientPublicKey123456789',
       amount: '1.0',
       network: 'solana',
@@ -384,18 +385,18 @@ jest.mock('svm-pay', () => ({
       label: 'Test Payment',
       message: 'Test message',
     })),
-    generatePaymentURL: jest.fn(() => 'mock-payment-url'),
-    validatePaymentURL: jest.fn(() => Promise.resolve(true)),
-    processPayment: jest.fn(() =>
+    generatePaymentURL: vi.fn(() => 'mock-payment-url'),
+    validatePaymentURL: vi.fn(() => Promise.resolve(true)),
+    processPayment: vi.fn(() =>
       Promise.resolve({ signature: 'mock-signature' }),
     ),
-    getSupportedNetworks: jest.fn(() => ['solana', 'sonic', 'eclipse']),
+    getSupportedNetworks: vi.fn(() => ['solana', 'sonic', 'eclipse']),
   })),
 }));
 
 // Mock QR Code generation to avoid rendering issues
-jest.mock('qrcode.react', () => ({
-  QRCodeSVG: jest.fn(({ value }) => {
+vi.mock('qrcode.react', () => ({
+  QRCodeSVG: vi.fn(({ value }) => {
     return `<svg data-testid="qr-code" data-value="${value}">Mock QR Code</svg>`;
   }),
 }));
@@ -404,7 +405,7 @@ jest.mock('qrcode.react', () => ({
 if (typeof window !== 'undefined') {
   // Mock window.close to prevent JSDOM errors
   const originalClose = window.close;
-  window.close = jest.fn();
+  window.close = vi.fn();
 
   // Mock iframe handling for JSDOM
   const originalCreateElement = document.createElement;
@@ -415,18 +416,18 @@ if (typeof window !== 'undefined') {
       // Add proper iframe mocking to prevent JSDOM errors
       Object.defineProperty(element, 'contentWindow', {
         value: {
-          postMessage: jest.fn(),
+          postMessage: vi.fn(),
           location: { href: 'about:blank' },
           document: {
             readyState: 'complete',
-            createElement: jest.fn(() => ({
+            createElement: vi.fn(() => ({
               src: '',
               onload: null,
               onerror: null,
             })),
-            head: { appendChild: jest.fn() },
+            head: { appendChild: vi.fn() },
           },
-          close: jest.fn(), // Add close method to prevent errors
+          close: vi.fn(), // Add close method to prevent errors
         },
         writable: true,
         configurable: true,
@@ -435,12 +436,12 @@ if (typeof window !== 'undefined') {
       Object.defineProperty(element, 'contentDocument', {
         value: {
           readyState: 'complete',
-          createElement: jest.fn(() => ({
+          createElement: vi.fn(() => ({
             src: '',
             onload: null,
             onerror: null,
           })),
-          head: { appendChild: jest.fn() },
+          head: { appendChild: vi.fn() },
         },
         writable: true,
         configurable: true,
@@ -455,11 +456,11 @@ if (typeof window !== 'undefined') {
 const originalConsole = global.console;
 global.console = {
   ...originalConsole,
-  error: jest.fn(),
-  warn: jest.fn(),
-  log: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  log: vi.fn(),
+  info: vi.fn(),
+  debug: vi.fn(),
 };
 
 // Initialize test globals safely - call this FIRST

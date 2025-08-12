@@ -19,7 +19,7 @@ import ImportExportIcon from '@mui/icons-material/ImportExport';
 import AddAccountDialog from '../AddAccountDialog';
 import DeleteMnemonicDialog from '../DeleteMnemonicDialog';
 import AddHardwareWalletDialog from '../AddHarwareWalletDialog';
-import { ExportMnemonicDialog } from '../ExportAccountDialog.js';
+import { ExportMnemonicDialog } from '../ExportAccountDialog.jsx';
 import { Navbar } from './Navbar';
 import { isExtension } from '../../utils/utils';
 import { useLocation } from 'react-router-dom';
