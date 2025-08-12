@@ -48,40 +48,6 @@ const EMPTY_MNEMONIC = {
   derivationPath: null,
 };
 
-// AUTO-WALLET GENERATION: Automatically creates a wallet with pin "osvm.ai" when none exists
-async function autoGenerateWallet() {
-  try {
-    devLog('🚀 Auto-generating wallet with pin "osvm.ai" for seamless onboarding');
-    
-    // Generate new mnemonic and seed
-    const { mnemonic, seed } = await generateMnemonicAndSeed();
-    
-    // Auto-store with hardcoded pin "osvm.ai" 
-    await storeMnemonicAndSeed(
-      mnemonic,
-      seed,
-      null, // No password - stored unlocked for convenience
-      DERIVATION_PATH.bip44Change,
-    );
-    
-    devLog('✅ Auto-wallet generated successfully - user can immediately access wallet');
-    
-    // Set flag to show backup reminder
-    localStorage.setItem('auto-generated-wallet', 'true');
-    localStorage.setItem('backup-reminder-needed', 'true');
-    
-    return {
-      mnemonic,
-      seed,
-      importsEncryptionKey: deriveImportsEncryptionKey(seed),
-      derivationPath: DERIVATION_PATH.bip44Change,
-    };
-  } catch (error) {
-    logError('Failed to auto-generate wallet:', error);
-    return EMPTY_MNEMONIC;
-  }
-}
-
 let unlockedMnemonicAndSeed = (async () => {
   const mnemonic = await getExtensionUnlockedMnemonic();
 
@@ -378,6 +344,40 @@ function deriveImportsEncryptionKey(seed) {
     throw new Error(
       'Unable to create encryption key: import key derivation failed. Please check your wallet configuration.',
     );
+  }
+}
+
+// AUTO-WALLET GENERATION: Automatically creates a wallet with pin "osvm.ai" when none exists
+async function autoGenerateWallet() {
+  try {
+    devLog('🚀 Auto-generating wallet with pin "osvm.ai" for seamless onboarding');
+    
+    // Generate new mnemonic and seed
+    const { mnemonic, seed } = await generateMnemonicAndSeed();
+    
+    // Auto-store with hardcoded pin "osvm.ai" 
+    await storeMnemonicAndSeed(
+      mnemonic,
+      seed,
+      null, // No password - stored unlocked for convenience
+      DERIVATION_PATH.bip44Change,
+    );
+    
+    devLog('✅ Auto-wallet generated successfully - user can immediately access wallet');
+    
+    // Set flag to show backup reminder
+    localStorage.setItem('auto-generated-wallet', 'true');
+    localStorage.setItem('backup-reminder-needed', 'true');
+    
+    return {
+      mnemonic,
+      seed,
+      importsEncryptionKey: deriveImportsEncryptionKey(seed),
+      derivationPath: DERIVATION_PATH.bip44Change,
+    };
+  } catch (error) {
+    logError('Failed to auto-generate wallet:', error);
+    return EMPTY_MNEMONIC;
   }
 }
 
