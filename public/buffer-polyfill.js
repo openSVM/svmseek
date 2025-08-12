@@ -183,7 +183,7 @@
       var global = window;
     }
     
-    // Add defensive handling for wallet extension conflicts
+    // Enhanced defensive handling for wallet extension conflicts
     (function() {
       try {
         // Store reference to any existing ethereum provider
@@ -193,39 +193,118 @@
         if (!window.ethereumHandlersInitialized) {
           window.ethereumHandlersInitialized = true;
           
-          // Create a non-conflicting ethereum property wrapper
-          Object.defineProperty(window, '_svmseekEthereumSafe', {
-            value: existingEthereum,
-            writable: false,
-            configurable: false
+          // Create a multiple provider management system
+          const providerRegistry = new Map();
+          let primaryProvider = existingEthereum;
+          
+          // Register existing provider if any
+          if (existingEthereum) {
+            if (existingEthereum.isMetaMask) {
+              providerRegistry.set('metamask', existingEthereum);
+            } else if (existingEthereum.isPhantom) {
+              providerRegistry.set('phantom', existingEthereum);
+            } else {
+              providerRegistry.set('unknown', existingEthereum);
+            }
+          }
+          
+          // Create a proxy ethereum object that can handle multiple providers
+          const ethereumProxy = new Proxy(primaryProvider || {}, {
+            get: function(target, prop) {
+              // Handle provider-specific access
+              if (prop === 'providers' && providerRegistry.size > 0) {
+                return Array.from(providerRegistry.values());
+              }
+              if (prop === 'getProvider') {
+                return function(name) {
+                  return providerRegistry.get(name) || primaryProvider;
+                };
+              }
+              if (prop === 'isMultiProvider') {
+                return providerRegistry.size > 1;
+              }
+              
+              // Delegate to primary provider or target
+              const provider = primaryProvider || target;
+              if (provider && typeof provider[prop] !== 'undefined') {
+                const value = provider[prop];
+                return typeof value === 'function' ? value.bind(provider) : value;
+              }
+              
+              return target[prop];
+            },
+            set: function(target, prop, value) {
+              if (primaryProvider) {
+                primaryProvider[prop] = value;
+              } else {
+                target[prop] = value;
+              }
+              return true;
+            }
           });
           
-          // Override Object.defineProperty to handle ethereum property conflicts
+          // Override Object.defineProperty to handle ethereum property conflicts gracefully
           const originalDefineProperty = Object.defineProperty;
           Object.defineProperty = function(obj, prop, descriptor) {
             if (obj === window && prop === 'ethereum') {
               try {
-                // If ethereum already exists and is non-configurable, skip redefinition
-                const existingDescriptor = Object.getOwnPropertyDescriptor(window, 'ethereum');
-                if (existingDescriptor && !existingDescriptor.configurable) {
-                  console.warn('SVMSeek: Skipping ethereum property redefinition to prevent conflicts');
-                  return obj;
+                // Check if we're dealing with a new provider
+                const newProvider = descriptor.value;
+                if (newProvider && typeof newProvider === 'object') {
+                  // Register the new provider
+                  let providerName = 'unknown';
+                  if (newProvider.isMetaMask) providerName = 'metamask';
+                  else if (newProvider.isPhantom) providerName = 'phantom';
+                  else if (newProvider.isSVMSeek) providerName = 'svmseek';
+                  else if (newProvider.isWalletConnect) providerName = 'walletconnect';
+                  
+                  providerRegistry.set(providerName, newProvider);
+                  
+                  // Update primary provider if this is the first or a preferred provider
+                  if (!primaryProvider || newProvider.isMetaMask) {
+                    primaryProvider = newProvider;
+                  }
+                  
+                  console.log('SVMSeek: Registered ethereum provider:', providerName);
+                  
+                  // Return the proxy instead of setting directly
+                  return originalDefineProperty.call(this, obj, prop, {
+                    value: ethereumProxy,
+                    writable: descriptor.writable,
+                    configurable: descriptor.configurable,
+                    enumerable: descriptor.enumerable
+                  });
                 }
                 
-                // Allow the definition but catch any errors
+                // Allow the definition for non-provider values
                 return originalDefineProperty.call(this, obj, prop, descriptor);
               } catch (error) {
-                console.warn('SVMSeek: Prevented ethereum property conflict:', error.message);
+                console.warn('SVMSeek: Handled ethereum property conflict gracefully:', error.message);
+                // Don't throw, just log and continue
                 return obj;
               }
             }
             return originalDefineProperty.call(this, obj, prop, descriptor);
           };
           
-          console.log('SVMSeek: Ethereum property conflict protection enabled');
+          // Set initial ethereum proxy if we have providers
+          if (providerRegistry.size > 0 || primaryProvider) {
+            try {
+              originalDefineProperty.call(Object, window, 'ethereum', {
+                value: ethereumProxy,
+                writable: true,
+                configurable: true,
+                enumerable: true
+              });
+            } catch (error) {
+              console.warn('SVMSeek: Could not set initial ethereum proxy:', error.message);
+            }
+          }
+          
+          console.log('SVMSeek: Enhanced ethereum provider management enabled');
         }
       } catch (error) {
-        console.warn('SVMSeek: Failed to setup ethereum conflict protection:', error);
+        console.warn('SVMSeek: Failed to setup enhanced ethereum conflict protection:', error);
       }
     })();
     

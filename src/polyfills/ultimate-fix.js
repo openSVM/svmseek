@@ -137,7 +137,7 @@ function setupSecureErrorHandling() {
       colno,
       error,
     ) {
-      // Handle homedir errors specifically
+      // Handle homedir errors specifically with enhanced recovery
       if (
         typeof message === 'string' &&
         (message.includes('c.homedir is not a function') ||
@@ -153,18 +153,54 @@ function setupSecureErrorHandling() {
       ) {
         logError('OS/Buffer access error intercepted:', message);
 
-        // Emergency polyfill injection
+        // Emergency polyfill injection with enhanced coverage
         try {
           if (typeof window !== 'undefined') {
             // Ensure os polyfill is available
             if (!window.os || !window.os.homedir) {
               window.os = osPolyfill;
             }
+            
             // Fix any undefined 'c' object that might be causing issues
             if (typeof window.c === 'undefined') {
-              window.c = { homedir: osPolyfill.homedir };
+              window.c = { 
+                homedir: osPolyfill.homedir,
+                resolve: function(...args) {
+                  // Basic path resolution for compatibility
+                  return args.join('/').replace(/\/+/g, '/');
+                }
+              };
             } else if (window.c && !window.c.homedir) {
               window.c.homedir = osPolyfill.homedir;
+              if (!window.c.resolve) {
+                window.c.resolve = function(...args) {
+                  return args.join('/').replace(/\/+/g, '/');
+                };
+              }
+            }
+            
+            // Also ensure global path resolution is available
+            if (!window.path) {
+              window.path = {
+                resolve: function(...args) {
+                  return args.join('/').replace(/\/+/g, '/');
+                },
+                join: function(...args) {
+                  return args.join('/').replace(/\/+/g, '/');
+                },
+                dirname: function(p) {
+                  return p.split('/').slice(0, -1).join('/') || '/';
+                },
+                basename: function(p) {
+                  return p.split('/').pop() || '';
+                }
+              };
+            }
+            
+            // Add to require cache if available
+            if (window.require && typeof window.require.cache === 'object') {
+              window.require.cache['os'] = { exports: window.os };
+              window.require.cache['path'] = { exports: window.path };
             }
           }
         } catch (recoveryError) {
