@@ -390,14 +390,14 @@ class LoggingService {
    * Generate a unique session ID
    */
   private generateSessionId(): string {
-    return `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `sess_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**
    * Generate a unique log ID
    */
   private generateLogId(): string {
-    return `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `log_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**

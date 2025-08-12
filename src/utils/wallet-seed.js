@@ -168,13 +168,31 @@ export async function storeMnemonicAndSeed(
 }
 
 export const checkIsCorrectPassword = async (password) => {
+  // SECURITY: Safe JSON parsing with validation for locked storage data
+  let lockedData;
+  try {
+    const lockedRaw = localStorage.getItem('locked');
+    if (!lockedRaw) {
+      throw new Error('No locked wallet found');
+    }
+    lockedData = JSON.parse(lockedRaw);
+    
+    // Validate required fields exist
+    if (!lockedData.encrypted || !lockedData.nonce || !lockedData.salt) {
+      throw new Error('Invalid locked wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse locked wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+
   const {
     encrypted: encodedEncrypted,
     nonce: encodedNonce,
     salt: encodedSalt,
     iterations,
     digest,
-  } = JSON.parse(localStorage.getItem('locked'));
+  } = lockedData;
 
   const encrypted = bs58.decode(encodedEncrypted);
   const nonce = bs58.decode(encodedNonce);
@@ -186,19 +204,52 @@ export const checkIsCorrectPassword = async (password) => {
   }
 
   const decodedPlaintext = Buffer.from(plaintext).toString();
-  const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
+  
+  // SECURITY: Safe JSON parsing with validation for decrypted wallet data
+  let walletData;
+  try {
+    walletData = JSON.parse(decodedPlaintext);
+    
+    // Validate required wallet fields exist
+    if (!walletData.mnemonic || !walletData.seed) {
+      throw new Error('Invalid wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse decrypted wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+  
+  const { mnemonic, seed, derivationPath } = walletData;
 
   return { mnemonic, seed, derivationPath };
 };
 
 export async function loadMnemonicAndSeed(password, stayLoggedIn) {
+  // SECURITY: Safe JSON parsing with validation for locked storage data
+  let lockedData;
+  try {
+    const lockedRaw = localStorage.getItem('locked');
+    if (!lockedRaw) {
+      throw new Error('No locked wallet found');
+    }
+    lockedData = JSON.parse(lockedRaw);
+    
+    // Validate required fields exist
+    if (!lockedData.encrypted || !lockedData.nonce || !lockedData.salt) {
+      throw new Error('Invalid locked wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse locked wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+
   const {
     encrypted: encodedEncrypted,
     nonce: encodedNonce,
     salt: encodedSalt,
     iterations,
     digest,
-  } = JSON.parse(localStorage.getItem('locked'));
+  } = lockedData;
   const encrypted = bs58.decode(encodedEncrypted);
   const nonce = bs58.decode(encodedNonce);
   const salt = bs58.decode(encodedSalt);
@@ -208,7 +259,22 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
     throw new Error('Incorrect password');
   }
   const decodedPlaintext = Buffer.from(plaintext).toString();
-  const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
+  
+  // SECURITY: Safe JSON parsing with validation for decrypted wallet data
+  let walletData;
+  try {
+    walletData = JSON.parse(decodedPlaintext);
+    
+    // Validate required wallet fields exist
+    if (!walletData.mnemonic || !walletData.seed) {
+      throw new Error('Invalid wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse decrypted wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+  
+  const { mnemonic, seed, derivationPath } = walletData;
   if (stayLoggedIn) {
     if (isExtension) {
       chrome.runtime.sendMessage({
