@@ -335,9 +335,19 @@ export class SolanaRPCService {
       const tokens = tokenAccounts.value.map(tokenAccount => {
         const data = tokenAccount.account.data as ParsedAccountData;
         const info = data.parsed.info;
+        
+        // SECURITY: Safe amount parsing with validation
+        const amountString = info.tokenAmount.uiAmountString || '0';
+        let amount = parseFloat(amountString);
+        
+        // Validate parsed amount is safe and finite
+        if (!isFinite(amount) || isNaN(amount) || amount < 0) {
+          amount = 0; // Default to 0 for invalid amounts
+        }
+        
         return {
           mint: info.mint,
-          amount: parseFloat(info.tokenAmount.uiAmountString || '0'),
+          amount,
           decimals: info.tokenAmount.decimals,
         };
       });
