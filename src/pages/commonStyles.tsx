@@ -67,13 +67,13 @@ export const GridContainer = styled(({ wallet, theme, ...rest }: GridContainerPr
   position: relative;
   padding: 0rem 3rem;
   margin: 0rem;
-  border-bottom: 1px solid var(--border-main);
+  border-bottom: 1px solid var(--border-primary);
   background: var(--bg-primary);
 
   @media (max-width: 850px) {
     display: flex;
     height: 10rem;
-    background: #222429;
+    background: var(--bg-secondary);
   }
 `;
 
@@ -93,15 +93,15 @@ export const ColorText = styled.div<ColorTextProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
   margin: ${(props) => props.margin || '0'};
-  font-size: 1.2rem;
-  font-family: Avenir Next Medium;
+  font-size: var(--font-size-md);
+  font-family: var(--font-primary);
   display: flex;
-  color: #fff;
+  color: var(--text-inverse);
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  background: ${(props) => props.background || '#383b45'};
-  border-radius: ${(props) => props.radius || '1.5rem'};
+  background: ${(props) => props.background || 'var(--bg-secondary)'};
+  border-radius: ${(props) => props.radius || 'var(--radius-lg)'};
   display: flex;
   justify-content: ${(props) => props.justify || 'space-evenly'};
   flex-direction: ${(props) => props.direction || 'row'};
@@ -110,7 +110,7 @@ export const ColorText = styled.div<ColorTextProps>`
   @media (max-width: 540px) {
     padding: ${(props) => (props.needBackground ? '0 2rem 0 2rem' : 'auto')};
     background: ${(props) => (props.needBackground ? 'transparent' : 'auto')};
-    font-size: 1.5rem;
+    font-size: var(--font-size-lg);
   }
 `;
 
@@ -130,25 +130,31 @@ export const Textarea = styled(({ ...props }: TextareaProps) => (
 ))<TextareaProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '5rem'};
-  font-family: Avenir Next;
-  border: 0.1rem solid #3a475c;
-  font-size: 1.1rem;
+  font-family: var(--font-primary);
+  border: 1px solid var(--border-primary);
+  font-size: var(--font-size-sm);
   letter-spacing: 0.01rem;
-  color: #f8faff;
-  border-radius: 1.5rem;
-  background: #222429;
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
   outline: none;
   padding: ${(props) => props.padding || '1rem 7rem 1rem 2rem'};
   position: relative;
   line-height: 3rem;
   overflow: hidden;
+  transition: border-color var(--animation-duration-fast) var(--animation-easing-default);
+
+  &:focus {
+    border-color: var(--border-focus);
+  }
 
   &::placeholder {
-    font-size: 1.4rem;
+    font-size: var(--font-size-md);
+    color: var(--text-tertiary);
   }
 
   @media (max-width: 540px) {
-    font-size: 1.4rem;
+    font-size: var(--font-size-md);
     line-height: 3rem;
     height: 6rem;
   }
@@ -158,11 +164,18 @@ export const ContainerForIcon = styled.div`
   cursor: pointer;
   width: 4rem;
   height: 3.5rem;
-  border-radius: 1.5rem;
-  border: 0.2rem solid #3a475c;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-primary);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: var(--bg-glass);
+  transition: all var(--animation-duration-fast) var(--animation-easing-default);
+
+  &:hover {
+    border-color: var(--border-focus);
+    background: var(--bg-secondary);
+  }
 
   @media (max-width: 540px) {
     height: 4.5rem;
@@ -194,19 +207,27 @@ export const Card = styled.div<CardProps>`
   width: ${(props) => props.width || '50rem'};
   height: ${(props) => props.height || '40rem'};
   padding: ${(props) => props.padding || '0'};
-  background: #222429;
-  border: 0.1rem solid #3a475c;
-  box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
-  border-radius: 2rem;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-glass);
+  border-radius: var(--radius-xl);
+  backdrop-filter: var(--glass-backdrop);
   display: flex;
   justify-content: ${(props) => props.justify || 'center'};
   flex-direction: column;
   align-items: center;
-  transition: 0.3s all ease-out;
+  transition: all var(--animation-duration-normal) var(--animation-easing-default);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--border-focus);
+  }
+  
   @media (max-width: 540px) {
-    background: #17181a;
+    background: var(--bg-secondary);
     border: none;
-    box-shadow: none;
+    box-shadow: var(--shadow-sm);
     height: ${(props) => props.minHeight || '40rem'};
     width: ${(props) => props.minWidth || '100%'};
   }

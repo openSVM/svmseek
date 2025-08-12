@@ -95,6 +95,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     root.style.setProperty('--radius-xl', effects.radius.xl);
     root.style.setProperty('--radius-full', effects.radius.full);
 
+    // Spacing
+    root.style.setProperty('--spacing-xs', effects.spacing.xs);
+    root.style.setProperty('--spacing-sm', effects.spacing.sm);
+    root.style.setProperty('--spacing-md', effects.spacing.md);
+    root.style.setProperty('--spacing-lg', effects.spacing.lg);
+    root.style.setProperty('--spacing-xl', effects.spacing.xl);
+    root.style.setProperty('--spacing-xxl', effects.spacing.xxl);
+
+    // Animation variables
+    root.style.setProperty('--animation-duration-fast', effects.animation.duration.fast);
+    root.style.setProperty('--animation-duration-normal', effects.animation.duration.normal);
+    root.style.setProperty('--animation-duration-slow', effects.animation.duration.slow);
+    root.style.setProperty('--animation-easing-default', effects.animation.easing.default);
+    root.style.setProperty('--animation-easing-bounce', effects.animation.easing.bounce);
+    root.style.setProperty('--animation-easing-smooth', effects.animation.easing.smooth);
+
     // Typography
     root.style.setProperty('--font-primary', typography.fontFamily.primary);
     root.style.setProperty('--font-mono', typography.fontFamily.mono);

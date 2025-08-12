@@ -43,14 +43,19 @@ const Switcher = styled.button<{ isTabActive?: boolean }>`
     outline: none;
     display: block;
     width: 20%;
-    color: ${(props) => (props.isTabActive ? ' #f5f5fb' : '#96999C')};
+    color: ${(props) => (props.isTabActive ? 'var(--text-primary)' : 'var(--text-secondary)')};
     background: none;
-    font-family: 'Avenir Next Demi';
+    font-family: var(--font-primary);
     height: 4rem;
     cursor: pointer;
     border: none;
     border-bottom: ${(props) =>
-      props.isTabActive ? '0.2rem solid #f5f5fb' : '0.2rem solid #96999C'};
+      props.isTabActive ? '2px solid var(--interactive-primary)' : '2px solid var(--border-primary)'};
+    transition: all var(--animation-duration-fast) var(--animation-easing-default);
+    
+    &:hover {
+      color: var(--interactive-primary);
+    }
   }
 `;
 

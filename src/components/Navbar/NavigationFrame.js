@@ -250,10 +250,10 @@ function Footer() {
       <FooterComponent>
         <span
           style={{
-            fontSize: '1.3rem',
-            color: '#fbf2f2',
+            fontSize: 'var(--font-size-sm)',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
-            fontFamily: 'Avenir Next medium',
+            fontFamily: 'var(--font-primary)',
           }}
         >
           {location.pathname.includes('restore')
@@ -271,9 +271,9 @@ function Footer() {
           href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
           style={{
             border: '0',
-            fontSize: '1.3rem',
+            fontSize: 'var(--font-size-sm)',
             height: '50%',
-            color: '#fbf2f2',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
           }}
         >
@@ -291,9 +291,9 @@ function Footer() {
           href="https://t.me/CryptocurrenciesAi"
           style={{
             border: '0',
-            fontSize: '1.3rem',
+            fontSize: 'var(--font-size-sm)',
             height: '50%',
-            color: '#fbf2f2',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
           }}
         >
@@ -308,9 +308,9 @@ function Footer() {
           href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
           style={{
             border: '0',
-            fontSize: '1.3rem',
+            fontSize: 'var(--font-size-sm)',
             height: '50%',
-            color: '#fbf2f2',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
           }}
         >
