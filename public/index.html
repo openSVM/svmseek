@@ -214,6 +214,205 @@
       }
     
     </style>
+    
+    <!-- CRITICAL: Immediate OS/Buffer polyfill - MUST be first script in head -->
+    <script>
+      (function() {
+        'use strict';
+        
+        // Comprehensive OS polyfill
+        var osPolyfill = {
+          EOL: '\n',
+          arch: function() { return 'browser'; },
+          platform: function() {
+            if (typeof navigator !== 'undefined') {
+              var ua = navigator.userAgent.toLowerCase();
+              if (ua.indexOf('mac') > -1) return 'darwin';
+              if (ua.indexOf('win') > -1) return 'win32';
+              if (ua.indexOf('linux') > -1) return 'linux';
+            }
+            return 'browser';
+          },
+          release: function() { return '1.0.0'; },
+          hostname: function() {
+            if (typeof window !== 'undefined' && window.location) {
+              return window.location.hostname || 'localhost';
+            }
+            return 'localhost';
+          },
+          homedir: function() { return '/home/user'; },
+          tmpdir: function() { return '/tmp'; },
+          userInfo: function() {
+            return {
+              uid: 1000,
+              gid: 1000,
+              username: 'user',
+              homedir: '/home/user',
+              shell: '/bin/bash'
+            };
+          },
+          cpus: function() {
+            var numCores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 4;
+            var cores = [];
+            for (var i = 0; i < numCores; i++) {
+              cores.push({
+                model: 'Browser CPU',
+                speed: 2400,
+                times: { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 }
+              });
+            }
+            return cores;
+          },
+          freemem: function() { return 256 * 1024 * 1024; },
+          totalmem: function() { return 2 * 1024 * 1024 * 1024; },
+          loadavg: function() { return [0.1, 0.1, 0.1]; },
+          uptime: function() { return Math.floor(Date.now() / 1000); },
+          networkInterfaces: function() { return {}; },
+          type: function() { return 'browser'; }
+        };
+
+        // Path polyfill
+        var pathPolyfill = {
+          resolve: function() {
+            var args = Array.prototype.slice.call(arguments);
+            return args.join('/').replace(/\/+/g, '/');
+          },
+          join: function() {
+            var args = Array.prototype.slice.call(arguments);
+            return args.join('/').replace(/\/+/g, '/');
+          },
+          dirname: function(p) {
+            return p.split('/').slice(0, -1).join('/') || '/';
+          },
+          basename: function(p) {
+            return p.split('/').pop() || '';
+          },
+          extname: function(p) {
+            var parts = p.split('.');
+            return parts.length > 1 ? '.' + parts.pop() : '';
+          },
+          isAbsolute: function(p) {
+            return p.charAt(0) === '/';
+          },
+          normalize: function(p) {
+            return p.replace(/\/+/g, '/');
+          }
+        };
+
+        // Get all global scopes
+        var globalScope = (function() {
+          if (typeof globalThis !== 'undefined') return globalThis;
+          if (typeof window !== 'undefined') return window;
+          if (typeof global !== 'undefined') return global;
+          if (typeof self !== 'undefined') return self;
+          return {};
+        })();
+
+        // Inject into global scope immediately
+        if (globalScope && typeof globalScope === 'object') {
+          // Set os and path
+          globalScope.os = osPolyfill;
+          globalScope.path = pathPolyfill;
+          
+          // CRITICAL: Pre-populate ALL possible webpack variable names
+          // Webpack typically uses short variable names in minified code: a, b, c, d, e, etc.
+          var allPossibleVarNames = [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am',
+            'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az',
+            'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bk', 'bl', 'bm',
+            'bn', 'bo', 'bp', 'bq', 'br', 'bs', 'bt', 'bu', 'bv', 'bw', 'bx', 'by', 'bz',
+            'ca', 'cb', 'cc', 'cd', 'ce', 'cf', 'cg', 'ch', 'ci', 'cj', 'ck', 'cl', 'cm',
+            'cn', 'co', 'cp', 'cq', 'cr', 'cs', 'ct', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz'
+          ];
+          
+          // Pre-populate all possible variable names with os polyfill
+          for (var i = 0; i < allPossibleVarNames.length; i++) {
+            var varName = allPossibleVarNames[i];
+            if (typeof globalScope[varName] === 'undefined') {
+              try {
+                globalScope[varName] = osPolyfill;
+              } catch (e) {
+                // Ignore if we can't set the property
+              }
+            }
+          }
+
+          // Set up require if it doesn't exist
+          if (!globalScope.require) {
+            globalScope.require = function(moduleName) {
+              switch (moduleName) {
+                case 'os':
+                case 'node:os':
+                  return osPolyfill;
+                case 'path':
+                case 'node:path':
+                  return pathPolyfill;
+                default:
+                  throw new Error('Module ' + moduleName + ' not found');
+              }
+            };
+            globalScope.require.cache = {
+              'os': { exports: osPolyfill },
+              'node:os': { exports: osPolyfill },
+              'path': { exports: pathPolyfill },
+              'node:path': { exports: pathPolyfill }
+            };
+          }
+
+          // Set global reference
+          if (!globalScope.global) {
+            globalScope.global = globalScope;
+          }
+
+          console.log('🛡️ Comprehensive OS polyfill initialized for all variables');
+        }
+
+        // Emergency error handler for any missed cases
+        if (typeof window !== 'undefined') {
+          var originalError = window.onerror;
+          window.onerror = function(message, source, lineno, colno, error) {
+            if (typeof message === 'string' && message.indexOf('.homedir is not a function') > -1) {
+              console.error('🚨 homedir error caught:', message);
+              
+              // Extract variable name from error
+              var match = message.match(/(\w+)\.homedir is not a function/);
+              if (match && match[1]) {
+                var varName = match[1];
+                console.log('🔧 Emergency fix: setting ' + varName + ' to os polyfill');
+                
+                // Set the problematic variable
+                try {
+                  window[varName] = osPolyfill;
+                  console.log('✅ Successfully set ' + varName);
+                  
+                  // Try to continue after a brief delay
+                  setTimeout(function() {
+                    // Try to reload the React app without full page reload
+                    if (window.location.hash.indexOf('#') === -1) {
+                      window.location.reload();
+                    }
+                  }, 100);
+                  
+                  return true; // Prevent default error handling
+                } catch (setError) {
+                  console.error('❌ Failed to set ' + varName + ':', setError);
+                }
+              }
+            }
+            
+            // Call original error handler
+            if (originalError) {
+              return originalError.call(this, message, source, lineno, colno, error);
+            }
+            return false;
+          };
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
