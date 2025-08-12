@@ -172,14 +172,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({
 
       // Amount filters with safe parsing
       if (filters.minAmount) {
+        // SECURITY: Enhanced parseFloat with overflow protection
         const minAmount = parseFloat(filters.minAmount);
-        if (isFinite(minAmount) && !isNaN(minAmount)) {
+        if (isFinite(minAmount) && !isNaN(minAmount) && minAmount >= 0 && minAmount <= Number.MAX_SAFE_INTEGER) {
           filtered = filtered.filter(tx => tx.amount >= minAmount);
         }
       }
       if (filters.maxAmount) {
+        // SECURITY: Enhanced parseFloat with overflow protection
         const maxAmount = parseFloat(filters.maxAmount);
-        if (isFinite(maxAmount) && !isNaN(maxAmount)) {
+        if (isFinite(maxAmount) && !isNaN(maxAmount) && maxAmount >= 0 && maxAmount <= Number.MAX_SAFE_INTEGER) {
           filtered = filtered.filter(tx => tx.amount <= maxAmount);
         }
       }

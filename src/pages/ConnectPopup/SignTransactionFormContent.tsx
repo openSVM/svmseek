@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { useWallet, useWalletPublicKeys } from '../../utils/wallet';
 import { decodeMessage } from '../../utils/transactions';
-import { devLog } from '../../utils/logger';
+import { devLog, logError } from '../../utils/logger';
 import {
   useConnection,
   useSolanaExplorerUrlSuffix,
@@ -140,12 +140,17 @@ export default function SignTransactionFormContent({
   const isMultiTx = messages.length > 1;
 
   useEffect(() => {
-    Promise.all(messages.map((m) => decodeMessage(connection, wallet, m))).then(
-      (txInstructions) => {
+    // BUSINESS LOGIC: Enhanced Promise.all with proper error handling for transaction decoding
+    Promise.all(messages.map((m) => decodeMessage(connection, wallet, m)))
+      .then((txInstructions) => {
         setTxInstructions(txInstructions);
         setParsing(false);
-      },
-    );
+      })
+      .catch((error) => {
+        logError('Failed to decode transaction messages:', error);
+        setTxInstructions(null);
+        setParsing(false);
+      });
   }, [messages, connection, wallet]);
 
   const validator = useMemo(() => {

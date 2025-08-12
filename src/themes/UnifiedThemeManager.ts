@@ -392,7 +392,11 @@ export class UnifiedThemeManager {
     });
 
     // Store preference
-    localStorage.setItem('svmseek-theme', newTheme.name);
+    try {
+      localStorage.setItem('svmseek-theme', newTheme.name);
+    } catch (error) {
+      // Silently fail if localStorage is not available (private browsing mode, etc.)
+    }
   }
 
   /**
@@ -420,11 +424,16 @@ export class UnifiedThemeManager {
    */
   initialize(): void {
     // Load saved theme preference
-    const savedThemeName = localStorage.getItem('svmseek-theme');
-    if (savedThemeName && themes[savedThemeName]) {
-      this.switchTheme(savedThemeName);
-    } else {
-      // Apply default theme
+    try {
+      const savedThemeName = localStorage.getItem('svmseek-theme');
+      if (savedThemeName && themes[savedThemeName]) {
+        this.switchTheme(savedThemeName);
+      } else {
+        // Apply default theme
+        this.cssGenerator.injectCSSVariables();
+      }
+    } catch (error) {
+      // Fallback to default theme if localStorage access fails
       this.cssGenerator.injectCSSVariables();
     }
 
@@ -460,12 +469,16 @@ export class UnifiedThemeManager {
    * Handle system theme preference changes
    */
   private handleSystemThemeChange = (e: MediaQueryListEvent): void => {
-    const savedTheme = localStorage.getItem('svmseek-theme');
+    try {
+      const savedTheme = localStorage.getItem('svmseek-theme');
 
-    // Only auto-switch if no user preference is set
-    if (!savedTheme) {
-      const autoTheme = e.matches ? 'solarized' : 'eink';
-      this.switchTheme(autoTheme);
+      // Only auto-switch if no user preference is set
+      if (!savedTheme) {
+        const autoTheme = e.matches ? 'solarized' : 'eink';
+        this.switchTheme(autoTheme);
+      }
+    } catch (error) {
+      // Silently fail if localStorage is not available
     }
   };
 

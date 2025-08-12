@@ -327,28 +327,60 @@ class WalletGroupService {
       const walletsData = localStorage.getItem(this.walletsStorageKey);
 
       if (groupsData) {
-        const entries = JSON.parse(groupsData);
-        this.groups = new Map(entries.map(([key, value]: [string, any]) => [
-          key,
-          {
-            ...value,
-            createdAt: new Date(value.createdAt),
-            updatedAt: new Date(value.updatedAt),
+        // SECURITY: Safe JSON parsing with comprehensive validation for groups data
+        let entries;
+        try {
+          if (!groupsData || typeof groupsData !== 'string') {
+            throw new Error('Invalid groups data format');
           }
-        ]));
+          entries = JSON.parse(groupsData);
+          
+          // Validate data structure
+          if (!Array.isArray(entries)) {
+            throw new Error('Invalid groups data structure - expected array');
+          }
+          
+          this.groups = new Map(entries.map(([key, value]: [string, any]) => [
+            key,
+            {
+              ...value,
+              createdAt: new Date(value.createdAt),
+              updatedAt: new Date(value.updatedAt),
+            }
+          ]));
+        } catch (parseError) {
+          logError('Failed to parse wallet groups data:', parseError);
+          localStorage.removeItem(this.storageKey);
+        }
       }
 
       if (walletsData) {
-        const entries = JSON.parse(walletsData);
-        this.wallets = new Map(entries.map(([key, value]: [string, any]) => [
-          key,
-          {
-            ...value,
-            publicKey: new PublicKey(value.publicKey),
-            createdAt: new Date(value.createdAt),
-            updatedAt: new Date(value.updatedAt),
+        // SECURITY: Safe JSON parsing with comprehensive validation for wallets data  
+        let entries;
+        try {
+          if (!walletsData || typeof walletsData !== 'string') {
+            throw new Error('Invalid wallets data format');
           }
-        ]));
+          entries = JSON.parse(walletsData);
+          
+          // Validate data structure
+          if (!Array.isArray(entries)) {
+            throw new Error('Invalid wallets data structure - expected array');
+          }
+          
+          this.wallets = new Map(entries.map(([key, value]: [string, any]) => [
+            key,
+            {
+              ...value,
+              publicKey: new PublicKey(value.publicKey),
+              createdAt: new Date(value.createdAt),
+              updatedAt: new Date(value.updatedAt),
+            }
+          ]));
+        } catch (parseError) {
+          logError('Failed to parse enhanced wallets data:', parseError);
+          localStorage.removeItem(this.walletsStorageKey);
+        }
       }
     } catch (error) {
       logError('Failed to load wallet groups from storage:', error);

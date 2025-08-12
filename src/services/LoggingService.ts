@@ -284,7 +284,24 @@ class LoggingService {
     try {
       const stored = localStorage.getItem('svmseek_logs');
       if (stored) {
-        const logs = JSON.parse(stored) as ErrorLog[];
+        // SECURITY: Safe JSON parsing with comprehensive validation for logs data
+        let logs;
+        try {
+          if (!stored || typeof stored !== 'string') {
+            throw new Error('Invalid logs data format');
+          }
+          logs = JSON.parse(stored) as ErrorLog[];
+          
+          // Validate data structure
+          if (!Array.isArray(logs)) {
+            throw new Error('Invalid logs data structure - expected array');
+          }
+        } catch (parseError) {
+          logError('Failed to parse logs data:', parseError);
+          localStorage.removeItem('svmseek_logs');
+          return;
+        }
+        
         this.logs = logs.filter(log =>
           log.timestamp > Date.now() - 7 * 24 * 60 * 60 * 1000 // Keep logs for 7 days
         );
@@ -309,7 +326,7 @@ class LoggingService {
         body: JSON.stringify({
           ...log,
           // Don't send the full error object to avoid circular references
-          error: log.error ? {
+          error: log.error && log.error instanceof Error ? {
             name: log.error.name,
             message: log.error.message,
             stack: log.error.stack,

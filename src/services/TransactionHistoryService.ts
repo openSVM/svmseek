@@ -539,7 +539,24 @@ class TransactionHistoryService {
     try {
       const transactionsData = localStorage.getItem(this.storageKey);
       if (transactionsData) {
-        const entries = JSON.parse(transactionsData);
+        // SECURITY: Safe JSON parsing with comprehensive validation for transaction data
+        let entries;
+        try {
+          if (!transactionsData || typeof transactionsData !== 'string') {
+            throw new Error('Invalid transactions data format');
+          }
+          entries = JSON.parse(transactionsData);
+          
+          // Validate data structure
+          if (!Array.isArray(entries)) {
+            throw new Error('Invalid transactions data structure - expected array');
+          }
+        } catch (parseError) {
+          logError('Failed to parse transaction history data:', parseError);
+          localStorage.removeItem(this.storageKey);
+          return;
+        }
+        
         this.transactions = new Map(entries.map(([key, value]: [string, any]) => [
           key,
           {
@@ -552,7 +569,24 @@ class TransactionHistoryService {
 
       const syncData = localStorage.getItem(this.syncStatusKey);
       if (syncData) {
-        const entries = JSON.parse(syncData);
+        // SECURITY: Safe JSON parsing with comprehensive validation for sync data
+        let entries;
+        try {
+          if (!syncData || typeof syncData !== 'string') {
+            throw new Error('Invalid sync data format');
+          }
+          entries = JSON.parse(syncData);
+          
+          // Validate data structure
+          if (!Array.isArray(entries)) {
+            throw new Error('Invalid sync data structure - expected array');
+          }
+        } catch (parseError) {
+          logError('Failed to parse sync status data:', parseError);
+          localStorage.removeItem(this.syncStatusKey);
+          return;
+        }
+        
         this.syncStatuses = new Map(entries.map(([key, value]: [string, any]) => [
           key,
           {
