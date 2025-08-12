@@ -20,6 +20,9 @@ import './styles/theme.css';
 // Import logging utility
 import { devLog, logInfo, logError } from './utils/logger';
 
+// Import theme manager for proper initialization
+import { themeManager } from './themes/UnifiedThemeManager';
+
 // Secure Buffer initialization without global modification
 import { Buffer } from 'buffer';
 
@@ -72,6 +75,10 @@ devLog('Buffer polyfills and React initialized successfully');
 // Wrap the entire app initialization in error handling
 function initializeApp() {
   try {
+    // Initialize theme manager first to apply theme variables
+    themeManager.initialize();
+    devLog('Theme manager initialized successfully');
+
     const container = document.getElementById('root');
     if (!container) {
       throw new Error('Root container not found');

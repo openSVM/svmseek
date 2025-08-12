@@ -5,10 +5,10 @@ export const StyledDialogContent = styled(DialogContent)<{ width?: string; heigh
   &&& {
     width: ${(props) => props.width || '50rem'};
     height: ${(props) => props.height || '40rem'};
-    background: #222429;
-    border: 0.1rem solid #3a475c;
-    box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
-    border-radius: 2rem;
+    background: var(--bg-secondary);
+    border: 0.1rem solid var(--border-primary);
+    box-shadow: var(--shadow-glass);
+    border-radius: var(--radius-xl);
     display: flex;
     justify-content: ${(props) => props.justify || 'center'};
     flex-direction: column;
@@ -20,10 +20,10 @@ export const StyledDialog = styled(Dialog)<{ width?: string; height?: string; ju
   &&& {
     width: ${(props) => props.width || '50rem'};
     height: ${(props) => props.height || '40rem'};
-    background: #222429;
-    border: 0.1rem solid #3a475c;
-    box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
-    border-radius: 2rem;
+    background: var(--bg-secondary);
+    border: 0.1rem solid var(--border-primary);
+    box-shadow: var(--shadow-glass);
+    border-radius: var(--radius-xl);
     display: flex;
     justify-content: ${(props) => props.justify || 'center'};
     flex-direction: column;
@@ -49,15 +49,18 @@ export const StyledTab = styled(Tab)`
     color: var(--interactive-primary);
     border-color: var(--interactive-primary);
     text-transform: capitalize;
-    font-size: 1.4rem;
-    font-family: Avenir Next Demi;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    font-weight: var(--font-weight-semibold);
     white-space: nowrap;
   }
 `
 
 export const StyledStepLabel = styled(StepLabel)`
   & span {
-    font-size: 1.4rem;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-primary);
+    color: var(--text-primary);
   }
 
   & svg {
@@ -65,7 +68,8 @@ export const StyledStepLabel = styled(StepLabel)`
     height: 2rem;
 
     text {
-      font-size: 1.4rem;
+      font-size: var(--font-size-sm);
+      fill: var(--text-primary);
     }
   }
 `

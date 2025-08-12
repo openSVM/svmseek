@@ -18,7 +18,7 @@ export default defineConfig({
     }),
     // Add Node.js polyfills for browser compatibility
     nodePolyfills({
-      include: ['crypto', 'stream', 'buffer', 'process', 'util', 'assert', 'url', 'os', 'path', 'vm'],
+      include: ['crypto', 'stream', 'buffer', 'process', 'util', 'assert', 'url', 'os', 'path', 'vm', 'fs'],
       globals: {
         Buffer: true,
         global: true,
@@ -39,7 +39,6 @@ export default defineConfig({
     outDir: 'build',
     sourcemap: true,
     rollupOptions: {
-      external: ['fs'],
       output: {
         manualChunks: {
           // Vendor chunk for common dependencies
@@ -95,6 +94,7 @@ export default defineConfig({
       os: path.resolve(__dirname, './src/polyfills/os-browser.js'),
       path: 'path-browserify',
       vm: 'vm-browserify',
+      fs: path.resolve(__dirname, './src/polyfills/fs-browser.js'),
     },
   },
   
