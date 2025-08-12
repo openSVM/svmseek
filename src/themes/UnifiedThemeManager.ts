@@ -303,12 +303,25 @@ export class MUIThemeGenerator {
    * @returns RGB array or null if invalid
    */
   private hexToRgb(hex: string): [number, number, number] | null {
+    // SECURITY: Validate input string before regex processing
+    if (!hex || typeof hex !== 'string' || hex.length > 7) {
+      return null;
+    }
+    
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? [
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16)
-    ] : null;
+    if (!result) return null;
+    
+    // SECURITY: Safe parseInt with validation for hex color components
+    const r = parseInt(result[1], 16);
+    const g = parseInt(result[2], 16);
+    const b = parseInt(result[3], 16);
+    
+    // Validate parsed values are in valid range (0-255)
+    if (isNaN(r) || isNaN(g) || isNaN(b) || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+      return null;
+    }
+    
+    return [r, g, b];
   }
 
   /**

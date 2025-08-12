@@ -423,7 +423,17 @@ class TransactionHistoryService {
       }
 
       // Daily activity
-      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0] || 'unknown-date';
+      // SECURITY: Safe date handling with validation for null/undefined blockTime
+      let date: string;
+      try {
+        if (tx.blockTime && typeof tx.blockTime === 'number' && isFinite(tx.blockTime)) {
+          date = new Date(tx.blockTime * 1000).toISOString().split('T')[0];
+        } else {
+          date = 'unknown-date';
+        }
+      } catch (error) {
+        date = 'unknown-date';
+      }
       const daily = dailyMap.get(date) || { count: 0, volume: 0 };
       daily.count++;
       daily.volume += tx.amount;

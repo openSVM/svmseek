@@ -415,7 +415,17 @@ class ExportService {
     const dailyMap = new Map<string, { count: number; volume: number; fees: number }>();
 
     transactions.forEach(tx => {
-      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0] || 'unknown-date';
+      // SECURITY: Safe date handling with validation for null/undefined blockTime
+      let date: string;
+      try {
+        if (tx.blockTime && typeof tx.blockTime === 'number' && isFinite(tx.blockTime)) {
+          date = new Date(tx.blockTime * 1000).toISOString().split('T')[0];
+        } else {
+          date = 'unknown-date';
+        }
+      } catch (error) {
+        date = 'unknown-date';
+      }
       const daily = dailyMap.get(date) || { count: 0, volume: 0, fees: 0 };
       daily.count++;
       daily.volume += tx.amount;
@@ -444,7 +454,13 @@ class ExportService {
   }
 
   generateFilename(type: string, format: string): string {
-    const timestamp = new Date().toISOString().split('T')[0] || 'unknown-date';
+    // SECURITY: Safe timestamp generation with error handling
+    let timestamp: string;
+    try {
+      timestamp = new Date().toISOString().split('T')[0];
+    } catch (error) {
+      timestamp = 'unknown-date';
+    }
     return `svmseek_${type}_${timestamp}.${format}`;
   }
 }

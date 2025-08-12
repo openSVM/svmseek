@@ -90,41 +90,60 @@ function initializeApp() {
   } catch (error) {
     logError('Failed to initialize React app:', error);
 
-    // Show a fallback error message
+    // Show a fallback error message with safe content
     const container = document.getElementById('root');
     if (container) {
-      container.innerHTML = `
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          background: #17181a;
-          color: #ffffff;
-          font-family: 'Avenir Next Medium', sans-serif;
-          text-align: center;
-          padding: 20px;
-        ">
-          <div>
-            <div style="font-size: 24px; margin-bottom: 20px;">⚠️</div>
-            <div style="font-size: 18px; margin-bottom: 10px;">Application Initialization Failed</div>
-            <div style="font-size: 14px; color: #888; margin-bottom: 20px;">
-              ${error instanceof Error ? error.message : 'Unknown error occurred'}
-            </div>
-            <button onclick="window.location.reload()" style="
-              background: #651CE4;
-              border: none;
-              color: white;
-              padding: 10px 20px;
-              border-radius: 5px;
-              cursor: pointer;
-              font-size: 14px;
-            ">
-              Reload Page
-            </button>
-          </div>
-        </div>
+      // SECURITY: Avoid XSS by using textContent instead of innerHTML for dynamic content
+      const errorDiv = document.createElement('div');
+      errorDiv.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #17181a;
+        color: #ffffff;
+        font-family: 'Avenir Next Medium', sans-serif;
+        text-align: center;
+        padding: 20px;
       `;
+      
+      const contentDiv = document.createElement('div');
+      
+      const iconDiv = document.createElement('div');
+      iconDiv.style.cssText = 'font-size: 24px; margin-bottom: 20px;';
+      iconDiv.textContent = '⚠️';
+      
+      const titleDiv = document.createElement('div');
+      titleDiv.style.cssText = 'font-size: 18px; margin-bottom: 10px;';
+      titleDiv.textContent = 'Application Initialization Failed';
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = 'font-size: 14px; color: #888; margin-bottom: 20px;';
+      // SECURITY: Safely display error message using textContent
+      messageDiv.textContent = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      const reloadButton = document.createElement('button');
+      reloadButton.style.cssText = `
+        background: #651CE4;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+      `;
+      reloadButton.textContent = 'Reload Page';
+      reloadButton.onclick = () => window.location.reload();
+      
+      contentDiv.appendChild(iconDiv);
+      contentDiv.appendChild(titleDiv);
+      contentDiv.appendChild(messageDiv);
+      contentDiv.appendChild(reloadButton);
+      errorDiv.appendChild(contentDiv);
+      
+      // Clear and append safely without innerHTML
+      container.textContent = '';
+      container.appendChild(errorDiv);
     }
   }
 }

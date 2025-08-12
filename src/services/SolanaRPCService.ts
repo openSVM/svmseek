@@ -285,7 +285,14 @@ export class SolanaRPCService {
     // Check if it's a block number
     if (/^\d+$/.test(trimmedQuery)) {
       try {
-        const slot = parseInt(trimmedQuery);
+        // SECURITY: Safe parseInt with bounds checking for slot numbers
+        const slot = parseInt(trimmedQuery, 10);
+        
+        // Validate slot number is within safe bounds
+        if (isNaN(slot) || !isFinite(slot) || slot < 0 || slot > Number.MAX_SAFE_INTEGER) {
+          throw new Error('Invalid slot number: out of valid range');
+        }
+        
         const block = await this.connection.getBlock(slot);
 
         if (block) {
