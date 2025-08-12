@@ -2,6 +2,7 @@
 import { Buffer } from 'buffer';
 import { derivePath } from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
+import crypto from 'crypto-browserify';
 import { devLog, logWarn, logError } from './logger';
 
 /**
@@ -157,8 +158,7 @@ export function safeCreateImportsEncryptionKey(seed) {
     // Use a simple PBKDF2-like approach instead of BIP32
     const seedBuffer = Buffer.isBuffer(seed) ? seed : Buffer.from(seed, 'hex');
 
-    // Create a deterministic 32-byte key from seed
-    const crypto = require('crypto-browserify');
+    // Create a deterministic 32-byte key from seed using imported crypto
     const key = crypto.pbkdf2Sync(
       seedBuffer,
       'svmseek-imports',
