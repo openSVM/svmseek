@@ -68,9 +68,9 @@ export const BtnCustom = styled(
   border-width: ${(props: Props) => props.borderWidth || '.1rem'};
   border-color: ${(props: Props) =>
     props.borderColor || props.btnColor || props.color || '#333'};
-  font-family: ${(props: Props) => props.fontFamily || 'Avenir Next Medium'};
-  font-size: ${(props: Props) => props.fontSize || '1rem'};
-  font-weight: ${(props: Props) => props.fontWeight || 500};
+  font-family: ${(props: Props) => props.fontFamily || 'var(--font-primary)'};
+  font-size: ${(props: Props) => props.fontSize || 'var(--font-size-md)'};
+  font-weight: ${(props: Props) => props.fontWeight || 'var(--font-weight-medium)'};
   margin: ${(props: Props) => props.margin || '0px'};
   padding: ${(props: Props) => props.padding || '3px 0px'};
   letter-spacing: ${(props: Props) => props.letterSpacing || '0.01rem'};

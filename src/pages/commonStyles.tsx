@@ -257,24 +257,24 @@ export const Input = styled(({ ...props }: InputProps) => (
 ))<InputProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '4.5rem'};
-  color: #fff;
-  font-family: Avenir Next Medium;
-  border: 0.1rem solid #3a475c;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  border: 0.1rem solid var(--border-primary);
   box-sizing: border-box;
-  font-size: 1.5rem;
-  border-radius: 1.5rem;
-  background: #222429;
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
   outline: none;
-  padding-left: 2rem;
-  padding-right: 10rem;
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-xxl);
 
   // fix for autocomplete
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-box-shadow: 0px 0px 0 50px #222429 inset !important;
-    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0px 0px 0 50px var(--bg-secondary) inset !important;
+    -webkit-text-fill-color: var(--text-primary);
   }
 
   @media (max-width: 540px) {
@@ -298,16 +298,16 @@ export type TextButtonProps = {
 };
 
 export const TextButton = styled.button<TextButtonProps>`
-  font-family: Avenir Next Medium;
+  font-family: var(--font-primary);
   font-style: normal;
-  font-weight: 500;
-  font-size: 1.2rem;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   text-align: center;
   letter-spacing: -0.457692px;
-  color: ${(props) => props.color || '#f79894'};
+  color: ${(props) => props.color || 'var(--status-error)'};
   border: none;
-  background-color: #222429;
-  backgroung: #222429;
+  background-color: var(--bg-secondary);
+  background: var(--bg-secondary);
   width: ${(props) => props.width || '50%'};
   outline: none;
   cursor: pointer;
@@ -340,17 +340,17 @@ export const Title = styled(
   }: TitleProps) => <span {...props}>{children}</span>,
 )<TitleProps>`
   width: ${(props) => props.width || 'auto'};
-  font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
+  font-family: ${(props) => props.fontFamily || 'var(--font-primary)'};
   font-style: normal;
   font-weight: normal;
-  font-size: ${(props) => props.fontSize || '1.4rem'};
+  font-size: ${(props) => props.fontSize || 'var(--font-size-md)'};
   text-align: center;
-  color: ${(props) => props.color || '#ecf0f3'};
+  color: ${(props) => props.color || 'var(--text-primary)'};
   text-align: ${(props) => props.textAlign || 'center'};
   margin: ${(props) => props.margin || '0'};
 
   @media (max-width: 540px) {
-    font-size: ${(props) => props.maxFont || '1.6rem'};
+    font-size: ${(props) => props.maxFont || 'var(--font-size-lg)'};
     text-align: ${(props) => props.mediaTextAlign || 'auto'};
   }
 `;
@@ -474,14 +474,14 @@ export const CardButton = styled.div<CardButtonProps>`
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  background: ${(props) => props.background || '#383b45'};
-  border-radius: ${(props) => props.radius || '1rem'};
-  transition: 0.2s;
+  background: ${(props) => props.background || 'var(--bg-tertiary)'};
+  border-radius: ${(props) => props.radius || 'var(--radius-lg)'};
+  transition: var(--animation-duration-fast);
   outline: none;
   opacity: ${(props) => props.opacity || '1'};
   text-decoration: none;
   &: hover {
-    box-shadow: 0px 0px 16px rgba(125, 125, 131, 0.1);
+    box-shadow: var(--shadow-md);
   }
 `;
 
@@ -491,10 +491,10 @@ export type BoldTitleProps = {
 };
 
 export const BoldTitle = styled.div<BoldTitleProps>`
-  font-family: Avenir Next Demi;
-  font-size: ${(props) => props.fontSize || '1.6rem'};
+  font-family: var(--font-display);
+  font-size: ${(props) => props.fontSize || 'var(--font-size-lg)'};
   letter-spacing: -0.523077px;
-  color: ${(props) => props.color || '#f8faff'};
+  color: ${(props) => props.color || 'var(--text-primary)'};
 `;
 
 export const Legend = styled.div`
@@ -504,7 +504,7 @@ export const Legend = styled.div`
   align-items: center;
   width: 75%;
   height: 0.1rem;
-  background: #383b45;
+  background: var(--bg-tertiary);
 `;
 
 export type StyledLabelProps = {
@@ -512,12 +512,12 @@ export type StyledLabelProps = {
 };
 
 export const StyledLabel = styled.label<StyledLabelProps>`
-  font-family: Avenir Next;
-  font-size: ${(props) => props.fontSize || '1.2rem'};
-  color: #93a0b2;
+  font-family: var(--font-primary);
+  font-size: ${(props) => props.fontSize || 'var(--font-size-sm)'};
+  color: var(--text-tertiary);
   cursor: pointer;
   @media (max-width: 540px) {
-    font-size: 1.6rem;
+    font-size: var(--font-size-lg);
   }
 `;
 
@@ -553,14 +553,14 @@ export const StyledRadio = styled(Radio)`
 `;
 
 export const SearchInput = styled.input`
-  background: #383b45;
-  border: 1px solid #3a475c;
-  border-radius: 1.7rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
   outline: none;
   width: 100%;
   height: 3.5rem;
-  color: #fff;
-  padding: 0 2rem;
+  color: var(--text-primary);
+  padding: 0 var(--spacing-lg);
 
   @media (max-width: 540px) {
     height: 4.5rem;
@@ -575,15 +575,15 @@ export type ListCardProps = {
 export const ListCard = styled.div<ListCardProps>`
   width: ${(props) => props.width || '100%'};
   height: ${(props) => props.height || '20rem'};
-  background: #222429;
-  border: 0.1rem solid #3a475c;
-  border-radius: 1rem;
+  background: var(--bg-secondary);
+  border: 0.1rem solid var(--border-primary);
+  border-radius: var(--radius-lg);
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   align-items: center;
   overflow: auto;
-  padding: 0 1.6rem;
+  padding: 0 var(--spacing-lg);
 `;
 
 export type ExclamationMarkProps = {

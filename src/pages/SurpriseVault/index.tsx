@@ -55,11 +55,11 @@ const SurpriseVault: React.FC = () => {
                 size="large"
                 onClick={() => navigate('/wallet')}
                 sx={{
-                  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                  color: '#000',
+                  background: 'var(--status-warning)',
+                  color: 'var(--text-inverse)',
                   fontWeight: 'bold',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #FFA500, #FFD700)',
+                    background: 'var(--interactive-hover)',
                   },
                 }}
               >
@@ -70,11 +70,11 @@ const SurpriseVault: React.FC = () => {
                 size="large"
                 onClick={() => navigate('/welcome')}
                 sx={{
-                  borderColor: '#FFD700',
-                  color: '#FFD700',
+                  borderColor: 'var(--status-warning)',
+                  color: 'var(--status-warning)',
                   '&:hover': {
-                    borderColor: '#FFA500',
-                    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                    borderColor: 'var(--interactive-hover)',
+                    backgroundColor: 'var(--bg-overlay)',
                   },
                 }}
               >

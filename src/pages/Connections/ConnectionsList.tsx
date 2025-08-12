@@ -22,10 +22,10 @@ const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   min-height: 70rem;
   padding: 2rem 4rem;
   width: 35rem;
-  background: #222429;
-  border: 0.1rem solid #3a475c;
-  box-shadow: 0px 0px 16px rgb(125 125 131, 10%);
-  border-radius: 2rem;
+  background: var(--bg-secondary);
+  border: 0.1rem solid var(--border-primary);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-xl);
 `;
 
 type TextProps = {
@@ -36,11 +36,11 @@ type TextProps = {
 };
 
 const Text = styled.span<TextProps>`
-  font-size: ${(props) => props.fontSize || '1.5rem'};
+  font-size: ${(props) => props.fontSize || 'var(--font-size-md)'};
   padding-bottom: ${(props) => props.paddingBottom || ''};
   text-transform: none;
-  font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
-  color: ${(props) => props.color || '#ecf0f3'};
+  font-family: ${(props) => props.fontFamily || 'var(--font-primary)'};
+  color: ${(props) => props.color || 'var(--text-primary)'};
 `;
 
 export default function ConnectionsList({ theme, close, open }) {
@@ -57,7 +57,7 @@ export default function ConnectionsList({ theme, close, open }) {
       aria-labelledby="responsive-dialog-title"
     >
       <RowContainer>
-        <Text fontSize={'2rem'}>Connected Dapps</Text>
+        <Text fontSize={'var(--font-size-xl)'}>Connected Dapps</Text>
       </RowContainer>
       <List disablePadding>
         {Object.entries(connectedWallets).map(([origin, connectedWallet]) => (
