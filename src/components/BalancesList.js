@@ -364,6 +364,10 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
           // Force a rerender now that we've cached the value.
           setForceUpdate((forceUpdate) => !forceUpdate);
         }
+      }).catch((error) => {
+        // BUSINESS LOGIC: Add proper error handling for token address resolution
+        logError('Failed to find associated token address:', error);
+        // Fail gracefully without crashing the component
       });
     }
   }

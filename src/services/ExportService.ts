@@ -175,16 +175,17 @@ class ExportService {
     const sections: string[] = [];
 
     // Metadata section
-    if (options.includeMetadata) {
+    if (options.includeMetadata && data.metadata) {
       sections.push('=== EXPORT METADATA ===');
       sections.push(
         ['Field', 'Value'].join(','),
-        ['Export Date', data.metadata.exportDate.toISOString()].join(','),
-        ['Export Type', data.metadata.exportType].join(','),
-        ['Version', data.metadata.version].join(','),
-        ['Total Wallets', data.metadata.totalWallets.toString()].join(','),
-        ['Total Groups', data.metadata.totalGroups.toString()].join(','),
-        ['Total Transactions', data.metadata.totalTransactions.toString()].join(','),
+        ['Export Date', (data.metadata.exportDate || new Date()).toISOString()].join(','),
+        ['Export Type', data.metadata.exportType || 'unknown'].join(','),
+        ['Version', data.metadata.version || '1.0.0'].join(','),
+        // BUSINESS LOGIC: Safe property access with fallback values
+        ['Total Wallets', (data.metadata.totalWallets || 0).toString()].join(','),
+        ['Total Groups', (data.metadata.totalGroups || 0).toString()].join(','),
+        ['Total Transactions', (data.metadata.totalTransactions || 0).toString()].join(','),
         ''
       );
     }

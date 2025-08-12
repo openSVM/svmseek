@@ -159,7 +159,12 @@ const toInstruction = async (
         programId,
       };
     }
-  } catch {}
+  } catch (error) {
+    // BUSINESS LOGIC: Add proper error handling instead of empty catch
+    devLog(`[${index}] Error decoding instruction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    // Log additional context for debugging
+    devLog(`[${index}] Program ID: ${programId.toString()}, Instruction data length: ${decoded.length}`);
+  }
 
   // all decodings failed
   devLog('[' + index + '] Failed, data: ' + JSON.stringify(decoded));
