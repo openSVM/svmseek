@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
-import { logError  } from '../utils/logger';
+import { logError } from '../utils/logger';
 import {
   refreshWalletPublicKeys,
   useBalanceInfo,
@@ -101,9 +101,8 @@ export default function BalancesList() {
   const wallet = useWallet();
   const [publicKeys, loaded] = useWalletPublicKeys();
   const [showAddTokenDialog, setShowAddTokenDialog] = useState(false);
-  const [showEditAccountNameDialog, setShowEditAccountNameDialog] = useState(
-    false,
-  );
+  const [showEditAccountNameDialog, setShowEditAccountNameDialog] =
+    useState(false);
   const [showMergeAccounts, setShowMergeAccounts] = useState(false);
   const [sortAccounts, setSortAccounts] = useState(SortAccounts.None);
   const { accounts, setAccountName } = useWalletSelector();
@@ -297,7 +296,7 @@ const ButtonContainer = styled('div')(({ theme }) => ({
 export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
   const wallet = useWallet();
   const balanceInfo = useBalanceInfo(publicKey);
-  const theme = useTheme()
+  const theme = useTheme();
   const connection = useConnection();
   const [open, setOpen] = useState(false);
   const [, setForceUpdate] = useState(false);
@@ -365,6 +364,10 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
           // Force a rerender now that we've cached the value.
           setForceUpdate((forceUpdate) => !forceUpdate);
         }
+      }).catch((error) => {
+        // BUSINESS LOGIC: Add proper error handling for token address resolution
+        logError('Failed to find associated token address:', error);
+        // Fail gracefully without crashing the component
       });
     }
   }
@@ -407,8 +410,8 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
     price === undefined // Not yet loaded.
       ? undefined
       : price === null // Loaded and empty.
-      ? null
-      : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
+        ? null
+        : ((amount / Math.pow(10, decimals)) * price).toFixed(2); // Loaded.
 
   if (setUsdValue && usdValue !== undefined) {
     setUsdValue(publicKey, usdValue === null ? null : parseFloat(usdValue));
@@ -416,7 +419,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
 
   return (
     <>
-      <ListItem  button onClick={() => expandable && setOpen((open) => !open)}>
+      <ListItem button onClick={() => expandable && setOpen((open) => !open)}>
         <ListItemIcon>
           <TokenIcon mint={mint} tokenName={tokenName} size={28} />
         </ListItemIcon>
@@ -429,9 +432,7 @@ export function BalanceListItem({ publicKey, expandable, setUsdValue }) {
                 {tokenSymbol ? ` (${tokenSymbol})` : null}
               </Title>
             }
-            secondary={
-              <AddressText>{subtitle}</AddressText>
-            }
+            secondary={<AddressText>{subtitle}</AddressText>}
           />
           <div
             style={{
@@ -466,10 +467,8 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
   const [, setDepositDialogOpen] = useState(false);
   const [tokenInfoDialogOpen, setTokenInfoDialogOpen] = useState(false);
   const [exportAccDialogOpen, setExportAccDialogOpen] = useState(false);
-  const [
-    closeTokenAccountDialogOpen,
-    setCloseTokenAccountDialogOpen,
-  ] = useState(false);
+  const [closeTokenAccountDialogOpen, setCloseTokenAccountDialogOpen] =
+    useState(false);
   const wallet = useWallet();
   const isProdNetwork = useIsProdNetwork();
   const [swapInfo] = useAsyncData(async () => {
@@ -558,7 +557,10 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
           ) : null}
         </ButtonContainer>
         <Typography variant="body2" component="div">
-          Deposit Address: <AddressText style={{ display: 'inline' }}>{publicKey.toBase58()}</AddressText>
+          Deposit Address:{' '}
+          <AddressText style={{ display: 'inline' }}>
+            {publicKey.toBase58()}
+          </AddressText>
         </Typography>
         <Typography variant="body2">
           Token Name: {tokenName ?? 'Unknown'}
@@ -568,7 +570,10 @@ function BalanceListItemDetails({ publicKey, serumMarkets, balanceInfo }) {
         </Typography>
         {mint ? (
           <Typography variant="body2" component="div">
-            Token Address: <AddressText style={{ display: 'inline' }}>{mint.toBase58()}</AddressText>
+            Token Address:{' '}
+            <AddressText style={{ display: 'inline' }}>
+              {mint.toBase58()}
+            </AddressText>
           </Typography>
         ) : null}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>

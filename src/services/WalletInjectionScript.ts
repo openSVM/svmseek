@@ -298,30 +298,50 @@ export function createWalletInjectionScript(): string {
     const phantomProvider = createWalletProvider('phantom');
     const svmseekProvider = createWalletProvider('svmseek');
 
+    // Check for existing providers to avoid conflicts
+    const existingProviders = {
+      solana: window.solana,
+      phantom: window.phantom,
+      svmseek: window.svmseek
+    };
+
     // Inject providers with proper property descriptors for security
-    Object.defineProperty(window, 'solana', {
-      value: solanaProvider,
-      writable: false,
-      configurable: false,
-      enumerable: true
-    });
+    // Only inject if not already present to avoid conflicts
+    if (!existingProviders.solana) {
+      Object.defineProperty(window, 'solana', {
+        value: solanaProvider,
+        writable: false,
+        configurable: false,
+        enumerable: true
+      });
+    } else {
+      console.warn('SVMSeek: Solana provider already exists, skipping injection');
+    }
 
-    Object.defineProperty(window, 'phantom', {
-      value: {
-        solana: phantomProvider,
-        isPhantom: true
-      },
-      writable: false,
-      configurable: false,
-      enumerable: true
-    });
+    if (!existingProviders.phantom) {
+      Object.defineProperty(window, 'phantom', {
+        value: {
+          solana: phantomProvider,
+          isPhantom: true
+        },
+        writable: false,
+        configurable: false,
+        enumerable: true
+      });
+    } else {
+      console.warn('SVMSeek: Phantom provider already exists, skipping injection');
+    }
 
-    Object.defineProperty(window, 'svmseek', {
-      value: svmseekProvider,
-      writable: false,
-      configurable: false,
-      enumerable: true
-    });
+    if (!existingProviders.svmseek) {
+      Object.defineProperty(window, 'svmseek', {
+        value: svmseekProvider,
+        writable: false,
+        configurable: false,
+        enumerable: true
+      });
+    } else {
+      console.warn('SVMSeek: SVMSeek provider already exists, skipping injection');
+    }
 
     // Mark injection as complete
     Object.defineProperty(window, 'svmseekWalletInjected', {
@@ -334,9 +354,9 @@ export function createWalletInjectionScript(): string {
     // Store provider references for external access
     Object.defineProperty(window, 'svmseekProviders', {
       value: {
-        solana: solanaProvider,
-        phantom: phantomProvider,
-        svmseek: svmseekProvider
+        solana: window.solana || solanaProvider,
+        phantom: window.phantom?.solana || phantomProvider,
+        svmseek: window.svmseek || svmseekProvider
       },
       writable: false,
       configurable: false,
@@ -348,11 +368,15 @@ export function createWalletInjectionScript(): string {
       detail: {
         version: '1.0.0',
         providers: ['solana', 'phantom', 'svmseek'],
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        conflictsDetected: Object.values(existingProviders).some(p => p !== undefined)
       }
     }));
 
-    console.log('SVMSeek: Wallet providers injected successfully');
+    console.log('SVMSeek: Wallet providers injected successfully', {
+      conflictsDetected: Object.values(existingProviders).some(p => p !== undefined),
+      existingProviders: Object.keys(existingProviders).filter(key => existingProviders[key])
+    });
 
   } catch (error) {
     console.error('SVMSeek: Failed to inject wallet providers:', error);

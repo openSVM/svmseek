@@ -175,16 +175,17 @@ class ExportService {
     const sections: string[] = [];
 
     // Metadata section
-    if (options.includeMetadata) {
+    if (options.includeMetadata && data.metadata) {
       sections.push('=== EXPORT METADATA ===');
       sections.push(
         ['Field', 'Value'].join(','),
-        ['Export Date', data.metadata.exportDate.toISOString()].join(','),
-        ['Export Type', data.metadata.exportType].join(','),
-        ['Version', data.metadata.version].join(','),
-        ['Total Wallets', data.metadata.totalWallets.toString()].join(','),
-        ['Total Groups', data.metadata.totalGroups.toString()].join(','),
-        ['Total Transactions', data.metadata.totalTransactions.toString()].join(','),
+        ['Export Date', (data.metadata.exportDate || new Date()).toISOString()].join(','),
+        ['Export Type', data.metadata.exportType || 'unknown'].join(','),
+        ['Version', data.metadata.version || '1.0.0'].join(','),
+        // BUSINESS LOGIC: Safe property access with fallback values
+        ['Total Wallets', (data.metadata.totalWallets || 0).toString()].join(','),
+        ['Total Groups', (data.metadata.totalGroups || 0).toString()].join(','),
+        ['Total Transactions', (data.metadata.totalTransactions || 0).toString()].join(','),
         ''
       );
     }
@@ -251,7 +252,15 @@ class ExportService {
     // For now, return CSV format with XLSX headers
     // In a real implementation, you would use a library like xlsx-js-style
     const csvData = this.formatAsCSV(data, options);
-    return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${btoa(csvData)}`;
+    
+    // SECURITY: Safe base64 encoding with error handling
+    try {
+      // Encode Unicode characters safely before btoa
+      const encodedData = btoa(unescape(encodeURIComponent(csvData)));
+      return `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${encodedData}`;
+    } catch (error) {
+      throw new Error('Failed to encode data for XLSX export: Invalid characters detected');
+    }
   }
 
   // CSV Helper Methods
@@ -415,7 +424,17 @@ class ExportService {
     const dailyMap = new Map<string, { count: number; volume: number; fees: number }>();
 
     transactions.forEach(tx => {
-      const date = new Date(tx.blockTime * 1000).toISOString().split('T')[0];
+      // SECURITY: Safe date handling with validation for null/undefined blockTime
+      let date: string;
+      try {
+        if (tx.blockTime && typeof tx.blockTime === 'number' && isFinite(tx.blockTime)) {
+          date = new Date(tx.blockTime * 1000).toISOString().split('T')[0];
+        } else {
+          date = 'unknown-date';
+        }
+      } catch (error) {
+        date = 'unknown-date';
+      }
       const daily = dailyMap.get(date) || { count: 0, volume: 0, fees: 0 };
       daily.count++;
       daily.volume += tx.amount;
@@ -444,7 +463,13 @@ class ExportService {
   }
 
   generateFilename(type: string, format: string): string {
-    const timestamp = new Date().toISOString().split('T')[0];
+    // SECURITY: Safe timestamp generation with error handling
+    let timestamp: string;
+    try {
+      timestamp = new Date().toISOString().split('T')[0];
+    } catch (error) {
+      timestamp = 'unknown-date';
+    }
     return `svmseek_${type}_${timestamp}.${format}`;
   }
 }

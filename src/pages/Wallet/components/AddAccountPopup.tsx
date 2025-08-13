@@ -120,10 +120,39 @@ export default function AddAccountDialog({ open, onAdd, onClose }) {
  * @param {string} privateKey - the private key in array format
  */
 function decodeAccount(privateKey) {
+  // SECURITY: Safe JSON parsing with comprehensive validation for private key data
   try {
-    const a = new Account(JSON.parse(privateKey));
+    if (!privateKey || typeof privateKey !== 'string' || privateKey.trim().length === 0) {
+      return undefined;
+    }
+    
+    const trimmedKey = privateKey.trim();
+    let parsedKey;
+    
+    try {
+      parsedKey = JSON.parse(trimmedKey);
+    } catch (parseError) {
+      // If JSON parsing fails, try to parse as a raw array string or other format
+      return undefined;
+    }
+    
+    // Validate that parsed key is a valid array of numbers for Solana Account
+    if (!Array.isArray(parsedKey) || parsedKey.length !== 64) {
+      return undefined;
+    }
+    
+    // Validate all elements are valid numbers in the expected range for private key bytes
+    for (const byte of parsedKey) {
+      if (typeof byte !== 'number' || !Number.isInteger(byte) || byte < 0 || byte > 255) {
+        return undefined;
+      }
+    }
+    
+    const a = new Account(parsedKey);
     return a;
-  } catch (_) {
+  } catch (error) {
+    // Log error for debugging but don't expose sensitive information
+    console.warn('Failed to decode account from private key');
     return undefined;
   }
 }

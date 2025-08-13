@@ -16,7 +16,7 @@ export const WRAPPED_SOL_MINT = new PublicKey(
 
 export const CCAI_MINT = new PublicKey(
   'E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp',
-)
+);
 
 export const MEMO_PROGRAM_ID = new PublicKey(
   'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo',
@@ -47,7 +47,10 @@ LAYOUT.addVariant(
 LAYOUT.addVariant(9, BufferLayout.struct([]), 'closeAccount');
 LAYOUT.addVariant(
   12,
-  BufferLayout.struct([BufferLayout.nu64('amount'), BufferLayout.u8('decimals')]),
+  BufferLayout.struct([
+    BufferLayout.nu64('amount'),
+    BufferLayout.u8('decimals'),
+  ]),
   'transferChecked',
 );
 
@@ -101,7 +104,14 @@ export function initializeAccount({ account, mint, owner }) {
   });
 }
 
-export function transferChecked({ source, mint, destination, amount, decimals, owner }) {
+export function transferChecked({
+  source,
+  mint,
+  destination,
+  amount,
+  decimals,
+  owner,
+}) {
   let keys = [
     { pubkey: source, isSigner: false, isWritable: true },
     { pubkey: mint, isSigner: false, isWritable: false },

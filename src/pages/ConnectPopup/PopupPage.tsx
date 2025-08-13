@@ -266,16 +266,26 @@ export default function PopupPage() {
 
   async function onApprove() {
     popRequest();
-    switch (request.method) {
-      case 'signTransaction':
-      case 'sign':
-        sendSignature(messages[0]);
-        break;
-      case 'signAllTransactions':
-        sendAllSignatures(messages);
-        break;
-      default:
-        throw new Error('Unexpected method: ' + request.method);
+    try {
+      switch (request.method) {
+        case 'signTransaction':
+        case 'sign':
+          await sendSignature(messages[0]);
+          break;
+        case 'signAllTransactions':
+          await sendAllSignatures(messages);
+          break;
+        default:
+          throw new Error('Unexpected method: ' + request.method);
+      }
+    } catch (error) {
+      // BUSINESS LOGIC: Proper error handling for signature operations
+      const errorMessage = error instanceof Error ? error.message : 'Failed to process signature request';
+      devLog('Failed to process signature request:', error);
+      postMessage({
+        error: errorMessage,
+        id: request.id,
+      });
     }
   }
 
@@ -299,9 +309,16 @@ export default function PopupPage() {
         signatures.push(await wallet.createSignature(messages[k]));
       }
     } else {
-      signatures = await Promise.all(
-        messages.map((m) => wallet.createSignature(m)),
-      );
+      // BUSINESS LOGIC: Safe Promise.all with proper error handling for signature operations
+      try {
+        signatures = await Promise.all(
+          messages.map((m) => wallet.createSignature(m)),
+        );
+      } catch (error) {
+        devLog('Failed to sign multiple transactions:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to sign transactions';
+        throw new Error(`Failed to sign transactions: ${errorMessage}`);
+      }
     }
     postMessage({
       result: {

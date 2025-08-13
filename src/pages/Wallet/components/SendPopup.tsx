@@ -283,7 +283,13 @@ function SendSplDialog({ onClose, publicKey, balanceInfo, refreshTokensData }) {
   }, [destinationAddress, wallet, mintString]);
 
   async function makeTransaction() {
-    let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
+    // SECURITY: Safe parseFloat with comprehensive validation 
+    const parsed = parseFloat(transferAmountString);
+    if (!isFinite(parsed) || isNaN(parsed) || parsed <= 0 || parsed > Number.MAX_SAFE_INTEGER / (10 ** decimals)) {
+      throw new Error('Invalid amount: must be a valid positive number');
+    }
+    
+    let amount = Math.round(parsed * 10 ** decimals);
 
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
@@ -447,7 +453,13 @@ function SendSwapDialog({
   ]);
 
   async function makeTransaction() {
-    let amount = Math.round(parseFloat(transferAmountString) * 10 ** decimals);
+    // SECURITY: Safe parseFloat with comprehensive validation 
+    const parsed = parseFloat(transferAmountString);
+    if (!isFinite(parsed) || isNaN(parsed) || parsed <= 0 || parsed > Number.MAX_SAFE_INTEGER / (10 ** decimals)) {
+      throw new Error('Invalid amount: must be a valid positive number');
+    }
+    
+    let amount = Math.round(parsed * 10 ** decimals);
     if (!amount || amount <= 0) {
       throw new Error('Invalid amount');
     }

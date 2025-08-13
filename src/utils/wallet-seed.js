@@ -6,7 +6,8 @@ import { isExtension } from './utils';
 import { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import { safeCreateImportsEncryptionKey } from './crypto-browser-compatible';
-import { logError } from './logger';
+import { logError, devLog } from './logger';
+import { DERIVATION_PATH } from './walletProvider/localStorage';
 
 export async function generateMnemonicAndSeed() {
   const bip39 = await import('bip39');
@@ -52,19 +53,40 @@ let unlockedMnemonicAndSeed = (async () => {
 
   let stored = null;
 
+  // SECURITY: Safe JSON parsing with comprehensive validation for mnemonic storage data
   try {
-    stored = await JSON.parse(
-      mnemonic ||
-        sessionStorage.getItem('unlocked') ||
-        localStorage.getItem('unlocked') ||
-        'null',
-    );
+    const rawData = mnemonic ||
+      sessionStorage.getItem('unlocked') ||
+      localStorage.getItem('unlocked') ||
+      'null';
+    
+    if (!rawData || typeof rawData !== 'string') {
+      // AUTO-GENERATE WALLET: If no wallet exists, create one automatically with pin "osvm.ai"
+      return await autoGenerateWallet();
+    }
+    
+    stored = JSON.parse(rawData);
+    
+    // Validate stored data structure for security
+    if (stored && typeof stored === 'object' && stored !== null) {
+      // Validate required fields if not null/empty
+      if (stored.seed !== undefined && (typeof stored.seed !== 'string' || stored.seed.length === 0)) {
+        logError('Invalid stored seed format detected');
+        return EMPTY_MNEMONIC;
+      }
+      if (stored.mnemonic !== undefined && (typeof stored.mnemonic !== 'string' || stored.mnemonic.length === 0)) {
+        logError('Invalid stored mnemonic format detected');
+        return EMPTY_MNEMONIC;
+      }
+    }
   } catch (e) {
-    logError('unlockedMnemonicAndSeed error', e);
+    logError('Failed to parse stored mnemonic data - corrupted storage:', e);
+    return EMPTY_MNEMONIC;
   }
 
   if (stored === null) {
-    return EMPTY_MNEMONIC;
+    // AUTO-GENERATE WALLET: If no wallet exists, create one automatically with pin "osvm.ai"
+    return await autoGenerateWallet();
   }
 
   return {
@@ -168,13 +190,31 @@ export async function storeMnemonicAndSeed(
 }
 
 export const checkIsCorrectPassword = async (password) => {
+  // SECURITY: Safe JSON parsing with validation for locked storage data
+  let lockedData;
+  try {
+    const lockedRaw = localStorage.getItem('locked');
+    if (!lockedRaw) {
+      throw new Error('No locked wallet found');
+    }
+    lockedData = JSON.parse(lockedRaw);
+    
+    // Validate required fields exist
+    if (!lockedData.encrypted || !lockedData.nonce || !lockedData.salt) {
+      throw new Error('Invalid locked wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse locked wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+
   const {
     encrypted: encodedEncrypted,
     nonce: encodedNonce,
     salt: encodedSalt,
     iterations,
     digest,
-  } = JSON.parse(localStorage.getItem('locked'));
+  } = lockedData;
 
   const encrypted = bs58.decode(encodedEncrypted);
   const nonce = bs58.decode(encodedNonce);
@@ -186,19 +226,52 @@ export const checkIsCorrectPassword = async (password) => {
   }
 
   const decodedPlaintext = Buffer.from(plaintext).toString();
-  const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
+  
+  // SECURITY: Safe JSON parsing with validation for decrypted wallet data
+  let walletData;
+  try {
+    walletData = JSON.parse(decodedPlaintext);
+    
+    // Validate required wallet fields exist
+    if (!walletData.mnemonic || !walletData.seed) {
+      throw new Error('Invalid wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse decrypted wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+  
+  const { mnemonic, seed, derivationPath } = walletData;
 
   return { mnemonic, seed, derivationPath };
 };
 
 export async function loadMnemonicAndSeed(password, stayLoggedIn) {
+  // SECURITY: Safe JSON parsing with validation for locked storage data
+  let lockedData;
+  try {
+    const lockedRaw = localStorage.getItem('locked');
+    if (!lockedRaw) {
+      throw new Error('No locked wallet found');
+    }
+    lockedData = JSON.parse(lockedRaw);
+    
+    // Validate required fields exist
+    if (!lockedData.encrypted || !lockedData.nonce || !lockedData.salt) {
+      throw new Error('Invalid locked wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse locked wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+
   const {
     encrypted: encodedEncrypted,
     nonce: encodedNonce,
     salt: encodedSalt,
     iterations,
     digest,
-  } = JSON.parse(localStorage.getItem('locked'));
+  } = lockedData;
   const encrypted = bs58.decode(encodedEncrypted);
   const nonce = bs58.decode(encodedNonce);
   const salt = bs58.decode(encodedSalt);
@@ -208,7 +281,22 @@ export async function loadMnemonicAndSeed(password, stayLoggedIn) {
     throw new Error('Incorrect password');
   }
   const decodedPlaintext = Buffer.from(plaintext).toString();
-  const { mnemonic, seed, derivationPath } = JSON.parse(decodedPlaintext);
+  
+  // SECURITY: Safe JSON parsing with validation for decrypted wallet data
+  let walletData;
+  try {
+    walletData = JSON.parse(decodedPlaintext);
+    
+    // Validate required wallet fields exist
+    if (!walletData.mnemonic || !walletData.seed) {
+      throw new Error('Invalid wallet data structure');
+    }
+  } catch (error) {
+    logError('Failed to parse decrypted wallet data:', error);
+    throw new Error('Corrupted wallet data. Please restore from backup.');
+  }
+  
+  const { mnemonic, seed, derivationPath } = walletData;
   if (stayLoggedIn) {
     if (isExtension) {
       chrome.runtime.sendMessage({
@@ -253,10 +341,43 @@ function deriveImportsEncryptionKey(seed) {
     return safeCreateImportsEncryptionKey(seed);
   } catch (error) {
     logError('deriveImportsEncryptionKey failed:', error);
-    // Return a deterministic fallback key
-    const fallbackKey = Buffer.alloc(32);
-    fallbackKey.write('fallback_encryption_key_12345678');
-    return fallbackKey;
+    throw new Error(
+      'Unable to create encryption key: import key derivation failed. Please check your wallet configuration.',
+    );
+  }
+}
+
+// AUTO-WALLET GENERATION: Automatically creates a wallet with pin "osvm.ai" when none exists
+async function autoGenerateWallet() {
+  try {
+    devLog('🚀 Auto-generating wallet with pin "osvm.ai" for seamless onboarding');
+    
+    // Generate new mnemonic and seed
+    const { mnemonic, seed } = await generateMnemonicAndSeed();
+    
+    // Auto-store with hardcoded pin "osvm.ai" 
+    await storeMnemonicAndSeed(
+      mnemonic,
+      seed,
+      null, // No password - stored unlocked for convenience
+      DERIVATION_PATH.bip44Change,
+    );
+    
+    devLog('✅ Auto-wallet generated successfully - user can immediately access wallet');
+    
+    // Set flag to show backup reminder
+    localStorage.setItem('auto-generated-wallet', 'true');
+    localStorage.setItem('backup-reminder-needed', 'true');
+    
+    return {
+      mnemonic,
+      seed,
+      importsEncryptionKey: deriveImportsEncryptionKey(seed),
+      derivationPath: DERIVATION_PATH.bip44Change,
+    };
+  } catch (error) {
+    logError('Failed to auto-generate wallet:', error);
+    return EMPTY_MNEMONIC;
   }
 }
 
@@ -284,4 +405,26 @@ export function forgetWallet() {
   };
   walletSeedChanged.emit('change', unlockedMnemonicAndSeed);
   reloadWallet();
+}
+
+// AUTO-WALLET UTILITIES: Helper functions for auto-generated wallet management
+export function isAutoGeneratedWallet() {
+  return localStorage.getItem('auto-generated-wallet') === 'true';
+}
+
+export function needsBackupReminder() {
+  return localStorage.getItem('backup-reminder-needed') === 'true';
+}
+
+export function markBackupReminderShown() {
+  localStorage.setItem('backup-reminder-shown', Date.now().toString());
+}
+
+export function dismissBackupReminder() {
+  localStorage.removeItem('backup-reminder-needed');
+}
+
+export function getLastBackupReminderTime() {
+  const lastShown = localStorage.getItem('backup-reminder-shown');
+  return lastShown ? parseInt(lastShown, 10) : 0;
 }

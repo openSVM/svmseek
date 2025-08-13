@@ -15,9 +15,11 @@ import WebBrowser from '../../components/WebBrowser';
 import { SVMPayInterface } from '../../components/SVMPay';
 import { AEANetworkInterface } from '../../components/AEANetwork';
 import VaultAccessButton from '../../components/VaultAccessButton';
+import BackupReminder from './components/BackupReminder';
 
 import { RowContainer } from '../commonStyles';
 import { PublicKey } from '@solana/web3.js';
+import { logError } from '../../utils/logger';
 import { useWallet } from '../../utils/wallet';
 import { getAllTokensData, TokenInfo, useInterval } from '../../utils/utils';
 import { TokensDataSingleton } from '../../components/TokensDataSingleton';
@@ -25,6 +27,7 @@ import { useConnection } from '../../utils/connection';
 import { useTokenInfosMap } from '../../utils/tokens/names';
 import CloseTokenAccountDialog from './components/CloseTokenAccountPopup';
 import { MultiAccountManager } from '../../services/MultiAccountManager';
+import { needsBackupReminder } from '../../utils/wallet-seed';
 
 const MainWalletContainer = styled(RowContainer)`
   flex-direction: column;
@@ -42,14 +45,19 @@ const Switcher = styled.button<{ isTabActive?: boolean }>`
     outline: none;
     display: block;
     width: 20%;
-    color: ${(props) => (props.isTabActive ? ' #f5f5fb' : '#96999C')};
+    color: ${(props) => (props.isTabActive ? 'var(--text-primary)' : 'var(--text-secondary)')};
     background: none;
-    font-family: 'Avenir Next Demi';
+    font-family: var(--font-primary);
     height: 4rem;
     cursor: pointer;
     border: none;
     border-bottom: ${(props) =>
-      props.isTabActive ? '0.2rem solid #f5f5fb' : '0.2rem solid #96999C'};
+      props.isTabActive ? '2px solid var(--interactive-primary)' : '2px solid var(--border-primary)'};
+    transition: all var(--animation-duration-fast) var(--animation-easing-default);
+    
+    &:hover {
+      color: var(--interactive-primary);
+    }
   }
 `;
 
@@ -99,6 +107,7 @@ const Wallet = () => {
     hash === '#add_token_to_rebalance',
   );
   const [activeTab, setTabActive] = useState('assets');
+  const [showExportDialog, setShowExportDialog] = useState(false);
 
   const tokenInfosMap = useTokenInfosMap();
   const [refreshCounter, changeRefreshCounter] = useState(0);
@@ -116,7 +125,10 @@ const Wallet = () => {
         'Main Wallet',
         'derived',
         []
-      ).catch(console.error);
+      ).catch((error) => {
+        logError('Failed to import wallet to MultiAccountManager:', error);
+        // Continue operation even if import fails to avoid blocking UI
+      });
     }
   }, [connection, wallet.publicKey, multiAccountManager]);
 
@@ -137,6 +149,11 @@ const Wallet = () => {
   const isTokenSelected =
     allTokensData.get(selectedTokenData.publicKey.toString()) &&
     selectedTokenData.publicKey;
+
+  // Handle backup reminder export
+  const handleExportWallet = () => {
+    setShowExportDialog(true);
+  };
 
   useInterval(refreshTokensData, 5 * 1000);
 
@@ -335,6 +352,43 @@ const Wallet = () => {
 
       {/* Floating Vault Access Button */}
       <VaultAccessButton />
+
+      {/* Backup Reminder for Auto-Generated Wallets */}
+      {needsBackupReminder() && (
+        <BackupReminder onExportWallet={handleExportWallet} />
+      )}
+
+      {/* Export Wallet Dialog */}
+      {showExportDialog && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ 
+            background: 'var(--bg-secondary)', 
+            borderRadius: '12px', 
+            padding: '2rem', 
+            maxWidth: '500px', 
+            width: '90%',
+            border: '1px solid var(--border-primary)'
+          }}>
+            <h2 style={{ margin: '0 0 1rem 0', color: 'var(--text-primary)' }}>Export Wallet Backup</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+              This feature will be available soon. For now, you can access your wallet seed phrase through the account settings.
+            </p>
+            <button 
+              onClick={() => setShowExportDialog(false)}
+              style={{
+                background: 'var(--interactive-primary)',
+                color: 'var(--text-primary)',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.75rem 1.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </MainWalletContainer>
   );
 };

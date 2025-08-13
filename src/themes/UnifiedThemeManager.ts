@@ -225,7 +225,7 @@ export class MUIThemeGenerator {
         },
       },
       shape: {
-        borderRadius: parseInt(effects.radius.md),
+        borderRadius: this.parseNumericValue(effects.radius.md, 8),
       },
       components: {
         MuiButton: {
@@ -282,17 +282,19 @@ export class MUIThemeGenerator {
    * @returns Luminance value 0-1
    */
   private getLuminance(color: string): number {
-    // Simplified luminance calculation
-    // In a real implementation, you'd parse the color properly
+    // Simplified luminance calculation with safety checks
     const rgb = this.hexToRgb(color);
     if (!rgb) return 0.5; // Default to middle if can't parse
 
     const [r, g, b] = rgb.map(c => {
+      if (c < 0 || c > 255) return 0; // Safety check for valid RGB values
       c = c / 255;
       return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
     });
 
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    // Ensure finite result
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    return isFinite(luminance) ? Math.max(0, Math.min(1, luminance)) : 0.5;
   }
 
   /**
@@ -301,12 +303,36 @@ export class MUIThemeGenerator {
    * @returns RGB array or null if invalid
    */
   private hexToRgb(hex: string): [number, number, number] | null {
+    // SECURITY: Validate input string before regex processing
+    if (!hex || typeof hex !== 'string' || hex.length > 7) {
+      return null;
+    }
+    
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? [
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16)
-    ] : null;
+    if (!result) return null;
+    
+    // SECURITY: Safe parseInt with validation for hex color components
+    const r = parseInt(result[1], 16);
+    const g = parseInt(result[2], 16);
+    const b = parseInt(result[3], 16);
+    
+    // Validate parsed values are in valid range (0-255)
+    if (isNaN(r) || isNaN(g) || isNaN(b) || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+      return null;
+    }
+    
+    return [r, g, b];
+  }
+
+  /**
+   * Parse numeric value safely with fallback
+   * @param value - String value to parse
+   * @param fallback - Fallback number if parsing fails
+   * @returns Parsed number or fallback
+   */
+  private parseNumericValue(value: string, fallback: number): number {
+    const parsed = parseInt(value);
+    return isNaN(parsed) || !isFinite(parsed) ? fallback : parsed;
   }
 }
 
@@ -319,6 +345,7 @@ export class UnifiedThemeManager {
   private cssGenerator: CSSVariableGenerator;
   private muiGenerator: MUIThemeGenerator;
   private changeListeners: Array<(theme: SVMTheme, muiTheme: MUITheme) => void> = [];
+  private mediaQuery: MediaQueryList | null = null;
 
   constructor(initialTheme: SVMTheme = defaultTheme) {
     this.currentTheme = initialTheme;
@@ -365,7 +392,11 @@ export class UnifiedThemeManager {
     });
 
     // Store preference
-    localStorage.setItem('svmseek-theme', newTheme.name);
+    try {
+      localStorage.setItem('svmseek-theme', newTheme.name);
+    } catch (error) {
+      // Silently fail if localStorage is not available (private browsing mode, etc.)
+    }
   }
 
   /**
@@ -393,18 +424,44 @@ export class UnifiedThemeManager {
    */
   initialize(): void {
     // Load saved theme preference
-    const savedThemeName = localStorage.getItem('svmseek-theme');
-    if (savedThemeName && themes[savedThemeName]) {
-      this.switchTheme(savedThemeName);
-    } else {
-      // Apply default theme
+    try {
+      const savedThemeName = localStorage.getItem('svmseek-theme');
+      if (savedThemeName && themes[savedThemeName]) {
+        this.switchTheme(savedThemeName);
+      } else {
+        // Apply default theme
+        this.cssGenerator.injectCSSVariables();
+      }
+    } catch (error) {
+      // Fallback to default theme if localStorage access fails
       this.cssGenerator.injectCSSVariables();
     }
 
     // Listen for system theme changes
     if (window.matchMedia) {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      mediaQuery.addEventListener('change', this.handleSystemThemeChange);
+      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.mediaQuery.addEventListener('change', this.handleSystemThemeChange);
+    }
+  }
+
+  /**
+   * Cleanup theme manager
+   * Removes event listeners to prevent memory leaks
+   */
+  cleanup(): void {
+    // PERFORMANCE: Clean up media query listener to prevent memory leaks
+    if (this.mediaQuery) {
+      this.mediaQuery.removeEventListener('change', this.handleSystemThemeChange);
+      this.mediaQuery = null;
+    }
+    
+    // Clear all change listeners
+    this.changeListeners = [];
+    
+    // Remove injected CSS to clean DOM
+    const existingStyle = document.getElementById('svmseek-theme-variables');
+    if (existingStyle) {
+      existingStyle.remove();
     }
   }
 
@@ -412,12 +469,16 @@ export class UnifiedThemeManager {
    * Handle system theme preference changes
    */
   private handleSystemThemeChange = (e: MediaQueryListEvent): void => {
-    const savedTheme = localStorage.getItem('svmseek-theme');
+    try {
+      const savedTheme = localStorage.getItem('svmseek-theme');
 
-    // Only auto-switch if no user preference is set
-    if (!savedTheme) {
-      const autoTheme = e.matches ? 'solarized' : 'eink';
-      this.switchTheme(autoTheme);
+      // Only auto-switch if no user preference is set
+      if (!savedTheme) {
+        const autoTheme = e.matches ? 'solarized' : 'eink';
+        this.switchTheme(autoTheme);
+      }
+    } catch (error) {
+      // Silently fail if localStorage is not available
     }
   };
 

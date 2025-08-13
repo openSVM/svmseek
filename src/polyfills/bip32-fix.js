@@ -16,55 +16,91 @@ function patchCryptoLibraries() {
         const originalFromPublicKey = bip32.fromPublicKey;
 
         if (originalFromSeed) {
-          bip32.fromSeed = function(seed, network) {
+          bip32.fromSeed = function (seed, network) {
             try {
               // Ensure seed is a proper Buffer
-              if (seed && typeof seed === 'object' && seed.buffer === undefined) {
+              if (
+                seed &&
+                typeof seed === 'object' &&
+                seed.buffer === undefined
+              ) {
                 logWarn('BIP32: Fixing undefined buffer in seed');
                 seed = Buffer.from(seed);
               }
               return originalFromSeed.call(this, seed, network);
             } catch (error) {
               logError('BIP32 fromSeed error caught:', error);
-              throw new Error('Failed to create key from seed - crypto library compatibility issue');
+              throw new Error(
+                'Failed to create key from seed - crypto library compatibility issue',
+              );
             }
           };
         }
 
         if (originalFromPrivateKey) {
-          bip32.fromPrivateKey = function(privateKey, chainCode, network) {
+          bip32.fromPrivateKey = function (privateKey, chainCode, network) {
             try {
-              if (privateKey && typeof privateKey === 'object' && privateKey.buffer === undefined) {
+              if (
+                privateKey &&
+                typeof privateKey === 'object' &&
+                privateKey.buffer === undefined
+              ) {
                 logWarn('BIP32: Fixing undefined buffer in privateKey');
                 privateKey = Buffer.from(privateKey);
               }
-              if (chainCode && typeof chainCode === 'object' && chainCode.buffer === undefined) {
+              if (
+                chainCode &&
+                typeof chainCode === 'object' &&
+                chainCode.buffer === undefined
+              ) {
                 logWarn('BIP32: Fixing undefined buffer in chainCode');
                 chainCode = Buffer.from(chainCode);
               }
-              return originalFromPrivateKey.call(this, privateKey, chainCode, network);
+              return originalFromPrivateKey.call(
+                this,
+                privateKey,
+                chainCode,
+                network,
+              );
             } catch (error) {
               logError('BIP32 fromPrivateKey error caught:', error);
-              throw new Error('Failed to create key from private key - crypto library compatibility issue');
+              throw new Error(
+                'Failed to create key from private key - crypto library compatibility issue',
+              );
             }
           };
         }
 
         if (originalFromPublicKey) {
-          bip32.fromPublicKey = function(publicKey, chainCode, network) {
+          bip32.fromPublicKey = function (publicKey, chainCode, network) {
             try {
-              if (publicKey && typeof publicKey === 'object' && publicKey.buffer === undefined) {
+              if (
+                publicKey &&
+                typeof publicKey === 'object' &&
+                publicKey.buffer === undefined
+              ) {
                 logWarn('BIP32: Fixing undefined buffer in publicKey');
                 publicKey = Buffer.from(publicKey);
               }
-              if (chainCode && typeof chainCode === 'object' && chainCode.buffer === undefined) {
+              if (
+                chainCode &&
+                typeof chainCode === 'object' &&
+                chainCode.buffer === undefined
+              ) {
                 logWarn('BIP32: Fixing undefined buffer in chainCode');
                 chainCode = Buffer.from(chainCode);
               }
-              return originalFromPublicKey.call(this, publicKey, chainCode, network);
+              return originalFromPublicKey.call(
+                this,
+                publicKey,
+                chainCode,
+                network,
+              );
             } catch (error) {
               logError('BIP32 fromPublicKey error caught:', error);
-              throw new Error('Failed to create key from public key - crypto library compatibility issue');
+              throw new Error(
+                'Failed to create key from public key - crypto library compatibility issue',
+              );
             }
           };
         }
@@ -72,7 +108,9 @@ function patchCryptoLibraries() {
         return bip32;
       } catch (error) {
         logError('BIP32Factory error caught:', error);
-        throw new Error('Failed to initialize BIP32 - crypto library compatibility issue');
+        throw new Error(
+          'Failed to initialize BIP32 - crypto library compatibility issue',
+        );
       }
     };
   };
@@ -85,7 +123,9 @@ function patchCryptoLibraries() {
     try {
       const bip32Module = originalRequire('bip32');
       if (bip32Module && bip32Module.BIP32Factory) {
-        bip32Module.BIP32Factory = createSafeBIP32Factory(bip32Module.BIP32Factory);
+        bip32Module.BIP32Factory = createSafeBIP32Factory(
+          bip32Module.BIP32Factory,
+        );
       }
     } catch (e) {
       // Module not available yet
@@ -99,7 +139,7 @@ function patchCryptoLibraries() {
   const safeGlobalPatch = () => {
     try {
       // Use property descriptors to avoid triggering security scanners
-      const globalScope = (function() {
+      const globalScope = (function () {
         if (typeof window !== 'undefined') return window;
         if (typeof global !== 'undefined') return global;
         return {};

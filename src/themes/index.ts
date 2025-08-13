@@ -70,6 +70,16 @@ export interface ThemeEffects {
     full: string;
   };
 
+  // Spacing system
+  spacing: {
+    xs: string;
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+    xxl: string;
+  };
+
   // Animations
   animation: {
     duration: {
@@ -128,6 +138,14 @@ const baseGlassEffects: ThemeEffects = {
     lg: '16px',
     xl: '24px',
     full: '9999px',
+  },
+  spacing: {
+    xs: '4px',
+    sm: '8px',
+    md: '16px',
+    lg: '24px',
+    xl: '32px',
+    xxl: '48px',
   },
   animation: {
     duration: {

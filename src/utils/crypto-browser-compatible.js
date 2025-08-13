@@ -2,6 +2,7 @@
 import { Buffer } from 'buffer';
 import { derivePath } from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
+import crypto from 'crypto-browserify';
 import { devLog, logWarn, logError } from './logger';
 
 /**
@@ -11,7 +12,7 @@ import { devLog, logWarn, logError } from './logger';
 
 // Safe Buffer initialization
 function initializeBufferGlobally() {
-  const globalScope = (function() {
+  const globalScope = (function () {
     if (typeof globalThis !== 'undefined') return globalThis;
     if (typeof window !== 'undefined') return window;
     return {};
@@ -49,33 +50,21 @@ export const createBrowserCompatibleBip32 = () => {
 
               return {
                 privateKey: Buffer.from(derivedKey.key),
-                publicKey: Buffer.from(derivedKey.publicKey || derivedKey.key.slice(32)),
+                publicKey: Buffer.from(
+                  derivedKey.publicKey || derivedKey.key.slice(32),
+                ),
               };
             } catch (error) {
               logError('Path derivation failed:', error);
-              // Return a fallback key
-              const fallbackKey = Buffer.alloc(32);
-              fallbackKey.writeUInt32BE(parseInt(path.split('/')[1]) || 0, 0);
-              return {
-                privateKey: fallbackKey,
-                publicKey: fallbackKey.slice(0, 32),
-              };
+              // SECURITY: Fail securely instead of using weak fallback keys
+              throw new Error('Key derivation failed - unable to generate secure keys. Please try again.');
             }
           },
         };
       } catch (error) {
         logError('Seed processing failed:', error);
-        // Return a fallback implementation
-        return {
-          derivePath: (path) => {
-            const fallbackKey = Buffer.alloc(32);
-            fallbackKey.writeUInt32BE(parseInt(path.split('/')[1]) || 0, 0);
-            return {
-              privateKey: fallbackKey,
-              publicKey: fallbackKey.slice(0, 32),
-            };
-          },
-        };
+        // SECURITY: Fail securely instead of using weak fallback keys
+        throw new Error('Seed processing failed - unable to generate secure keys. Please unlock wallet again.');
       }
     },
   };
@@ -97,24 +86,19 @@ export function safeDeriveKey(seed, path) {
     return derivedKey.key;
   } catch (error) {
     logError('Safe key derivation failed:', error);
-    // Return a deterministic fallback
-    const fallbackSeed = Buffer.alloc(32);
-    const pathSegments = path.split('/').filter(segment => segment && segment !== 'm');
-
-    // Create a deterministic seed based on path
-    for (let i = 0; i < pathSegments.length && i < 8; i++) {
-      const value = parseInt(pathSegments[i].replace("'", "")) || 0;
-      fallbackSeed.writeUInt32BE(value, i * 4);
-    }
-
-    return fallbackSeed;
+    // SECURITY: Fail securely instead of using predictable fallback
+    throw new Error('Secure key derivation failed. Please unlock wallet again.');
   }
 }
 
 /**
  * Create account from seed without using problematic BIP32
  */
-export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = undefined) {
+export function createAccountFromSeed(
+  seed,
+  walletIndex = 0,
+  derivationPath = undefined,
+) {
   try {
     let derivedSeed;
 
@@ -126,12 +110,16 @@ export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = un
       derivedSeed = safeDeriveKey(seed, path);
     } else {
       // Use a simpler derivation that doesn't require BIP32
-      const seedBuffer = Buffer.isBuffer(seed) ? seed : Buffer.from(seed, 'hex');
+      const seedBuffer = Buffer.isBuffer(seed)
+        ? seed
+        : Buffer.from(seed, 'hex');
       const indexBuffer = Buffer.allocUnsafe(4);
       indexBuffer.writeUInt32BE(walletIndex, 0);
 
-      // Create a deterministic seed by combining original seed with index
-      derivedSeed = Buffer.concat([seedBuffer.slice(0, 28), indexBuffer]);
+      // SECURITY: Use cryptographically secure derivation instead of simple concatenation
+      const crypto = require('crypto-browserify');
+      const combinedInput = Buffer.concat([seedBuffer, indexBuffer]);
+      derivedSeed = crypto.createHash('sha256').update(combinedInput).digest();
     }
 
     // Ensure derivedSeed is exactly 32 bytes
@@ -152,16 +140,8 @@ export function createAccountFromSeed(seed, walletIndex = 0, derivationPath = un
     };
   } catch (error) {
     logError('Create account from seed failed:', error);
-
-    // Return a fallback account based on wallet index
-    const fallbackSeed = new Uint8Array(32);
-    fallbackSeed[0] = (walletIndex || 0) % 256;
-    const fallbackKeyPair = nacl.sign.keyPair.fromSeed(fallbackSeed);
-
-    return {
-      secretKey: fallbackKeyPair.secretKey,
-      publicKey: fallbackKeyPair.publicKey,
-    };
+    // SECURITY: Fail securely instead of using weak fallback accounts
+    throw new Error('Account creation failed - unable to generate secure keys. Please unlock wallet again.');
   }
 }
 
@@ -178,18 +158,20 @@ export function safeCreateImportsEncryptionKey(seed) {
     // Use a simple PBKDF2-like approach instead of BIP32
     const seedBuffer = Buffer.isBuffer(seed) ? seed : Buffer.from(seed, 'hex');
 
-    // Create a deterministic 32-byte key from seed
-    const crypto = require('crypto-browserify');
-    const key = crypto.pbkdf2Sync(seedBuffer, 'svmseek-imports', 10000, 32, 'sha256');
+    // Create a deterministic 32-byte key from seed using imported crypto
+    const key = crypto.pbkdf2Sync(
+      seedBuffer,
+      'svmseek-imports',
+      10000,
+      32,
+      'sha256',
+    );
 
     return key;
   } catch (error) {
     logError('Safe imports encryption key creation failed:', error);
-
-    // Return a deterministic fallback
-    const fallbackKey = Buffer.alloc(32);
-    fallbackKey.write('svmseek_fallback_imports_key_12');
-    return fallbackKey;
+    // SECURITY: Fail securely instead of using static fallback
+    throw new Error('Encryption key generation failed - unable to create secure key. Please unlock wallet again.');
   }
 }
 

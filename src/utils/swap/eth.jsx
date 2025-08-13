@@ -6,8 +6,50 @@ import { useCallAsync } from '../notifications';
 import { VioletButton } from '../../pages/commonStyles';
 import { useTheme } from '@mui/material';
 import { isExtension } from '../utils';
+import { devLog } from '../logger';
 
-const web3 = new Web3(window.ethereum);
+// Safe ethereum provider access with multiple provider support
+function getEthereumProvider() {
+  if (typeof window === 'undefined') return null;
+  
+  // Check for multiple providers
+  if (window.ethereum?.providers && Array.isArray(window.ethereum.providers)) {
+    // Prefer MetaMask if available
+    const metamask = window.ethereum.providers.find(p => p.isMetaMask);
+    if (metamask) return metamask;
+    
+    // Otherwise use the first available provider
+    return window.ethereum.providers[0];
+  }
+  
+  // Single provider or legacy access
+  if (window.ethereum) {
+    return window.ethereum;
+  }
+  
+  // Check for provider-specific access patterns
+  if (window.web3?.currentProvider) {
+    return window.web3.currentProvider;
+  }
+  
+  return null;
+}
+
+// Initialize Web3 with safe provider access
+let web3;
+try {
+  const provider = getEthereumProvider();
+  if (provider) {
+    web3 = new Web3(provider);
+  } else {
+    // Create a minimal Web3 instance for cases where no provider is available
+    web3 = new Web3();
+  }
+} catch (error) {
+  console.warn('SVMSeek: Failed to initialize Web3 with provider, using minimal instance:', error);
+  web3 = new Web3();
+}
+
 // Change to use estimated gas limit
 const SUGGESTED_GAS_LIMIT = 200000;
 
@@ -15,17 +57,40 @@ export function useEthAccount() {
   const [account, setAccount] = useState(null);
 
   useEffect(() => {
-    if (!window.ethereum) {
-      return;
-    }
-    const onChange = (accounts) =>
-      setAccount(accounts.length > 0 ? accounts[0] : null);
-    window.ethereum.request({ method: 'eth_accounts' }).then(onChange);
-    window.ethereum.on('accountsChanged', onChange);
-    return () => {
-      if (!window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', onChange);
+    const provider = getEthereumProvider();
+    if (provider) {
+      const onChange = (accounts) =>
+        setAccount(accounts.length > 0 ? accounts[0] : null);
+      
+      // Safe account access with error handling
+      const initializeAccount = async () => {
+        try {
+          const accounts = await provider.request({ method: 'eth_accounts' });
+          onChange(accounts);
+        } catch (error) {
+          console.warn('SVMSeek: Failed to get initial eth accounts:', error);
+          setAccount(null);
+        }
+      };
+      
+      initializeAccount();
+      
+      // Set up event listener with error handling
+      try {
+        provider.on('accountsChanged', onChange);
+      } catch (error) {
+        console.warn('SVMSeek: Failed to set up accountsChanged listener:', error);
       }
+      
+      return () => {
+        try {
+          if (provider && provider.removeListener) {
+            provider.removeListener('accountsChanged', onChange);
+          }
+        } catch (error) {
+          console.warn('SVMSeek: Failed to remove accountsChanged listener:', error);
+        }
+      };
     }
   }, []);
 
@@ -33,16 +98,22 @@ export function useEthAccount() {
 }
 
 export async function getErc20Balance(account, erc20Address) {
-  if (!erc20Address) {
-    return parseInt(await web3.eth.getBalance(account)) / 1e18;
-  }
+  try {
+    if (!erc20Address) {
+      const balance = await web3.eth.getBalance(account);
+      return parseInt(balance) / 1e18;
+    }
 
-  const erc20 = new web3.eth.Contract(ERC20_ABI, erc20Address);
-  const [value, decimals] = await Promise.all([
-    erc20.methods.balanceOf(account).call(),
-    erc20.methods.decimals().call(),
-  ]);
-  return parseInt(value, 10) / 10 ** parseInt(decimals, 10);
+    const erc20 = new web3.eth.Contract(ERC20_ABI, erc20Address);
+    const [value, decimals] = await Promise.all([
+      erc20.methods.balanceOf(account).call(),
+      erc20.methods.decimals().call(),
+    ]);
+    return parseInt(value, 10) / 10 ** parseInt(decimals, 10);
+  } catch (error) {
+    console.warn('SVMSeek: Failed to get ERC20 balance:', error);
+    return 0;
+  }
 }
 
 export async function estimateErc20SwapFees({
@@ -198,6 +269,7 @@ export async function withdrawEth(from, withdrawal, callAsync) {
   try {
     await method.estimateGas();
   } catch (e) {
+    devLog('Gas estimation failed for withdrawal:', e.message);
     return;
   }
   pendingNonces.add(nonce);
@@ -233,9 +305,10 @@ function waitForConfirms(tx, onStatusChange) {
 
 export function ConnectToMetamaskButton() {
   const callAsync = useCallAsync();
-  const theme = useTheme()
+  const theme = useTheme();
 
-  if (!window.ethereum) {
+  const provider = getEthereumProvider();
+  if (!provider) {
     return (
       <VioletButton
         theme={theme}
@@ -252,7 +325,7 @@ export function ConnectToMetamaskButton() {
 
   function connect() {
     callAsync(
-      window.ethereum.request({
+      provider.request({
         method: 'eth_requestAccounts',
       }),
       {

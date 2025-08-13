@@ -30,6 +30,8 @@ import {
 import { sleep } from '../utils/utils';
 import { useTokenInfosMap, getTokenInfo } from '../utils/tokens/names';
 
+const MERGE_CONFIRMATION_TEXT = 'merge';
+
 export default function MergeAccountsDialog({ open, onClose }) {
   const theme = useTheme();
   const [publicKeys] = useWalletPublicKeys();
@@ -154,7 +156,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
     setMergeCheck('');
     onClose();
   };
-  const disabled = mergeCheck.toLowerCase() !== 'merge';
+  const disabled = mergeCheck.toLowerCase() !== MERGE_CONFIRMATION_TEXT;
 
   return (
     <DialogForm
@@ -184,7 +186,11 @@ export default function MergeAccountsDialog({ open, onClose }) {
           </div>
         </Card>
       ) : (
-        <RowContainer justify={'space-between'} height={'100%'} direction={'column'}>
+        <RowContainer
+          justify={'space-between'}
+          height={'100%'}
+          direction={'column'}
+        >
           <Title
             maxFont={'2.1rem'}
             fontSize="2.4rem"
@@ -235,7 +241,7 @@ export default function MergeAccountsDialog({ open, onClose }) {
               margin="normal"
               value={mergeCheck}
               onChange={(e) => setMergeCheck(e.target.value.trim())}
-              placeholder={'Type "merge" to confirm'}
+              placeholder={`Type "${MERGE_CONFIRMATION_TEXT}" to confirm`}
             />
           </RowContainer>
           <RowContainer padding={'1rem 0'} justify={'space-between'}>
@@ -261,8 +267,10 @@ export default function MergeAccountsDialog({ open, onClose }) {
                     setIsMerging(false);
                   })
                   .catch((err) => {
+                    logError('Account merge failed:', err);
+                    const errorMessage = err?.message || err?.toString() || 'Unknown error occurred';
                     enqueueSnackbar(
-                      `There was a problem merging your accounts: ${err.toString()}`,
+                      `There was a problem merging your accounts: ${errorMessage}`,
                       { variant: 'error' },
                     );
                     setIsMerging(false);
@@ -343,8 +351,23 @@ async function mergeMint(
 }
 
 async function refresh(wallet, publicKeys) {
-  await refreshWalletPublicKeys(wallet);
-  publicKeys.map((publicKey) =>
-    refreshAccountInfo(wallet.connection, publicKey, true),
-  );
+  try {
+    // BUSINESS LOGIC: Add proper error handling for wallet refresh operations
+    await refreshWalletPublicKeys(wallet);
+    
+    // Handle refresh operations with error recovery
+    const refreshPromises = publicKeys.map(async (publicKey) => {
+      try {
+        await refreshAccountInfo(wallet.connection, publicKey, true);
+      } catch (error) {
+        logError(`Failed to refresh account ${publicKey.toString()}:`, error);
+        // Continue with other accounts even if one fails
+      }
+    });
+    
+    await Promise.allSettled(refreshPromises);
+  } catch (error) {
+    logError('Failed to refresh wallet data:', error);
+    throw new Error('Unable to refresh wallet data. Please try again.');
+  }
 }

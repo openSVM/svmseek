@@ -43,25 +43,25 @@ export const ShimmerContainer = styled(Box)(({ theme }) => ({
 
 // Primary action button with vault styling
 export const VaultButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-  color: '#000',
+  background: 'var(--status-warning)',
+  color: 'var(--text-inverse)',
   fontWeight: 'bold',
   borderRadius: (theme.shape.borderRadius as number) * 3,
   textTransform: 'none',
-  boxShadow: '0 8px 32px rgba(255, 215, 0, 0.3)',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  boxShadow: 'var(--shadow-xl)',
+  transition: 'all var(--animation-duration-normal) var(--animation-easing-smooth)',
   position: 'relative',
   overflow: 'hidden',
   '&:hover': {
-    background: 'linear-gradient(135deg, #FFA500, #FFD700)',
+    background: 'var(--interactive-hover)',
     transform: 'translateY(-2px)',
-    boxShadow: '0 12px 40px rgba(255, 215, 0, 0.4)',
+    boxShadow: 'var(--shadow-glass)',
   },
   '&:disabled': {
-    background: 'linear-gradient(135deg, #888, #666)',
-    color: '#ccc',
+    background: 'var(--interactive-disabled)',
+    color: 'var(--text-tertiary)',
     transform: 'none',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+    boxShadow: 'var(--shadow-sm)',
   },
   '&::before': {
     content: '""',
@@ -80,28 +80,28 @@ export const VaultButton = styled(Button)(({ theme }) => ({
 
 // Secondary action button
 export const SecondaryButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #4ECDC4, #44B7B8)',
-  color: '#fff',
+  background: 'var(--interactive-secondary)',
+  color: 'var(--text-inverse)',
   fontWeight: 'bold',
   borderRadius: (theme.shape.borderRadius as number) * 1.5,
   textTransform: 'none',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: 'all var(--animation-duration-normal) var(--animation-easing-smooth)',
   '&:hover': {
-    background: 'linear-gradient(135deg, #44B7B8, #3BAEA3)',
+    background: 'var(--interactive-hover)',
     transform: 'translateY(-2px)',
   },
 }));
 
 // Danger button for destructive actions
 export const DangerButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #FF6B6B, #FF8E8E)',
-  color: '#fff',
+  background: 'var(--status-error)',
+  color: 'var(--text-inverse)',
   fontWeight: 'bold',
   borderRadius: (theme.shape.borderRadius as number) * 1.5,
   textTransform: 'none',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: 'all var(--animation-duration-normal) var(--animation-easing-smooth)',
   '&:hover': {
-    background: 'linear-gradient(135deg, #FF4757, #FF6B6B)',
+    background: 'var(--interactive-active)',
     transform: 'translateY(-2px)',
   },
 }));
@@ -127,7 +127,7 @@ export const VaultTextField = styled(TextField)(({ theme }) => ({
 
 // Progress indicator for vault actions
 export const VaultProgress = styled(CircularProgress)(({ theme }) => ({
-  color: '#FFD700',
+  color: 'var(--status-warning)',
   '& .MuiCircularProgress-circle': {
     strokeLinecap: 'round',
   },
@@ -140,20 +140,20 @@ export const StatusChip = styled(Chip, {
   ({ theme, status = 'info' }) => {
     const variants = {
       success: {
-        background: 'linear-gradient(135deg, #4CAF50, #66BB6A)',
-        color: '#fff',
+        background: 'var(--status-success)',
+        color: 'var(--text-inverse)',
       },
       warning: {
-        background: 'linear-gradient(135deg, #FF9800, #FFB74D)',
-        color: '#fff',
+        background: 'var(--status-warning)',
+        color: 'var(--text-inverse)',
       },
       error: {
-        background: 'linear-gradient(135deg, #F44336, #EF5350)',
-        color: '#fff',
+        background: 'var(--status-error)',
+        color: 'var(--text-inverse)',
       },
       info: {
-        background: 'linear-gradient(135deg, #2196F3, #42A5F5)',
-        color: '#fff',
+        background: 'var(--status-info)',
+        color: 'var(--text-inverse)',
       },
     };
 
@@ -242,7 +242,7 @@ export const ProgressContainer = styled(Box)(({ theme }) => ({
     background: theme.palette.action.hover,
   },
   '& .MuiLinearProgress-bar': {
-    background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+    background: 'var(--status-warning)',
     borderRadius: theme.shape.borderRadius,
   },
 }));
@@ -252,11 +252,8 @@ export const AnimatedNumber = styled(Box)(({ theme }) => ({
   fontFamily: theme.typography.fontFamily,
   fontWeight: theme.typography.fontWeightBold,
   fontSize: '2rem',
-  background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-  backgroundClip: 'text',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+  color: 'var(--text-accent)',
+  transition: 'all var(--animation-duration-slow) var(--animation-easing-smooth)',
   '&.updating': {
     transform: 'scale(1.1)',
   },

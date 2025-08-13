@@ -284,12 +284,13 @@ class WalletGroupService {
 
   // Utility Methods
   private generateRandomColor(): string {
-    const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-      '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
-      '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
+    // Use theme-aware color palette that works across all themes
+    const themeColors = [
+      'var(--status-error)', 'var(--status-info)', 'var(--status-success)', 'var(--status-warning)',
+      'var(--interactive-primary)', 'var(--interactive-secondary)', 'var(--text-accent)',
+      'var(--border-focus)', 'var(--interactive-hover)', 'var(--interactive-active)'
     ];
-    return colors[Math.floor(Math.random() * colors.length)];
+    return themeColors[Math.floor(Math.random() * themeColors.length)];
   }
 
   private async executeSendOperation(wallet: EnhancedWallet, params: any): Promise<string> {
@@ -327,28 +328,60 @@ class WalletGroupService {
       const walletsData = localStorage.getItem(this.walletsStorageKey);
 
       if (groupsData) {
-        const entries = JSON.parse(groupsData);
-        this.groups = new Map(entries.map(([key, value]: [string, any]) => [
-          key,
-          {
-            ...value,
-            createdAt: new Date(value.createdAt),
-            updatedAt: new Date(value.updatedAt),
+        // SECURITY: Safe JSON parsing with comprehensive validation for groups data
+        let entries;
+        try {
+          if (!groupsData || typeof groupsData !== 'string') {
+            throw new Error('Invalid groups data format');
           }
-        ]));
+          entries = JSON.parse(groupsData);
+          
+          // Validate data structure
+          if (!Array.isArray(entries)) {
+            throw new Error('Invalid groups data structure - expected array');
+          }
+          
+          this.groups = new Map(entries.map(([key, value]: [string, any]) => [
+            key,
+            {
+              ...value,
+              createdAt: new Date(value.createdAt),
+              updatedAt: new Date(value.updatedAt),
+            }
+          ]));
+        } catch (parseError) {
+          logError('Failed to parse wallet groups data:', parseError);
+          localStorage.removeItem(this.storageKey);
+        }
       }
 
       if (walletsData) {
-        const entries = JSON.parse(walletsData);
-        this.wallets = new Map(entries.map(([key, value]: [string, any]) => [
-          key,
-          {
-            ...value,
-            publicKey: new PublicKey(value.publicKey),
-            createdAt: new Date(value.createdAt),
-            updatedAt: new Date(value.updatedAt),
+        // SECURITY: Safe JSON parsing with comprehensive validation for wallets data  
+        let entries;
+        try {
+          if (!walletsData || typeof walletsData !== 'string') {
+            throw new Error('Invalid wallets data format');
           }
-        ]));
+          entries = JSON.parse(walletsData);
+          
+          // Validate data structure
+          if (!Array.isArray(entries)) {
+            throw new Error('Invalid wallets data structure - expected array');
+          }
+          
+          this.wallets = new Map(entries.map(([key, value]: [string, any]) => [
+            key,
+            {
+              ...value,
+              publicKey: new PublicKey(value.publicKey),
+              createdAt: new Date(value.createdAt),
+              updatedAt: new Date(value.updatedAt),
+            }
+          ]));
+        } catch (parseError) {
+          logError('Failed to parse enhanced wallets data:', parseError);
+          localStorage.removeItem(this.walletsStorageKey);
+        }
       }
     } catch (error) {
       logError('Failed to load wallet groups from storage:', error);

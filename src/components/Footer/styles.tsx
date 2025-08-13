@@ -6,9 +6,9 @@ export const FooterComponent = styled(RowContainer)`
   display: none;
   @media (max-width: 600px) {
     display: flex;
-    background-color: #222429;
-    border-top: 0.1rem solid #383b45;
-    padding: 0 2rem;
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-primary);
+    padding: 0 var(--spacing-md);
     justify-content: space-between;
   }
 `;
@@ -20,11 +20,17 @@ export const StyledLink = styled(RouterLink)`
   flex-direction: column;
   text-align: center;
   text-decoration: none;
-  color: #fbf2f2;
-  font-family: Avenir Next Medium;
-  font-size: 1.3rem;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
+  
+  &:hover {
+    color: var(--interactive-primary);
+  }
+  
   span {
-    margin-top: 1rem;
+    margin-top: var(--spacing-xs);
   }
 `;
 export const StyledA = styled.a`
@@ -35,11 +41,17 @@ export const StyledA = styled.a`
   flex-direction: column;
   text-align: center;
   text-decoration: none;
-  color: #fbf2f2;
-  font-family: Avenir Next Medium;
-  font-size: 1.3rem;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
+  
+  &:hover {
+    color: var(--interactive-primary);
+  }
+  
   span {
-    margin-top: 1rem;
+    margin-top: var(--spacing-xs);
   }
 `;
 
@@ -52,10 +64,17 @@ export const StyledButton = styled.div`
   height: 5rem;
   text-align: center;
   text-decoration: none;
-  color: #fbf2f2;
-  font-family: Avenir Next Medium;
-  font-size: 1.3rem;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: color var(--animation-duration-fast) var(--animation-easing-default);
+  
+  &:hover {
+    color: var(--interactive-primary);
+  }
+  
   span {
-    margin-top: 1rem;
+    margin-top: var(--spacing-xs);
   }
 `;

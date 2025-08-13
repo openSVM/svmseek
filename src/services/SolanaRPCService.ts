@@ -50,6 +50,7 @@ export class SolanaRPCService {
   private connection: Connection;
   private cache = new Map<string, { data: any; timestamp: number }>();
   private readonly CACHE_TTL = 30000; // 30 seconds
+  private readonly MAX_CACHE_SIZE = 100; // Maximum cache entries
 
   constructor(rpcUrl: string = 'https://api.mainnet-beta.solana.com') {
     this.connection = new Connection(rpcUrl, 'confirmed');
@@ -68,6 +69,16 @@ export class SolanaRPCService {
   }
 
   private setCache(key: string, data: any): void {
+    // PERFORMANCE: Prevent memory leaks with cache size management
+    if (this.cache.size >= this.MAX_CACHE_SIZE) {
+      // Remove oldest entries (first 20% of cache)
+      const entriesToRemove = Math.floor(this.MAX_CACHE_SIZE * 0.2);
+      const keys = Array.from(this.cache.keys());
+      for (let i = 0; i < entriesToRemove; i++) {
+        this.cache.delete(keys[i]);
+      }
+    }
+    
     this.cache.set(key, { data, timestamp: Date.now() });
   }
 
@@ -95,12 +106,14 @@ export class SolanaRPCService {
       ]);
 
       // Calculate TPS from recent performance samples
-      const tps = recentPerformanceSamples.length > 0
+      const tps = recentPerformanceSamples.length > 0 && recentPerformanceSamples[0].samplePeriodSecs > 0
         ? Math.round(recentPerformanceSamples[0].numTransactions / recentPerformanceSamples[0].samplePeriodSecs)
         : 0;
 
       // Calculate average block time
-      const avgBlockTime = recentPerformanceSamples.length > 0
+      const avgBlockTime = recentPerformanceSamples.length > 0 && 
+        recentPerformanceSamples[0].numSlots > 0 && 
+        recentPerformanceSamples[0].samplePeriodSecs > 0
         ? recentPerformanceSamples[0].samplePeriodSecs / recentPerformanceSamples[0].numSlots
         : 0.4;
 
@@ -283,7 +296,14 @@ export class SolanaRPCService {
     // Check if it's a block number
     if (/^\d+$/.test(trimmedQuery)) {
       try {
-        const slot = parseInt(trimmedQuery);
+        // SECURITY: Safe parseInt with bounds checking for slot numbers
+        const slot = parseInt(trimmedQuery, 10);
+        
+        // Validate slot number is within safe bounds
+        if (isNaN(slot) || !isFinite(slot) || slot < 0 || slot > Number.MAX_SAFE_INTEGER) {
+          throw new Error('Invalid slot number: out of valid range');
+        }
+        
         const block = await this.connection.getBlock(slot);
 
         if (block) {
@@ -326,9 +346,19 @@ export class SolanaRPCService {
       const tokens = tokenAccounts.value.map(tokenAccount => {
         const data = tokenAccount.account.data as ParsedAccountData;
         const info = data.parsed.info;
+        
+        // SECURITY: Safe amount parsing with validation
+        const amountString = info.tokenAmount.uiAmountString || '0';
+        let amount = parseFloat(amountString);
+        
+        // Validate parsed amount is safe and finite
+        if (!isFinite(amount) || isNaN(amount) || amount < 0) {
+          amount = 0; // Default to 0 for invalid amounts
+        }
+        
         return {
           mint: info.mint,
-          amount: parseFloat(info.tokenAmount.uiAmountString || '0'),
+          amount,
           decimals: info.tokenAmount.decimals,
         };
       });

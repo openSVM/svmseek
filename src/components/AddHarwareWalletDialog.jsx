@@ -21,9 +21,7 @@ export default function AddHardwareWalletDialog({ open, onAdd, onClose }) {
           await provider.init();
           setPubKey(provider.publicKey);
         } catch (err) {
-          devLog(
-            `received error when attempting to connect ledger: ${err}`,
-          );
+          devLog(`received error when attempting to connect ledger: ${err}`);
           if (err.statusCode === 0x6804) {
             enqueueSnackbar('Unlock ledger device', { variant: 'error' });
           }

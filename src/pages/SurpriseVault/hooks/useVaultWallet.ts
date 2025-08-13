@@ -66,17 +66,21 @@ export const useVaultWallet = () => {
     }
 
     // Also listen for storage changes (if wallet state is managed elsewhere)
-    window.addEventListener('storage', (e) => {
+    const handleStorageChange = (e) => {
       if (e.key === 'walletAddress') {
         checkWalletConnection();
       }
-    });
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
+      // PERFORMANCE: Clean up all event listeners to prevent memory leaks
       if (window.solana) {
         window.solana.removeListener('connect', handleWalletChange);
         window.solana.removeListener('disconnect', handleWalletChange);
       }
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 

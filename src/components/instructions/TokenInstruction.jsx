@@ -36,12 +36,12 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
     return tokenMint
       ? tokenMint.name
       : isOwner
-      ? 'This wallet'
-      : (isOwned ? '(Owned) ' : '') + address?.toBase58();
+        ? 'This wallet'
+        : (isOwned ? '(Owned) ' : '') + address?.toBase58();
   };
 
   return (
-    <>
+    <React.Fragment>
       <Title
         variant="subtitle1"
         style={{ fontWeight: 'bold', fontSize: '1.6rem' }}
@@ -66,6 +66,6 @@ export default function TokenInstruction({ instruction, onOpenAddress }) {
             />
           );
         })}
-    </>
+    </React.Fragment>
   );
 }

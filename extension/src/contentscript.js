@@ -5,7 +5,8 @@ scriptTag.src = chrome.runtime.getURL('script.js');
 container.insertBefore(scriptTag, container.children[0]);
 container.removeChild(scriptTag);
 
-window.addEventListener('ccai_injected_script_message', (event) => {
+// Store event handler reference for cleanup
+const messageHandler = (event) => {
   chrome.runtime.sendMessage(
     {
       channel: 'ccai_contentscript_background_channel',
@@ -21,4 +22,11 @@ window.addEventListener('ccai_injected_script_message', (event) => {
       );
     },
   );
+};
+
+window.addEventListener('ccai_injected_script_message', messageHandler);
+
+// Cleanup event listener when extension is unloaded
+window.addEventListener('beforeunload', () => {
+  window.removeEventListener('ccai_injected_script_message', messageHandler);
 });

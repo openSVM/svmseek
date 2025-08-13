@@ -76,9 +76,11 @@ class FetchLoopInternal<T = any> {
   }
 
   get refreshInterval(): number {
-    return Math.min(
-      ...[...this.listeners].map((listener) => listener.refreshInterval),
-    );
+    const intervals = [...this.listeners].map((listener) => listener.refreshInterval);
+    if (intervals.length === 0) {
+      return 60000; // Default fallback interval if no listeners
+    }
+    return Math.min(...intervals);
   }
 
   get stopped(): boolean {
@@ -132,15 +134,18 @@ class FetchLoopInternal<T = any> {
       if (!this.timeoutId && !this.stopped) {
         let waitTime = this.refreshInterval;
 
-        // Back off on errors.
+        // SECURITY: Prevent division by zero in backoff calculation
         if (this.errors > 0) {
-          waitTime = Math.min(1000 * 2 ** (this.errors - 1), 60000);
+          const safeErrors = Math.max(1, Math.min(this.errors, 10)); // Cap errors to prevent overflow
+          const backoffFactor = Math.min(2 ** (safeErrors - 1), 30); // Cap backoff
+          waitTime = Math.min(1000 * backoffFactor, 60000);
         }
 
         // Don't do any refreshing for the first five seconds, to make way for other things to load.
         const timeSincePageLoad = +new Date() - +pageLoadTime;
-        if (timeSincePageLoad < 5000) {
-          waitTime += 5000 - timeSincePageLoad / 2;
+        if (timeSincePageLoad < 5000 && timeSincePageLoad > 0) {
+          const remainingDelay = 5000 - timeSincePageLoad;
+          waitTime += Math.max(0, remainingDelay / 2);
         }
 
         // Refresh background pages slowly.
@@ -151,9 +156,19 @@ class FetchLoopInternal<T = any> {
         }
 
         // Add jitter so we don't send all requests at the same time.
-        waitTime *= 0.8 + 0.4 * Math.random();
+        const jitterFactor = 0.8 + 0.4 * Math.random();
+        // SECURITY: Ensure waitTime is finite and within safe bounds
+        if (!isFinite(waitTime) || waitTime < 0) {
+          waitTime = this.refreshInterval; // Fallback to default
+        }
+        waitTime = Math.max(100, Math.min(waitTime * jitterFactor, 300000)); // Cap at 5 minutes
 
         this.timeoutId = setTimeout(this.refresh, waitTime);
+        
+        // PERFORMANCE: Prevent timeout from keeping Node.js process alive in tests
+        if (this.timeoutId && typeof this.timeoutId.unref === 'function') {
+          this.timeoutId.unref();
+        }
       }
     }
   };
@@ -206,6 +221,46 @@ export function refreshCache(cacheKey, clearCache = false) {
       loop.notifyListeners();
     }
   }
+}
+
+// PERFORMANCE: Add cache size management to prevent memory leaks
+const MAX_CACHE_SIZE = 1000;
+const MAX_ERROR_CACHE_SIZE = 100;
+
+// PERFORMANCE: Periodically clean cache to prevent memory accumulation
+function cleanupCaches() {
+  // Clean global cache if it gets too large
+  if (globalCache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(globalCache.entries());
+    // Keep the most recently accessed items (simple LRU approximation)
+    const keepEntries = entries.slice(-Math.floor(MAX_CACHE_SIZE * 0.8));
+    globalCache.clear();
+    keepEntries.forEach(([key, value]) => globalCache.set(key, value));
+  }
+  
+  // Clean error cache
+  if (errorCache.size > MAX_ERROR_CACHE_SIZE) {
+    const entries = Array.from(errorCache.entries());
+    const keepEntries = entries.slice(-Math.floor(MAX_ERROR_CACHE_SIZE * 0.8));
+    errorCache.clear();
+    keepEntries.forEach(([key, value]) => errorCache.set(key, value));
+  }
+}
+
+// PERFORMANCE: Clean caches every 5 minutes
+const cacheCleanupInterval = setInterval(cleanupCaches, 5 * 60 * 1000);
+
+// PERFORMANCE: Cleanup function to clear all resources  
+export function cleanupFetchLoop() {
+  clearInterval(cacheCleanupInterval);
+  globalCache.clear();
+  errorCache.clear();
+  globalLoops.loops.clear();
+}
+
+// Auto-cleanup on page unload to prevent memory leaks
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', cleanupFetchLoop);
 }
 
 export function setCache(cacheKey, value, { initializeOnly = false } = {}) {

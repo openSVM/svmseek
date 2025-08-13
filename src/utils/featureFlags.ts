@@ -38,11 +38,11 @@ export interface FeatureFlags {
  * unless explicitly needed for wallet extension compatibility.
  */
 const DEFAULT_FLAGS: FeatureFlags = {
-  // Global patches - disabled by default for safety
-  enableOsPolyfill: process.env.REACT_APP_ENABLE_OS_POLYFILL === 'true',
-  enableBufferPolyfill: process.env.REACT_APP_ENABLE_BUFFER_POLYFILL === 'true',
-  enableSafeEventListeners: process.env.REACT_APP_ENABLE_SAFE_EVENT_LISTENERS === 'true',
-  enableCryptoPolyfill: process.env.REACT_APP_ENABLE_CRYPTO_POLYFILL === 'true',
+  // Global patches - enabled by default for wallet compatibility
+  enableOsPolyfill: process.env.REACT_APP_ENABLE_OS_POLYFILL !== 'false',
+  enableBufferPolyfill: process.env.REACT_APP_ENABLE_BUFFER_POLYFILL !== 'false',
+  enableSafeEventListeners: process.env.REACT_APP_ENABLE_SAFE_EVENT_LISTENERS !== 'false',
+  enableCryptoPolyfill: process.env.REACT_APP_ENABLE_CRYPTO_POLYFILL !== 'false',
   
   // Security features - enabled by default
   enableAdvancedRateLimiting: process.env.REACT_APP_DISABLE_RATE_LIMITING !== 'true',

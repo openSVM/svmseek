@@ -1,4 +1,3 @@
-
 window.ccai = {
   postMessage: (message) => {
     const listener = (event) => {

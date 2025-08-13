@@ -91,13 +91,14 @@ if [ ! -f "build/index.html" ]; then
     exit 1
 fi
 
-if [ ! -d "build/static" ]; then
-    print_error "Build validation failed: static directory not found"
+# Check for Vite's assets directory (modern build system)
+if [ ! -d "build/assets" ]; then
+    print_error "Build validation failed: assets directory not found"
     exit 1
 fi
 
-# Verify JavaScript bundles exist
-JS_FILES=$(find build/static/js -name "*.js" | wc -l)
+# Verify JavaScript bundles exist (Vite puts all assets in single directory)
+JS_FILES=$(find build/assets -name "*.js" | wc -l)
 if [ "$JS_FILES" -eq 0 ]; then
     print_error "Build validation failed: No JavaScript files found"
     exit 1
@@ -163,7 +164,7 @@ done
 
 # Verify final build structure
 print_status "Final build verification..."
-if [ ! -f "build/index.html" ] || [ ! -d "build/static/js" ] || [ ! -d "build/static/css" ]; then
+if [ ! -f "build/index.html" ] || [ ! -d "build/assets" ]; then
     print_error "Build verification failed: Missing critical build artifacts"
     exit 1
 fi
@@ -175,8 +176,8 @@ echo "Build Summary:"
 echo "  Size: $BUILD_SIZE"
 echo "  Context: $CONTEXT"
 echo "  Branch: $BRANCH"
-echo "  JavaScript files: $(find build/static/js -name "*.js" | wc -l)"
-echo "  CSS files: $(find build/static/css -name "*.css" | wc -l)"
+echo "  JavaScript files: $(find build/assets -name "*.js" | wc -l)"
+echo "  CSS files: $(find build/assets -name "*.css" | wc -l)"
 echo ""
 
 # Set build metadata for Netlify

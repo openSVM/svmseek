@@ -19,7 +19,7 @@ import ImportExportIcon from '@mui/icons-material/ImportExport';
 import AddAccountDialog from '../AddAccountDialog';
 import DeleteMnemonicDialog from '../DeleteMnemonicDialog';
 import AddHardwareWalletDialog from '../AddHarwareWalletDialog';
-import { ExportMnemonicDialog } from '../ExportAccountDialog.js';
+import { ExportMnemonicDialog } from '../ExportAccountDialog.jsx';
 import { Navbar } from './Navbar';
 import { isExtension } from '../../utils/utils';
 import { useLocation } from 'react-router-dom';
@@ -72,10 +72,8 @@ export function WalletSelector() {
   const { accounts, setWalletSelector, addAccount } = useWalletSelector();
   const [anchorEl, setAnchorEl] = useState(null);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
-  const [
-    addHardwareWalletDialogOpen,
-    setAddHardwareWalletDialogOpen,
-  ] = useState(false);
+  const [addHardwareWalletDialogOpen, setAddHardwareWalletDialogOpen] =
+    useState(false);
   const [deleteMnemonicOpen, setDeleteMnemonicOpen] = useState(false);
   const [exportMnemonicOpen, setExportMnemonicOpen] = useState(false);
 
@@ -245,24 +243,24 @@ function Footer() {
   const location = useLocation();
   devLog('location', location);
 
-  if (isConnectPopup) return null
+  if (isConnectPopup) return null;
 
   return (
     <>
       <FooterComponent>
         <span
           style={{
-            fontSize: '1.3rem',
-            color: '#fbf2f2',
+            fontSize: 'var(--font-size-sm)',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
-            fontFamily: 'Avenir Next medium',
+            fontFamily: 'var(--font-primary)',
           }}
         >
           {location.pathname.includes('restore')
             ? 'Restore your wallet using seed phrase to get access for SPL assets management and interaction with dApps on the Solana blockchain.'
             : location.pathname.includes('create')
-            ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
-            : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
+              ? ' Create a cryptocurrency wallet for SPL assets management and secure connection and interaction with dApps on the Solana blockchain.'
+              : 'Web-based cryptocurrency wallet or browser extension for SPL assets management and securely connect and interact with dApps on the Solana blockchain.'}
         </span>{' '}
         <Button
           variant="outlined"
@@ -273,9 +271,9 @@ function Footer() {
           href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
           style={{
             border: '0',
-            fontSize: '1.3rem',
+            fontSize: 'var(--font-size-sm)',
             height: '50%',
-            color: '#fbf2f2',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
           }}
         >
@@ -293,9 +291,9 @@ function Footer() {
           href="https://t.me/CryptocurrenciesAi"
           style={{
             border: '0',
-            fontSize: '1.3rem',
+            fontSize: 'var(--font-size-sm)',
             height: '50%',
-            color: '#fbf2f2',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
           }}
         >
@@ -310,9 +308,9 @@ function Footer() {
           href="https://github.com/Cryptocurrencies-AI/spl-token-wallet"
           style={{
             border: '0',
-            fontSize: '1.3rem',
+            fontSize: 'var(--font-size-sm)',
             height: '50%',
-            color: '#fbf2f2',
+            color: 'var(--text-secondary)',
             textTransform: 'none',
           }}
         >

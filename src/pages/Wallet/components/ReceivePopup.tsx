@@ -375,14 +375,18 @@ function MetamaskDeposit({ swapInfo, insufficientEthBalance, onClose }) {
     setStatus({ step: 0, confirms: 0, txid: '' });
     await callAsync(
       (async () => {
+        // SECURITY: Enhanced amount validation with overflow protection
         let parsedAmount = parseFloat(amount);
-
+        
         if (
+          isNaN(parsedAmount) ||
+          !isFinite(parsedAmount) ||
           !parsedAmount ||
-          parsedAmount > Number(maxAmount) ||
-          parsedAmount <= 0
+          parsedAmount <= 0 ||
+          parsedAmount > Number.MAX_SAFE_INTEGER ||
+          parsedAmount > Number(maxAmount)
         ) {
-          throw new Error('Invalid amount');
+          throw new Error('Invalid amount: Please enter a valid positive number within allowed limits');
         }
         await swapErc20ToSpl({
           ethAccount,

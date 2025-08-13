@@ -7,6 +7,7 @@ import { useAsyncData } from '../../../utils/fetch-loop';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 import { useTheme } from '@mui/material';
 import { useSendTransaction } from '../../../utils/notifications';
+import { logError } from '../../../utils/logger';
 import {
   abbreviateAddress,
   formatNumberToUSFormat,
@@ -108,12 +109,18 @@ export default function AddTokenDialog({
     } else if (tab === 'erc20') {
       params = { erc20Address };
     } else {
+      // BUSINESS LOGIC: Enhanced Promise.all with proper error handling for token operations
       Promise.all(
         selectedTokens.map((tokenInfo) => sendTransaction(addToken(tokenInfo))),
-      ).then(() => {
-        refreshTokensData();
-        onClose();
-      });
+      )
+        .then(() => {
+          refreshTokensData();
+          onClose();
+        })
+        .catch((error) => {
+          logError('Failed to add selected tokens:', error);
+          // Keep dialog open on error so user can retry
+        });
 
       return;
     }

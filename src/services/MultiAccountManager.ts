@@ -35,6 +35,7 @@ class MultiAccountManager {
   private exportService: ExportService;
   private state: MultiAccountState;
   private listeners: Array<(state: MultiAccountState) => void> = [];
+  private autoSyncInterval: NodeJS.Timeout | null = null;
 
   constructor(connection: Connection) {
     this.connection = connection;
@@ -291,7 +292,7 @@ class MultiAccountManager {
         metadata: {
           balance,
           transactionCount: transactions.length,
-          lastActivity: transactions[0]?.blockTime ? new Date(transactions[0].blockTime * 1000) : undefined,
+          lastActivity: this.safeCreateDate(transactions[0]?.blockTime),
           isArchived: false,
           tags: [],
         },
@@ -563,6 +564,32 @@ class MultiAccountManager {
     }, 0);
   }
 
+  private safeCreateDate(blockTime?: number): Date | undefined {
+    if (!blockTime || !isFinite(blockTime) || blockTime <= 0) {
+      return undefined;
+    }
+    
+    try {
+      const timestamp = blockTime * 1000;
+      const date = new Date(timestamp);
+      
+      // Validate the date is reasonable (not in far future or past)
+      const now = Date.now();
+      const oneYearMs = 365 * 24 * 60 * 60 * 1000;
+      
+      if (isNaN(date.getTime()) || 
+          date.getTime() > now + oneYearMs || 
+          date.getTime() < now - (10 * oneYearMs)) {
+        return undefined;
+      }
+      
+      return date;
+    } catch (error) {
+      logError('Failed to create date from blockTime:', error);
+      return undefined;
+    }
+  }
+
   private refreshState(): void {
     const wallets = walletGroupService.getAllWallets();
     const groups = walletGroupService.getAllGroups();
@@ -577,8 +604,13 @@ class MultiAccountManager {
   }
 
   private scheduleAutoSync(): void {
+    // Clear existing interval if any
+    if (this.autoSyncInterval) {
+      clearInterval(this.autoSyncInterval);
+    }
+
     // Schedule periodic sync every 5 minutes for wallets with autoSync enabled
-    setInterval(() => {
+    this.autoSyncInterval = setInterval(() => {
       const walletsToSync = this.state.wallets.filter(
         w => w.settings.autoSync && !w.metadata.isArchived
       );
@@ -589,11 +621,44 @@ class MultiAccountManager {
         );
       }
     }, 5 * 60 * 1000); // 5 minutes
+    
+    // PERFORMANCE: Prevent interval from keeping Node.js process alive in tests
+    if (this.autoSyncInterval && typeof this.autoSyncInterval.unref === 'function') {
+      this.autoSyncInterval.unref();
+    }
   }
 
-  // Cleanup
+  // Cleanup - SECURITY: Proper resource management
+  destroy(): void {
+    // Clear auto-sync interval
+    if (this.autoSyncInterval) {
+      clearInterval(this.autoSyncInterval);
+      this.autoSyncInterval = null;
+    }
+    
+    // Clear all listeners
+    this.listeners = [];
+    
+    // Clear state to prevent memory leaks
+    this.state = {
+      wallets: [],
+      groups: [],
+      selectedWallets: [],
+      selectedGroups: [],
+      activeFilters: {
+        search: '',
+        type: [],
+        status: [],
+        groups: [],
+      },
+      syncStatus: [],
+      isLoading: false,
+      errors: [],
+    };
+  }
+
   dispose(): void {
-    this.listeners.length = 0;
+    this.destroy(); // Ensure consistent cleanup
   }
 }
 

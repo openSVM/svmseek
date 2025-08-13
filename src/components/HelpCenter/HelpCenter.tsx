@@ -47,7 +47,7 @@ const SearchBox = styled.div`
 const SearchInput = styled.input`
   width: 100%;
   padding: 16px 20px 16px 56px;
-  border: 2px solid var(--border-main);
+  border: 2px solid var(--border-primary);
   border-radius: 12px;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -93,7 +93,7 @@ const CategoryList = styled.div`
   background: var(--bg-secondary);
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid var(--border-main);
+  border: 1px solid var(--border-primary);
 `;
 
 const CategoryTitle = styled.h3`
@@ -146,7 +146,7 @@ const SectionTitle = styled.h2`
 
 const FAQItem = styled.div`
   background: var(--bg-secondary);
-  border: 1px solid var(--border-main);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   margin-bottom: 16px;
   overflow: hidden;
@@ -178,7 +178,7 @@ const FAQAnswer = styled.div<{ expanded: boolean }>`
 
 const CodeBlock = styled.pre`
   background: var(--bg-primary);
-  border: 1px solid var(--border-main);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
   padding: 16px;
   margin: 16px 0;

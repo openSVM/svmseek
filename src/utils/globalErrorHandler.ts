@@ -17,10 +17,14 @@ export class GlobalErrorHandler {
   private errorCounts: Map<string, number> = new Map();
   private maxErrorsPerType = 5;
 
-  // Logging throttling mechanism
+  // Logging throttling mechanism with cleanup
   private logThrottleMap: Map<string, number> = new Map();
   private readonly LOG_THROTTLE_WINDOW_MS = 60000; // 1 minute
   private readonly MAX_LOGS_PER_WINDOW = 10;
+  private cleanupInterval: NodeJS.Timeout | null = null;
+
+  // Track applied patches to prevent double-patching
+  private patchesApplied = new Set<string>();
 
   constructor(config: Partial<ErrorHandlerConfig> = {}) {
     this.config = {
@@ -35,6 +39,12 @@ export class GlobalErrorHandler {
    * Initialize global error handling
    */
   public initialize(): void {
+    // Prevent double-initialization
+    if (this.patchesApplied.has('initialized')) {
+      logWarn('GlobalErrorHandler: Already initialized, skipping');
+      return;
+    }
+
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
       this.handleUnhandledRejection(event);
@@ -50,6 +60,11 @@ export class GlobalErrorHandler {
 
     // Add wallet extension conflict protection
     this.addWalletConflictProtection();
+
+    // Start cleanup interval for memory management
+    this.startCleanupInterval();
+
+    this.patchesApplied.add('initialized');
 
     if (this.config.enableLogging) {
       logWarn('GlobalErrorHandler: Error handling initialized');
@@ -159,31 +174,14 @@ export class GlobalErrorHandler {
 
   /**
    * Add wallet extension conflict protection
-   *
-   * MONKEY-PATCH WARNING: This method modifies the global Object.defineProperty to intercept
-   * attempts to redefine the window.ethereum property, which is a common source of wallet
-   * extension conflicts. Multiple wallet extensions (MetaMask, Phantom, etc.) try to claim
-   * the same property, causing "Cannot redefine property" errors.
-   *
-   * The original Object.defineProperty is preserved and wrapped with conflict detection that:
-   * 1. Monitors attempts to define window.ethereum
-   * 2. Checks if the property is already non-configurable
-   * 3. Gracefully handles conflicts by logging and skipping redefinition
-   * 4. Allows the first extension to succeed, preventing subsequent conflicts
-   *
-   * Impact: This prevents the entire application from crashing when multiple wallet
-   * extensions are installed. The first extension to define window.ethereum wins.
-   *
-   * @onboarding For new developers: This is a browser extension ecosystem compatibility
-   * layer. Wallet extensions compete for global properties, and without this protection,
-   * the app crashes with "Cannot redefine property" errors when users have multiple
-   * wallet extensions installed (which is common).
    */
   private addWalletConflictProtection(): void {
+    // Prevent double-patching
+    if (this.patchesApplied.has('wallet_conflict_protection')) {
+      return;
+    }
+
     // Monitor for ethereum property conflicts
-    // IMPLEMENTATION NOTE: This creates a proxy around Object.defineProperty specifically
-    // to intercept window.ethereum redefinition attempts. The ethereumConflictDetected
-    // flag ensures we only warn once per session to avoid log spam.
     let ethereumConflictDetected = false;
 
     const originalDefineProperty = Object.defineProperty;
@@ -198,12 +196,14 @@ export class GlobalErrorHandler {
           }
         } catch (error: any) {
           ethereumConflictDetected = true;
-          logWarn('Ethereum property conflict prevented:', error.message);
+          logWarn('Ethereum property conflict prevented:', error?.message || error);
           return obj;
         }
       }
       return originalDefineProperty.call(this, obj, prop, descriptor);
     };
+    
+    this.patchesApplied.add('wallet_conflict_protection');
   }
 
   /**
@@ -334,6 +334,64 @@ export class GlobalErrorHandler {
    */
   public resetErrorCounts(): void {
     this.errorCounts.clear();
+  }
+
+  /**
+   * Start cleanup interval for memory management
+   */
+  private startCleanupInterval(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+    
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupThrottleMaps();
+    }, this.LOG_THROTTLE_WINDOW_MS);
+    
+    // PERFORMANCE: Prevent interval from keeping Node.js process alive in tests
+    if (this.cleanupInterval && typeof this.cleanupInterval.unref === 'function') {
+      this.cleanupInterval.unref();
+    }
+  }
+
+  /**
+   * Clean up throttle maps to prevent memory leaks
+   */
+  private cleanupThrottleMaps(): void {
+    const currentTime = Date.now();
+    const cutoff = currentTime - this.LOG_THROTTLE_WINDOW_MS;
+    
+    for (const [key] of this.logThrottleMap) {
+      const keyTime = parseInt(key.split('_').pop() || '0');
+      if (keyTime < cutoff) {
+        this.logThrottleMap.delete(key);
+      }
+    }
+    
+    // Also clean error counts if they get too large
+    if (this.errorCounts.size > 100) {
+      const entries = Array.from(this.errorCounts.entries());
+      entries.sort((a, b) => b[1] - a[1]); // Sort by count, highest first
+      this.errorCounts.clear();
+      // Keep only the top 50 error types
+      entries.slice(0, 50).forEach(([key, value]) => {
+        this.errorCounts.set(key, value);
+      });
+    }
+  }
+
+  /**
+   * Cleanup method to prevent memory leaks
+   */
+  public cleanup(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+    
+    this.logThrottleMap.clear();
+    this.errorCounts.clear();
+    this.patchesApplied.clear();
   }
 }
 

@@ -59,7 +59,10 @@ export class Wallet {
   }
 
   getTokenAccountInfo = async () => {
-    let accounts = await getTokenAccountsByOwner(this.connection, this.publicKey);
+    let accounts = await getTokenAccountsByOwner(
+      this.connection,
+      this.publicKey,
+    );
     return accounts
       .map(({ publicKey, accountInfo }) => {
         setInitialAccountInfo(this.connection, publicKey, accountInfo);
@@ -149,12 +152,8 @@ const WalletContext = React.createContext(null);
 
 export function WalletProvider({ children }) {
   useListener(walletSeedChanged, 'change');
-  const [{
-    mnemonic,
-    seed,
-    importsEncryptionKey,
-    derivationPath,
-  }] = useUnlockedMnemonicAndSeed();
+  const [{ mnemonic, seed, importsEncryptionKey, derivationPath }] =
+    useUnlockedMnemonicAndSeed();
   const { enqueueSnackbar } = useSnackbar();
   const connection = useConnection();
   const [wallet, setWallet] = useState();
@@ -225,17 +224,15 @@ export function WalletProvider({ children }) {
                   );
                 } catch (error) {
                   logError('Failed to create account from seed:', error);
-                  // Return a fallback account
-                  const fallbackSeed = new Uint8Array(32);
-                  fallbackSeed[0] = (walletSelector.walletIndex || 0) % 256;
-                  return new Account(nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey);
+                  throw new Error(
+                    'Unable to create wallet account: seed generation failed. Please ensure your wallet is properly configured.',
+                  );
                 }
               })()
             : (() => {
                 try {
-                  const { nonce, ciphertext } = privateKeyImports[
-                    walletSelector.importedPubkey
-                  ];
+                  const { nonce, ciphertext } =
+                    privateKeyImports[walletSelector.importedPubkey];
                   const decryptedKey = nacl.secretbox.open(
                     bs58.decode(ciphertext),
                     bs58.decode(nonce),
@@ -246,10 +243,13 @@ export function WalletProvider({ children }) {
                   }
                   return new Account(decryptedKey);
                 } catch (error) {
-                  logError('Failed to create account from imported key:', error);
-                  // Return a fallback account
-                  const fallbackSeed = new Uint8Array(32);
-                  return new Account(nacl.sign.keyPair.fromSeed(fallbackSeed).secretKey);
+                  logError(
+                    'Failed to create account from imported key:',
+                    error,
+                  );
+                  throw new Error(
+                    'Unable to create wallet account: private key decryption failed. Please check your imported key configuration.',
+                  );
                 }
               })();
         wallet = await Wallet.create(connection, 'local', { account });
@@ -313,8 +313,11 @@ export function WalletProvider({ children }) {
       const seedBuffer = Buffer.from(seed, 'hex');
       const derivedAccounts = [...Array(walletCount).keys()].map((idx) => {
         try {
-          let address = getAccountFromSeed(seedBuffer, idx, derivationPath)
-            .publicKey;
+          let address = getAccountFromSeed(
+            seedBuffer,
+            idx,
+            derivationPath,
+          ).publicKey;
           let name = localStorage.getItem(`name${idx}`);
           return {
             selector: {

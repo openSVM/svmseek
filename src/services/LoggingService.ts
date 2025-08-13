@@ -34,6 +34,10 @@ class LoggingService {
   private sessionId: string;
   private logs: ErrorLog[] = [];
   private isInitialized = false;
+  
+  // Track event listeners for cleanup
+  private errorHandler: ((event: ErrorEvent) => void) | null = null;
+  private rejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null;
 
   constructor() {
     this.sessionId = this.generateSessionId();
@@ -280,7 +284,24 @@ class LoggingService {
     try {
       const stored = localStorage.getItem('svmseek_logs');
       if (stored) {
-        const logs = JSON.parse(stored) as ErrorLog[];
+        // SECURITY: Safe JSON parsing with comprehensive validation for logs data
+        let logs;
+        try {
+          if (!stored || typeof stored !== 'string') {
+            throw new Error('Invalid logs data format');
+          }
+          logs = JSON.parse(stored) as ErrorLog[];
+          
+          // Validate data structure
+          if (!Array.isArray(logs)) {
+            throw new Error('Invalid logs data structure - expected array');
+          }
+        } catch (parseError) {
+          logError('Failed to parse logs data:', parseError);
+          localStorage.removeItem('svmseek_logs');
+          return;
+        }
+        
         this.logs = logs.filter(log =>
           log.timestamp > Date.now() - 7 * 24 * 60 * 60 * 1000 // Keep logs for 7 days
         );
@@ -305,7 +326,7 @@ class LoggingService {
         body: JSON.stringify({
           ...log,
           // Don't send the full error object to avoid circular references
-          error: log.error ? {
+          error: log.error && log.error instanceof Error ? {
             name: log.error.name,
             message: log.error.message,
             stack: log.error.stack,
@@ -352,18 +373,22 @@ class LoggingService {
    * Set up global error handlers
    */
   private setupGlobalErrorHandlers(): void {
+    // Clean up existing handlers first
+    this.cleanupEventHandlers();
+    
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    this.rejectionHandler = (event) => {
       this.error(
         'Unhandled promise rejection',
         new Error(event.reason),
         { reason: event.reason },
         'GlobalHandler'
       );
-    });
+    };
+    window.addEventListener('unhandledrejection', this.rejectionHandler);
 
     // Handle global errors
-    window.addEventListener('error', (event) => {
+    this.errorHandler = (event) => {
       this.error(
         'Global JavaScript error',
         event.error || new Error(event.message),
@@ -374,21 +399,46 @@ class LoggingService {
         },
         'GlobalHandler'
       );
-    });
+    };
+    window.addEventListener('error', this.errorHandler);
   }
 
   /**
    * Generate a unique session ID
    */
   private generateSessionId(): string {
-    return `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `sess_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**
    * Generate a unique log ID
    */
   private generateLogId(): string {
-    return `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `log_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  /**
+   * Clean up event handlers to prevent memory leaks
+   */
+  private cleanupEventHandlers(): void {
+    if (this.errorHandler) {
+      window.removeEventListener('error', this.errorHandler);
+      this.errorHandler = null;
+    }
+    
+    if (this.rejectionHandler) {
+      window.removeEventListener('unhandledrejection', this.rejectionHandler);
+      this.rejectionHandler = null;
+    }
+  }
+
+  /**
+   * Public cleanup method for service shutdown
+   */
+  public cleanup(): void {
+    this.cleanupEventHandlers();
+    this.logs = [];
+    this.isInitialized = false;
   }
 }
 

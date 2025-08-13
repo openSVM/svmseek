@@ -9,18 +9,18 @@ import SunLogo from '../images/SunLogo.svg';
 
 export const StyledPaper = styled(({ ...props }) => <Paper {...props} />)`
   height: auto;
-  padding: 2rem 4rem;
+  padding: var(--spacing-lg) var(--spacing-xxl);
   width: 65rem;
-  box-shadow: 0px 0px 0.8rem 0px rgba(0, 0, 0, 0.45);
-  background: #222429;
-  border-radius: 0.8rem;
+  box-shadow: var(--shadow-xl);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
 `;
 
 const BoldHeader = styled.h1`
-  font-family: Avenir Next Bold;
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xxl);
   letter-spacing: -1.04615px;
-  color: #f5f5fb;
+  color: var(--text-primary);
 `;
 
 type TextProps = {
@@ -31,11 +31,11 @@ type TextProps = {
 };
 
 const Text = styled.span<TextProps>`
-  font-size: ${(props) => props.fontSize || '1.5rem'};
+  font-size: ${(props) => props.fontSize || 'var(--font-size-md)'};
   padding-bottom: ${(props) => props.paddingBottom || ''};
   text-transform: none;
-  font-family: ${(props) => props.fontFamily || 'Avenir Next Medium'};
-  color: ${(props) => props.color || '#ecf0f3'};
+  font-family: ${(props) => props.fontFamily || 'var(--font-primary)'};
+  color: ${(props) => props.color || 'var(--text-primary)'};
 `;
 
 type BlueButtonProps = {

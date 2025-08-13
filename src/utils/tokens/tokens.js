@@ -1,4 +1,4 @@
-import { MAINNET_URL } from "../connection";
+import { MAINNET_URL } from '../connection';
 
 // This list is used for deciding what to display in the popular tokens list
 // in the `AddTokenDialog`.

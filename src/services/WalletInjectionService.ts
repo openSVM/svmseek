@@ -30,11 +30,13 @@ export class WalletInjectionService {
   private wallet: any = null;
   private injected = new Set<string>();
   private messageHandlers = new Map<string, (data: any) => void>();
+  private messageListener: ((event: MessageEvent) => void) | null = null;
 
   // Rate limiting for request throttling
   private requestCounts = new Map<string, number>();
   private readonly MAX_REQUESTS_PER_MINUTE = 60;
   private readonly REQUEST_WINDOW_MS = 60000; // 1 minute
+  private rateLimitCleanupInterval: NodeJS.Timeout | null = null;
 
   constructor(wallet: any) {
     this.wallet = wallet;
@@ -98,9 +100,18 @@ export class WalletInjectionService {
    * Setup rate limiting cleanup to prevent memory leaks
    */
   private setupRateLimitingCleanup(): void {
-    setInterval(() => {
+    if (this.rateLimitCleanupInterval) {
+      clearInterval(this.rateLimitCleanupInterval);
+    }
+    
+    this.rateLimitCleanupInterval = setInterval(() => {
       this.requestCounts.clear();
     }, this.REQUEST_WINDOW_MS);
+    
+    // PERFORMANCE: Prevent interval from keeping Node.js process alive in tests
+    if (this.rateLimitCleanupInterval && typeof this.rateLimitCleanupInterval.unref === 'function') {
+      this.rateLimitCleanupInterval.unref();
+    }
   }
 
   /**
@@ -163,7 +174,7 @@ export class WalletInjectionService {
    * Handle messages from the iframe with rate limiting and enhanced security
    */
   private setupMessageListener(): void {
-    window.addEventListener('message', (event) => {
+    this.messageListener = (event) => {
       try {
         if (!this.iframe || event.source !== this.iframe.contentWindow) {
           return;
@@ -190,7 +201,9 @@ export class WalletInjectionService {
       } catch (error) {
         logError('WalletInjectionService: Error processing message:', error, event.data);
       }
-    });
+    };
+
+    window.addEventListener('message', this.messageListener);
   }
 
   /**
@@ -447,9 +460,37 @@ export class WalletInjectionService {
    * Clean up resources
    */
   public cleanup(): void {
+    if (this.rateLimitCleanupInterval) {
+      clearInterval(this.rateLimitCleanupInterval);
+      this.rateLimitCleanupInterval = null;
+    }
     this.iframe = null;
     this.injected.clear();
     this.messageHandlers.clear();
+    this.requestCounts.clear();
+  }
+
+  /**
+   * Clean up event listeners and resources to prevent memory leaks
+   */
+  public destroy(): void {
+    // Clean up message listener
+    if (this.messageListener) {
+      window.removeEventListener('message', this.messageListener);
+      this.messageListener = null;
+    }
+
+    // Clean up rate limiting interval
+    if (this.rateLimitCleanupInterval) {
+      clearInterval(this.rateLimitCleanupInterval);
+      this.rateLimitCleanupInterval = null;
+    }
+
+    // Clean up other resources
+    this.iframe = null;
+    this.injected.clear();
+    this.messageHandlers.clear();
+    this.requestCounts.clear();
   }
 
   /**

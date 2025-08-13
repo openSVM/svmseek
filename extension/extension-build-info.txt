@@ -1,13 +1,13 @@
 SVMSeek Wallet Browser Extensions
 =================================
-Build Date: Thu Jul 24 13:14:00 UTC 2025
+Build Date: Mon Aug 11 18:33:56 UTC 2025
 Extensions Built: Chrome, Firefox, Safari, Edge
 
 Extension Details:
-- chrome: 6.9M (Manifest v3)
-- firefox: 6.9M (Manifest v2)
-- safari: 6.9M (Manifest v2)
-- edge: 6.9M (Manifest v3)
+- chrome: 3.3M (Manifest v3)
+- firefox: 3.3M (Manifest v3)
+- safari: 3.3M (Manifest v3)
+- edge: 3.3M (Manifest v3)
 
 Distribution:
 - Chrome: Chrome Web Store (Manifest v3)

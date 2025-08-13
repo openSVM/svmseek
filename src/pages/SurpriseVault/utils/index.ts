@@ -65,8 +65,15 @@ export const VaultStorage = {
   get: <T>(key: string, defaultValue: T): T => {
     try {
       const item = localStorage.getItem(`vault_${key}`);
-      return item ? JSON.parse(item) : defaultValue;
-    } catch {
+      if (!item || typeof item !== 'string') {
+        return defaultValue;
+      }
+      // SECURITY: Enhanced JSON parsing with validation for vault storage data
+      const parsed = JSON.parse(item);
+      return parsed !== null && parsed !== undefined ? parsed : defaultValue;
+    } catch (error) {
+      // Remove corrupted data
+      localStorage.removeItem(`vault_${key}`);
       return defaultValue;
     }
   },

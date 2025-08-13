@@ -15,8 +15,11 @@ export const getRandomNumbers = ({
   numberOfNumbers?: number;
   maxNumber?: number;
 }): number[] => {
+  // Prevent infinite loop - can't get more unique numbers than available
+  const safeNumberOfNumbers = Math.min(numberOfNumbers, maxNumber);
+  
   var arr: number[] = [];
-  while (arr.length < numberOfNumbers) {
+  while (arr.length < safeNumberOfNumbers) {
     var r = Math.floor(Math.random() * maxNumber) + 1;
     if (arr.indexOf(r) === -1) arr.push(r);
   }

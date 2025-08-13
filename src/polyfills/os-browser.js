@@ -46,15 +46,16 @@ function userInfo() {
     gid: 1000,
     username: 'user',
     homedir: homedir(),
-    shell: '/bin/bash'
+    shell: '/bin/bash',
   };
 }
 
 function cpus() {
   // Return stub CPU info
-  const numCores = typeof navigator !== 'undefined' && navigator.hardwareConcurrency
-    ? navigator.hardwareConcurrency
-    : 4;
+  const numCores =
+    typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+      ? navigator.hardwareConcurrency
+      : 4;
 
   return Array(numCores).fill({
     model: 'Browser CPU',
@@ -64,8 +65,8 @@ function cpus() {
       nice: 0,
       sys: 0,
       idle: 0,
-      irq: 0
-    }
+      irq: 0,
+    },
   });
 }
 
@@ -111,7 +112,7 @@ const osModule = {
   loadavg,
   uptime,
   networkInterfaces,
-  type
+  type,
 };
 
 // Export for CommonJS
@@ -138,5 +139,5 @@ export {
   loadavg,
   uptime,
   networkInterfaces,
-  type
+  type,
 };

@@ -29,15 +29,10 @@ export function getAccountFromSeed(
     return new Account(accountData.secretKey);
   } catch (error) {
     logError('getAccountFromSeed failed:', error);
-    // Return a fallback account with a deterministic key based on wallet index
-    const fallbackSeed = new Uint8Array(32);
-    fallbackSeed[0] = (walletIndex || 0) % 256;
-    const fallbackKeyPair = nacl.sign.keyPair.fromSeed(fallbackSeed);
-    return new Account(fallbackKeyPair.secretKey);
+    // Fail securely instead of using weak fallback keys
+    throw new Error('Unable to generate secure account keys. Please unlock wallet again.');
   }
 }
-
-
 
 export class LocalStorageWalletProvider {
   constructor(args) {
@@ -52,7 +47,9 @@ export class LocalStorageWalletProvider {
 
       // Validate that we have a valid seed
       if (!seed) {
-        logWarn('LocalStorageWalletProvider: No seed available, using fallback');
+        logWarn(
+          'LocalStorageWalletProvider: No seed available, using fallback',
+        );
       }
 
       this.listAddresses = async (walletCount) => {
@@ -61,29 +58,30 @@ export class LocalStorageWalletProvider {
           if (seed) {
             seedBuffer = Buffer.from(seed, 'hex');
           } else {
-            // Fallback seed if none available
-            seedBuffer = Buffer.alloc(32);
-            logWarn('Using fallback seed for address listing');
+            // Fail securely if no seed available instead of using weak fallback
+            throw new Error('No seed available for secure key generation');
           }
 
           return [...Array(walletCount).keys()].map((walletIndex) => {
             try {
-              let address = getAccountFromSeed(seedBuffer, walletIndex).publicKey;
+              let address = getAccountFromSeed(
+                seedBuffer,
+                walletIndex,
+              ).publicKey;
               let name = localStorage.getItem(`name${walletIndex}`);
               return { index: walletIndex, address, name };
             } catch (error) {
-              logError(`Failed to generate address for wallet ${walletIndex}:`, error);
-              // Return a fallback address structure
-              return {
-                index: walletIndex,
-                address: null,
-                name: `Wallet ${walletIndex} (Error)`
-              };
+              logError(
+                `Failed to generate address for wallet ${walletIndex}:`,
+                error,
+              );
+              // Return error structure instead of weak fallback
+              throw new Error(`Unable to generate secure address for wallet ${walletIndex}`);
             }
           });
         } catch (error) {
           logError('Failed to list addresses:', error);
-          return [];
+          throw new Error('Unable to list addresses securely. Please unlock wallet again.');
         }
       };
 
@@ -97,7 +95,7 @@ export class LocalStorageWalletProvider {
         return [...Array(walletCount).keys()].map((walletIndex) => ({
           index: walletIndex,
           address: null,
-          name: `Wallet ${walletIndex} (Initialization Error)`
+          name: `Wallet ${walletIndex} (Initialization Error)`,
         }));
       };
 
