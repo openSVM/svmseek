@@ -10,10 +10,6 @@ on:
   release:
     types: [published, created]
   
-  # Run every 6 hours to test against live Solana mainnet (production monitoring)
-  schedule:
-    - cron: '0 */72 * * *'
-  
   # Allow manual triggering
   workflow_dispatch:
     inputs:
