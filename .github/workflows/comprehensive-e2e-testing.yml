@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
   schedule:
     # Run daily at 2 AM UTC for production health checks
-    - cron: '0 9 1 * *'
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       test_suite:
@@ -295,8 +295,14 @@ jobs:
             fi
           done
         
-      - name: Install Playwright
-        run: npx playwright install chromium --with-deps
+      - name: Install Playwright browsers
+        run: |
+          # Install browsers based on project requirements
+          if [[ "${{ matrix.project }}" == "Mobile Safari" || "${{ matrix.project }}" == "iPad" ]]; then
+            npx playwright install webkit --with-deps
+          else
+            npx playwright install chromium --with-deps
+          fi
         
       - name: Build application for local testing
         if: github.event.inputs.environment == 'local' || env.PLAYWRIGHT_BASE_URL == 'http://localhost:3000'
@@ -570,8 +576,8 @@ jobs:
         
       - name: Run production health check
         run: |
-          npx playwright test e2e/comprehensive-production.spec.ts --grep="should load correctly" --reporter=html
-          npx playwright test e2e/advanced-performance.spec.ts --grep="Core Web Vitals" --reporter=html
+          npx playwright test e2e/comprehensive-production.spec.ts --grep="should complete full onboarding" --reporter=html
+          npx playwright test e2e/advanced-performance.spec.ts --grep="should meet Core Web Vitals standards on landing page" --reporter=html
         env:
           PLAYWRIGHT_BASE_URL: https://svmseek.com
           
